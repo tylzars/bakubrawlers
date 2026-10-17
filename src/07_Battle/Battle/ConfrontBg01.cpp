@@ -55,15 +55,15 @@ void ConfrontBg01::LoadGraphics() {
     FS_ChangeDir(dir);
     u8 n = entries[mUnk_12].mUnk_0d_0;
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
-    LoadAndQueueUpload(1, 1, 0x2000, path, 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "vs_b_bg_01_06_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "vs_b_bg_01_06_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "vs_b_bg_01_06_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "vs_b_bg_01_06_nsc.bin", 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
-    LoadAndQueueUpload(1, 1, 0x6000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_ncg.bin", n);
-    LoadAndQueueUpload(1, 14, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_nsc.bin", n);
-    LoadAndQueueUpload(1, 10, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, path, 0, 0, 0);
     ChangeDir("/");
 }
 

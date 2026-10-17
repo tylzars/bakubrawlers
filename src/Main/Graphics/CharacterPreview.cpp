@@ -92,7 +92,7 @@ UnkStruct_0205401c *UnkStruct_0205401c::Release() {
     mCharacter = NULL;
     ModelInstance *shadow = mShadow;
     if (shadow != NULL) {
-        shadow->mOwnFlags = 0xf;
+        shadow->mOwnFlags = MODEL_OWN_ALL;
         delete shadow;
         mShadow = NULL;
     }
@@ -300,7 +300,7 @@ StoryCharacterModel::~StoryCharacterModel() {
         StopAsyncLoad();
         ModelInstance *model = mModel;
         if (model != NULL) {
-            model->mOwnFlags = 0xf;
+            model->mOwnFlags = MODEL_OWN_ALL;
             delete model;
             mModel = NULL;
         }

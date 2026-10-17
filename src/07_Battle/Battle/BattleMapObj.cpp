@@ -11,7 +11,7 @@
 BattleMapObjPart::~BattleMapObjPart() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mOwnFlags = 0xb;
+        model->mOwnFlags = (MODEL_OWN_ANIM | MODEL_OWN_FILE | MODEL_OWN_ANIM_DATA);
         delete model;
         mModel = 0;
     }

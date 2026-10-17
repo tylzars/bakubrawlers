@@ -559,16 +559,16 @@ void BattleCommandPrompt::Load() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/2D/union_b");
-    LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
     mWindow->SetCells(2, sPromptWindowCells);
-    LoadAndQueueUpload(1, 4, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 4, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x180, "union_b_obj_gp_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x180, "union_b_obj_gp_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj");
-    LoadAndQueueUpload(1, 4, 0x19000, "battle_b_obj_state.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x100, "battle_b_obj_state_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x19000, "battle_b_obj_state.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x100, "battle_b_obj_state_ncl.bin", 0, 0, 0);
     mStateCellAnims[0] = new CellAnimation("battle_b_obj_state_nce.bin", 0, 1, 1);
     mStateCellAnims[0]->mCharBase = screen.GetCharBase(0x19000);
     mStateCellAnims[0]->mPaletteBase   = 8;
@@ -585,9 +585,9 @@ void BattleCommandPrompt::Load() {
         case 5:
         case 7: {
             ChangeDir("/Game/Battle/Bg");
-            LoadAndQueueUpload(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Card/Graphic/Large");
             u8 i = 0;
             do {
@@ -595,9 +595,9 @@ void BattleCommandPrompt::Load() {
                 u32 size;
                 sprintf(name, "card_l_%03d.nce_ncg1D.bin", GetCardNumber(mCardIds[i]));
                 void *data = LoadFile(name, 0, 0, 0, &size, 0);
-                QueueUpload(1, 4, mCharOffset + i * 0x1800, screen.DownsampleCharacters((u8 *) data), 0x1000, 1);
+                QueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset + i * 0x1800, screen.DownsampleCharacters((u8 *) data), 0x1000, 1);
                 sprintf(name, "card_l_%03d_ncl.bin", GetCardNumber(mCardIds[i]));
-                LoadAndQueueUpload(1, 0, 0x1400 + i * 0x200, name, 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x1400 + i * 0x200, name, 0, 0, 0);
                 i++;
             } while (i < mCount);
             ChangeDir("/Game/2D/union_b");
@@ -615,12 +615,12 @@ void BattleCommandPrompt::Load() {
         case 2:
         case 6: {
             ChangeDir("/Game/Battle/Bg");
-            LoadAndQueueUpload(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Battle/Obj");
-            LoadAndQueueUpload(1, 4, 0, "bakugan_sub.nce_ncg1D.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0, 0x200, "bakugan_sub_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0, "bakugan_sub.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x200, "bakugan_sub_ncl.bin", 0, 0, 0);
             u8 i = 0;
             do {
                 mBakuganSubCellAnims[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
@@ -643,8 +643,8 @@ void BattleCommandPrompt::Load() {
       case 6:
       case 7: {
         ChangeDir("/Game/Character/Icon");
-        LoadAndQueueUpload(1, 4, 0x14000, "icon_ch_base.nce_ncg1D.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 5, 0x120, "icon_ch_base_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x14000, "icon_ch_base.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x120, "icon_ch_base_ncl.bin", 0, 0, 0);
         u8 j = 0;
         do {
             mCharacterIconCellAnims[j] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);

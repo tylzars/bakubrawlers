@@ -29,7 +29,7 @@ void GimmickTornado::Load() {
 void GimmickTornado::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mOwnFlags       = 0xf;
+        m->mOwnFlags       = MODEL_OWN_ALL;
         delete m;
         mModel = 0;
     }

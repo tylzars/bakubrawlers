@@ -49,7 +49,7 @@ MyroomStatusScene::~MyroomStatusScene() {
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     ModelInstance *p14 = mMyroombgModel;
     if (p14 != NULL) {
-        p14->mOwnFlags = 0xf;
+        p14->mOwnFlags = MODEL_OWN_ALL;
         delete p14;
         mMyroombgModel = NULL;
     }
@@ -277,7 +277,7 @@ void MyroomStatusScene::RenderLine(u8 line) {
             break;
     }
     SpriteManager &sprites = SpriteManager::Get();
-    QueueUpload(sprites.Screen(0).mBgIndex, 4, gMyroomStatusLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(sprites.Screen(0).mBgIndex, UPLOAD_KIND_OBJ, gMyroomStatusLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
 }
 
 void MyroomStatusScene::DrawLines() {

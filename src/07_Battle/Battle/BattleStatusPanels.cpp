@@ -221,7 +221,7 @@ void BattleStatusPanels::DrawPanels() {
                         shown1 = true;
                         if (mPanels[i].mUnk_29 != 0) {
                             if (mPanels[i].mUnk_36 != 0) {
-                                if (SpriteManager::Get().sFade[0] <= 1) {
+                                if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
                                         SoundManager::Get().StartSeqArc(6);
@@ -257,7 +257,7 @@ void BattleStatusPanels::DrawPanels() {
                         shown2 = true;
                         if (mPanels[i].mUnk_29 != 0) {
                             if (mPanels[i].mUnk_36 != 0) {
-                                if (SpriteManager::Get().sFade[0] <= 1) {
+                                if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
                                         SoundManager::Get().StartSeqArc(6);
@@ -287,7 +287,7 @@ void BattleStatusPanels::DrawPanels() {
                 }
             } else if (mPanels[i].mUnk_29 != 0) {
                 if (mPanels[i].mUnk_36 != 0) {
-                    if (SpriteManager::Get().sFade[0] <= 1) {
+                    if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                         if (mUnk_fd) {
                             mUnk_fd = 0;
                             SoundManager::Get().StartSeqArc(6);
@@ -425,11 +425,11 @@ void BattleStatusPanels::PrintName(u32 index) {
     TextManager::Get().mUse4bppFont = 0;
     switch (mMode) {
         case 0:
-            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000 + (index << 11),
+            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, mCharBase + 0x2000 + (index << 11),
                           mPanels[index].mBuffer, mBufferSize, 0);
             break;
         case 1:
-            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000, mPanels[index].mBuffer,
+            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, mCharBase + 0x2000, mPanels[index].mBuffer,
                           mBufferSize, 0);
             break;
     }

@@ -74,12 +74,12 @@ void CreditsScene::InitDisplay() {
 
 void CreditsScene::LoadGraphics() {
     ChangeDir("/Game/Credit/");
-    LoadAndQueueUpload(0, 1, 0, "credits_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "credits_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "credits_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "credits_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "credits_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "credits_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "credits_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "credits_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "credits_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "credits_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "credits_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "credits_b_bg_00_nsc.bin", 0, 0, 0);
 }
 
 void CreditsScene::Update() {
@@ -88,7 +88,7 @@ void CreditsScene::Update() {
             InitDisplay();
             LoadGraphics();
             LoadText();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -103,7 +103,7 @@ void CreditsScene::Update() {
             break;
         case 3:
             mState++;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         case 4:
             if (SpriteManager::Get().IsFading()) {
@@ -203,28 +203,28 @@ void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
         tm.Print(file->GetText((u16) message), file->GetLength((u16) message), mBuffers[column], 0x20, 2, &outWidth2,
                                  &outHeight2, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
     }
-    QueueUpload(column, 12, offset, mBuffers[column], mBufferSize, 0);
+    QueueUpload(column, UPLOAD_KIND_BG1_CHAR, offset, mBuffers[column], mBufferSize, 0);
 }
 
 void CreditsScene::LoadText() {
     u16 *map = (u16 *) OS_Alloc(TextManager::Get().BufferSize(8, 8));
     MI_CpuClear16(map, 0x800);
     TextManager::Get().FillScrChars(0, map, 0, 0, 0x20, 0x20, 0x20);
-    QueueUpload(0, 8, 0, map, 0x800, 1);
+    QueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, map, 0x800, 1);
     map = (u16 *) OS_Alloc(0x800);
     MI_CpuClear16(map, 0x800);
     TextManager::Get().FillScrChars(0, map, 0, 0, 0x20, 0x20, 0x20);
-    QueueUpload(1, 8, 0, map, 0x800, 1);
+    QueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, map, 0x800, 1);
     TextManager::Get().func_0202ce44(0, 0, 0, 0);
     TextManager::Get().func_0202ce44(1, 0, 0, 0);
     void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
     MI_CpuClear16(chars, 0x8000);
     DC_FlushRange(chars, 0x8000);
-    QueueUpload(0, 12, 0, chars, 0x8000, 1);
+    QueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, chars, 0x8000, 1);
     chars = OS_Alloc(0x8000);
     MI_CpuClear16(chars, 0x8000);
     DC_FlushRange(chars, 0x8000);
-    QueueUpload(1, 12, 0, chars, 0x8000, 1);
+    QueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, chars, 0x8000, 1);
     mBufferSize = TextManager::Get().BufferSize(8, 8);
     for (u32 i = 0; i < 2; i++) {
         mBuffers[i] = OS_Alloc(mBufferSize);

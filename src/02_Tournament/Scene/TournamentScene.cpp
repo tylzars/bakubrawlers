@@ -233,10 +233,10 @@ void TournamentScene::Update() {
                 break;
             }
             if (mEvent->IsRunning()) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             } else {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 if (gSaveData[0].mUnk_42 == 10) {
                     if (mEvent != NULL) {
                         mEvent->RequestFinish();
@@ -257,7 +257,7 @@ void TournamentScene::Update() {
         case 3:
             if (!mEvent->IsRunning()) {
                 mUnk_d3 = 1;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 if (gSaveData[0].mUnk_42 == 10) {
                     if (mEvent != NULL) {
                         mEvent->RequestFinish();
@@ -275,18 +275,18 @@ void TournamentScene::Update() {
                 break;
             }
             if (mEvent->GetSaveRequest()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 4;
                 break;
             }
             if (mEvent->GetUnlockPopupHandle()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 9;
                 break;
             }
             if (HandleEventResult()) {
                 if (mUnk_d0 != 0) {
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState = 0xc;
                 } else {
                     mState = 0x18;
@@ -294,7 +294,7 @@ void TournamentScene::Update() {
             }
             break;
         case 4:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             mState++;
@@ -304,18 +304,18 @@ void TournamentScene::Update() {
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest       = 0;
             data_020d433c.mUnk_14_1 = 0;
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 6:
             if (mContext->mRequest == 0) {
                 break;
             }
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 7:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             ReloadMenu();
@@ -335,12 +335,12 @@ void TournamentScene::Update() {
                 mUnk_be = 0;
                 mState = 0x29;
             } else {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState = 2;
             }
             break;
         case 9:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
@@ -385,7 +385,7 @@ void TournamentScene::Update() {
             }
             if (mUnk_d2 != 0) {
                 mUnk_d2 = 0;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x12;
             } else {
                 if (mEvent != NULL) {
@@ -406,7 +406,7 @@ void TournamentScene::Update() {
             break;
         case 16:
             if (mEvent->func_0206f9b4("mes_Im_button", 0x15, 0, 6, 10, 4, 0)) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
@@ -414,7 +414,7 @@ void TournamentScene::Update() {
             if (mEvent->IsRunning()) {
                 break;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 18:
@@ -438,7 +438,7 @@ void TournamentScene::Update() {
             PrintSubScreenText(sTournamentMenuSubTextIndices[mSelection]);
             SetupMainScreenText(sTournamentMenuMainTextIndices[mSelection]);
             mMenuVisible = 1;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 0x15;
             break;
         case 20:
@@ -507,7 +507,7 @@ void TournamentScene::Update() {
             }
             break;
         case 24:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 25:
@@ -560,7 +560,7 @@ void TournamentScene::Update() {
             if (--mTimer != 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 28:
@@ -582,7 +582,7 @@ void TournamentScene::Update() {
             mNextBgLayer = 1;
             SetupMainScreenText(sTournamentModeMainTextIndices[mMode]);
             PrintSubScreenText(sModeTables[0][mMode]);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 0x1f;
             if (mUnk_d3 != 0) {
                 mUnk_d3 = 0;
@@ -682,7 +682,7 @@ void TournamentScene::Update() {
             break;
         }
         case 34:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 35:
@@ -722,7 +722,7 @@ void TournamentScene::Update() {
             }
             break;
         case 39:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 40:
@@ -847,15 +847,15 @@ void TournamentScene::LoadMainGraphics(BOOL a, BOOL b) {
     if (b) {
         char name[0x40];
         sprintf(name, "tournament_u_bg_0%d_nsc.bin", sModeTables[2][mMode]);
-        LoadAndQueueUpload(0, 7, 0, name, 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, name, 0, 0, 0);
         sprintf(name, "tournament_u_bg_0%d_ncg.bin", sModeTables[2][mMode]);
-        LoadAndQueueUpload(0, 0xb, 0, name, 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, name, 0, 0, 0);
         sprintf(name, "tournament_u_bg_0%d_ncl.bin", sModeTables[2][mMode]);
-        LoadAndQueueUpload(0, 1, 0, name, 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, name, 0, 0, 0);
     } else {
-        LoadAndQueueUpload(0, 7, 0, "tournament_u_bg_06_nsc.bin", 0, 0, 0);
-        LoadAndQueueUpload(0, 0xb, 0, "tournament_u_bg_06_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(0, 1, 0, "tournament_u_bg_06_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "tournament_u_bg_06_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "tournament_u_bg_06_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "tournament_u_bg_06_ncl.bin", 0, 0, 0);
     }
     u8 idx;
     int count = sCounts[mMode];
@@ -881,30 +881,30 @@ void TournamentScene::LoadMainGraphics(BOOL a, BOOL b) {
     mCellAnimsA[1]            = new CellAnimation("tournament_u_obj_00_nce.bin", (u8) x, 1, 1);
     mCellAnimsA[1]->mCharBase = screen.GetCharBase(0);
     mCellAnimsA[1]->mPaletteBase   = 0;
-    mCellAnimsA[1]->SetMode(5);
+    mCellAnimsA[1]->SetMode(CELL_ANIM_MODE_STOP);
     delete mCellAnimsA[3];
     u8 sel = a != 0 ? 6 : 8;
     mCellAnimsA[3]            = new CellAnimation("tournament_u_obj_01_nce.bin", sel, 1, 1);
     mCellAnimsA[3]->mCharBase = screen.GetCharBase(0x10000);
     mCellAnimsA[3]->mPaletteBase   = 1;
-    mCellAnimsA[3]->SetMode(0);
+    mCellAnimsA[3]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     delete mCellAnimsA[4];
     mCellAnimsA[4]            = new CellAnimation("tournament_u_obj_01_nce.bin", 7, 1, 1);
     mCellAnimsA[4]->mCharBase = screen.GetCharBase(0x10000);
     mCellAnimsA[4]->mPaletteBase   = 1;
-    mCellAnimsA[4]->SetMode(0);
+    mCellAnimsA[4]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     delete mCellAnimsB[0];
     mCellAnimsB[0]            = new CellAnimation("tournament_u_obj_01_nce.bin", 0xa, 1, 1);
     mCellAnimsB[0]->mCharBase = screen.GetCharBase(0x10000);
-    mCellAnimsB[0]->SetMode(0);
+    mCellAnimsB[0]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     delete mCellAnimsB[1];
     mCellAnimsB[1]            = new CellAnimation("tournament_u_obj_00_nce.bin", (u8) (x + 7), 1, 1);
     mCellAnimsB[1]->mCharBase = screen.GetCharBase(0);
-    mCellAnimsB[1]->SetMode(5);
+    mCellAnimsB[1]->SetMode(CELL_ANIM_MODE_STOP);
     delete mCellAnimsB[3];
     mCellAnimsB[3]            = new CellAnimation("tournament_u_obj_01_nce.bin", 0xb, 1, 1);
     mCellAnimsB[3]->mCharBase = screen.GetCharBase(0x10000);
-    mCellAnimsB[3]->SetMode(0);
+    mCellAnimsB[3]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     ChangeDir("/");
     if (a) {
         delete mObj38;
@@ -930,7 +930,7 @@ void TournamentScene::LoadMainGraphics(BOOL a, BOOL b) {
     mCellAnimsA[2]            = new CellAnimation("storytalk_ob_128k_nce.bin", 0, 1, 1);
     mCellAnimsA[2]->mCharBase = screen.GetCharBase(0x1a000);
     mCellAnimsA[2]->mPaletteBase   = 0xb;
-    mCellAnimsA[2]->SetMode(0);
+    mCellAnimsA[2]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     mMainScreenVisible = 1;
     ChangeDir("/");
 }
@@ -942,9 +942,9 @@ void TournamentScene::LoadWindowGraphics() {
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -964,9 +964,9 @@ void TournamentScene::ReloadMenu() {
 
 void TournamentScene::LoadMenu() {
     ChangeDir("/Game/Tournament/bg/");
-    LoadAndQueueUpload(1, 1, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "tournament_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "tournament_b_bg_00_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/Tournament/Obj/");
     sub.LoadCharacters("tournament_b_obj_00.nce_ncg1D.bin", 0, 0);
@@ -995,9 +995,9 @@ void TournamentScene::LoadMenu() {
 
 void TournamentScene::LoadModeMenu() {
     ChangeDir("/Game/Tournament/bg/");
-    LoadAndQueueUpload(1, 1, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "tournament_b_bg_00_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "tournament_b_bg_00_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/Tournament/Obj/");
     sub.LoadCharacters("tournament_b_obj_02.nce_ncg1D.bin", 0, 0);
@@ -1234,7 +1234,7 @@ u8 TournamentScene::UpdateScrollInput(u8 input) {
                 mMenuWindow->mCellAnims[i]->ResetAnimation();
                 mMenuWindow->mCellAnims[i]->SetAnimation(sTournamentMenuSelectedAnimIndices[i]);
             } else if (mSelection == i) {
-                mMenuWindow->mCellAnims[i]->SetMode(2);
+                mMenuWindow->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
             }
             items[i].mFlags = 0x8000;
             i++;
@@ -1276,7 +1276,7 @@ BOOL TournamentScene::HandleEventResult() {
     int r = mEvent->GetResult();
     if (r != 0) {
         switch (r) {
-            case 5:
+            case SCRIPT_RESULT_BATTLE:
                 mSelection = 0;
                 break;
             case 8:
@@ -1399,7 +1399,7 @@ void TournamentScene::PrintSubScreenText(u8 index) {
         mTextHeight = height;
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
 void TournamentScene::ClearSubScreenText() {
@@ -1459,13 +1459,13 @@ void TournamentScene::PrintMainScreenText(u32 index) {
     if (&mUnk_ac != NULL) {
         mUnk_ac = width1;
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1d000, mTextBuffers[2], mTextBufferSizes[2], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x1d000, mTextBuffers[2], mTextBufferSizes[2], 0);
     height2 = 0;
     width2  = 0;
     TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d441a, 0x18, mTextBuffers[3], 0x18, 2, &height2, &width2, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1f000, mTextBuffers[3], mTextBufferSizes[3], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x1f000, mTextBuffers[3], mTextBufferSizes[3], 0);
 }
 
 void TournamentScene::ClearMainScreenText() {
@@ -1536,7 +1536,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             mUnk_a2 = -mUnk_a0;
             break;
         case 7:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mBattleStep++;
             break;
         case 8:
@@ -1564,7 +1564,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
                 u8 id   = mCharacterIds[mUnk_c1 + idx];
                 if (mEvent->func_0206f9b4("mes_tm_battle", id, data_ov002_02220a54[0][id], data_ov002_02220a6c[id][pick], 2, 3,
                                   0)) {
-                    SpriteManager::Get().StartFade(2);
+                    SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                     mBattleStep++;
                 }
             }
@@ -1580,7 +1580,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             }
             break;
         case 12:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mBattleStep++;
             break;
         case 13:
@@ -1600,10 +1600,10 @@ void TournamentScene::func_ov002_0221e8f0() {
     mCellsBVisible        = 1;
     if (mMode == 1) {
         mCellAnimsB[0]->SetAnimation(12);
-        mCellAnimsB[0]->SetMode(0);
+        mCellAnimsB[0]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     } else {
         mCellAnimsB[0]->SetAnimation(10);
-        mCellAnimsB[0]->SetMode(0);
+        mCellAnimsB[0]->SetMode(CELL_ANIM_MODE_FORWARD_ONCE);
     }
 }
 
@@ -1677,9 +1677,9 @@ void TournamentScene::CloseWindow() {
 
 void TournamentScene::LoadWindow(const char *path, u32 index) {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
@@ -1716,18 +1716,18 @@ void TournamentScene::PrintWindowText(u32 index) {
     height = 0;
     MessageFile *file = mMessages[1];
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[1], 0x18, 0x10, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffers[1], mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x1b000, mTextBuffers[1], mTextBufferSizes[1], 0);
 }
 
 void TournamentScene::StartBgBlend(u32 index) {
     ChangeDir("/game/Tournament/Bg/");
     index      = sModeTables[2][index];
-    u32 nsc    = 7;
-    u32 ncg    = 0xb;
+    u32 nsc    = UPLOAD_KIND_BG0_SCR;
+    u32 ncg    = UPLOAD_KIND_BG0_CHAR;
     u32 offset = 0;
     if (mNextBgLayer != 0) {
-        nsc    = 8;
-        ncg    = 0xc;
+        nsc    = UPLOAD_KIND_BG1_SCR;
+        ncg    = UPLOAD_KIND_BG1_CHAR;
         offset = 0x2000;
     }
     char path[64];
@@ -1736,7 +1736,7 @@ void TournamentScene::StartBgBlend(u32 index) {
     sprintf(path, "tournament_u_bg_0%d_ncg.bin", index);
     LoadAndQueueUpload(0, ncg, 0, path, 0, 0, 0);
     sprintf(path, "tournament_u_bg_0%d_ncl.bin", index);
-    LoadAndQueueUpload(0, 1, offset, path, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, offset, path, 0, 0, 0);
     mBlend = 0;
     if (mNextBgLayer == 0) {
         G2_SetBG0Priority(2);

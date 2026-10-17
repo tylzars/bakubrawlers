@@ -92,7 +92,7 @@ void GameOverScene::Update() {
             LoadGraphics();
             CreateResultWindow();
             SetupText();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -139,7 +139,7 @@ void GameOverScene::Update() {
             }
             break;
         case 4:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 5:
@@ -203,12 +203,12 @@ void GameOverScene::InitDisplay() {
 
 void GameOverScene::LoadGraphics() {
     ChangeDir("/game/GameOver/");
-    LoadAndQueueUpload(0, 1, 0, "gameover_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "gameover_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "gameover_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "gameover_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "gameover_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "gameover_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "gameover_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "gameover_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "gameover_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "gameover_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "gameover_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "gameover_b_bg_00_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("gameover_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("gameover_b_obj_00_ncl.bin", 0, 0);
@@ -220,9 +220,9 @@ void GameOverScene::LoadGraphics() {
     mCellAnims[0]->mPaletteBase   = 0;
     mCellAnims[0]->SetAnimation(0);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &window = SpriteManager::Get().Screen(1);
     window.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x3000, 0);
     window.LoadPalette("union_b_obj_window_ncl.bin", 0x40, 0);
@@ -258,7 +258,7 @@ void GameOverScene::SetupText() {
     height            = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(10), file->GetLength(10), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void GameOverScene::DrawText() {

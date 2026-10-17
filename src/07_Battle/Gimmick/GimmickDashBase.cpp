@@ -50,7 +50,7 @@ void GimmickDashBase::Load() {
 void GimmickDashBase::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mOwnFlags       = 1;
+        m->mOwnFlags       = MODEL_OWN_ANIM;
         delete m;
         mModel = 0;
     }

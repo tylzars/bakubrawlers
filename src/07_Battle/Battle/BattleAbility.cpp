@@ -164,7 +164,7 @@ void BattleAbility::Update() {
                     mUnk_0f = 3;
                     break;
                 case 2:
-                    SpriteManager::Get().sFade[1] = 3;
+                    SpriteManager::Get().sFade[1] = FADE_MODE_DOWN;
                     mUnk_0f                         = 1;
                     break;
             }
@@ -175,7 +175,7 @@ void BattleAbility::Update() {
             }
             mState = 10;
             if (mAbilityId == 0xcd) {
-                SpriteManager::Get().sFade[1] = 3;
+                SpriteManager::Get().sFade[1] = FADE_MODE_DOWN;
             }
             WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -281,7 +281,7 @@ void BattleAbility::Update() {
             CloseCommandPage(mCommandPage, 1);
             mState = 10;
             if (mUnk_0f == 1 || mAbilityId == 0xcd) {
-                SpriteManager::Get().sFade[1] = 3;
+                SpriteManager::Get().sFade[1] = FADE_MODE_DOWN;
             }
             break;
         }
@@ -295,7 +295,7 @@ void BattleAbility::Update() {
                 CloseCommandPage(mCommandPage, 1);
                 mState = 10;
                 if (mAbilityId == 0xcd) {
-                    SpriteManager::Get().sFade[1] = 3;
+                    SpriteManager::Get().sFade[1] = FADE_MODE_DOWN;
                 }
             }
             break;
@@ -330,8 +330,8 @@ void BattleAbility::Update() {
             break;
         case 13:
             if ((this->*sAbilityHandlers[mAbilityIndex])()) {
-                SpriteManager::Get().sFade[0] = 3;
-                SpriteManager::sFade[1]        = 3;
+                SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
+                SpriteManager::sFade[1]        = FADE_MODE_DOWN;
                 mState                           = 0xe;
             }
             break;
@@ -377,8 +377,8 @@ void BattleAbility::LoadGraphics() {
     mNumberCellAnims[1]->SetAnimation(1);
     ChangeDir("/");
     ChangeDir("/Game/2D/union_b");
-    LoadAndQueueUpload(1, 4, 0x2000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0xe0, "union_b_obj_page_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x2000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0xe0, "union_b_obj_page_ncl.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
@@ -636,7 +636,7 @@ u8 BattleAbility::func_ov007_02265118() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         }
@@ -665,7 +665,7 @@ u8 BattleAbility::func_ov007_022652c8() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         }
@@ -695,7 +695,7 @@ u8 BattleAbility::func_ov007_0226547c() {
         case 0:
             SoundManager::Get().StartSeqArc(0x5b);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         case 1: {
@@ -758,7 +758,7 @@ u8 BattleAbility::func_ov007_02265718() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5c);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         }
@@ -767,7 +767,7 @@ u8 BattleAbility::func_ov007_02265718() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 4;
+                SpriteManager::sFade[0] = FADE_MODE_UP;
                 mStep++;
             }
             break;
@@ -781,7 +781,7 @@ u8 BattleAbility::func_ov007_02265718() {
                 ((BakuganModel *) mTarget->mBakugan)->Setup(record->mBakuganId, record->mAttribute, 3);
             }
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         case 3:
@@ -836,7 +836,7 @@ u8 BattleAbility::func_ov007_02265af8() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5d);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mUnk_62_1                  = 0;
             mStep++;
             break;
@@ -924,7 +924,7 @@ u8 BattleAbility::func_ov007_02265fac() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5d);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mUnk_62_1                  = 0;
             mStep++;
             break;
@@ -998,7 +998,7 @@ u8 BattleAbility::func_ov007_022663f0() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5e);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         }
@@ -1027,7 +1027,7 @@ u8 BattleAbility::func_ov007_022665ec() {
         case 0:
             LoadEffectGroup(mEffects, 0, "gp_pickup2");
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         case 1: {
@@ -1075,7 +1075,7 @@ u8 BattleAbility::func_ov007_02266868() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5f);
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mStep++;
             break;
         }
@@ -1120,7 +1120,7 @@ u8 BattleAbility::func_ov007_02266a28() {
         case 0:
             LoadEffectGroup(mEffects, 0, mAbilityId == 0xd4 ? "gp_pickup2" : "gp_down");
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             OrbitCamera(this);
             mStep++;
             break;

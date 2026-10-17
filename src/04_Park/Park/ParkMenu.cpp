@@ -194,11 +194,11 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
                 mWindow->mCellAnims[k]->ResetAnimation();
                 mWindow->mCellAnims[k]->SetAnimation(1);
                 mWindow->mCellAnims[k]->mFrameIndex = mWindow->mCellAnims[k]->mFrames[mWindow->mCellAnims[k]->mAnimIndex].mFrameCount;
-                mWindow->mCellAnims[k]->SetMode(2);
+                mWindow->mCellAnims[k]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
                 mCellAnims[k]->ResetAnimation();
                 mCellAnims[k]->SetAnimation(1);
                 mCellAnims[k]->mFrameIndex = mCellAnims[k]->mFrames[mCellAnims[k]->mAnimIndex].mFrameCount;
-                mCellAnims[k]->SetMode(2);
+                mCellAnims[k]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
             }
             items[k].mFlags = 0x8000;
             k++;
@@ -372,7 +372,7 @@ void ParkMenu::DrawText() {
         text.Print(file->GetText(entry), file->GetLength(entry), mTextBuffers[i], 0x18, 2, &w, &h, &mTextWidth[i], 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
 
         TextManager::Get().mUse4bppFont = 0;
-        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, sTextVramOffsets[i], mTextBuffers[i], mTextBufferSize, 0);
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, sTextVramOffsets[i], mTextBuffers[i], mTextBufferSize, 0);
     }
 }
 
@@ -401,7 +401,7 @@ void ParkMenu::Draw() {
         }
         CellAnimation *c = mCellAnims[i];
         if (c->mAnimIndex == 1 && c->mFinished != 0) {
-            if (c->mMode == 2) {
+            if (c->mMode == CELL_ANIM_MODE_BACKWARD_ONCE) {
                 c->SetAnimation(0);
             } else {
                 c->SetAnimation(2);

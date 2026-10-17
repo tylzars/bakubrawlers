@@ -21,6 +21,21 @@ struct WmCallbackArg {
 #define WM_ENTRY_SIZE 0xc0 // one scanned/listed network record (the wireless library's WMBssDesc with its game info)
 #define WM_ENTRY_COUNT 12
 
+// Status of the last wireless library call (WirelessManager::mUnk_122a, also written as data_020c4030.mUnk_22a).
+// Update starts the current mState's next call when it is WM_CALL_DONE, and on WM_CALL_FAILED (outside mState 9) calls
+// func_0202e544 and sets mState 9 (unless it is 8). 2 (set with mState 6 by the parent callback's event 7) is
+// never read and stays a literal.
+#define WM_CALL_DONE             0 // the last call completed (its callback succeeded, or TestNextChannel ran out of
+                                   // channels) and nothing is pending
+#define WM_CALL_SCAN_REQUESTED   1 // RequestScan issued the scan; Update (mState 4) then runs UpdateScanResultTimers
+#define WM_CALL_JOINED           3 // func_0202e288 sets it when it moves mState 5 (Join) to 7; JoinCallback then skips
+                                   // func_0202ea34
+#define WM_CALL_PENDING          4 // a call was issued and its callback has not run yet
+#define WM_CALL_STOPPED          5 // StopCallback succeeded (mState 0); Update in mState 9 sets it every frame
+#define WM_CALL_FAILED           6 // a call or its callback failed, or the mUnk_1254 countdown ran out. BattleShoot and
+                                   // BattleCommand write it on purpose (mRequest 2 while data_020d433c.mWireless is
+                                   // set) to send Update down this path; nothing has failed there
+
 // Scan result of one beacon (the wireless library's WMBssDesc followed by its game info), as far as it is read.
 struct WmEntry {
     /* 00 */ PAD(0x00, 0x04);
@@ -55,8 +70,8 @@ public:
                                    // 6 connected as parent, 7 joined, 8 stopping, 9 failed; also read as
                                    // data_020c4030.mUnk_228 / data_020c4258 (IsWirelessMode tests 6 and 7)
     /* 1229 */ u8 mJoinIndex;
-    /* 122a */ u8 mUnk_122a; // 4 = a library call is pending, 0 = it completed, 6 = failure or stop request (also written as
-                             // data_020c4030.mUnk_22a), 1 = scan issued, 2 / 3 = parent / joined link up, 5 = stopped
+    /* 122a */ u8 mUnk_122a; // WM_CALL_* status of the last library call; 2 is written with mState 6 by func_0202dee4
+                             // and never read. Also written as data_020c4030.mUnk_22a
     /* 122b */ u8 mUnk_122b;
     /* 122c */ u8 mUnk_122c;
     /* 122d */ u8 mUnk_122d;

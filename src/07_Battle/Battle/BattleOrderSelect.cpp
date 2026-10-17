@@ -150,7 +150,7 @@ void BattleOrderSelect::Update() {
             InitDisplay();
             LoadGraphics();
             ShuffleOrder();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -202,7 +202,7 @@ void BattleOrderSelect::Update() {
             }
             break;
         case 7:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 8:
@@ -302,17 +302,17 @@ void BattleOrderSelect::InitDisplay() {
 
 void BattleOrderSelect::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(0, 1, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "select_order_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "select_order_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "select_order_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "select_order_b_bg_01_a_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "select_order_b_bg_01_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x4000, "select_order_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 13, 0, "select_order_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "select_order_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "select_order_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "select_order_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_order_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_order_b_bg_01_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "select_order_b_bg_01_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "select_order_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, "select_order_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "select_order_b_bg_00_nsc.bin", 0, 0, 0);
     SpriteScreen &screen0 = SpriteManager::Get().mScreens[0];
     ChangeDir("/Game/Character/Icon/");
     screen0.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0xb000, 0);

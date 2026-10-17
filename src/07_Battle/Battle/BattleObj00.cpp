@@ -168,7 +168,7 @@ void BattleObj00::Update() {
             if (data_020d433c.mUnk_10) {
                 data_020d433c.mUnk_10->SetupLayout(0xd);
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             return;
         case 5: {
@@ -237,7 +237,7 @@ void BattleObj00::Update() {
                 }
                 return;
             }
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState = 0xc;
             return;
         case 11:
@@ -253,7 +253,7 @@ void BattleObj00::Update() {
                 }
                 return;
             }
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState = 0xc;
             return;
         case 12:
@@ -314,7 +314,7 @@ void BattleObj00::Update() {
             if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 return;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             if (mUnion) {
                 mUnion->Close(0);
             }
@@ -385,10 +385,10 @@ void BattleObj00::Update() {
             func_ov007_02247e00(mMap);
             data_020d433c.mGimmicks->mState = 0;
             mState                         = 0x13;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             return;
         case 19: {
-            if (SpriteManager::Get().sFade[0] > 1) {
+            if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
             mUnk_28 = mUnk_28 + 1;
@@ -473,7 +473,7 @@ void BattleObj00::Update() {
             return;
         case 23:
             mState++;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             return;
         case 24:
             if (!SpriteManager::Get().IsFading()) {
@@ -489,8 +489,8 @@ void BattleObj00::Update() {
 
 void BattleObj00::LoadGraphics() {
     ChangeDir("/Game/Battle/Obj");
-    LoadAndQueueUpload(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_PLTT, 0, "battle_u_ncl.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);

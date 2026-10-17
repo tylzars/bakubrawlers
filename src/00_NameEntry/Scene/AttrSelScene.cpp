@@ -85,7 +85,7 @@ AttrSelScene::~AttrSelScene() {
 void AttrSelScene::Update() {
     switch (mState) {
         case 0:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
         case 1:
             if (!SpriteManager::Get().IsFading()) {
@@ -139,7 +139,7 @@ void AttrSelScene::Update() {
             }
             switch (event) {
                 case 1:
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mRequest = 1;
                     mState = 4;
                     break;
@@ -162,7 +162,7 @@ void AttrSelScene::Update() {
         case 3:
             if (mPulseState != 2) {
                 gSaveData[0].mAttribute = sAttribToSaved[mAttrib];
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mRequest = 2;
                 mState++;
             }
@@ -198,12 +198,12 @@ void AttrSelScene::InitDisplay() {
 
 void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Bg");
-    LoadAndQueueUpload(0, 1, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "edit_attribute_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "edit_attribute_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "edit_attribute_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "edit_attribute_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "edit_attribute_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "edit_attribute_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "edit_attribute_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "edit_attribute_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "edit_attribute_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "edit_attribute_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen0 = SpriteManager::Get().Screen(0);
     ChangeDir("/Game/AttrSel/Obj");
@@ -261,7 +261,7 @@ void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 he
     TextManager::Get().Print(gSaveData[0].mName, 0x18, buffer, width, height, &outWidth, &outHeight,
                              (u16 *) &pixelWidth, 0, 2, unk, 0x10, 0, 0, 1, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, vram, buffer, size, 0);
 }
 
 void AttrSelScene::PrintMessage(MessageFile *file, u16 index, void *buffer, u32 size, u32 vram, u16 width, u16 height, u32 unk) {
@@ -273,18 +273,18 @@ void AttrSelScene::PrintMessage(MessageFile *file, u16 index, void *buffer, u32 
     outWidth = 0;
     text.Print(file->GetText(index), file->GetLength(index), buffer, width, height, &outWidth, &outHeight, NULL, 0, 2,
                unk, 0xc, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, vram, buffer, size, 0);
 }
 
 void AttrSelScene::LoadSubBg() {
     char path[0x40];
     ChangeDir("/Game/AttrSel/Bg");
     sprintf(path, "edit_attribute_u_sub_%02d_ncl.bin", mAttrib);
-    LoadAndQueueUpload(0, 1, 0x6000, path, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, path, 0, 0, 0);
     sprintf(path, "edit_attribute_u_sub_%02d_ncg.bin", mAttrib);
-    LoadAndQueueUpload(0, 14, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG3_CHAR, 0, path, 0, 0, 0);
     sprintf(path, "edit_attribute_u_sub_%02d_nsc.bin", mAttrib);
-    LoadAndQueueUpload(0, 10, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG3_SCR, 0, path, 0, 0, 0);
     ChangeDir("/");
     PrintMessage(mMessages, sAttribToSaved[mAttrib] + 0x1d, mTextBuffer[1], mBufferSize[1], 0x4000, 0x1c, 0x10, 0x44);
 }

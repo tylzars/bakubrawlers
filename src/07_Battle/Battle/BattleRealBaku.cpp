@@ -30,7 +30,7 @@ BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int
 BattleRealBaku::~BattleRealBaku() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
         mModel = 0;
     }

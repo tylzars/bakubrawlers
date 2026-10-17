@@ -132,7 +132,7 @@ void BattleData::Load() {
         screen.LoadCharacters(path, i << 13, 0);
         sprintf(path, "bakugan_l_%03d_ncl.bin", id);
         u8 *palette = (u8 *) LoadFile(path, 0, 0, 0, &size, 0);
-        QueueUpload(1, 0, i << 9, palette + (mEntries[i].mUnk_0d_0 << 9), 0x200, 0);
+        QueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, i << 9, palette + (mEntries[i].mUnk_0d_0 << 9), 0x200, 0);
         OS_Free(palette);
         sprintf(path, "bakugan_l_%03d_nce.bin", id);
         mCellAnims[i] = new CellAnimation(path, 0, 1, 1);

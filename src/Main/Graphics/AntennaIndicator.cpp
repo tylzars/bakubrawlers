@@ -139,7 +139,7 @@ void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 
         CopyNonZeroNibbles(buffer, file + (b * 0x200 + 0x800));
     }
     DC_FlushRange(buffer, 0x200);
-    QueueUpload(screen, 4, offset, buffer, 0x200, 1);
+    QueueUpload(screen, UPLOAD_KIND_OBJ, offset, buffer, 0x200, 1);
     OS_Free(file);
     LoadEditedIconPalette(screen, palette, pal, unk5);
     ChangeDir("/");
@@ -216,7 +216,7 @@ void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors,
         MIi_CpuCopy16(file, buffer, 0x20);
     }
     DC_FlushRange(buffer, 0x20);
-    QueueUpload(screen, 5, palette << 5, buffer, 0x20, 1);
+    QueueUpload(screen, UPLOAD_KIND_OBJ_PLTT, palette << 5, buffer, 0x20, 1);
     if (extra != NULL) {
         OS_Free(extra);
     }

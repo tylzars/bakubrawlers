@@ -312,7 +312,7 @@ void PrintStorytalkText(StorytalkWindow *self) {
         self->mUnk_3e = w;
         self->mUnk_36 = 1;
     }
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x6000, self->mTextBuffers[0], 0x1800, 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0x6000, self->mTextBuffers[0], 0x1800, 0);
     if (self->mTextPage != 0) {
         TextManager &first = TextManager::Get();
         TextManager &text = TextManager::Get();
@@ -345,7 +345,7 @@ void PrintStorytalkText(StorytalkWindow *self) {
 file->GetText(index), file->GetLength(index), self->mTextBuffers[1], 0x20, 2, &y, &x, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0x7800, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
 void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1) {

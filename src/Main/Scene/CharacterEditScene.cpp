@@ -240,7 +240,7 @@ CharacterEditScene::~CharacterEditScene() {
     }
     ModelInstance *instance = mCutRoomModel;
     if (instance != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
         mCutRoomModel = NULL;
     }
@@ -339,7 +339,7 @@ void CharacterEditScene::SetText(u32 slot, u32 message, u32 value) {
         if (&mTexts[slot].mHeight != NULL) {
             mTexts[slot].mHeight = b;
         }
-        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, sCharacterEditTextVramOffsets[slot], mTextBuffers[slot],
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, sCharacterEditTextVramOffsets[slot], mTextBuffers[slot],
                       mTextBufferSize, 0);
     }
     mTexts[slot].mItemIndex = value;
@@ -390,7 +390,7 @@ void CharacterEditScene::UpdateInit() {
     case 1:
         mStepFrames++;
         if (mStepFrames >= 3) {
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mStepFrames = 0;
             mState = 1;
             mStep = 2;
@@ -403,7 +403,7 @@ void CharacterEditScene::UpdateRootMenu() {
     switch (mStep) {
     case 2:
         SpriteManager::Get();
-        if (SpriteManager::sFade[0] > 1 | SpriteManager::sFade[1] > 1) {
+        if (SpriteManager::sFade[0] > FADE_MODE_HOLD | SpriteManager::sFade[1] > FADE_MODE_HOLD) {
             return;
         }
         mWindows[0]->mEnabled = 1;
@@ -539,7 +539,7 @@ void CharacterEditScene::UpdateRootMenu() {
         } else if (mWindow0Result == 3) {
             if (mWindows[0]->GetSelectedId() == 7) {
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 3;
+                SpriteManager::sFade[0] = FADE_MODE_DOWN;
                 mStep = 6;
                 mWindows[0]->mEnabled = 0;
                 mWindows[1]->mEnabled = 0;
@@ -574,7 +574,7 @@ void CharacterEditScene::UpdateRootMenu() {
         break;
     case 6:
         SpriteManager::Get();
-        if (SpriteManager::sFade[0] > 1) {
+        if (SpriteManager::sFade[0] > FADE_MODE_HOLD) {
             return;
         }
         RandomizeLook();
@@ -588,7 +588,7 @@ void CharacterEditScene::UpdateRootMenu() {
             return;
         }
         SpriteManager::Get();
-        SpriteManager::sFade[0] = 2;
+        SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
         mStep = 8;
         break;
     case 8:
@@ -1847,7 +1847,7 @@ void CharacterEditScene::func_020612cc() {
 void CharacterEditScene::UpdateFinish() {
     switch (mStep) {
     case 0x5a:
-        SpriteManager::Get().StartFade(3);
+        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
         mStep = 0x5b;
         break;
     case 0x5b:
@@ -2024,24 +2024,24 @@ void CharacterEditScene::LoadGraphics() {
     ChangeDir("/Game/2d/CharacterEditor/Bg");
     void *data;
     data = LoadFile("edit_ch_b_bg_00_ncl.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 1, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, data, size, 1);
     data = LoadFile("edit_ch_b_bg_01_ncg.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 0xb, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, data, size, 1);
     data = LoadFile("edit_ch_b_bg_01_nsc.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 7, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, data, size, 1);
     data = LoadFile("edit_ch_b_bg_00_ncl.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 1, 0x4000, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, data, size, 1);
     data = LoadFile("edit_ch_b_bg_00_ncg.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 0xd, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, data, size, 1);
     data = LoadFile("edit_ch_b_bg_00_nsc.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 9, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, data, size, 1);
     ChangeDir("/Game/2D/union_b");
     data = LoadFile("union_b_bg_window_ncl.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 1, 0x6000, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, data, size, 1);
     data = LoadFile("union_b_bg_window_ncg.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 0xe, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, data, size, 1);
     data = LoadFile("union_b_bg_window_b_nsc.bin", 0, 0, 0, &size, 0);
-    QueueUpload(1, 0xa, 0, data, size, 1);
+    QueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, data, size, 1);
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen1.SetObjVramMode(3);
     ChangeDir("/Game/2d/union_b");
@@ -2941,7 +2941,7 @@ void CharacterEditScene::PrintWindowText() {
     MessageFile *file = (MessageFile *) mMessages;
     text.Print(file->GetText(0x1c), file->GetLength(0x1c), mWindowTextBuffer, 0x18, 8, &a, &b, NULL, 0, 2, 0x21, 0x10, 0, 0,
                1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1000, mWindowTextBuffer, mWindowTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x1000, mWindowTextBuffer, mWindowTextBufferSize, 0);
     mWindowTextVisible = 1;
 }
 
@@ -2961,5 +2961,5 @@ void CharacterEditScene::PrintName() {
     TextManager::Get().Print(gSaveData[0].mName, 0x18, mNameBuffer, 0x20, 2, &a, &b, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1,
                              1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x2000, mNameBuffer, mNameBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x2000, mNameBuffer, mNameBufferSize, 0);
 }

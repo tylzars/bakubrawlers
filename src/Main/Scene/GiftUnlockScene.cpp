@@ -49,12 +49,12 @@ void GiftUnlockScene::Update() {
         case 0:
             InitDisplay();
             LoadGraphics();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             draw = FALSE;
             mState++;
             break;
         case 1:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 FrameTask::Get().StopAllChannels();
                 SoundManager::Get().StartSeqArc(0x58);
                 mUnk_1e = 1;
@@ -77,7 +77,7 @@ void GiftUnlockScene::Update() {
             break;
         case 3:
             if (mWindow->Update(TRUE) == 1) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             break;
@@ -115,12 +115,12 @@ void GiftUnlockScene::LoadGraphics() {
     char path[0x40];
     char name[0x40];
     ChangeDir("/game/Giftunlock/Bg/");
-    LoadAndQueueUpload(0, 1, 0, "gift_unlock_u_bg_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "gift_unlock_u_bg_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "gift_unlock_u_bg_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "gift_unlock_b_bg_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "gift_unlock_b_bg_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "gift_unlock_b_bg_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "gift_unlock_u_bg_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "gift_unlock_u_bg_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "gift_unlock_u_bg_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "gift_unlock_b_bg_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "gift_unlock_b_bg_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "gift_unlock_b_bg_nsc.bin", 0, 0, 0);
     SpriteScreen &top = SpriteManager::Get().Screen(0);
     ChangeDir("/Game/Giftunlock/Obj/");
     sprintf(path, "gift_unlock_u_ob_0%d.nce_ncg1D.bin", sEmblemFiles[mIndex]);

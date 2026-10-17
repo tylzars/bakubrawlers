@@ -265,7 +265,7 @@ void CharacterModel::FreeParts() {
             }
             inst->mUnk_38 = NULL;
             inst = mParts[i];
-            inst->mOwnFlags = 0xf;
+            inst->mOwnFlags = MODEL_OWN_ALL;
             delete inst;
             mParts[i] = NULL;
         }

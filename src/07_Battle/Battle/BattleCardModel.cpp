@@ -324,7 +324,7 @@ BOOL BattleCardModel::UpdateState() {
     switch (mState) {
         case 0:
             SpriteManager::Get();
-            SpriteManager::sFade[0]       = 1;
+            SpriteManager::sFade[0]       = FADE_MODE_HOLD;
             SpriteManager::sBrightness[0] = -16;
             LoadNameText();
             LoadGraphics();
@@ -333,7 +333,7 @@ BOOL BattleCardModel::UpdateState() {
         case 1:
             func_ov007_02273be8();
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mState++;
             break;
         case 2:
@@ -350,19 +350,19 @@ BOOL BattleCardModel::UpdateState() {
                 }
                 if (mBaku->mModel->GetAnimFrame() >= mLastFrame) {
                     SpriteManager::Get();
-                    if (SpriteManager::sFade[0] <= 1) {
+                    if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                         SpriteManager::Get();
-                        SpriteManager::sFade[0] = 3;
+                        SpriteManager::sFade[0] = FADE_MODE_DOWN;
                     } else {
                         s8 brightness = -(s8) ((mBaku->mModel->GetAnimFrame() - mLastFrame) >> 12);
                         if (brightness < -16) {
                             brightness = -16;
                         }
                         SpriteManager::Get();
-                        SpriteManager::sFade[0]       = 1;
+                        SpriteManager::sFade[0]       = FADE_MODE_HOLD;
                         SpriteManager::sBrightness[0] = brightness;
                         SpriteManager::Get();
-                        SpriteManager::sFade[0] = 3;
+                        SpriteManager::sFade[0] = FADE_MODE_DOWN;
                     }
                 }
                 mCamera->AdvanceFrame(0);
@@ -408,7 +408,7 @@ BOOL BattleCardModel::UpdateState() {
             break;
         case 3:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] > 1) {
+            if (SpriteManager::sFade[0] > FADE_MODE_HOLD) {
                 mCamera->AdvanceFrame(1);
                 mCamera->ApplyPath();
                 SnapshotCamera();
@@ -594,7 +594,7 @@ void CloseCardModel(BattleCardModel *model) {
     }
     model->mState = 3;
     SpriteManager::Get();
-    SpriteManager::sFade[0] = 3;
+    SpriteManager::sFade[0] = FADE_MODE_DOWN;
 }
 
 void BattleCardModel::LoadNameText() {
@@ -621,7 +621,7 @@ void BattleCardModel::LoadNameText() {
     width  = 0;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x20, 2, &width, &height, &mTextWidth, 0, 2,
                0x21, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffer, mTextBufferSize, 0);
     TextManager::Get().mUse4bppFont = 0;
     OS_Free(file);
 }

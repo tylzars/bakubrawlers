@@ -62,7 +62,7 @@ Effect::~Effect() {
     for (u8 i = 0; i < 10; i++) {
         ModelInstance *model = mModels[i];
         if (model != NULL) {
-            model->mOwnFlags = 1;
+            model->mOwnFlags = MODEL_OWN_ANIM;
             delete model;
         }
     }
@@ -247,7 +247,7 @@ BOOL Effect::Update() {
                 }
             } else {
                 ModelInstance *model = mModels[i];
-                model->mOwnFlags       = 1;
+                model->mOwnFlags       = MODEL_OWN_ANIM;
                 delete model;
                 mModels[i] = NULL;
             }

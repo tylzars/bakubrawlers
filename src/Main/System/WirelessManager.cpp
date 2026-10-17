@@ -177,39 +177,39 @@ void StartCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult == 0) {
         mgr.mState = 1;
-        mgr.mUnk_122a = 0;
+        mgr.mUnk_122a = WM_CALL_DONE;
         return;
     }
-    mgr.mUnk_122a = 6;
+    mgr.mUnk_122a = WM_CALL_FAILED;
 }
 
 void func_0202dd60(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult == 0) {
-        mgr.mUnk_122a = 0;
+        mgr.mUnk_122a = WM_CALL_DONE;
     } else {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
     }
 }
 
 void StopCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
         return;
     }
-    mgr.mUnk_122a = 5;
+    mgr.mUnk_122a = WM_CALL_STOPPED;
     mgr.mState = 0;
 }
 
 void func_0202de58(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
         return;
     }
     func_020108e4((void *) func_0202dee4);
-    mgr.mUnk_122a = 4;
+    mgr.mUnk_122a = WM_CALL_PENDING;
 }
 
 void func_0202dee4(WmCallbackArg *arg) {
@@ -243,15 +243,15 @@ void func_0202dee4(WmCallbackArg *arg) {
                     }
                     mgr.func_0202ec74(1);
                 } else {
-                    mgr.mUnk_122a = 6;
+                    mgr.mUnk_122a = WM_CALL_FAILED;
                 }
                 break;
             case 0x1a:
-                mgr.mUnk_122a = 6;
+                mgr.mUnk_122a = WM_CALL_FAILED;
                 break;
         }
     } else {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
     }
 }
 
@@ -275,18 +275,18 @@ void ScanCallback(WmCallbackArg *arg) {
             }
             break;
           default:
-            mgr.mUnk_122a = 6;
+            mgr.mUnk_122a = WM_CALL_FAILED;
             break;
         }
     } else {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
     }
 }
 
 void TestChannelCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
         return;
     }
     u16 a = arg->mUnk_0a;
@@ -315,7 +315,7 @@ void func_0202e288(WmCallbackArg *arg) {
                         break;
                     case 5:
                         mgr.mState = 7;
-                        mgr.mUnk_122a = 3;
+                        mgr.mUnk_122a = WM_CALL_JOINED;
                         mgr.SetRecvCallback();
                         break;
                 }
@@ -327,7 +327,7 @@ void func_0202e288(WmCallbackArg *arg) {
     } else {
         u16 e = arg->mResult;
         if (e != 9 && e != 0xd && e != 0xf) {
-            mgr.mUnk_122a = 6;
+            mgr.mUnk_122a = WM_CALL_FAILED;
         }
     }
 }
@@ -342,27 +342,27 @@ void JoinCallback(WmCallbackArg *arg) {
                 break;
             case 7: {
                 mgr.mUnk_1220 = arg->mUnk_0a;
-                if (mgr.mUnk_122a != 3) {
+                if (mgr.mUnk_122a != WM_CALL_JOINED) {
                     mgr.func_0202ea34();
                 }
                 break;
             }
             case 9:
-                mgr.mUnk_122a = 6;
+                mgr.mUnk_122a = WM_CALL_FAILED;
                 break;
             case 0x1a:
-                mgr.mUnk_122a = 6;
+                mgr.mUnk_122a = WM_CALL_FAILED;
                 break;
         }
     } else {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
     }
 }
 
 void func_0202e478(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = 6;
+        mgr.mUnk_122a = WM_CALL_FAILED;
     }
 }
 
@@ -370,23 +370,23 @@ void func_0202e4e8(WmCallbackArg *arg) {}
 
 void WirelessManager::func_0202e4ec() {
     func_02010674(data_02210440, (void *) StartCallback, 2);
-    mUnk_122a = 4;
+    mUnk_122a = WM_CALL_PENDING;
     mUnk_122c = 0;
 }
 
 void WirelessManager::func_0202e524() {
-    mUnk_122a = 4;
+    mUnk_122a = WM_CALL_PENDING;
     func_0201071c((void *) StopCallback);
 }
 
 void WirelessManager::func_0202e544() {
-    mUnk_122a = 4;
+    mUnk_122a = WM_CALL_PENDING;
     if (mUnk_122c != 0) {
         func_020110c0(data_0220fc20);
         mUnk_122c = 0;
     }
     if (func_020106e4((void *) func_0202dd60) != 2) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
     }
 }
 
@@ -398,34 +398,34 @@ void WirelessManager::func_0202e59c() {
     PARENT_PARAM->mUnk_18 = func_020104dc();
     mUnk_122e = 0;
     func_0201075c((void *) func_0202de58, sParentParam);
-    mUnk_122a = 4;
+    mUnk_122a = WM_CALL_PENDING;
 }
 
 void WirelessManager::TestNextChannel() {
     u32 mask = func_0201042c();
     if (mask == 0x8000) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
         return;
     }
     if (mask == 0) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
         return;
     }
     do {
         mTestedChannel++;
         if (mask & (1 << (mTestedChannel - 1))) {
             if (func_020119ec((void *) TestChannelCallback, 3, 0x11, mTestedChannel, 0x1e) == 2) {
-                mUnk_122a = 4;
+                mUnk_122a = WM_CALL_PENDING;
                 break;
             }
-            mUnk_122a = 6;
+            mUnk_122a = WM_CALL_FAILED;
         }
     } while (mTestedChannel < 0x10);
     if (mTestedChannel < 0x10) {
         return;
     }
     mState = 3;
-    mUnk_122a = 0;
+    mUnk_122a = WM_CALL_DONE;
 }
 
 void WirelessManager::StartChannelTest() {
@@ -465,18 +465,18 @@ void WirelessManager::SelectNextScanChannel() {
 
 void WirelessManager::RequestScan() {
     if (func_020108f4((void *) ScanCallback, &SCAN_PARAM) != 2) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
     } else {
-        mUnk_122a = 1;
+        mUnk_122a = WM_CALL_SCAN_REQUESTED;
     }
 }
 
 void WirelessManager::Join(u32 unk1) {
     MI_CpuCopy8(&mScanSnapshot[unk1], sEntryBuffer, 0xc0);
     if (func_020109e0((void *) JoinCallback, sEntryBuffer, mUnk_1231, 1, 0) != 2) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
     } else {
-        mUnk_122a = 4;
+        mUnk_122a = WM_CALL_PENDING;
     }
 }
 
@@ -528,7 +528,7 @@ void WirelessManager::SetRecvCallback() {
 
 void WirelessManager::func_0202ea34() {
     func_02010c1c((void *) func_0202e288, data_0220f860, 0x1c0, data_0220f700, 0xa0, 1);
-    mUnk_122a = 4;
+    mUnk_122a = WM_CALL_PENDING;
 }
 
 void WirelessManager::SendNext() {
@@ -570,7 +570,7 @@ void WirelessManager::func_0202ebc4() {
             break;
         case 1:
         case 3:
-            mUnk_122a = 6;
+            mUnk_122a = WM_CALL_FAILED;
             mUnk_124e = 0;
             break;
     }
@@ -578,14 +578,14 @@ void WirelessManager::func_0202ebc4() {
         mUnk_1254 = 0x708;
     } else {
         if (--mUnk_1254 == 0) {
-            mUnk_122a = 6;
+            mUnk_122a = WM_CALL_FAILED;
         }
     }
 }
 
 void WirelessManager::func_0202ec74(u32 unk1) {
     if (func_02011a64((void *) func_0202e478, unk1) != 2) {
-        mUnk_122a = 6;
+        mUnk_122a = WM_CALL_FAILED;
     }
 }
 
@@ -773,7 +773,7 @@ u32 WirelessManager::func_0202f238() {
 }
 
 void WirelessManager::Update() {
-    if (mUnk_122a == 6 && mState != 9) {
+    if (mUnk_122a == WM_CALL_FAILED && mState != 9) {
         func_0202e544();
         if (mState != 8) {
             mState = 9;
@@ -782,39 +782,39 @@ void WirelessManager::Update() {
     switch (mState) {
         case 8:
             switch (mUnk_122a) {
-                case 0:
+                case WM_CALL_DONE:
                     func_0202e524();
                     break;
-                case 5:
+                case WM_CALL_STOPPED:
                     break;
             }
             break;
         case 2:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == 0) {
+            if (mUnk_122a == WM_CALL_DONE) {
                 StartChannelTest();
             }
             break;
         case 3:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == 0) {
+            if (mUnk_122a == WM_CALL_DONE) {
                 func_0202e59c();
             }
             break;
         case 4:
             mUnk_124d = func_0201044c();
             switch (mUnk_122a) {
-                case 0:
+                case WM_CALL_DONE:
                     SetupScanParam();
                     RequestScan();
-                case 1:
+                case WM_CALL_SCAN_REQUESTED:
                     UpdateScanResultTimers();
                     break;
             }
             break;
         case 5:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == 0) {
+            if (mUnk_122a == WM_CALL_DONE) {
                 Join(mJoinIndex);
             }
             break;
@@ -838,7 +838,7 @@ void WirelessManager::Update() {
             break;
         case 9:
             mUnk_124d = func_0201044c();
-            mUnk_122a = 5;
+            mUnk_122a = WM_CALL_STOPPED;
             break;
     }
 }

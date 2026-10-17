@@ -141,13 +141,13 @@ void TournamentSubScene::Update() {
             input = FALSE;
             mCounter--;
             if (mCounter <= 0) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
         case 2:
             if (mUnk_58 != 0) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCharacterView->mFinishRequested = 1;
                 mState           = 4;
             } else {
@@ -238,13 +238,13 @@ void TournamentSubScene::Init() {
     mCharacterView = new RankingCharacterView(mEntries[mSelected].mId, mEntries[mSelected].mRank,
                                      mEntries[mSelected].mScore, 1);
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xb, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Tournament/Bg/");
-    LoadAndQueueUpload(1, 8, 0, "tournament_b_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xc, 0, "tournament_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "tournament_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "tournament_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "tournament_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "tournament_b_bg_01_ncl.bin", 0, 0, 0);
     u8 count = mCount;
     u8 n = 9 - (3 - count);
     u8 j;
@@ -402,7 +402,7 @@ void TournamentSubScene::PrintProfile() {
     }
     text.mLineStartCount = 0x10;
     text.Print(message, half * 2, buffer, 0x14, 0xe, &height, &width, 0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x8000, mTextBuffer, mTextBufferSize, 0);
 }
 
 

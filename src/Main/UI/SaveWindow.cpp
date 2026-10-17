@@ -138,7 +138,7 @@ void SaveWindow::Update() {
             }
             break;
         case 5:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 6:
@@ -162,7 +162,7 @@ extern const WindowItemRecord gSaveWindowItems[];
 // brightness and SpriteManager::sFade/sBrightness (:259-266, :321-328).
 void SaveWindow::Load() {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(mScreen, 1, mWindowPaletteOffset, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(mScreen, UPLOAD_KIND_BG_EXT_PLTT, mWindowPaletteOffset, "union_b_bg_window_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(mScreen, gBgCharUploadKinds[mWindowBg], mWindowCharOffset, "union_b_bg_window_ncg.bin", 0, 0, 0);
     u32 size;
     u16 *tiles = (u16 *) LoadFile("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
@@ -262,9 +262,9 @@ void SaveWindow::Load() {
         mask |= 0x10;
         G2_SetBlendBrightness(mask ^ 0x3f, -8);
         SpriteManager::Get();
-        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sFade[0]       = FADE_MODE_HOLD;
         SpriteManager::sBrightness[0] = 0;
-        SpriteManager::sFade[1]        = 1;
+        SpriteManager::sFade[1]        = FADE_MODE_HOLD;
         SpriteManager::sBrightness[1]  = -8;
     } else {
         u16 plane = (reg_GXS_DB_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
@@ -324,9 +324,9 @@ void SaveWindow::Load() {
         mask |= 0x10;
         G2S_SetBlendBrightness(mask ^ 0x3f, -8);
         SpriteManager::Get();
-        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sFade[0]       = FADE_MODE_HOLD;
         SpriteManager::sBrightness[0] = -8;
-        SpriteManager::sFade[1]        = 1;
+        SpriteManager::sFade[1]        = FADE_MODE_HOLD;
         SpriteManager::sBrightness[1]  = 0;
     }
 }

@@ -21,7 +21,7 @@ ModelTransform::ModelTransform() {
 ModelTransform::~ModelTransform() {
     ModelInstance *model = mModel;
     if (model != NULL) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
         mModel = NULL;
     }

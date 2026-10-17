@@ -207,7 +207,7 @@ void BattlePlayerList::Update() {
     if (data_020d433c.mWireless) {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             RequestScene(SCENE_ARENA_WINDOW);
             data_020d433c.mUnk_10 = 0;
             return;
@@ -332,7 +332,7 @@ void BattlePlayerList::Update() {
             }
             if (data_020d433c.mTutorialId == 1) {
                 mState = 0x22;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 return;
             }
             mState++;
@@ -401,7 +401,7 @@ void BattlePlayerList::Update() {
             if (mode == 2 || mode == 3 || mode == 4 || mode == 0xc) {
                 if (result != 5) {
                     mState = 0x22;
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     if (result != 1) {
                         if (data_020d433c.mTutorialId == 0xc && mUnk_2b0 == 0) {
                             data_020d433c.mUnk_86++;
@@ -422,7 +422,7 @@ void BattlePlayerList::Update() {
                 if (result != 5) {
                     if (result == 1) {
                         mState = 0x22;
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         data_020d433c.mUnk_86++;
                         return;
                     } else if (mUnk_2a9 == mTurnPlayer) {
@@ -695,7 +695,7 @@ void BattlePlayerList::Update() {
                 SoundManager::Get().LoadAndStartSeq(1);
                 RecordSndHeapState(SoundManager::Get().mHeap);
                 mState = 0x22;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 if (mUnk_2b0 != 0) {
                     data_020d433c.mUnk_86 = 0;
                 } else {
@@ -874,7 +874,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 36:
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             SoundManager::Get().StopSeq(1);
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {

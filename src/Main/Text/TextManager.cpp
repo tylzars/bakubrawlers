@@ -388,17 +388,17 @@ void TextManager::FillScrChars(u32 mode, u16 *map, u32 palette, u32 base, u32 wi
 
 void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {
     if (unk2 == 0) {
-        QueueUpload(unk1, 5, unk3 << 5, mPalette, 0x20, 0);
+        QueueUpload(unk1, UPLOAD_KIND_OBJ_PLTT, unk3 << 5, mPalette, 0x20, 0);
     } else {
-        QueueUpload(unk1, 0, unk3 << 9, mPalette, 0x20, 0);
+        QueueUpload(unk1, UPLOAD_KIND_OBJ_EXT_PLTT, unk3 << 9, mPalette, 0x20, 0);
     }
 }
 
 void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 == 0) {
-        QueueUpload(unk1, 6, unk3 << 5, mPalette, 0x20, 0);
+        QueueUpload(unk1, UPLOAD_KIND_BG_PLTT, unk3 << 5, mPalette, 0x20, 0);
     } else {
-        QueueUpload(unk1, 1, (unk4 << 13) + (unk3 << 9), mPalette, 0x20, 0);
+        QueueUpload(unk1, UPLOAD_KIND_BG_EXT_PLTT, (unk4 << 13) + (unk3 << 9), mPalette, 0x20, 0);
     }
 }
 

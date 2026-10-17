@@ -10,7 +10,7 @@ BattleFontObj::BattleFontObj(u32 type) {
 BattleFontObj::~BattleFontObj() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
         mModel = 0;
     }

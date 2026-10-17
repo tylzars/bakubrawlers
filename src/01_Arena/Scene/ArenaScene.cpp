@@ -169,7 +169,7 @@ void ArenaScene::StopWirelessAndReset() {
     if (mSubMenuMode != 0) {
         SetSubMenuMode(0);
     }
-    SpriteManager::Get().StartFade(2);
+    SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
 }
 
 void ArenaScene::SetSubMenuMode(u32 mode) {
@@ -265,7 +265,7 @@ void ArenaScene::Update() {
             InitNameText();
             LoadMessages();
             SetupVariant();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -568,12 +568,12 @@ void ArenaScene::Update() {
             break;
         case 14:
             mRequest = ARENA_REQUEST_FIELD_SELECT;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState = 0x10;
             break;
         case 15:
             mRequest = ARENA_REQUEST_TITLE;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState = 0x10;
             break;
         case 16:
@@ -624,19 +624,19 @@ void ArenaScene::LoadGraphics() {
         data_020d433c.mUnk_10->SetupLayout(1);
     }
     ChangeDir("/Game/Battle/bg/");
-    LoadAndQueueUpload(0, 1, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "select_wireless_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "select_wireless_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "select_wireless_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "select_wireless_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "select_wireless_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "select_wireless_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/obj/");
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
@@ -915,7 +915,7 @@ void ArenaScene::PrintNames() {
         width  = 0;
         TextManager::Get().PrintNumber(i + 1, 0, 0, mBuffers[i], 0x20, 2, &height, &width, 0, 2, 0x21, 0, 0, 0, 1);
         DC_FlushRange(mBuffers[i], mTextBufferSize);
-        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, i << 11, mBuffers[i], mTextBufferSize, 0);
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, i << 11, mBuffers[i], mTextBufferSize, 0);
     }
 }
 
@@ -973,7 +973,7 @@ void ArenaScene::PrintMessage(u32 unk1) {
     height            = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(unk1), file->GetLength(unk1), mMessageTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xe000, mMessageTextBuffer, mMessageTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0xe000, mMessageTextBuffer, mMessageTextBufferSize, 0);
 }
 
 void ArenaScene::DrawMessage() {

@@ -60,12 +60,12 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
 BattleCardSpec::~BattleCardSpec() {
     ModelInstance *a = mRealbaseModel;
     if (a) {
-        a->mOwnFlags = 0xf;
+        a->mOwnFlags = MODEL_OWN_ALL;
         delete a;
     }
     ModelInstance *b = mRealnormalModel;
     if (b) {
-        b->mOwnFlags = 0xf;
+        b->mOwnFlags = MODEL_OWN_ALL;
         delete b;
     }
     SpriteManager::Get().ResetSlots();
@@ -114,7 +114,7 @@ void BattleCardSpec::Update() {
             break;
         case 5:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 mState++;
             }
             break;

@@ -38,7 +38,7 @@ void GimmickBlock::Load() {
 void GimmickBlock::Unload() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mOwnFlags = 1;
+        model->mOwnFlags = MODEL_OWN_ANIM;
         delete model;
         mModel = 0;
     }

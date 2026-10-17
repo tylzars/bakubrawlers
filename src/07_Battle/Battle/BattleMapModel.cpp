@@ -18,7 +18,7 @@ BattleMapModel::BattleMapModel(u32 unk1) {
 BattleMapModel::~BattleMapModel() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
         mModel = 0;
     }

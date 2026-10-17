@@ -357,7 +357,7 @@ void BattleShoot::Update() {
                 } else {
                     mWindow->mEnabled = 1;
                 }
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 u8 mode = data_020d433c.mTutorialId;
                 if (mode >= 3 && mode <= 12) {
                     data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
@@ -414,7 +414,7 @@ void BattleShoot::Update() {
                 break;
             }
             if (func_ov007_0226d214()) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x10;
                 func_ov007_0226f378();
                 return;
@@ -464,7 +464,7 @@ void BattleShoot::Update() {
         case 8:
             mDelayTimer--;
             if (mDelayTimer == 0) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
@@ -605,10 +605,10 @@ void BattleShoot::Update() {
                 case 2:
                     if (data_020d433c.mWireless != 0) {
                         WirelessManager::Get();
-                        data_020c4030.mUnk_22a = 6;
+                        data_020c4030.mUnk_22a = WM_CALL_FAILED;
                         mState++;
                     } else {
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         mState = 0x10;
                     }
                     break;
@@ -700,13 +700,13 @@ void BattleShoot::LoadGraphics() {
     player = data_020d433c.mBattlePlayers->mTurnPlayer;
     record = data_020d433c.mBattlePlayers->mPlayers[player]->RecordIndex();
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(1, 1, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xb, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "battle_shoot_b_bg_00_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "battle_shoot_b_bg_00_a_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 6, 0, "pentest_pen_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "pentest_pen_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "battle_shoot_b_bg_00_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "battle_shoot_b_bg_00_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_PLTT, 0, "pentest_pen_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "pentest_pen_nsc.bin", 0, 0, 0);
     ClearBitmap();
     u8 id = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[record].mAttribute;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -719,7 +719,7 @@ void BattleShoot::LoadGraphics() {
     sprintf(buffer, "battle_shoot_b_ball_%02d.nce_ncg1D.bin", id);
     screen.LoadCharacters("battle_shoot_b_ball_sp.nce_ncg1D.bin", 0x2000, 0);
     void *palette = LoadFile("battle_shoot_b_ball_sp_ncl.bin", 0, id << 5, 0x20, 0, 0);
-    QueueUpload(screen.mBgIndex, 5, 0, palette, 0x20, 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0, palette, 0x20, 1);
     mCells[0].mCellAnim = new CellAnimation("battle_shoot_b_ball_00_nce.bin", 1, 1, 1);
     mCells[0].mCellAnim->mCharBase = screen.GetCharBase(0);
     mCells[0].mCellAnim->mPaletteBase   = 0;
@@ -835,7 +835,7 @@ void BattleShoot::LoadShootText() {
     text.Print(file->GetText(0), file->GetLength(0), buffer, 0x18, 0xa, &height, &width, &pixelWidth, 0, 2, 0x21, 0x10, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     mTextWidth = pixelWidth;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x14000, buffer, size, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x14000, buffer, size, 0);
     if (file) {
         OS_Free(file);
     }
@@ -1733,7 +1733,7 @@ void BattleShoot::ClearBitmap() {
 void BattleShoot::UploadBitmap() {
     if (mPlotEnabled != 0) {
         DC_FlushRange(mBitmap, 0x6000);
-        QueueUpload(1, 0xd, 0, mBitmap, 0x6000, 0);
+        QueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, mBitmap, 0x6000, 0);
     }
 }
 

@@ -24,7 +24,7 @@ MessageScreen::MessageScreen(u32 unk1) {
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, 0);
     G2_BlendNone();
     G2S_BlendNone();
-    SpriteManager::Get().SetFade(1, 0);
+    SpriteManager::Get().SetFade(FADE_MODE_HOLD, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 1);
     MessageFile *file;
     if (unk1 != MESSAGE_SCREEN_TITLE_8) {

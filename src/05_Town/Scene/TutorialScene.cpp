@@ -156,7 +156,7 @@ void TutorialScene::Update() {
             InitWindowDisplay(this);
             LoadListText();
             LoadGraphics();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2:
@@ -186,7 +186,7 @@ void TutorialScene::Update() {
         }
         case 4:
             DrawList();
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 5:
@@ -243,7 +243,7 @@ void TutorialScene::Update() {
                 sprintf(second, "cmd_%s.bin", first);
             }
             mEvent->StartScript(second);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         }
@@ -254,7 +254,7 @@ void TutorialScene::Update() {
             mState++;
             break;
         case 9:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 10:
@@ -279,7 +279,7 @@ void TutorialScene::Update() {
         case 12:
             InitWindowDisplay(this);
             LoadListWindow();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 13:
@@ -292,7 +292,7 @@ void TutorialScene::Update() {
             break;
         case 14:
             if (mWindow->Update(TRUE)) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
@@ -353,7 +353,7 @@ void TutorialScene::Update() {
             }
             InitWindowDisplay(this);
             LoadListWindow();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 18:
@@ -370,7 +370,7 @@ void TutorialScene::Update() {
             break;
         case 19:
             if (mWindow->Update(TRUE)) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
@@ -395,7 +395,7 @@ void TutorialScene::Update() {
             }
             InitWindowDisplay(this);
             LoadListWindow();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 22:
@@ -408,7 +408,7 @@ void TutorialScene::Update() {
             break;
         case 23:
             if (mWindow->Update(TRUE)) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
@@ -568,12 +568,12 @@ void InitWindowDisplay(TutorialScene *scene) {
 
 void TutorialScene::LoadGraphics() {
     ChangeDir("/Game/Tutorial/bg/");
-    LoadAndQueueUpload(0, 1, 0, "tutorial_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "tutorial_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "tutorial_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "tutorial_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "tutorial_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "tutorial_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "tutorial_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "tutorial_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "tutorial_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "tutorial_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "tutorial_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "tutorial_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Tutorial/obj/");
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.SetObjVramMode(3);
@@ -649,9 +649,9 @@ void TutorialScene::LoadListWindow() {
     G2S_SetBG0Priority(2);
     GXS_SetVisiblePlane(0x11);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -687,7 +687,7 @@ void TutorialScene::ShowText(int index) {
     MessageFile *file = mMessages[1];
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 4, &height,
                              &width, 0, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
-    QueueUpload(1, 4, 0x1000, buffer, size, 1);
+    QueueUpload(1, UPLOAD_KIND_OBJ, 0x1000, buffer, size, 1);
 }
 
 void TutorialScene::LoadListText() {
@@ -709,7 +709,7 @@ void TutorialScene::LoadListText() {
         MessageFile *file = mMessages[0];
         text.Print(file->GetText((u16) (i + 5)), file->GetLength((u16) (i + 5)), buffer, 0x20, 2, &height,
                    &width, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
-        QueueUpload(1, 4, 0x8000 + i * 0x800, buffer, size, 1);
+        QueueUpload(1, UPLOAD_KIND_OBJ, 0x8000 + i * 0x800, buffer, size, 1);
     }
     TextManager::Get().SetColor(1, 0, 0xf);
 }

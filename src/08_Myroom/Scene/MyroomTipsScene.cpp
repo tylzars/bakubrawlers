@@ -172,7 +172,7 @@ void MyroomTipsScene::Update() {
             CreateMessage();
             mEvent = new ScriptPlayer(5, 0, 1);
             GXS_SetVisiblePlane(0x13);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             context->mInfo.mStep++;
             return;
         case 1:
@@ -182,7 +182,7 @@ void MyroomTipsScene::Update() {
             Draw();
             return;
         case 2:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mEvent->RequestFinish();
                 context->mInfo.mStep++;
             }
@@ -191,26 +191,26 @@ void MyroomTipsScene::Update() {
         case 3:
             mEvent = new ScriptPlayer(5, 0, 1);
             SetMessage(0x2d);
-            SpriteManager::Get().sFade[0] = 2;
+            SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             context->mInfo.mStep++;
             Draw();
             return;
         case 4:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 if (!mEvent->IsRunning()) {
                     u32 id = 0x33;
                     if (mUnlocked[0] == 0) {
                         id = 0x34;
                     }
                     StartMessageScript(mEvent, "mes_tips_Dan", id, 10, 0x15);
-                    SpriteManager::Get().sFade[0] = 2;
+                    SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                     context->mInfo.mStep             = 5;
                 }
             }
             Draw();
             return;
         case 5:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mWindowA->mState = 4;
                 mWindowA->Reset(-1);
                 mFlags = MYROOM_TIPS_WINDOW_A;
@@ -284,7 +284,7 @@ void MyroomTipsScene::Update() {
             return;
         case 13:
             context->mInfo.mStep = state + 1;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             GXS_SetVisiblePlane(0x11);
             return;
         case 14:
@@ -326,12 +326,12 @@ void MyroomTipsScene::InitDisplay() {
 
 void MyroomTipsScene::LoadGraphics() {
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "myroom_tips_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "myroom_tips_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "myroom_tips_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "myroom_tips_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "myroom_tips_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "myroom_tips_b_bg_00_ncg.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     ChangeDir("/Game/Myroom/");
@@ -573,7 +573,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 mWindowB->Reset(0);
                 break;
             case 2:
-                SpriteManager::Get().sFade[0] = 3;
+                SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
                 context->mInfo.mStep             = 2;
                 break;
             case 0:
@@ -790,7 +790,7 @@ void MyroomTipsScene::PrintRows(s32 row) {
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
                    0x11, 0x10, 0, 0, 1, 1, 1);
-        QueueUpload(1, 4, 0x8000 + i * 0xc00, mTextBuffers[i], mTextBufferSize, 0);
+        QueueUpload(1, UPLOAD_KIND_OBJ, 0x8000 + i * 0xc00, mTextBuffers[i], mTextBufferSize, 0);
         i++;
     } while (i < end);
 }

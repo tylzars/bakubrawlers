@@ -174,7 +174,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
     if (mKind == 0 || mKind == 1 || mKind == 3) {
         mWindow->SetCells(2, sUnionTwoButtonCells);
         mWindow->mCellAnims[0]->SetAnimation(1);
-        LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         u8 i = 0;
         do {
             mCellAnims[i]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
@@ -185,12 +185,12 @@ void BattleUnionAbility::func_ov007_022344a4() {
     } else if (mKind == 5) {
         mWindow->SetCells(1, sUnionOneButtonCells);
         mWindow->mCellAnims[0]->SetAnimation(7);
-        LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         mCellAnims[0]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
         mCellAnims[0]->mCharBase = screen.GetCharBase(mCharOffset);
         mCellAnims[0]->mPaletteBase   = mPalette;
     }
-    LoadAndQueueUpload(1, 5, mPalette << 5, "battle_b_obj_ability_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, mPalette << 5, "battle_b_obj_ability_ncl.bin", 0, 0, 0);
     ChangeDir("/");
     mCharOffset += 0xa00;
 }
@@ -202,32 +202,32 @@ void BattleUnionAbility::LoadGraphics() {
     ChangeDir("/Game/Battle/Obj");
     switch (mKind) {
         case 0:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 3, 1, 1);
             break;
         case 1:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 4, 1, 1);
             break;
         case 2:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 2, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 5, 1, 1);
             break;
         case 3:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 0, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 2, 1, 1);
             break;
         case 4:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_wait_nce.bin", 1, 1, 1);
             break;
         case 5:
-            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 1, 1, 1);
             mCellAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 3, 1, 1);
             break;

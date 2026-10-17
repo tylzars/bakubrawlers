@@ -149,7 +149,7 @@ void MapScene::Update() {
             mState++;
             break;
         case 2:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 3:
@@ -162,36 +162,36 @@ void MapScene::Update() {
                 mEvent->ClearGraphicsLoaded();
             }
             if (mEvent->GetSaveRequest()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 4;
             }
             if (mEvent->GetUnlockPopupHandle()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 8;
             }
             break;
         case 4:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] > 1) {
+            if (SpriteManager::sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 5:
             if (mContext->mRequest == 0) {
                 break;
             }
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 6:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] > 1) {
+            if (SpriteManager::sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             ReloadMap();
@@ -209,12 +209,12 @@ void MapScene::Update() {
                 mState = 0xb;
                 break;
             }
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState = 3;
             break;
         case 8:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] > 1) {
+            if (SpriteManager::sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
@@ -239,7 +239,7 @@ void MapScene::Update() {
             FrameTask::Get().StartChannel(0, 0x12);
             CreateMenu();
             mEvent->func_0206ef4c("mes_town", data_ov005_0221fe90[mTab], 10, 7, 0x15);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 12: {
@@ -308,7 +308,7 @@ void MapScene::Update() {
             break;
         }
         case 16:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 17:
@@ -354,12 +354,12 @@ void MapScene::Update() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 22:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] > 1) {
+            if (SpriteManager::sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             mState++;
@@ -373,7 +373,7 @@ void MapScene::Update() {
                 break;
             }
             mEvent->StartScript("cmd_ST_mev_011.bin");
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 25:
@@ -475,9 +475,9 @@ void MapScene::LoadWindowGraphics() {
     G2S_SetBG1Priority(0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -500,13 +500,13 @@ void MapScene::ReloadMap() {
 
 void MapScene::LoadMapBackground() {
     ChangeDir("/story/");
-    LoadAndQueueUpload(1, 1, 0x4000, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
@@ -581,28 +581,28 @@ BOOL MapScene::SetNextSceneFromEvent() {
     u32 result = mEvent->GetResult();
     if (result != 0) {
         switch (result) {
-            case 1:
+            case SCRIPT_RESULT_MYROOM:
                 mNextScene            = SCENE_MYROOM;
                 data_020d433c.mUnk_7f = SCENE_MAP;
                 break;
-            case 2:
+            case SCRIPT_RESULT_STORE:
                 mNextScene = SCENE_STORE;
                 break;
-            case 3:
+            case SCRIPT_RESULT_PARK:
                 mNextScene = SCENE_PARK;
                 break;
-            case 4:
+            case SCRIPT_RESULT_TOURNAMENT:
                 mNextScene = SCENE_TOURNAMENT;
                 break;
-            case 5:
+            case SCRIPT_RESULT_BATTLE:
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 mNextScene              = SCENE_BATTLE_PLAYER_LIST;
                 break;
-            case 6:
+            case SCRIPT_RESULT_MAP:
                 mNextScene = SCENE_MAP;
                 break;
-            case 7:
+            case SCRIPT_RESULT_TUTORIAL:
                 data_020d433c.mUnk_83 = 1;
                 data_020d433c.mUnk_84 = 0;
                 data_020d433c.mUnk_82 = 1;
@@ -930,7 +930,7 @@ void MapScene::ShowNumbers() {
         x2 = 0x98 - mPopupTextX;
     }
     TextManager::Get().PrintNumber(data_020d48f0.mRank, 0, 0, buffer, 0x18, 0x10, &x2, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
-    QueueUpload(1, 4, 0x5000, buffer, size, 1);
+    QueueUpload(1, UPLOAD_KIND_OBJ, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
@@ -961,7 +961,7 @@ void MapScene::ShowText(u16 index, s32 unk2) {
     }
     mPopupTextX = (256 - mPopupTextX) / 2;
     mPopupTextY = (0x6c - mPopupTextY) / 2 + 0x1e;
-    QueueUpload(1, 4, 0x5000, buffer, size, 1);
+    QueueUpload(1, UPLOAD_KIND_OBJ, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
@@ -1023,7 +1023,7 @@ void MapScene::LoadPanelText() {
     MessageFile *file = mText[0].mMessages;
     text.Print(file->GetText(16), file->GetLength(16), mText[0].mTextBuffer, 0x18, 4, &height, &width, 0, 0,
                2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xc000, mText[0].mTextBuffer, mText[0].mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0xc000, mText[0].mTextBuffer, mText[0].mTextBufferSize, 0);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
@@ -1059,7 +1059,7 @@ void MapScene::LoadPanelText2(int index) {
     text.Print(file->GetText(id), file->GetLength(id), mText[1].mTextBuffer, 0x20, 4, &height, &width,
                &mTextWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mText[1].mTextBuffer, mText[1].mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0xd000, mText[1].mTextBuffer, mText[1].mTextBufferSize, 0);
 }
 
 void MapScene::DrawPanelText2(s16 x) {

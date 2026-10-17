@@ -115,7 +115,7 @@ void MessageWindow::Update() {
         // into the call and loaded after them.
         SpriteManager &sprites = SpriteManager::Get();
         ScreenIndex screen     = (ScreenIndex) mScreen;
-        QueueUpload(sprites.Screen(screen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
+        QueueUpload(sprites.Screen(screen).mBgIndex, UPLOAD_KIND_OBJ, mVram, mBuffer, 0x800, 0);
         BOOL negative = mTextX < 0;
         BOOL last     = mTextWidth == -mTextX;
         if (negative & last) {

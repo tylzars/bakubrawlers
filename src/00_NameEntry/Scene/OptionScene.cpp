@@ -141,7 +141,7 @@ void OptionScene::Update() {
             break;
         case 1:
             BuildMainMenu();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2: {
@@ -326,7 +326,7 @@ void OptionScene::Update() {
             }
             break;
         case 14:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 15:
@@ -349,7 +349,7 @@ void OptionScene::Update() {
             mWindow->Update(1);
             if (mWindow->mState == 4) {
                 if (mSaved == *(u16 *) ((u8 *) gSaveData + 0x28)) {
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState = 0x17;
                 } else {
                     GX_SetVisiblePlane(0x11);
@@ -403,15 +403,15 @@ void OptionScene::Init() {
     G2_BlendNone();
     G2S_BlendNone();
     ChangeDir("/Game/Title/");
-    LoadAndQueueUpload(0, 1, 0, "option_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "option_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "option_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "option_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "option_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "option_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "/Game/2D/union_b/union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "/Game/2D/union_b/union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0x800, "/Game/2D/union_b/union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "option_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "option_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "option_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "option_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "option_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "option_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "/Game/2D/union_b/union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "/Game/2D/union_b/union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0x800, "/Game/2D/union_b/union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("option_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("option_b_obj_00_ncl.bin", 0, 0);
@@ -428,8 +428,8 @@ void OptionScene::Init() {
     u16 *map = (u16 *) OS_Alloc(mapSize);
     MI_CpuClearFast(map, mapSize);
     TextManager::Get().FillScrChars(0, map, 0, 0, 0x18, 0x18, 0x20);
-    QueueUpload(0, 8, 0, map, mapSize, 0);
-    QueueUpload(1, 9, 0x800, map, mapSize, 1);
+    QueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, map, mapSize, 0);
+    QueueUpload(1, UPLOAD_KIND_BG2_SCR, 0x800, map, mapSize, 1);
 }
 
 void OptionScene::BuildMainMenu() {
@@ -631,7 +631,7 @@ void OptionScene::BuildMenu3() {
     outWidth = 0;
     MessageFile *file = mFile;
     text.Print(file->GetText(3), file->GetLength(3), mBuf0c, 0x18, 0x18, &outWidth, &outHeight, NULL, 0, 2, 0, 0x10, 0, 0, 1, 1, 1);
-    QueueUpload(1, 0xd, 0, mBuf0c, mBufSize, 0);
+    QueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, mBuf0c, mBufSize, 0);
 }
 
 void OptionScene::SlideStep() {
@@ -707,6 +707,6 @@ void OptionScene::ClearText(u32 index) {
     outWidth = 0;
     MessageFile *file = mFile;
     text.Print(file->GetText(index), file->GetLength(index), mBuf0c, 0x18, 0x18, &outWidth, &outHeight, &pixelWidth, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(0, 0xc, 0, mBuf0c, mBufSize, 0);
+    QueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, mBuf0c, mBufSize, 0);
     G2_SetBG1Offset((pixelWidth - 0x100) / 2, 0);
 }

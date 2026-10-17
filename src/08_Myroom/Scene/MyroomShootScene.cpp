@@ -109,7 +109,7 @@ MyroomShootScene::~MyroomShootScene() {
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     ModelInstance *room = mRoom;
     if (room != NULL) {
-        room->mOwnFlags = 0xf;
+        room->mOwnFlags = MODEL_OWN_ALL;
         delete room;
     }
     BakuganModel *shooter = mShooter;
@@ -166,7 +166,7 @@ void MyroomShootScene::Update() {
             if (mTimer > 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2:
@@ -243,9 +243,9 @@ void MyroomShootScene::Init() {
     manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
     mLights = new ModelLightGroup(sMyroomShootLightData);
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.SetObjVramMode(3);
     main.LoadCharacters("myroom_s_shoot_u_obj_00.nce_ncg1D.bin", 0x4000, 0);
@@ -443,7 +443,7 @@ void MyroomShootScene::PrintShooterText() {
     if (&mTextEndY != NULL) {
         mTextEndY = height;
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSize[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
     TextManager::Get().mUse4bppFont = 1;
     TextManager &text2         = TextManager::Get();
@@ -456,7 +456,7 @@ void MyroomShootScene::PrintShooterText() {
     text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mTextWidth, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mUnlocked[mSelected] == 0) {
         mTextEndY = 0;
     }
@@ -554,7 +554,7 @@ s8 MyroomShootScene::UpdateKeySelection() {
 void MyroomShootScene::func_ov008_02223264() {
     if (mResult == 2) {
         SoundManager::Get().StartSeqArc(1);
-        SpriteManager::Get().StartFade(3);
+        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
         mState = 3;
     } else if (mPendingSelection != -1) {
         SpriteManager::Get().RestoreSlot(0);

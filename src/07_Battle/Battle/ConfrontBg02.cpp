@@ -257,9 +257,9 @@ void ConfrontBg02::LoadGraphics() {
         return;
     }
     ChangeDir("/Game/Confrontation/Bg/");
-    LoadAndQueueUpload(1, 1, 0x2000, "vs_b_bg_02_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "vs_b_bg_02_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "vs_b_bg_02_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "vs_b_bg_02_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "vs_b_bg_02_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "vs_b_bg_02_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);

@@ -143,7 +143,7 @@ void MyroomCharaScene::Update() {
             mState            = 1;
             return;
         case 1:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 2;
             break;
         case 2:
@@ -159,7 +159,7 @@ void MyroomCharaScene::Update() {
             u8 tab = id;
             if (tab < 4 && tab != mTab) {
                 mTab = tab;
-                SpriteManager::Get().sFade[0] = 3;
+                SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
                 mState = 4;
                 break;
             }
@@ -174,14 +174,14 @@ void MyroomCharaScene::Update() {
                     RefreshPageButtons();
                 }
             } else if (mResult == 2) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x11;
             }
             break;
         }
         case 4:
             mWindow->mEnabled = 0;
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mState = 5;
                 if (mShownTab == 0) {
                     SetReady();
@@ -199,7 +199,7 @@ void MyroomCharaScene::Update() {
                     RefreshPageButtons();
                     LoadText();
                     RenderLines();
-                    SpriteManager::Get().sFade[0] = 2;
+                    SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                     mState                     = 7;
                     mShownTab                    = mTab;
                 }
@@ -221,11 +221,11 @@ void MyroomCharaScene::Update() {
             }
             break;
         case 6:
-            SpriteManager::Get().sFade[0] = 2;
+            SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             mState++;
             break;
         case 7:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mState = 8;
             }
             break;
@@ -331,9 +331,9 @@ void MyroomCharaScene::InitDisplay() {
 
 void MyroomCharaScene::LoadSubGraphics() {
     ChangeDir("Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
     mWindow = new SelectWindow(7, sMyroomCharaWindowItems, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
@@ -365,9 +365,9 @@ void MyroomCharaScene::LoadSubGraphics() {
 
 void MyroomCharaScene::LoadMainGraphics() {
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(0, 7, 0, "story_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "story_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 1, 0, "story_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "story_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "story_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "story_bg_01_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.SetObjVramMode(3);
     main.ResetOam();
@@ -602,7 +602,7 @@ void MyroomCharaScene::RenderLine(u32 line, u32 kind) {
             break;
         }
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, sMyroomCharaLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, sMyroomCharaLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
     mLinesVisible[line] = 1;
 }
 

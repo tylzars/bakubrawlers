@@ -243,7 +243,7 @@ BattleCharaAct::~BattleCharaAct() {
     DeleteFieldopModel();
     ModelInstance *model = mActModel;
     if (model) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
         mActModel = 0;
     }
@@ -407,7 +407,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
             mState++;
             break;
         case 4:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
         case 3:
             mState++;
             break;
@@ -449,15 +449,15 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
         case 8:
             if (mKind == 0) {
                 if (CameraManager::Get().mMode != 1) {
-                    SpriteManager::Get().StartFade(4);
+                    SpriteManager::Get().StartFade(FADE_MODE_UP);
                     mActFrames = 0xffff;
                 }
             } else {
                 if (CameraManager::Get().mMode != 1) {
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 } else {
                     SpriteManager::Get();
-                    SpriteManager::sFade[0] = 3;
+                    SpriteManager::sFade[0] = FADE_MODE_DOWN;
                 }
             }
             mState++;
@@ -529,7 +529,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
         if (frames > 0x5a && frames % 7 == 0) {
             if (mFadeBrightness < 0x10) {
                 mFadeBrightness++;
-                SpriteManager::Get().SetFade(1, (u8) mFadeBrightness);
+                SpriteManager::Get().SetFade(FADE_MODE_HOLD, (u8) mFadeBrightness);
             }
         }
     } else {
@@ -594,7 +594,7 @@ void BattleCharaAct::LoadFieldopModel() {
 void BattleCharaAct::DeleteFieldopModel() {
     ModelInstance *model = mFieldopModel;
     if (model) {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
     }
 }

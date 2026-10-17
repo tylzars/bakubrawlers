@@ -20,10 +20,10 @@ ModelInstance::~ModelInstance() {
     DisableCallbackMtx();
     DetachAllAnims();
     if (mAnim != NULL) {
-        if (mOwnFlags & 8) {
+        if (mOwnFlags & MODEL_OWN_ANIM_DATA) {
             mAnim->FreeAnimData();
         }
-        if ((mOwnFlags & 1) && mAnim != NULL) {
+        if ((mOwnFlags & MODEL_OWN_ANIM) && mAnim != NULL) {
             delete mAnim;
         }
     }
@@ -31,12 +31,12 @@ ModelInstance::~ModelInstance() {
     ModelFile *file = mModelFile;
     if (file != NULL) {
         texture = file->mTexture;
-        if ((mOwnFlags & 2) && file != NULL) {
+        if ((mOwnFlags & MODEL_OWN_FILE) && file != NULL) {
             file->Release();
             delete file;
         }
         if (texture != NULL) {
-            if ((mOwnFlags & 4) && texture != NULL) {
+            if ((mOwnFlags & MODEL_OWN_TEXTURE) && texture != NULL) {
                 texture->Release();
                 delete texture;
             }

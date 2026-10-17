@@ -111,7 +111,7 @@ void TextureFile::UploadTextures() {
         void *buf = OS_Alloc(size);
         MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
         DC_FlushRange(buf, size);
-        QueueUpload(0, 2, addr, buf, size, 1);
+        QueueUpload(0, UPLOAD_KIND_TEX, addr, buf, size, 1);
         mTex->mTexState |= 1;
     }
     u32 idx;
@@ -128,12 +128,12 @@ void TextureFile::UploadTextures() {
     void *buf2  = OS_Alloc(size2);
     MIi_CpuCopy32((u8 *) tex2 + ofs2, buf2, size2);
     DC_FlushRange(buf2, size2);
-    QueueUpload(0, 2, addr2, buf2, size2, 1);
+    QueueUpload(0, UPLOAD_KIND_TEX, addr2, buf2, size2, 1);
     size2 >>= 1;
     void *buf3 = OS_Alloc(size2);
     MIi_CpuCopy32((u8 *) tex2 + idx, buf3, size2);
     DC_FlushRange(buf3, size2);
-    QueueUpload(0, 2, 0x20000 + ((addr2 & 0x1ffff) >> 1) + ((addr2 & 0x40000) >> 2), buf3, size2, 1);
+    QueueUpload(0, UPLOAD_KIND_TEX, 0x20000 + ((addr2 & 0x1ffff) >> 1) + ((addr2 & 0x40000) >> 2), buf3, size2, 1);
     mTex->m4x4State |= 1;
 }
 
@@ -146,7 +146,7 @@ void TextureFile::UploadPalettes() {
     void *buf         = OS_Alloc(size);
     MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
     DC_FlushRange(buf, size);
-    QueueUpload(0, 3, addr, buf, size, 1);
+    QueueUpload(0, UPLOAD_KIND_TEX_PLTT, addr, buf, size, 1);
     mTex->mPlttState |= 1;
 }
 
@@ -175,7 +175,7 @@ BOOL TextureFile::UploadNamedTexture(const char *name, void *data, u32 size) {
         void *dst = OS_Alloc(size);
         MIi_CpuCopy32(data, dst, size);
         DC_FlushRange(dst, size);
-        QueueUpload(0, 2, addr, dst, size, 1);
+        QueueUpload(0, UPLOAD_KIND_TEX, addr, dst, size, 1);
     } else {
         return FALSE;
     }
@@ -209,7 +209,7 @@ BOOL TextureFile::UploadNamedPalette(const char *name, void *data, u32 size) {
         void *dst   = OS_Alloc(aligned);
         MIi_CpuCopy32(data, dst, aligned);
         DC_FlushRange(dst, aligned);
-        QueueUpload(0, 3, addr, dst, aligned, 1);
+        QueueUpload(0, UPLOAD_KIND_TEX_PLTT, addr, dst, aligned, 1);
     } else {
         return FALSE;
     }

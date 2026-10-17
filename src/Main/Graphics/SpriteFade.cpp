@@ -22,7 +22,7 @@ void SetScreen0Brightness(int brightness) {
 
 SpriteFadeDefaults::SpriteFadeDefaults() {
     for (u8 i = 0; i < 2; i++) {
-        SpriteManager::sFade[i]       = 1;
+        SpriteManager::sFade[i]       = FADE_MODE_HOLD;
         SpriteManager::sBrightness[i] = 16;
     }
 }
@@ -32,12 +32,12 @@ void UpdateSpriteFade() {
         s8 *fade       = &SpriteManager::sFade[i];
         s8 *brightness = &SpriteManager::sBrightness[i];
         switch (*fade) {
-            case 1:
+            case FADE_MODE_HOLD:
                 gBrightnessFuncs[i](*brightness);
                 break;
-            case 2:
+            case FADE_MODE_TO_ZERO:
                 if (*brightness == 0) {
-                    *fade = 1;
+                    *fade = FADE_MODE_HOLD;
                 } else if (*brightness < 0) {
                     *brightness += 1;
                 } else {
@@ -45,19 +45,19 @@ void UpdateSpriteFade() {
                 }
                 gBrightnessFuncs[i](*brightness);
                 break;
-            case 3:
+            case FADE_MODE_DOWN:
                 if (*brightness > -16) {
                     *brightness -= 1;
                 } else {
-                    *fade = 1;
+                    *fade = FADE_MODE_HOLD;
                 }
                 gBrightnessFuncs[i](*brightness);
                 break;
-            case 4:
+            case FADE_MODE_UP:
                 if (*brightness < 16) {
                     *brightness += 1;
                 } else {
-                    *fade = 1;
+                    *fade = FADE_MODE_HOLD;
                 }
                 gBrightnessFuncs[i](*brightness);
                 break;

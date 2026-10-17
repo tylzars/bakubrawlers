@@ -112,7 +112,7 @@ void UnkStruct_02071d24::Update() {
                 break;
             }
             SpriteManager::Get();
-            SpriteManager::sFade[1] = 2;
+            SpriteManager::sFade[1] = FADE_MODE_TO_ZERO;
             mState++;
             break;
         case 2:
@@ -214,7 +214,7 @@ void UnkStruct_02071d24::Update() {
                 mContext->mRequest = 0;
             }
             mState++;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         case 8:
             func_02072dfc();
@@ -257,13 +257,13 @@ void func_02072614() {
 // when it has a record.
 void UnkStruct_02071d24::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(1, 7, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "result_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "result_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "result_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "result_b_bg_01_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2d/union_b/");
-    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xf000, 0);
@@ -280,7 +280,7 @@ void UnkStruct_02071d24::LoadGraphics() {
     mBakuganSubCellAnim           = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
     mBakuganSubCellAnim->mCharBase = screen2.GetCharBase(0x9000);
     mBakuganSubCellAnim->mPaletteBase   = 0;
-    mBakuganSubCellAnim->SetMode(5);
+    mBakuganSubCellAnim->SetMode(CELL_ANIM_MODE_STOP);
     mBakuganSubCellAnim->mFrameIndex = mAttributes[mBakuganIndex];
     mWindow          = new SelectWindow(7, data_020a2e48, 0);
     mWindow->SetCells(7, data_020a2f0c);
@@ -646,7 +646,7 @@ void UnkStruct_02071d24::PrintText() {
         TextManager::Get().mUse4bppFont = 0;
     }
     DC_FlushRange(mTextBuffer, mTextBufferSize);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffer, mTextBufferSize, 0);
 }
 
 // Outside states 2-4 also steps the MessageWindow's text (Update).

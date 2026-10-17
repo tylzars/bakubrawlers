@@ -32,7 +32,7 @@ void GimmickHaosBall::Load() {
 void GimmickHaosBall::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mOwnFlags       = 1;
+        m->mOwnFlags       = MODEL_OWN_ANIM;
         delete m;
         mModel = 0;
     }

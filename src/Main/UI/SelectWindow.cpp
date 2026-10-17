@@ -196,7 +196,7 @@ BOOL SelectWindow::Update(BOOL input) {
         if (mCellAnims[sel == -1 ? -1 : c->mItems[sel].mId]->mFinished != 0) {
             flag = TRUE;
         }
-        if (mCellAnims[sel == -1 ? -1 : c->mItems[sel].mId]->mMode == 1) {
+        if (mCellAnims[sel == -1 ? -1 : c->mItems[sel].mId]->mMode == CELL_ANIM_MODE_FORWARD_LOOP) {
             flag = TRUE;
         }
         if (flag) {

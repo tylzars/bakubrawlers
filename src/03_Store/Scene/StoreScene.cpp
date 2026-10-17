@@ -121,14 +121,14 @@ void StoreScene::Update() {
                 break;
             }
             mEvent->StartScript("cmd_ST_sev_Ali.bin");
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             ctx->mInfo.mState++;
             break;
         case 3:
             if (mEvent->IsRunning()) {
                 break;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             break;
         case 4:
@@ -164,7 +164,7 @@ void StoreScene::Update() {
                 break;
             }
             mEvent->func_02067998(sSelectScriptIds[ctx->mInfo.mSelection]);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             ctx->mInfo.mState++;
             break;
         case 9:
@@ -197,7 +197,7 @@ void StoreScene::Update() {
                 mWindow->Draw();
             }
             DrawText();
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             switch (ctx->mInfo.mUnk_06) {
                 case 0:
                     mEvent->func_020702e0(sEventPositions[2][0], sEventPositions[2][1], sEventPositions[2][2],
@@ -222,7 +222,7 @@ void StoreScene::Update() {
             if (mEvent->IsRunning()) {
                 break;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             break;
         case 14:
@@ -241,7 +241,7 @@ void StoreScene::Update() {
             if (ctx->mRequest == 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             break;
         case 16:
@@ -277,7 +277,7 @@ void StoreScene::Update() {
             break;
         case 19:
             if (++ctx->mInfo.mUnk_0a >= 8) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 ctx->mInfo.mState++;
             }
             mWindow->Draw();
@@ -354,9 +354,9 @@ void StoreScene::InitDisplay() {
 
 void StoreScene::LoadGraphics() {
     ChangeDir("/Game/Store/");
-    LoadAndQueueUpload(1, 7, 0, "shop_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "shop_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "shop_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "shop_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "shop_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "shop_b_bg_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Store/");
     SpriteScreen &shop = SpriteManager::Get().Screen(1);
     shop.SetObjVramMode(3);
@@ -469,7 +469,7 @@ void StoreScene::StartScroll() {
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
         } else if (info->mSelection == i) {
-            mWindow->mCellAnims[i]->SetMode(2);
+            mWindow->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
         }
         items[i].mFlags = 0x8000;
     }
@@ -674,7 +674,7 @@ void StoreScene::PrintStatus() {
     text.Print(table->GetText(index), table->GetLength(index), mTextBuffer, 0x10, 2, &height, &width,
                &info->mUnk_00, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x3000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void StoreScene::ClearTextBuffer() {

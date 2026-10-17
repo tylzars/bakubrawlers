@@ -23,6 +23,34 @@
 #include "Graphics/BakuganModel.hpp"
 #include "Graphics/ModelInternal.hpp"
 
+// Wait kinds (mWaitKind): set by ExecuteCommand, run by UpdateWait while mState is 4; RunCommands goes on to the
+// next command at once only for SCRIPT_WAIT_KIND_NONE. Kinds 5 (commands 74 / 97: func_02067f30 one frame later,
+// then kind 6 when it returns TRUE) and 8 (command 234: until mUnk_14e7 is 0 again) stay literals.
+#define SCRIPT_WAIT_KIND_NONE                  0  // UpdateWait ends the wait at once
+#define SCRIPT_WAIT_KIND_TIMER                 1  // until mWaitTimer has counted down to 0 (commands 3 and 13)
+#define SCRIPT_WAIT_KIND_MESSAGES              2  // until mMessagePos reaches mMessageCount (command 2)
+#define SCRIPT_WAIT_KIND_BRIGHTNESS            3  // until mBrightnessFrameCount is 0 (commands 25-27)
+#define SCRIPT_WAIT_KIND_LERP                  4  // steps mLerpFrames up to mLerpFrameCount, interpolating every slot
+                                                  // (commands 16, 17)
+#define SCRIPT_WAIT_KIND_LOAD                  6  // the command's LoadCharacter / LoadMap / LoadModel /
+                                                  // LoadNextModelFiles / LoadSphere until TRUE (the mWaitTimer
+                                                  // countdown before it never runs: every kind-6 wait starts at 0)
+#define SCRIPT_WAIT_KIND_STOP                  7  // StopWithResult: holds mState at 4, never ends
+#define SCRIPT_WAIT_KIND_LOAD_GRAPHICS         9  // LoadGraphics, sets mGraphicsLoaded, then kind 10 (command 232)
+#define SCRIPT_WAIT_KIND_CLEAR_GRAPHICS_LOADED 10 // until mGraphicsLoaded is 0 again (the scene's ClearGraphicsLoaded)
+
+// Fade kind (mFadeKind), set by commands 25-27. UpdateBrightnessFade, its only reader, calls G2_SetBlendBrightness
+// only for SCRIPT_FADE_KIND_BLEND (command 25). 1 (command 26, stored with SpriteManager::StartSubFade) and 2
+// (command 27, with StartFade) stay literals: nothing reads them apart.
+#define SCRIPT_FADE_KIND_BLEND 0
+
+// Camera modes (mCameraMode, SetCameraMode).
+// SCRIPT_CAMERA_MODE_ANGLES: UpdateCameraAndLight puts the target 100 units from the eye along mCameraAngles
+// (commands 40-45); SCRIPT_CAMERA_MODE_TARGET: the target stays mCameraPoints[1] (commands 34-39; SetCameraMode first
+// places it from the angles when it switches to this mode).
+#define SCRIPT_CAMERA_MODE_ANGLES 0
+#define SCRIPT_CAMERA_MODE_TARGET 1
+
 ScriptPlayer *gScriptPlayer;
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
@@ -75,14 +103,14 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mCommandCount = 0;
     mUnk_12c0 = 0;
     mUnk_12c2 = 0;
-    mWaitKind = 0;
+    mWaitKind = SCRIPT_WAIT_KIND_NONE;
     mMessageState = 0;
     mInputTimer = 0;
     mMessagePos = 0;
     mMessageCount = 0;
     mUnk_12d0 = 0;
     mUnk_14d2 = -1;
-    mFadeKind = 0;
+    mFadeKind = SCRIPT_FADE_KIND_BLEND;
     mUnk_14d4 = 0;
     mBrightness = -16;
     mBrightnessTo = -16;
@@ -177,7 +205,7 @@ ScriptPlayer::~ScriptPlayer() {
     }
     ModelInstance *instance = mShadowModel;
     if (instance != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
     }
     delete mCamera;
@@ -304,7 +332,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     } else {
                         SetupBattle(type, index);
                         if (mUnk_14e2 == 0 || mUnk_14e9 == 1) {
-                            StopWithResult(5);
+                            StopWithResult(SCRIPT_RESULT_BATTLE);
                         }
                     }
                     break;
@@ -359,12 +387,12 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                             break;
                     }
                     gSaveData[0].mUnk_42 = 10;
-                    StopWithResult(6);
+                    StopWithResult(SCRIPT_RESULT_MAP);
                     mSaveRequested = 1;
                 } else {
                     u32 next = 0;
                     if (data_020b4324[type]->mUnk_78 != 0) {
-                        next = 6;
+                        next = SCRIPT_RESULT_MAP;
                     }
                     if (next != 0) {
                         StopWithResult(next);
@@ -496,7 +524,7 @@ u32 ScriptPlayer::func_02066f60() {
     }
     func_02066814(1);
     if (mUnk_14e9 != 0) {
-        StopWithResult(5);
+        StopWithResult(SCRIPT_RESULT_BATTLE);
     }
     return 0;
 }
@@ -684,7 +712,7 @@ void ScriptPlayer::ReleaseModels(u32 unk1) {
         if (unk1 != 0) {
             ModelInstance *instance = mMaps[i].mModel;
             if (instance != NULL) {
-                instance->mOwnFlags = 0xf;
+                instance->mOwnFlags = MODEL_OWN_ALL;
                 delete instance;
                 mMaps[i].mModel = NULL;
             }
@@ -703,7 +731,7 @@ void ScriptPlayer::ReleaseModels(u32 unk1) {
     }
     ModelInstance *instance;
     if (unk1 != 0 && (instance = mShadowModel) != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
         mShadowModel = NULL;
     }
@@ -722,7 +750,7 @@ u32 ScriptPlayer::GetResult() {
 
 void ScriptPlayer::StopWithResult(u32 unk1) {
     mResult = unk1;
-    mWaitKind = 7;
+    mWaitKind = SCRIPT_WAIT_KIND_STOP;
     mState = 4;
 }
 
@@ -813,7 +841,7 @@ void ScriptPlayer::UpdateBrightnessFade() {
         mBrightnessFrames = 0;
         mBrightnessFrameCount = 0;
     }
-    if (mFadeKind == 0) {
+    if (mFadeKind == SCRIPT_FADE_KIND_BLEND) {
         G2_SetBlendBrightness(0x21, mBrightness);
     }
 }
@@ -1181,7 +1209,7 @@ BOOL ScriptPlayer::SetMap(s32 value) {
     }
     ModelInstance *instance = mMaps[0].mModel;
     if (instance != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
         mMaps[0].mModel = NULL;
     }
@@ -1412,7 +1440,7 @@ void ScriptPlayer::SwapModel(u32 index) {
 void ScriptPlayer::ReleaseModel(u32 index) {
     ModelInstance *instance = mModels[index].mModel;
     if (instance != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
         mModels[index].mModel = NULL;
     }
@@ -1563,7 +1591,7 @@ void ScriptPlayer::ResetCamera() {
     mFov[0] = 0x3c;
     mFov[1] = 0x3c;
     mFov[2] = 0x3c;
-    mCameraMode    = 1;
+    mCameraMode    = SCRIPT_CAMERA_MODE_TARGET;
     ApplyFov();
 }
 
@@ -1595,7 +1623,7 @@ void ScriptPlayer::ApplyFov() {
 }
 
 void ScriptPlayer::UpdateCameraAndLight() {
-    if (mCameraMode == 0) {
+    if (mCameraMode == SCRIPT_CAMERA_MODE_ANGLES) {
         mCameraPoints[1].mX = mCameraPoints[0].mX + SinIdx(mCameraAngles.mYaw) * 100;
         mCameraPoints[1].mZ = mCameraPoints[0].mZ - CosIdx(mCameraAngles.mYaw) * 100;
         mCameraPoints[1].mY = mCameraPoints[0].mY + SinIdx(mCameraAngles.mPitch) * 100;
@@ -1626,7 +1654,7 @@ void ScriptPlayer::SetCameraMode(u32 mode) {
     if (mCameraMode == mode) {
         return;
     }
-    if (mode != 0) {
+    if (mode != SCRIPT_CAMERA_MODE_ANGLES) {
         mCameraPoints[1].mX = mCameraPoints[0].mX + SinIdx(mCameraAngles.mYaw) * 100;
         mCameraPoints[1].mZ = mCameraPoints[0].mZ - CosIdx(mCameraAngles.mYaw) * 100;
         mCameraPoints[1].mXFrom = mCameraPoints[1].mX >> 12;
@@ -1716,7 +1744,7 @@ void ScriptPlayer::SetCutsceneAnimation(u32 value, u32 force) {
 void ScriptPlayer::UpdateMessages() {
     if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mSkipped == 0))) {
         u8 state = mState;
-        if (((state >= 3) & (state <= 4)) && mWaitKind != 6) {
+        if (((state >= 3) & (state <= 4)) && mWaitKind != SCRIPT_WAIT_KIND_LOAD) {
             if (InputManager::Get().IsPressed(8)) {
                 SkipScript();
                 return;
@@ -2127,7 +2155,7 @@ UnkStruct_02065c40_Kind ScriptPlayer::GetCommandSlot(u32 id) {
 
 void ScriptPlayer::RunCommands() {
     mState = 3;
-    mWaitKind = 0;
+    mWaitKind = SCRIPT_WAIT_KIND_NONE;
     while (TRUE) {
         if (mCommandIndex >= mCommandCount) {
             if (mMessagePos != mMessageCount) {
@@ -2139,7 +2167,7 @@ void ScriptPlayer::RunCommands() {
             return;
         }
         ExecuteCommand(mCommands[mCommandIndex].mCommand, mCommands[mCommandIndex].mValue);
-        if (mWaitKind == 0) {
+        if (mWaitKind == SCRIPT_WAIT_KIND_NONE) {
             mCommandIndex++;
         } else {
             mState = 4;
@@ -2155,7 +2183,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
     mCurrentValue = value;
     s16 angle = (mCurrentValue << 16) / 360;
     u32 idx   = GetCommandSlot(mCurrentCommand);
-    mWaitKind = 0;
+    mWaitKind = SCRIPT_WAIT_KIND_NONE;
     switch (mCurrentCommand) {
         case 1:
             mMessageIndices[mMessageCount] = mCurrentValue;
@@ -2169,13 +2197,13 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mMessageState = 0;
             mMessagePos = mMessageCount;
             mWaitTimer = 0;
-            mWaitKind = 1;
+            mWaitKind = SCRIPT_WAIT_KIND_TIMER;
             break;
         case 8:
             mUnk_13d2[mMessageCount] = mCurrentValue;
             break;
         case 2:
-            mWaitKind = 2;
+            mWaitKind = SCRIPT_WAIT_KIND_MESSAGES;
             break;
         case 9:
             {
@@ -2197,7 +2225,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 13:
             mWaitTimer = mCurrentValue;
-            mWaitKind = 1;
+            mWaitKind = SCRIPT_WAIT_KIND_TIMER;
             break;
         case 14:
             {
@@ -2231,33 +2259,33 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 case 0x1a:
                     mFadeKind = 1;
                     if (mBrightnessTo < 0) {
-                        SpriteManager::Get().StartSubFade(3);
+                        SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                     } else {
-                        SpriteManager::Get().StartSubFade(2);
+                        SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
                     }
                     mBrightnessFrameCount = 0x10;
                     break;
                 case 0x1b:
                     mFadeKind = 2;
                     if (mBrightnessTo < 0) {
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     } else {
-                        SpriteManager::Get().StartFade(2);
+                        SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                     }
                     mBrightnessFrameCount = 0x10;
                     break;
                 default:
-                    mFadeKind = 0;
+                    mFadeKind = SCRIPT_FADE_KIND_BLEND;
                     break;
             }
-            mWaitKind = 3;
+            mWaitKind = SCRIPT_WAIT_KIND_BRIGHTNESS;
             break;
         case 17:
             SetBg0Wave(1);
         case 16:
             mLerpFrames = 0;
             mLerpFrameCount = mFrameCount;
-            mWaitKind = 4;
+            mWaitKind = SCRIPT_WAIT_KIND_LERP;
             break;
         case 18:
         case 19:
@@ -2305,42 +2333,42 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mCameraPoints[1].mXFrom = mCurrentValue;
         case 37:
             mCameraPoints[1].mXTo = mCurrentValue;
-            SetCameraMode(1);
+            SetCameraMode(SCRIPT_CAMERA_MODE_TARGET);
             break;
         case 35:
             mCameraPoints[1].mY = FX_FROM_INT_ROUND(mCurrentValue);
             mCameraPoints[1].mYFrom = mCurrentValue;
         case 38:
             mCameraPoints[1].mYTo = mCurrentValue;
-            SetCameraMode(1);
+            SetCameraMode(SCRIPT_CAMERA_MODE_TARGET);
             break;
         case 36:
             mCameraPoints[1].mZ = FX_FROM_INT_ROUND(mCurrentValue);
             mCameraPoints[1].mZFrom = mCurrentValue;
         case 39:
             mCameraPoints[1].mZTo = mCurrentValue;
-            SetCameraMode(1);
+            SetCameraMode(SCRIPT_CAMERA_MODE_TARGET);
             break;
         case 40:
             mCameraAngles.mVec[0].x = angle;
             mCameraAngles.mVec[1].x = angle;
         case 41:
             mCameraAngles.mVec[2].x = angle;
-            SetCameraMode(0);
+            SetCameraMode(SCRIPT_CAMERA_MODE_ANGLES);
             break;
         case 42:
             mCameraAngles.mVec[0].y = angle;
             mCameraAngles.mVec[1].y = angle;
         case 43:
             mCameraAngles.mVec[2].y = angle;
-            SetCameraMode(0);
+            SetCameraMode(SCRIPT_CAMERA_MODE_ANGLES);
             break;
         case 44:
             mCameraAngles.mVec[0].z = angle;
             mCameraAngles.mVec[1].z = angle;
         case 45:
             mCameraAngles.mVec[2].z = angle;
-            SetCameraMode(0);
+            SetCameraMode(SCRIPT_CAMERA_MODE_ANGLES);
             break;
         case 46:
             mFov[0] = 0x3c;
@@ -2390,14 +2418,14 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 191:
             if (func_02068c54(idx, mCurrentValue)) {
                 mWaitTimer = 0;
-                mWaitKind = 6;
+                mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             }
             break;
         case 170:
         case 192:
             StartNextModelLoad(idx, mCurrentValue);
             mWaitTimer = 0;
-            mWaitKind = 6;
+            mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             break;
         case 171:
         case 193:
@@ -2520,7 +2548,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 59:
             if (SetMap(mCurrentValue)) {
                 mWaitTimer = 0;
-                mWaitKind = 6;
+                mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             }
             break;
         case 61:
@@ -2630,7 +2658,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             CreateNextCharacter(idx);
             mCharacters[idx].mUnk_38 = mCurrentValue;
             mWaitTimer = 0;
-            mWaitKind = 6;
+            mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             break;
         case 74:
         case 97:
@@ -2704,7 +2732,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 mSpheres[idx].mSphere = NULL;
                 if (func_02069680(idx)) {
                     mWaitTimer = 0;
-                    mWaitKind = 6;
+                    mWaitKind = SCRIPT_WAIT_KIND_LOAD;
                 }
                 break;
             }
@@ -2719,7 +2747,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 mSpheres[idx].mNextTableIndex = mCurrentValue;
                 CreateNextSphere(idx);
                 mWaitTimer = 0;
-                mWaitKind = 6;
+                mWaitKind = SCRIPT_WAIT_KIND_LOAD;
                 break;
             }
         case 122:
@@ -2935,25 +2963,25 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 break;
             }
         case 225:
-            StopWithResult(1);
+            StopWithResult(SCRIPT_RESULT_MYROOM);
             break;
         case 226:
-            StopWithResult(2);
+            StopWithResult(SCRIPT_RESULT_STORE);
             break;
         case 227:
-            StopWithResult(3);
+            StopWithResult(SCRIPT_RESULT_PARK);
             break;
         case 228:
-            StopWithResult(4);
+            StopWithResult(SCRIPT_RESULT_TOURNAMENT);
             break;
         case 229:
-            StopWithResult(7);
+            StopWithResult(SCRIPT_RESULT_TUTORIAL);
             break;
         case 230:
             StopWithResult(8);
             break;
         case 231:
-            StopWithResult(5);
+            StopWithResult(SCRIPT_RESULT_BATTLE);
             {
                 s32 v = mCurrentValue;
                 if (v > 4) {
@@ -2969,14 +2997,14 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
             mUnk_14e4 = 0;
             SetStorytalkBlink(mStorytalkWindow, 0);
-            mWaitKind = 9;
+            mWaitKind = SCRIPT_WAIT_KIND_LOAD_GRAPHICS;
             break;
         case 233:
             ReleaseModels(1);
             SpriteManager::Get().SetupMode(1, 7);
             SetupSpriteSlots();
             CameraManager::Get().SetCamerasAndRequestMode(2, mCamera, (u32) mCamera);
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             mUnk_14e4 = 1;
             mUnk_14e5 = 1;
             GXS_SetVisiblePlane(1);
@@ -3001,12 +3029,12 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
 void ScriptPlayer::UpdateWait() {
     BOOL done = FALSE;
     switch (mWaitKind) {
-        case 2:
+        case SCRIPT_WAIT_KIND_MESSAGES:
             if (mMessagePos == mMessageCount) {
                 done = TRUE;
             }
             break;
-        case 3:
+        case SCRIPT_WAIT_KIND_BRIGHTNESS:
             if (mUnk_14d4 == 0) {
                 if (mBrightnessFrameCount == 0) {
                     done = TRUE;
@@ -3032,11 +3060,11 @@ void ScriptPlayer::UpdateWait() {
                 done = TRUE;
             } else {
                 mWaitTimer = 0;
-                mWaitKind = 6;
+                mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             }
             break;
         }
-        case 6:
+        case SCRIPT_WAIT_KIND_LOAD:
             if (mWaitTimer != 0) {
                 mWaitTimer--;
                 break;
@@ -3073,14 +3101,14 @@ void ScriptPlayer::UpdateWait() {
                     break;
             }
             break;
-        case 1:
+        case SCRIPT_WAIT_KIND_TIMER:
             if (mWaitTimer != 0) {
                 mWaitTimer--;
             } else {
                 done = TRUE;
             }
             break;
-        case 4: {
+        case SCRIPT_WAIT_KIND_LERP: {
             int n = mLerpFrames + 1;
             if (n > mLerpFrameCount) {
                 n = mLerpFrameCount;
@@ -3231,7 +3259,7 @@ void ScriptPlayer::UpdateWait() {
             G2_SetBlendBrightness(0x21, mBrightness);
             break;
         }
-        case 7:
+        case SCRIPT_WAIT_KIND_STOP:
             mState = 4;
             break;
         case 8:
@@ -3241,17 +3269,17 @@ void ScriptPlayer::UpdateWait() {
                 mUnk_14f1 = 1;
             }
             break;
-        case 9:
+        case SCRIPT_WAIT_KIND_LOAD_GRAPHICS:
             LoadGraphics();
             mGraphicsLoaded = 1;
-            mWaitKind = 10;
+            mWaitKind = SCRIPT_WAIT_KIND_CLEAR_GRAPHICS_LOADED;
             break;
-        case 10:
+        case SCRIPT_WAIT_KIND_CLEAR_GRAPHICS_LOADED:
             if (mGraphicsLoaded == 0) {
                 done = TRUE;
             }
             break;
-        case 0:
+        case SCRIPT_WAIT_KIND_NONE:
         default:
             done = TRUE;
             break;
@@ -4024,7 +4052,7 @@ void ScriptPlayer::SkipScript() {
     SetNoStorytalkMessage(mStorytalkWindow);
     mState = 3;
     mSkipped = 1;
-    SpriteManager::Get().StartFade(2);
+    SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
     if (mBg0Wave != 0) {
         SetBg0Wave(0);
     }

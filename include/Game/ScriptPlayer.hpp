@@ -16,6 +16,17 @@ class UnkStruct_0205401c;
 class BakuganModel;
 class TextureFile;
 
+// Results (StopWithResult, GetResult), named for the scene MapScene::SetNextSceneFromEvent requests for each. 0 = no
+// result yet. 8 (command 230, or func_02066814 when gSaveData mUnk_42 reaches 10) stays a literal: MapScene handles
+// it only in its default case, TournamentScene::HandleEventResult sets mUnk_d0 for it.
+#define SCRIPT_RESULT_MYROOM     1 // command 225
+#define SCRIPT_RESULT_STORE      2 // command 226
+#define SCRIPT_RESULT_PARK       3 // command 227
+#define SCRIPT_RESULT_TOURNAMENT 4 // command 228
+#define SCRIPT_RESULT_BATTLE     5 // command 231 (also sets the player count), and func_02066814 after SetupBattle
+#define SCRIPT_RESULT_MAP        6 // func_02066814 at the end of a table
+#define SCRIPT_RESULT_TUTORIAL   7 // command 229
+
 // GetCommandSlot's result: an enum, not BOOL (the final compare's moveq/movne order needs it)
 enum UnkStruct_02065c40_Kind { UNK_02065C40_KIND_0, UNK_02065C40_KIND_1 };
 
@@ -214,7 +225,7 @@ public:
     /* 12be */ u16 mCommandCount;
     /* 12c0 */ u16 mUnk_12c0;
     /* 12c2 */ u16 mUnk_12c2;
-    /* 12c4 */ u8 mWaitTimer; // command 13 sets it for wait kind 1; every kind-6 wait starts it at 0, so kind 6's countdown never runs
+    /* 12c4 */ u8 mWaitTimer; // command 13 sets it for SCRIPT_WAIT_KIND_TIMER; every SCRIPT_WAIT_KIND_LOAD wait starts it at 0, so that countdown never runs
     /* 12c5 */ u8 mWaitKind;
     /* 12c6 */ u8 mCurrentCommand;
     /* 12c7 */ PAD(0x12c7, 0x12c8);
@@ -265,9 +276,9 @@ public:
     // Script number for the save position (gSaveData mUnk_42 / mUnk_43) or -1; may call SetupBattle and
     // StopWithResult even with unk1 == 0; unk1 != 0 also advances the position.
     s32 func_02066814(u32 unk1);
-    void StopWithResult(u32 unk1); // stores the result and waits in state 4 with wait kind 7
+    void StopWithResult(u32 unk1); // stores the result and waits in state 4 with SCRIPT_WAIT_KIND_STOP
     void UpdateBrightness(); // the code after 'mUnk_14d4 == 0' never runs: mUnk_14d4 is only ever 0
-    void UpdateBrightnessFade(); // interpolates mBrightness; applies it only while mFadeKind == 0
+    void UpdateBrightnessFade(); // interpolates mBrightness; applies it only while mFadeKind == SCRIPT_FADE_KIND_BLEND
     void SetCharacterVisible(u32 index, u8 unk2); // also clears the slot's mUnk_3b
     void ApplyPendingSwaps();
     void CreateNextCharacter(u32 index);
@@ -307,7 +318,7 @@ public:
     void func_0206a01c();
     void SetCutsceneAnimation(u32 value, u32 force);
     void SkipScript();
-    void UpdateMessages(); // starts with the skip check (key 8 in states 3-4 outside wait kind 6 calls SkipScript)
+    void UpdateMessages(); // starts with the skip check (key 8 in states 3-4 outside SCRIPT_WAIT_KIND_LOAD calls SkipScript)
     void DrawSpheres();
     void DrawCharacters();
     void UpdateCharacterAnimation(u32 index);
@@ -321,7 +332,7 @@ public:
     BOOL ReadMessages();
     BOOL func_02067f30(u32 index, s32 value);
     // 0 for mUnk_14e2 == 6; with a script number from func_02066814(0) starts "cmd_ST_mev_..." and returns 1;
-    // otherwise func_02066814(1) (and StopWithResult(5) when mUnk_14e9 is set) and 0.
+    // otherwise func_02066814(1) (and StopWithResult(SCRIPT_RESULT_BATTLE) when mUnk_14e9 is set) and 0.
     u32 func_02066f60();
     // Also writes display registers; makes the cutscene cells when mUnk_14e4 == 0 and (mUnk_14f1 or
     // func_02066c7c()), and then with mUnk_14e2 == 5 clears mUnk_14f1 and sets mUnk_14ed.

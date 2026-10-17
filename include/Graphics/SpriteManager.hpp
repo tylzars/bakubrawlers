@@ -48,6 +48,14 @@ struct TexSlotRanges {
     /* 28 */
 };
 
+// Fade modes (SpriteManager::sFade, StartFade, StartSubFade, SetFade), stepped once per frame by UpdateSpriteFade,
+// which writes the screen's sBrightness to its master brightness in each of these modes. Each fade ends in
+// FADE_MODE_HOLD, so sFade > FADE_MODE_HOLD (IsFading) means a fade is still running.
+#define FADE_MODE_HOLD    1 // sBrightness is left as it is
+#define FADE_MODE_TO_ZERO 2 // sBrightness steps by 1 towards 0
+#define FADE_MODE_DOWN    3 // sBrightness steps down by 1 to -16
+#define FADE_MODE_UP      4 // sBrightness steps up by 1 to 16
+
 // Global sprite/display manager, constructed on first use.
 class SpriteManager {
 public:
@@ -102,6 +110,6 @@ public:
     }
 
     BOOL IsFading() {
-        return (sFade[0] > 1) | (sFade[1] > 1);
+        return (sFade[0] > FADE_MODE_HOLD) | (sFade[1] > FADE_MODE_HOLD);
     }
 };

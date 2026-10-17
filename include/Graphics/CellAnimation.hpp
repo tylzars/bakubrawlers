@@ -72,6 +72,15 @@ struct SpriteTransform {
     SpriteTransform(s32 scaleX, s32 scaleY, u16 rotation); // 0x02027f10
 };
 
+// Playback modes (CellAnimation::mMode, SetMode; ResetAnimation copies CellAnimFrame::mMode). The ONCE modes set
+// mFinished at the end. 4 stays a literal: Update steps it to the same frames as CELL_ANIM_MODE_FORWARD_ONCE (it
+// increments, then clamps to the last frame), so the code gives it no word of its own.
+#define CELL_ANIM_MODE_FORWARD_ONCE  0
+#define CELL_ANIM_MODE_FORWARD_LOOP  1 // wraps to frame 0; never sets mFinished (SelectWindow state 2 takes it as done)
+#define CELL_ANIM_MODE_BACKWARD_ONCE 2 // to frame 0
+#define CELL_ANIM_MODE_BACKWARD_LOOP 3 // wraps to the last frame
+#define CELL_ANIM_MODE_STOP          5 // Update returns at once
+
 // A cell animation loaded from an NCE file.
 class CellAnimation {
 public:
@@ -81,9 +90,9 @@ public:
     /* 0c */ u16 mCharBase;
     /* 0e */ u8 mAnimIndex; // animation index
     /* 0f */ u8 mFrameIndex; // frame index
-    /* 10 */ u8 mMode; // Update: 0 and 4 forward once, 1 forward loop, 2 backward once, 3 backward loop, 5 stopped
+    /* 10 */ u8 mMode; // CELL_ANIM_MODE_*; 4 plays like CELL_ANIM_MODE_FORWARD_ONCE
     /* 11 */ s8 mPaletteBase;
-    /* 12 */ u8 mFinished; // set when mode 0, 2 or 4 reaches its end; cleared by ResetAnimation
+    /* 12 */ u8 mFinished; // set when a ONCE mode (or mode 4) reaches its end; cleared by ResetAnimation
     /* 13 */ PAD(0x13, 0x14);
     /* 14 */ CellAnimFile *mFile;
     /* 18 */

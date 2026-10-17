@@ -156,9 +156,9 @@ void BattleUnk0227532c::LoadWindow() {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 10, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0x180, 0);
@@ -181,7 +181,7 @@ void BattleUnk0227532c::LoadWindow() {
     height = 0;
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 8, &height, &width, 0, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
     OS_Free(file);
-    QueueUpload(1, 4, 0x11000, buffer, 0x1800, 1);
+    QueueUpload(1, UPLOAD_KIND_OBJ, 0x11000, buffer, 0x1800, 1);
     mGlyphCount  = TextManager::Get().GlyphCount(3);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 8, 0x44);

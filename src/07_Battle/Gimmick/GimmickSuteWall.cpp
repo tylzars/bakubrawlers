@@ -60,11 +60,11 @@ void GimmickSuteWall::Load() {
 void GimmickSuteWall::Unload() {
     if (mModel) {
         ModelInstance *m = mModelB;
-        m->mOwnFlags       = 1;
+        m->mOwnFlags       = MODEL_OWN_ANIM;
         delete m;
         mModelB = 0;
         m       = mModel;
-        m->mOwnFlags = 1;
+        m->mOwnFlags = MODEL_OWN_ANIM;
         delete m;
         mModel = 0;
     }

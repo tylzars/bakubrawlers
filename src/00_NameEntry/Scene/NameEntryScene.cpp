@@ -167,19 +167,19 @@ void NameEntryScene::InitDisplay() {
 void NameEntryScene::LoadGraphics() {
     if (mMode == 0) {
         ChangeDir("/Game/Title");
-        LoadAndQueueUpload(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
-        LoadAndQueueUpload(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
     }
     ChangeDir("/Game/Nameentry");
-    LoadAndQueueUpload(1, 8, 0, "keyboard_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "keyboard_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "keyboard_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "keyboard_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "keyboard_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "keyboard_b_bg_00_ncl.bin", 0, 0, 0);
     mBuf3c = (u8 *) LoadFile("keyboard_b_bg_font_a_nsc.bin", 0, 0, 0, 0, 0);
     mBuf40 = (u8 *) LoadFile("keyboard_b_bg_font_b_nsc.bin", 0, 0, 0, 0, 0);
     mBuf48 = (u8 *) LoadFile("keyboard_b_bg_font_b_ncg.bin", 0, 0, 0, 0, 0);
     mBuf44 = (u8 *) LoadFile("keyboard_b_bg_font_a_ncg.bin", 0, 0, 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "keyboard_b_bg_font_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "keyboard_b_bg_font_ncl.bin", 0, 0, 0);
     UploadTabNcg();
     UploadTabNsc();
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -223,9 +223,9 @@ void NameEntryScene::LoadGraphics() {
     mConfirm = new SelectWindow(2, sNameEntryConfirmItems, 1);
     mConfirm->SetCells(2, sNameEntryConfirmCells);
     mConfirm->mEnabled = 0;
-    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
 }
 
 void NameEntryScene::Update() {
@@ -238,7 +238,7 @@ void NameEntryScene::Update() {
             InitDisplay();
             LoadGraphics();
             Load();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -526,7 +526,7 @@ void NameEntryScene::Update() {
             mState++;
             break;
         case 5:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 6:
@@ -545,10 +545,10 @@ void NameEntryScene::Update() {
 void NameEntryScene::UploadTabNsc() {
     switch (mTab) {
         case NAME_ENTRY_TAB_FONT_A:
-            QueueUpload(1, 7, 0x1c0, mBuf3c + 0x1c0 + mScroll * 0xc0, 0x300, 0);
+            QueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1c0, mBuf3c + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
         case NAME_ENTRY_TAB_FONT_B:
-            QueueUpload(1, 7, 0x1c0, mBuf40 + 0x1c0 + mScroll * 0xc0, 0x300, 0);
+            QueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1c0, mBuf40 + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
     }
 }
@@ -556,10 +556,10 @@ void NameEntryScene::UploadTabNsc() {
 void NameEntryScene::UploadTabNcg() {
     switch (mTab) {
         case NAME_ENTRY_TAB_FONT_A:
-            QueueUpload(1, 0xb, 0, mBuf44, 0x5000, 0);
+            QueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, mBuf44, 0x5000, 0);
             break;
         case NAME_ENTRY_TAB_FONT_B:
-            QueueUpload(1, 0xb, 0, mBuf48, 0x5000, 0);
+            QueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, mBuf48, 0x5000, 0);
             break;
     }
 }
@@ -710,7 +710,7 @@ void NameEntryScene::RenderName() {
     DC_FlushRange(mTextBuffer, mTextBufferSize);
     TextManager &endText = TextManager::Get();
     endText.mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void NameEntryScene::func_ov000_0221bc98() {
@@ -813,7 +813,7 @@ void NameEntryScene::PrintMessage() {
     height = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void NameEntryScene::DrawConfirmText() {

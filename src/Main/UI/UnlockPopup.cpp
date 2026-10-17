@@ -52,24 +52,24 @@ void UnlockPopup::Update() {
         case 0:
             InitDisplay();
             Load();
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             draw = FALSE;
             mState++;
             break;
         case 1:
-            if (SpriteManager::Get().sFade[1] <= 1) {
+            if (SpriteManager::Get().sFade[1] <= FADE_MODE_HOLD) {
                 mWindow->mEnabled = 1;
                 mState++;
             }
             break;
         case 2:
             if (mWindow->Update(TRUE) == 1) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState++;
             }
             break;
         case 3:
-            if (SpriteManager::Get().sFade[1] <= 1) {
+            if (SpriteManager::Get().sFade[1] <= FADE_MODE_HOLD) {
                 RequestScene(1);
                 draw      = FALSE;
                 mFinished = 1;
@@ -91,9 +91,9 @@ void UnlockPopup::InitDisplay() {
 
 void UnlockPopup::Load() {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &bottom = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     bottom.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -132,7 +132,7 @@ void UnlockPopup::PrintMessage() {
     MessageFile *table = mMessages;
     text.Print(table->GetText(id), table->GetLength(id), mTextBuffer, 0x18, 0xc, &height, &width, NULL, 0, 2, 0x42, 0xe,
                0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x2000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x2000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void UnlockPopup::ClearText() {

@@ -39,7 +39,7 @@ BakuganModel::~BakuganModel() {
             model->mOwnFlags = 0;
             delete model;
         } else {
-            model->mOwnFlags = 0xf;
+            model->mOwnFlags = MODEL_OWN_ALL;
             delete model;
         }
         mModel = 0;
@@ -55,7 +55,7 @@ extern "C" void FreeBakuganModelInstance(BakuganModel *pose) {
         model->mOwnFlags = 0;
         delete model;
     } else {
-        model->mOwnFlags = 0xf;
+        model->mOwnFlags = MODEL_OWN_ALL;
         delete model;
     }
     pose->mModel = 0;
@@ -135,7 +135,7 @@ BOOL BakuganModel::LoadModel(u8 kind) {
     }
     ModelInstance *old = mModel;
     if (old) {
-        old->mOwnFlags = 0xf;
+        old->mOwnFlags = MODEL_OWN_ALL;
         delete old;
         mModel = 0;
     }

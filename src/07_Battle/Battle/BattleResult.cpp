@@ -162,7 +162,7 @@ BattleResult::BattleResult()
     mMoneyStep = 0;
     mUnk_b3 = 0;
     SpriteManager::Get();
-    SpriteManager::sFade[0] = 1;
+    SpriteManager::sFade[0] = FADE_MODE_HOLD;
     SpriteManager::sBrightness[0] = -16;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     MI_CpuClear32(mHistoryValues, sizeof(mHistoryValues));
@@ -181,7 +181,7 @@ BattleResult::BattleResult()
 
 BattleResult::~BattleResult() {
     SpriteManager::Get();
-    SpriteManager::sFade[0] = 1;
+    SpriteManager::sFade[0] = FADE_MODE_HOLD;
     SpriteManager::sBrightness[0] = -16;
     delete mWindow;
     delete mMessageWindow;
@@ -378,7 +378,7 @@ void BattleResult::Update() {
             LoadResultGraphics();
             LoadResultTextAndAmounts();
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             FrameTask::Get().StartChannel(0, 0x11);
             mUnk_68 = new UnkStruct_02076058(0);
             mContext->mRequest = 0;
@@ -387,7 +387,7 @@ void BattleResult::Update() {
         }
         case 5:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 mState++;
             }
             DrawResultScreen();
@@ -407,7 +407,7 @@ void BattleResult::Update() {
             DrawResultScreen();
             break;
         case 8:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 9:
@@ -491,7 +491,7 @@ void BattleResult::Update() {
                 mWindow->SetCells(3, sResultCells);
             }
             GXS_SetVisiblePlane(0x12);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         }
@@ -561,7 +561,7 @@ void BattleResult::Update() {
             DrawRetryScreen();
             if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x13)) {
                 FrameTask::Get().StopAllChannels();
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             break;
@@ -648,9 +648,9 @@ void BattleResult::InitMainScreen() {
 
 void BattleResult::LoadResultGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(0, 1, 0, "result_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "result_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "result_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "result_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "result_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "result_u_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(3);
@@ -673,7 +673,7 @@ void BattleResult::LoadResultGraphics() {
             mCellAnims[i + 2] = new CellAnimation("bakugan_sub_s_nce.bin", 0, 1, 1);
             mCellAnims[i + 2]->mCharBase = screen.GetCharBase(0x2000);
             mCellAnims[i + 2]->mPaletteBase   = 0;
-            mCellAnims[i + 2]->SetMode(5);
+            mCellAnims[i + 2]->SetMode(CELL_ANIM_MODE_STOP);
             mCellAnims[i + 2]->mFrameIndex = rec[i * 6 + 2];
         }
         i++;
@@ -704,12 +704,12 @@ void BattleResult::SetupRetryScreen() {
     G2S_SetBG0Offset(0, 0);
     G2S_SetBG1Offset(0, 0);
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(0, 1, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
     AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
         unk->SetupLayout(12);
@@ -756,7 +756,7 @@ void BattleResult::SetupRetryScreen() {
     void *map = OS_Alloc(TextManager::Get().GlyphCount(0x600));
     MI_CpuClearFast(map, 0x600);
     TextManager::Get().FillScrChars(0, (u16 *) map, 0, 0, 0x20, 0x18, 0x20);
-    QueueUpload(0, 8, 0, map, 0x600, 1);
+    QueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, map, 0x600, 1);
     void *buffer = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x18));
     MI_CpuClearFast(buffer, 0x6000);
     TextManager::Get().mUse4bppFont = 1;
@@ -781,7 +781,7 @@ void BattleResult::SetupRetryScreen() {
         j++;
     } while (j < data_020d433c.mPlayerCount);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(0, 12, 0, buffer, 0x6000, 1);
+    QueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, buffer, 0x6000, 1);
     mTextBufferSizes[2] = TextManager::Get().BufferSize(0x18, 4);
     mTextBuffers[2] = OS_Alloc(mTextBufferSizes[2]);
     MI_CpuClear16(mTextBuffers[2], mTextBufferSizes[2]);
@@ -794,12 +794,12 @@ void BattleResult::SetupRetryScreen() {
     width  = 0;
     height = 0;
     text.Print(file->GetText(13), file->GetLength(13), mTextBuffers[2], 0x18, 4, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x7000, mTextBuffers[2], mTextBufferSizes[2], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x7000, mTextBuffers[2], mTextBufferSizes[2], 0);
     OS_Free(file);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &screen1b = SpriteManager::Get().Screen(1);
     screen1b.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x5000, 0);
     screen1b.LoadPalette("union_b_obj_window_ncl.bin", 0x40, 0);
@@ -1217,7 +1217,7 @@ void BattleResult::PrintResultText() {
     }
     TextManager::Get().mUse4bppFont = 0;
     DC_FlushRange(mTextBuffers[0], mTextBufferSizes[0]);
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
 void BattleResult::PrintMoney() {
@@ -1238,7 +1238,7 @@ void BattleResult::PrintMoney() {
     }
     TextManager::Get().mUse4bppFont = 0;
     DC_FlushRange(mTextBuffers[1], mTextBufferSizes[1]);
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mTextBuffers[1], mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0xf000, mTextBuffers[1], mTextBufferSizes[1], 0);
 }
 
 #define COUNT_STEP(CLEAR_ONLY)                                                         \

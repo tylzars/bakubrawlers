@@ -398,7 +398,7 @@ void FieldSelectScene::Update() {
             LoadGraphics();
             LoadMessages();
             LoadNameText();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 1:
@@ -467,7 +467,7 @@ void FieldSelectScene::Update() {
                 GXS_SetVisiblePlane(mPendingSubPlanes);
                 mPendingSubPlanes = -1;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 9:
@@ -529,16 +529,16 @@ void FieldSelectScene::InitDisplay() {
 
 void FieldSelectScene::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(0, 1, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 12, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 8, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x6000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
@@ -712,9 +712,9 @@ void FieldSelectScene::SetupPage() {
             mMain.mCellAnim->SetAnimation(2);
             ChangeDir("/Game/Battle/Bg/");
             if (mLocalIsFirstSlot != 0) {
-                LoadAndQueueUpload(1, 1, 0, "select_rule_b_bg_00_ncl.bin", 0, 0, 0);
-                LoadAndQueueUpload(1, 11, 0, "select_rule_b_bg_00_ncg.bin", 0, 0, 0);
-                LoadAndQueueUpload(1, 7, 0, "select_rule_b_bg_00_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_rule_b_bg_00_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_rule_b_bg_00_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_rule_b_bg_00_nsc.bin", 0, 0, 0);
                 ChangeDir("/Game/Battle/Obj/");
                 SpriteScreen &sub = SpriteManager::Get().Screen(1);
                 sub.LoadCharacters("select_rule_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -747,9 +747,9 @@ void FieldSelectScene::SetupPage() {
                 mCells2[7].mCellAnim->SetAnimation(6);
                 mCells2[7].mUnk_09 = 1;
             } else {
-                LoadAndQueueUpload(0, 1, 0, "select_rule_u_bg_00_ncl.bin", 0, 0, 0);
-                LoadAndQueueUpload(0, 11, 0, "select_rule_u_bg_00_ncg.bin", 0, 0, 0);
-                LoadAndQueueUpload(0, 7, 0, "select_rule_u_bg_00_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_rule_u_bg_00_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "select_rule_u_bg_00_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "select_rule_u_bg_00_nsc.bin", 0, 0, 0);
                 ChangeDir("/Game/Battle/Obj/");
                 SpriteScreen &main = SpriteManager::Get().Screen(0);
                 main.LoadCharacters("select_rule_u_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -779,9 +779,9 @@ void FieldSelectScene::SetupPage() {
             mMessageWindow->StartMessage(6, 0, 1);
             mMain.mCellAnim->SetAnimation(3);
             ChangeDir("/Game/Battle/Bg/");
-            LoadAndQueueUpload(1, 1, 0, "select_ch_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 11, 0, "select_ch_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "select_ch_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_ch_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_ch_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_ch_b_bg_00_nsc.bin", 0, 0, 0);
             u8 j = 0;
             do {
                 mInput[j].mCursorItem = mInput[j].mTakenItem;
@@ -993,9 +993,9 @@ void FieldSelectScene::SetupPage() {
             }
             mMain.mCellAnim->SetAnimation(5);
             ChangeDir("/Game/Battle/Bg/");
-            LoadAndQueueUpload(1, 1, 0, "select_field_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 11, 0, "select_field_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "select_field_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_field_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_field_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_field_b_bg_00_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Battle/Obj/");
             SpriteScreen &sub = SpriteManager::Get().Screen(1);
             sub.LoadCharacters("select_field_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -1053,9 +1053,9 @@ void FieldSelectScene::SetupPage() {
             mMain.mCellAnim->SetAnimation(1);
             if (mLocalIsFirstSlot != 0) {
                 ChangeDir("/Game/2D/union_b/");
-                LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-                LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-                LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
                 SpriteScreen &sub = SpriteManager::Get().Screen(1);
                 sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x8000, 0);
                 sub.LoadPalette("union_b_obj_window_ncl.bin", 0x100, 0);
@@ -2349,9 +2349,9 @@ void FieldSelectScene::UploadFieldFiles(u32 idx) {
     } else {
         sel = sFieldSelectSubFileIndices[idx];
     }
-    QueueUpload(0, 1, 0, mFiles[sel][1], mFileSizes[sel][1], 0);
-    QueueUpload(0, 0xb, 0, mFiles[sel][0], mFileSizes[sel][0], 0);
-    QueueUpload(0, 7, 0, mFiles[sel][2], mFileSizes[sel][2], 0);
+    QueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, mFiles[sel][1], mFileSizes[sel][1], 0);
+    QueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, mFiles[sel][0], mFileSizes[sel][0], 0);
+    QueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, mFiles[sel][2], mFileSizes[sel][2], 0);
     mCells[4].mCellAnim->mFrameIndex = sel;
 }
 
@@ -2772,7 +2772,7 @@ void FieldSelectScene::PrintWindowText(u32 index) {
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0x10, &height, &width, 0, 0, 2, 0x44, 0xe, 0, 0,
                1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x15000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x15000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void FieldSelectScene::DrawWindowText() {
@@ -2837,7 +2837,7 @@ void FieldSelectScene::PrintSlotName(u8 slot) {
                    1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, (slot << 12) + 0xc000, mNameBuffers[slot], mNameBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, (slot << 12) + 0xc000, mNameBuffers[slot], mNameBufferSize, 0);
 }
 
 void FieldSelectScene::DrawNames() {

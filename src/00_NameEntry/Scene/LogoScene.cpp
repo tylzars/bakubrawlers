@@ -24,7 +24,7 @@ LogoScene::~LogoScene() {
 void LogoScene::Update() {
     switch (mState) {
         case 0:
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             if (data_020d433c.mUnk_81 == 0) {
                 data_020d433c.mUnk_81 = 1;
                 new UnkScene_02226e4c();
@@ -65,7 +65,7 @@ void LogoScene::Update() {
         case 4:
             LoadActivisionLogo();
             LoadNelvanaLogo();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mWaitFrames = 0;
             mState++;
             break;
@@ -76,7 +76,7 @@ void LogoScene::Update() {
             if (!WaitFrames(0x78, 0)) {
                 return;
             }
-            SpriteManager::Get().StartFade(4);
+            SpriteManager::Get().StartFade(FADE_MODE_UP);
             mState++;
             break;
         case 6:
@@ -85,7 +85,7 @@ void LogoScene::Update() {
             }
             LoadNowLogo();
             LoadCriLogo();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mWaitFrames = 0;
             mState++;
             break;
@@ -96,7 +96,7 @@ void LogoScene::Update() {
             if (!WaitFrames(0x78, 0)) {
                 return;
             }
-            SpriteManager::Get().StartFade(4);
+            SpriteManager::Get().StartFade(FADE_MODE_UP);
             mState++;
             break;
         case 8:
@@ -105,7 +105,7 @@ void LogoScene::Update() {
             }
             LoadLegaltextLogo();
             LoadMobiclipLogo();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mWaitFrames = 0;
             mState++;
             break;
@@ -116,7 +116,7 @@ void LogoScene::Update() {
             if (!WaitFrames(0x3c, 0x3c)) {
                 return;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 10:
@@ -163,27 +163,27 @@ BOOL LogoScene::WaitFrames(u32 maxFrames, u32 minFrames) {
 
 void LoadActivisionLogo() {
     ChangeDir("/logo");
-    LoadAndQueueUpload(0, 6, 0, "logo_activision_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "logo_activision_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "logo_activision_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_PLTT, 0, "logo_activision_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "logo_activision_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "logo_activision_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x11);
 }
 
 void LogoScene::LoadNowLogo() {
     ChangeDir("/logo");
-    LoadAndQueueUpload(0, 6, 0, "logo_now_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "logo_now_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "logo_now_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_PLTT, 0, "logo_now_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "logo_now_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "logo_now_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x11);
 }
 
 void LogoScene::LoadMobiclipLogo() {
     ChangeDir("/logo");
-    LoadAndQueueUpload(0, 1, 0x2000, "logo_mobiclip_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 12, 0, "logo_mobiclip_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 8, 0, "logo_mobiclip_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_mobiclip_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, "logo_mobiclip_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, "logo_mobiclip_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x12);
 }
@@ -191,13 +191,13 @@ void LogoScene::LoadMobiclipLogo() {
 void LogoScene::LoadLegaltextLogo() {
     ChangeDir("/logo");
     if (data_020d433c.mLanguage == 0) {
-        LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 12, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 8, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);
     } else {
-        LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_french_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 12, 0, "logo_legaltext_french_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 8, 0, "logo_legaltext_french_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_legaltext_french_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "logo_legaltext_french_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "logo_legaltext_french_nsc.bin", 0, 0, 0);
     }
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
@@ -205,18 +205,18 @@ void LogoScene::LoadLegaltextLogo() {
 
 void LogoScene::LoadCriLogo() {
     ChangeDir("/logo");
-    LoadAndQueueUpload(1, 1, 0x2000, "logo_cri_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "logo_cri_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "logo_cri_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_cri_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "logo_cri_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "logo_cri_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
 }
 
 void LogoScene::LoadNelvanaLogo() {
     ChangeDir("/logo");
-    LoadAndQueueUpload(1, 1, 0x2000, "logo_nelvana_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "logo_nelvana_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "logo_nelvana_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_nelvana_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "logo_nelvana_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "logo_nelvana_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
 }

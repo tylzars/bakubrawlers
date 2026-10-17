@@ -144,7 +144,7 @@ void MyroomGiftScene::Update() {
             if (mTimer > 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2:
@@ -210,13 +210,13 @@ void MyroomGiftScene::InitDisplay() {
 
 void MyroomGiftScene::LoadGraphics() {
     ChangeDir("/Game/Card/Graphic/");
-    LoadAndQueueUpload(0, 7, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "cardspec_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 1, 0, "cardspec_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "cardspec_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "cardspec_u_bg_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.SetObjVramMode(3);
     LoadEmblem(6);
@@ -298,9 +298,9 @@ void MyroomGiftScene::LoadEmblem(u8 index) {
     }
     ChangeDir("/Game/Myroom/");
     sprintf(name, "myroom_gift_u_obj_emblem_%02d.nce_ncg1D.bin", index + 1);
-    LoadAndQueueUpload(0, 4, 0, name, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ, 0, name, 0, 0, 0);
     sprintf(name, "myroom_gift_u_obj_emblem_%02d_ncl.bin", index + 1);
-    LoadAndQueueUpload(0, 0, 0, name, 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_EXT_PLTT, 0, name, 0, 0, 0);
     ChangeDir("/");
     mTextPage = 0;
     mTextX = 0x100;
@@ -380,7 +380,7 @@ void MyroomGiftScene::PrintEmblemText() {
     if (&mTextEndY != NULL) {
         mTextEndY = height;
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x5000, mTextBuffers[0], mTextBufferSize[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x5000, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
     TextManager::Get().mUse4bppFont = 1;
     TextManager &text2         = TextManager::Get();
@@ -393,7 +393,7 @@ void MyroomGiftScene::PrintEmblemText() {
     text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mTextWidth, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[1], mTextBufferSize[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x8000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mHasEmblem[mEmblem] == 0) {
         mTextEndY = 0;
     }
@@ -489,7 +489,7 @@ s8 MyroomGiftScene::UpdateKeySelection() {
 
 void MyroomGiftScene::func_ov008_0221f194() {
     if (mResult == 2) {
-        SpriteManager::Get().StartFade(3);
+        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
         SoundManager::Get().StartSeqArc(1);
         mState = 3;
     } else {

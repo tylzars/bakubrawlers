@@ -405,7 +405,7 @@ void BattleTarget::Update() {
             case 0:
                 Init();
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 2;
+                SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
                 mState++;
                 break;
             case 1:
@@ -507,7 +507,7 @@ void BattleTarget::Update() {
                 }
                 break;
             case 4:
-                QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 5, 0, mRoulettePalette, mRoulettePaletteSize, 0);
+                QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0, mRoulettePalette, mRoulettePaletteSize, 0);
                 DrawRoulette();
                 mUnk_34 = 0;
                 mState++;
@@ -583,7 +583,7 @@ void BattleTarget::Update() {
                 mTimer = mTimer - 1;
                 if (mTimer == 0) {
                     SpriteManager::Get();
-                    SpriteManager::sFade[0] = 4;
+                    SpriteManager::sFade[0] = FADE_MODE_UP;
                     SoundManager::Get().StartSeqArc(6);
                     mState++;
                 }
@@ -597,7 +597,7 @@ void BattleTarget::Update() {
                 BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
                 mBakugan->Setup(record->mBakuganId, record->mAttribute, 3);
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 2;
+                SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
                 mTimer                   = 0x78;
                 mState++;
                 break;
@@ -621,11 +621,11 @@ void BattleTarget::Update() {
                 u8 b                   = list->mUnitB;
                 if (list->mPlayers[cur]->mUnk_fa != 0 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
                     SpriteManager::Get();
-                    SpriteManager::sFade[0] = 3;
+                    SpriteManager::sFade[0] = FADE_MODE_DOWN;
                     mState++;
                     break;
                 }
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0xf;
                 break;
             }
@@ -3697,7 +3697,7 @@ void BattleTarget::func_ov007_0225cb7c() {
             i++;
         } while (i < 0x80);
         DC_FlushRange(buf, 0x80);
-        QueueUpload(0, 4, 0xe00, buf, 0x80, 1);
+        QueueUpload(0, UPLOAD_KIND_OBJ, 0xe00, buf, 0x80, 1);
     }
     mCellAnims[2]->Draw(0, 0xbe, 0xb7, 1);
     mCellAnims[3]->Draw(0, 0xce, 0xba, 1);

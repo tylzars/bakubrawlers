@@ -144,10 +144,10 @@ BattleConfrontCard::BattleConfrontCard(u32 unk)
     mUnk_64 = 0;
     mUnk_65 = 0;
     SpriteManager::Get();
-    SpriteManager::sFade[0]       = 1;
+    SpriteManager::sFade[0]       = FADE_MODE_HOLD;
     SpriteManager::sBrightness[0] = -16;
     SpriteManager::Get();
-    SpriteManager::sFade[1]       = 1;
+    SpriteManager::sFade[1]       = FADE_MODE_HOLD;
     SpriteManager::sBrightness[1] = -16;
 }
 
@@ -176,10 +176,10 @@ BattleConfrontCard::~BattleConfrontCard() {
     }
     SoundManager::Get().LoadSoundGroup(6);
     SpriteManager::Get();
-    SpriteManager::sFade[0]       = 1;
+    SpriteManager::sFade[0]       = FADE_MODE_HOLD;
     SpriteManager::sBrightness[0] = -16;
     SpriteManager::Get();
-    SpriteManager::sFade[1]       = 1;
+    SpriteManager::sFade[1]       = FADE_MODE_HOLD;
     SpriteManager::sBrightness[1] = -16;
     SpriteManager::Get().ResetSlots();
 }
@@ -200,7 +200,7 @@ void BattleConfrontCard::Update() {
             break;
         case 2:
             Init();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 3:
@@ -214,7 +214,7 @@ void BattleConfrontCard::Update() {
             }
             break;
         case 5:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             FrameTask::Get().StopChannel(1);
             mState++;
             break;
@@ -317,9 +317,9 @@ void BattleConfrontCard::ResetDisplay() {
 void BattleConfrontCard::LoadGraphics() {
     char buffer[0x80];
     ChangeDir("/Game/Confrontation/Bg");
-    LoadAndQueueUpload(1, 1, 0, "vs_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xb, 0, "vs_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "vs_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "vs_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "vs_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "vs_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     ChangeDir("/Game/Confrontation/Obj");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -337,8 +337,8 @@ void BattleConfrontCard::LoadGraphics() {
     mCellAnims[4]->mCharBase = screen.GetCharBase(0x13000);
     mCellAnims[4]->mPaletteBase   = 5;
     mCellAnims[4]->SetAnimation(0);
-    LoadAndQueueUpload(1, 5, 0x120, "cardspec_b_obj_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 4, 0x18000, "cardspec_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x120, "cardspec_b_obj_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x18000, "cardspec_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
     u8 i = 2;
     do {
         if (mCellAnims[i]) {
@@ -353,8 +353,8 @@ void BattleConfrontCard::LoadGraphics() {
     mCellAnims[2]->SetAnimation(0);
     mCellAnims[3]->SetAnimation(1);
     ChangeDir("/Game/2D/union_b");
-    LoadAndQueueUpload(1, 4, 0xe000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0xe0, "union_b_obj_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0xe000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0xe0, "union_b_obj_window_ncl.bin", 0, 0, 0);
     if (mCellAnims[0] == 0) {
         LoadCardGraphic(0);
     } else {
@@ -477,7 +477,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     } else {
                         CloseWindow();
                         ReleaseWindow();
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         mStep = 0x31;
                     }
                     mUnk_68 = 0;
@@ -504,7 +504,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     ReleaseWindow();
                     mUnk_68 = 0;
                     if (p->mMsg.mTouchDown) {
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         mStep = 0x31;
                     } else {
                         mStep = 1;
@@ -520,7 +520,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             } else {
                 BattleCardCamera *cam = mCardCamera;
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 3;
+                SpriteManager::sFade[0] = FADE_MODE_DOWN;
                 data_020d433c.mUnk_14 |= 4;
                 cam->mState = 3;
                 mStep++;
@@ -1066,7 +1066,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 i++;
             } while (i < 2);
             mStep = 0x27;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         }
         case 39: {
@@ -1137,7 +1137,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 ResetDisplay();
                 MI_CpuClearFast((void *) 0x6200000, 0x20000);
                 LoadGraphics();
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mUnk_22 = 0;
                 mStep++;
             } else {
@@ -1233,7 +1233,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
         case 47:
             if (mContext->mRequest != 0) {
                 mStep++;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 break;
             }
             mUnk_10++;
@@ -1258,7 +1258,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             BattleCardCamera *cam = mCardCamera;
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 3;
+            SpriteManager::sFade[0] = FADE_MODE_DOWN;
             data_020d433c.mUnk_14 |= 4;
             cam->mState = 3;
             mContext->mRequest = 0;
@@ -2215,9 +2215,9 @@ void BattleConfrontCard::ReleaseWindow() {
 
 void BattleConfrontCard::LoadWindow(const char *path, u32 mode) {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xc000, 0);
@@ -2267,7 +2267,7 @@ void BattleConfrontCard::PrintMessage(u32 index) {
     height             = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0xd000, mTextBuffer, mTextBufferSize, 0);
 }
 
 u8 BattleConfrontCard::func_ov007_02244440() {

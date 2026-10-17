@@ -285,17 +285,17 @@ void BattleCommandMap::Update() {
         case 1:
             func_ov007_02246450();
             if (CameraManager::Get().mMode == 2) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             } else {
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 3;
+                SpriteManager::sFade[0] = FADE_MODE_DOWN;
             }
             mState++;
             break;
         case 2:
             func_ov007_02246450();
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 mState++;
             }
             break;

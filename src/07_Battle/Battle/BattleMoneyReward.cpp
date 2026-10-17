@@ -184,14 +184,14 @@ void BattleMoneyReward::Update() {
             Init();
             mSlideA = 0x108;
             mSlideB = 0x108;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mFade = 0x40;
             draw  = 0;
             mState++;
             break;
         case 1:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 FrameTask::Get().StartChannel(0, 0x18);
                 mAmountVisible = 1;
                 mState++;
@@ -265,7 +265,7 @@ void BattleMoneyReward::Update() {
         case 7:
             if (mUnk_a9 == 0) {
                 if (mWindow->Update(draw) == 1) {
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState++;
                 }
             }
@@ -363,17 +363,17 @@ void BattleMoneyReward::InitDisplay() {
 
 void BattleMoneyReward::Init() {
     ChangeDir("/game/Tournament/Bg/");
-    LoadAndQueueUpload(0, 1, 0, "tournament_u_bg_result_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "tournament_u_bg_result_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "tournament_u_bg_result_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "tournament_u_bg_result_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "tournament_u_bg_result_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "tournament_u_bg_result_nsc.bin", 0, 0, 0);
     ChangeDir("/story/");
-    LoadAndQueueUpload(1, 1, 0, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 10, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     ChangeDir("/Game/Tournament/Obj/");
     screen.LoadCharacters("tournament_u_obj_01.nce_ncg1D.bin", 0, 0);
@@ -486,7 +486,7 @@ void BattleMoneyReward::PrintTotal() {
     y3 = 0;
     text2.Print(mMessages->GetText(15), mMessages->GetLength(15), mTextBuffer, 0x20, 2, &y3, &x3, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xa000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0xa000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void BattleMoneyReward::ClearText() {

@@ -357,7 +357,7 @@ u32 SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
     if (unk3 != 0) {
         size = unk3;
     }
-    return QueueUpload(mBgIndex, 4, offset, data, size, 1);
+    return QueueUpload(mBgIndex, UPLOAD_KIND_OBJ, offset, data, size, 1);
 }
 
 
@@ -367,7 +367,7 @@ u32 SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
     if (unk3 != 0) {
         size = unk3;
     }
-    return QueueUpload(mBgIndex, 5, offset, data, size, 1);
+    return QueueUpload(mBgIndex, UPLOAD_KIND_OBJ_PLTT, offset, data, size, 1);
 }
 
 
@@ -384,7 +384,7 @@ void SpriteScreen::LoadExtPalette(const char *path, u32 unk2, u32 unk3) {
     if (unk3 != 0) {
         size = unk3;
     }
-    QueueUpload(mBgIndex, 0, unk2, data, size, 1);
+    QueueUpload(mBgIndex, UPLOAD_KIND_OBJ_EXT_PLTT, unk2, data, size, 1);
 }
 
 

@@ -565,7 +565,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mCommandListClosed  = 0;
     mCommandPageClosed  = 0;
     mPendingPlanes  = -1;
-    SpriteManager::Get().SetFade(1, -16);
+    SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
     mCharacterId = mMode == 5 ? data_020d43db[mPlayer] : 0x15;
     for (u8 i = 0; i < 2; i++) {
         mTextBuffers[i] = NULL;
@@ -663,7 +663,7 @@ ListScene::~ListScene() {
             mGlyphBuffers[i] = NULL;
         }
     }
-    SpriteManager::Get().SetFade(1, -16);
+    SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
     if (data_020d433c.mWireless != 0) {
         mAntenna->mUnk_04 = 1;
     }
@@ -826,7 +826,7 @@ void ListScene::Update() {
             mPromptWindow->mEnabled = 0;
             mListWindow->mEnabled = 0;
             if (!IsCommandListOrPageSettingUp()) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
@@ -918,7 +918,7 @@ void ListScene::Update() {
             mPromptWindow->mEnabled = 0;
             mListWindow->mEnabled = 0;
             mDeckWindow->mEnabled = 0;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             func_020851d0();
             return;
@@ -956,7 +956,7 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 10:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mDeckWindow->mEnabled = 0;
             mState++;
             func_020851d0();
@@ -976,7 +976,7 @@ void ListScene::Update() {
             break;
         case 13:
             if (!IsCommandListOrPageSettingUp()) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
@@ -987,7 +987,7 @@ void ListScene::Update() {
             }
             break;
         case 15:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mListWindow->mEnabled = 0;
             mState++;
             break;
@@ -1006,7 +1006,7 @@ void ListScene::Update() {
             return;
         case 18:
             if (!IsCommandListOrPageSettingUp() && mMainScreenState == 0) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             func_020851d0();
@@ -1066,7 +1066,7 @@ void ListScene::Update() {
                 CopySlotsToFirstPlayer(this);
             }
             MIi_CpuCopyFast(gCharacterLook, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             func_020851d0();
             return;
@@ -1109,7 +1109,7 @@ void ListScene::Update() {
             UPDATE_TAIL();
         case 31:
             if (func_02084e64(this)) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             UPDATE_TAIL();
@@ -1121,12 +1121,12 @@ void ListScene::Update() {
             }
             UPDATE_TAIL();
         case 33:
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 34:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] <= 1) {
+            if (SpriteManager::sFade[1] <= FADE_MODE_HOLD) {
                 if (mCommandList != NULL) {
                     mCommandList->SetWindowVisible(0);
                 }
@@ -1177,7 +1177,7 @@ void ListScene::Update() {
             mWndMode          = 1;
             return;
         case 38:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 39:
@@ -1214,7 +1214,7 @@ void ListScene::Update() {
             if (mMode == 3 || mMode == 5) {
                 StoreSlotsInSaveData();
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mPromptWindow->mEnabled = 0;
             mListWindow->mEnabled = 0;
             mState++;
@@ -1333,47 +1333,47 @@ void ListScene::SetupPagesAndList() {
 
 void ListScene::LoadSubScreenGraphics() {
     ChangeDir("/Game/2d/union_b/");
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     switch (mMode) {
         case 0:
         case 1:
         case 2:
             ChangeDir("/Game/List/");
-            LoadAndQueueUpload(1, 1, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x6000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xb, 0, "list_store_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "list_store_b_bg_00_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 9, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 10, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "list_store_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "list_store_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 3:
             ChangeDir("/Game/List/");
-            LoadAndQueueUpload(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 10, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 4:
             ChangeDir("/Game/List/");
-            LoadAndQueueUpload(1, 1, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 1, 0x6000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xb, 0, "list_gallery_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "list_gallery_b_bg_00_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 9, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 10, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "list_gallery_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "list_gallery_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 5:
             ChangeDir("/Game/Battle/Bg/");
-            LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
             break;
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -1463,15 +1463,15 @@ void ListScene::LoadSubScreenGraphics() {
         this->SetItemFlags(0, 6, 0x8000);
     }
     ChangeDir("/Game/Bakugan/mark");
-    LoadAndQueueUpload(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 4, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
     mSubScreenCellAnims[14]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
     mSubScreenCellAnims[14]->mCharBase = screen.GetCharBase(0x12000);
     mSubScreenCellAnims[14]->mPaletteBase   = 0;
     mSubScreenCellAnims[14]->SetAnimation(0);
     ChangeDir("/Game/Card/Graphic/Small");
-    LoadAndQueueUpload(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     if (data_020d433c.mWireless == 0) {
         return;
     }
@@ -1613,7 +1613,7 @@ void ListScene::PrintRows() {
             }
             break;
     }
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
 void ListScene::DrawSubScreenText() {
@@ -1960,10 +1960,10 @@ void ListScene::UpdateMainScreen() {
                 mCommandPageClosed          = 1;
                 mMainScreenState          = 3;
             }
-            SpriteManager::Get().sFade[0] = 3;
+            SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
             break;
         case 2:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 ReleaseMainScreenGraphics();
                 mMainScreenState = 4;
             }
@@ -2670,7 +2670,7 @@ void ListScene::SetupMainScreenForPage() {
                         LoadSmallCard(mSlotValues[i], (u8) (i - 3), 0);
                     }
                 }
-                SpriteManager::Get().sFade[0] = 2;
+                SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                 return;
             }
             if (mPage < 4) {
@@ -2694,7 +2694,7 @@ void ListScene::SetupMainScreenForPage() {
         case 4:
             if (mPage == 0) {
                 InitAndLoadMainScreen();
-                SpriteManager::Get().sFade[0] = 2;
+                SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                 return;
             }
             if (mPage < 7) {
@@ -3267,7 +3267,7 @@ void ListScene::LoadBakuganMark(u32 unk1, u32 unk2, u32 unk3) {
             offset = unk2 * 0x400 + 0x19000;
             break;
     }
-    LoadAndQueueUpload(second, 4, offset, path, 0, 0, 0);
+    LoadAndQueueUpload(second, UPLOAD_KIND_OBJ, offset, path, 0, 0, 0);
 }
 
 static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x, u16 *width) {
@@ -3364,7 +3364,7 @@ void ListScene::LoadSmallCard(u32 unk1, u32 unk2, u32 unk3) {
             offset = unk2 * 0x200 + 0x1a000;
             break;
     }
-    LoadAndQueueUpload(second, 4, offset, path, 0, 0, 0);
+    LoadAndQueueUpload(second, UPLOAD_KIND_OBJ, offset, path, 0, 0, 0);
 }
 
 void ListScene::PrintCardNameShort(u32 unk1, u32 unk2) {
@@ -3420,14 +3420,14 @@ void ListScene::InitAndLoadMainScreen() {
     switch (mMode) {
         case 3:
         case 5:
-            LoadAndQueueUpload(0, 1, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(0, 0xb, 0, "list_edit_u_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(0, 7, 0, "list_edit_u_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "list_edit_u_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "list_edit_u_bg_00_nsc.bin", 0, 0, 0);
             break;
         case 4:
-            LoadAndQueueUpload(0, 1, 0, "list_gallery_u_bg_00_ncl.bin", 0, 0, 0);
-            LoadAndQueueUpload(0, 0xb, 0, "list_gallery_u_bg_00_ncg.bin", 0, 0, 0);
-            LoadAndQueueUpload(0, 7, 0, "list_gallery_u_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_gallery_u_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "list_gallery_u_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "list_gallery_u_bg_00_nsc.bin", 0, 0, 0);
             break;
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
@@ -3445,9 +3445,9 @@ void ListScene::InitAndLoadMainScreen() {
     mMainScreenCellAnims[2]->SetAnimation(2);
     mMainScreenCellAnims[3]->SetAnimation(3);
     ChangeDir("/Game/Bakugan/mark");
-    LoadAndQueueUpload(0, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 4, 0x3000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_EXT_PLTT, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_EXT_PLTT, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ, 0x3000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
     mMainScreenCellAnims[4]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
     mMainScreenCellAnims[4]->mCharBase = screen.GetCharBase(0x3000);
     mMainScreenCellAnims[4]->mPaletteBase   = 0;
@@ -3460,7 +3460,7 @@ void ListScene::InitAndLoadMainScreen() {
     mMainScreenCellAnims[5]->mPaletteBase   = 5;
     mMainScreenCellAnims[5]->SetAnimation(2);
     ChangeDir("/Game/Card/Graphic/Small");
-    LoadAndQueueUpload(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_EXT_PLTT, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     InitMainScreenText();
     PrintListSceneMainScreenText(this);
 }
@@ -3508,7 +3508,7 @@ void PrintListSceneMainScreenText(ListScene *self) {
         TextManager::Get().Print(&self->mAlphabetChar, 2, self->mTextBuffers[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
         TextManager::Get().PrintNumber(self->mGalleryCounts[i].mTotal, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
 void ListScene::DrawMainScreenText() {
@@ -3795,7 +3795,7 @@ void PrintListSceneSubScreenText(ListScene *self) {
     if (base != NULL) {
         PrintMessageF3(TextManager::Get(), (MessageFile *) base, index, self->mTextBuffers[0], 0, 0);
     }
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mTextBuffers[0], self->mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0, self->mTextBuffers[0], self->mTextBufferSizes[0], 0);
 }
 
 void ListScene::DrawPromptWindowContents() {
@@ -3857,9 +3857,9 @@ void func_020843ac(ListScene *self, u32 unk1) {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     if (unk1 != 0) {
         ChangeDir("/Game/Battle/Bg/");
-        LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
         ChangeDir("/Game/Deck/");
         screen.LoadCharacters("select_deck_b_obj_01.nce_ncg1D.bin", 0x1c000, 0);
         screen.LoadPalette("select_deck_b_obj_01_ncl.bin", 0xc0, 0);
@@ -3899,13 +3899,13 @@ void func_020843ac(ListScene *self, u32 unk1) {
         self->ApplyWndMode();
     } else {
         ChangeDir("/Game/List/");
-        LoadAndQueueUpload(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
-        LoadAndQueueUpload(1, 0xa, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
         screen.LoadPalette("list_b_obj_00_ncl.bin", 0xc0, 0);
         ChangeDir("/Game/2d/union_b/");
         screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x1c000, 0);

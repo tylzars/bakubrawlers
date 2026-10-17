@@ -66,11 +66,11 @@ void GimmickAquosFukidashi::Load() {
 void GimmickAquosFukidashi::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mOwnFlags       = 1;
+        m->mOwnFlags       = MODEL_OWN_ANIM;
         delete m;
         mModel = 0;
         ModelInstance *b = mModelB;
-        b->mOwnFlags       = 1;
+        b->mOwnFlags       = MODEL_OWN_ANIM;
         delete b;
         mModelB = 0;
     }

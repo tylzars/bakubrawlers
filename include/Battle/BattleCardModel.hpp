@@ -102,4 +102,4 @@ public:
     }
 };
 
-void CloseCardModel(BattleCardModel *model); // nothing once mState >= 3; else state 3 and sFade[0] = 3; frees nothing
+void CloseCardModel(BattleCardModel *model); // nothing once mState >= 3; else state 3 and sFade[0] = FADE_MODE_DOWN; frees nothing

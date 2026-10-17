@@ -102,7 +102,7 @@ ParkScene::ParkScene() :
     mUnk_1c = NULL;
     mGlyphBuffer = NULL;
     mPlayerCount = data_020d433c.mPlayerCount;
-    SpriteManager::Get().SetFade(1, -16);
+    SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
     G2_BlendNone();
 }
 
@@ -139,26 +139,26 @@ void ParkScene::Update() {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2:
             if (mEvent->GetResult() | mEvent->GetSaveRequest()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 4;
             }
             if (mEvent->GetUnlockPopupHandle()) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 7;
             }
             if (mEvent->IsRunning()) {
                 break;
             }
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 3:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             {
@@ -180,26 +180,26 @@ void ParkScene::Update() {
             mFinished = TRUE;
             return;
         case 4:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 5:
             if (mContext->mRequest == 0) {
                 break;
             }
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             FrameTask::Get().StartChannel(0, 0x14);
             mState++;
             break;
         case 6:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             if (mRequestParkScene == 0) {
@@ -211,7 +211,7 @@ void ParkScene::Update() {
             }
             return;
         case 7:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
@@ -250,7 +250,7 @@ void ParkScene::Update() {
             ParkEntry entry;
             GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
             if (entry.mType == 6) {
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState++;
                 break;
             }
@@ -305,14 +305,14 @@ void ParkScene::Update() {
             if (ok == 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         }
         case 14:
             if (!mEvent->IsRunning()) {
                 data_020d433c.mUnk_7c = 1;
-                SpriteManager::Get().StartSubFade(3);
+                SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 0xf;
                 break;
             }
@@ -322,7 +322,7 @@ void ParkScene::Update() {
             }
             break;
         case 15:
-            if (SpriteManager::Get().sFade[1] > 1) {
+            if (SpriteManager::Get().sFade[1] > FADE_MODE_HOLD) {
                 break;
             }
             mEvent->RequestFinish();
@@ -348,7 +348,7 @@ void ParkScene::Update() {
             break;
         }
         case 17:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 18:
@@ -396,7 +396,7 @@ void ParkScene::Update() {
             }
             break;
         case 21:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 22:
@@ -470,7 +470,7 @@ void ParkScene::Update() {
                 break;
             }
             GXS_SetVisiblePlane(0x11);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -495,7 +495,7 @@ void ParkScene::Update() {
                         mState           = 0x24;
                         break;
                     default:
-                        SpriteManager::Get().StartFade(3);
+                        SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         mState++;
                         break;
                 }
@@ -622,7 +622,7 @@ void ParkScene::Update() {
                 mUnk_0f = 0;
                 mState++;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         }
         case 34:
@@ -681,7 +681,7 @@ void ParkScene::Update() {
                 mUnk_0f = 0;
                 mState++;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         }
         case 39:
@@ -766,9 +766,9 @@ void ParkScene::LoadWindowGraphics() {
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -785,12 +785,12 @@ void ParkScene::ReloadBackground() {
 
 void ParkScene::LoadBackground() {
     ChangeDir("/Game/Park/");
-    LoadAndQueueUpload(1, 1, 0, "park_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "park_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "park_b_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x4000, "park_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 13, 0, "park_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 9, 0, "park_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "park_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "park_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "park_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "park_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, "park_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "park_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     delete mMenu;
     mMenu = new ParkMenu(mEntryIndex);
@@ -867,9 +867,9 @@ void ParkScene::HideWindow() {
 
 void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
@@ -916,7 +916,7 @@ void ParkPopup::PrintMessage(u32 index) {
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42,
                0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x1b000, mTextBuffer, mTextBufferSize, 0);
 }
 
 struct ParkRulesBuf {

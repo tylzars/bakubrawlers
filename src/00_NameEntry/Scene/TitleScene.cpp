@@ -225,7 +225,7 @@ void TitleScene::Update() {
             InitDisplay();
             LoadGraphics();
             LoadSystemText();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             if (data_020d433c.mUnk_76) {
                 FrameTask::Get().StartChannel(0, 0x10);
                 mLogoVisible = 1;
@@ -268,7 +268,7 @@ void TitleScene::Update() {
             func_ov000_022245e8();
             if (IsFadeDone(0)) {
                 SetPlaneBlend(0);
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             break;
@@ -465,7 +465,7 @@ void TitleScene::Update() {
             if (IsFadeDone(1)) {
                 SetPlaneBlend(0);
                 data_020d433c.mUnk_76 = 1;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 FrameTask::Get().CloseHandles();
                 mState++;
             }
@@ -539,7 +539,7 @@ void TitleScene::Update() {
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 29:
@@ -547,7 +547,7 @@ void TitleScene::Update() {
                 InitDisplay();
                 LoadGraphics();
                 G2_BlendNone();
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mLogoVisible = 1;
                 FrameTask::Get().StartChannel(0, 0x10);
                 mState++;
@@ -642,7 +642,7 @@ void TitleScene::Update() {
             UpdateCursorCell();
             if (IsFadeDone(0)) {
                 SetPlaneBlend(0);
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             break;
@@ -727,7 +727,7 @@ void TitleScene::Update() {
             InitSaveWindowDisplay();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 46:
@@ -807,22 +807,22 @@ void TitleScene::InitSaveWindowDisplay() {
 void TitleScene::LoadGraphics() {
     char path[0x80];
     ChangeDir("/Game/Title/");
-    LoadAndQueueUpload(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 1, 0x2000, "title_u_bg_01_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 12, 0, "title_u_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 8, 0, "title_u_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "title_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "title_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "title_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0x2000, "title_b_bg_02_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 12, 0, "title_b_bg_02_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 8, 0, "title_b_bg_02_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "title_u_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_CHAR, 0, "title_u_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_BG1_SCR, 0, "title_u_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "title_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "title_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "title_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "title_b_bg_02_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "title_b_bg_02_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "title_b_bg_02_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 10, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Title/");
     if (mBuffers[0][1] == NULL) {
         for (u8 i = 0; i < 5; i++) {
@@ -933,7 +933,7 @@ void TitleScene::PrintText(MessageFile *file, u32 index) {
     outWidth = 0;
     text.Print(file->GetText(index), file->GetLength(index), mBuf40, 0x18, 0xa, &outWidth, &outHeight, NULL, 0, 2,
                0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x19000, mBuf40, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x19000, mBuf40, mTextBufferSize, 0);
 }
 
 void TitleScene::DrawText() {
@@ -1002,9 +1002,9 @@ BOOL TitleScene::IsFadeDone(BOOL tick) {
 }
 
 void TitleScene::UploadSubBg(u32 index) {
-    QueueUpload(1, 1, 0x4000, mBuffers[index][1], mBufferSizes[index][1], 0);
-    QueueUpload(1, 13, 0, mBuffers[index][0], mBufferSizes[index][0], 0);
-    QueueUpload(1, 9, 0, mBuffers[index][2], mBufferSizes[index][2], 0);
+    QueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, mBuffers[index][1], mBufferSizes[index][1], 0);
+    QueueUpload(1, UPLOAD_KIND_BG2_CHAR, 0, mBuffers[index][0], mBufferSizes[index][0], 0);
+    QueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, mBuffers[index][2], mBufferSizes[index][2], 0);
 }
 
 BOOL TitleScene::UpdateCursorCell() {

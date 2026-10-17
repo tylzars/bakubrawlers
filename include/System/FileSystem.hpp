@@ -21,6 +21,30 @@ void *GetAsyncLoadBuffer(); // data of the finished asynchronous load
 u8 IsAsyncLoadActive();    // nonzero while the asynchronous load is busy
 void StopAsyncLoad();
 
+// Upload kinds (the kind argument of QueueUpload / LoadAndQueueUpload): gUploadFuncs[kind + screen * UPLOAD_KIND_COUNT]
+// in UploadQueue.cpp is the function the upload goes through; kinds 0-4 and 7-14 are named after it (screen 0 /
+// screen 1), and kinds 0-3 are also bracketed by the gBeginLoadFuncs / gEndLoadFuncs entry. Kinds 5 and 6 are named
+// from their uses, not from the four palette loaders in their slots: every use queues 5 with OBJ kinds (beside kind 4
+// in SpriteScreen, the counterpart of kind 0 in TextManager::SetColor) and 6 with BG kinds (with kinds 11 and 7 in
+// LogoScene, with kind 9 for the same file stem in BattleShoot, the counterpart of kind 1 in func_0202ce44). The two
+// slot entries that disagree with this (GXS_LoadBGPltt in screen-0 slot 5, GX_LoadOBJPltt in screen-1 slot 21) are
+// also the only entries whose GX_ / GXS_ prefix is not their slot's screen.
+#define UPLOAD_KIND_OBJ_EXT_PLTT 0  // GX_LoadOBJExtPltt / GX_LoadSubOBJExtPltt
+#define UPLOAD_KIND_BG_EXT_PLTT  1  // GX_LoadBGExtPltt / GX_LoadSubBGExtPltt
+#define UPLOAD_KIND_TEX          2  // GX_LoadTex on both
+#define UPLOAD_KIND_TEX_PLTT     3  // GX_LoadTexPltt on both
+#define UPLOAD_KIND_OBJ          4  // GX_LoadOBJ / GXS_LoadOBJ
+#define UPLOAD_KIND_OBJ_PLTT     5
+#define UPLOAD_KIND_BG_PLTT      6
+#define UPLOAD_KIND_BG0_SCR      7  // GX_LoadBG0Scr / GXS_LoadBG0Scr
+#define UPLOAD_KIND_BG1_SCR      8
+#define UPLOAD_KIND_BG2_SCR      9
+#define UPLOAD_KIND_BG3_SCR      10
+#define UPLOAD_KIND_BG0_CHAR     11 // GX_LoadBG0Char / GXS_LoadBG0Char
+#define UPLOAD_KIND_BG1_CHAR     12
+#define UPLOAD_KIND_BG2_CHAR     13
+#define UPLOAD_KIND_BG3_CHAR     14
+
 // Loads a file and hands it to QueueUpload with freeData = 1. Returns offset + size.
 u32 LoadAndQueueUpload(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7);
 // Uploads a buffer to VRAM at once while the screen's master brightness is -16 or 16 (or func_0200d924 returns 0);

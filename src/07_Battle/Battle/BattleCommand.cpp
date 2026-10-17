@@ -342,7 +342,7 @@ void BattleCommand::Update() {
             func_ov007_0223a734();
             func_ov007_0223ad70(mFlipped);
             LoadTurnGraphics();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 1;
             return;
         }
@@ -373,7 +373,7 @@ void BattleCommand::Update() {
                 return;
             }
             CloseMode(1);
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             return;
         case 4: {
@@ -421,7 +421,7 @@ void BattleCommand::Update() {
                 data_020d433c.mBattlePlayers->mUnk_292 = 0;
                 if (func_ov007_02263150(data_020d433c.mBattlePlayers)) {
                     mState = 0x37;
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     return;
                 }
                 u8 i = 0;
@@ -436,7 +436,7 @@ void BattleCommand::Update() {
                 } while (i < 12);
                 if (found == 0) {
                     mState = 0x38;
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     return;
                 }
             }
@@ -447,7 +447,7 @@ void BattleCommand::Update() {
             LoadTurnGraphics();
             CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             return;
         }
@@ -568,7 +568,7 @@ void BattleCommand::Update() {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             list->mUnk_28b         = a;
             list->mUnk_28c         = b;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState = 0x1d;
             return;
         }
@@ -691,7 +691,7 @@ void BattleCommand::Update() {
                     l->mUnk_28c = b;
                     mNextMode = 0;
                     CloseMode(1);
-                    SpriteManager::Get().StartFade(3);
+                    SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState = 0xf;
                     return;
                 }
@@ -705,7 +705,7 @@ void BattleCommand::Update() {
                     }
                     mNextMode = 0;
                     CloseMode(0);
-                    SpriteManager::Get().SetFade(1, -16);
+                    SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                     {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         l->mPlayers[l->mTurnPlayer]->mRecord = p->mMsg.mUnk_0e;
@@ -799,7 +799,7 @@ void BattleCommand::Update() {
                 list->mUnk_28b         = a;
                 list->mUnk_28c         = b;
                 CloseMode(1);
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCursorX = hi;
                 mCursorY = lo;
                 mState++;
@@ -834,7 +834,7 @@ void BattleCommand::Update() {
             }
             mUnk_11c = 0;
             CloseMode(1);
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             if (data_020d433c.mBattlePlayers->mUnk_292 != 0) {
                 mState = 0x15;
                 return;
@@ -950,7 +950,7 @@ void BattleCommand::Update() {
             if (sel == 1 || flag != 0) {
                 mUnk_12f = 0;
                 mUnk_11e = 0;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x1c;
                 if (flag != 0) {
                     mCockpitWindow->mState = 4;
@@ -1054,7 +1054,7 @@ void BattleCommand::Update() {
             func_ov007_02247a7c(mCommandMap);
             mUnk_12e = 1;
             data_020d433c.mGimmicks->mState = 0;
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             return;
         }
@@ -1078,7 +1078,7 @@ void BattleCommand::Update() {
             mState++;
             AddMarker(data_020d433c.mBattlePlayers, mCursorX, mCursorY, mUnk_133, mUnk_132);
             mUnk_130 = 1;
-            SpriteManager::Get().sFade[0] = 3;
+            SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
             data_020d433c.mBattlePlayers->mUnk_28f = 0;
             WindowItem *items = mCommandWindow->mCursor->mItems;
             items[2].mFlags   = 0x8000;
@@ -1091,7 +1091,7 @@ void BattleCommand::Update() {
             return;
         }
         case 34:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 GXS_SetVisibleWnd(0);
                 mUnk_12e = 0;
                 G2S_SetBlendBrightness(0x11, 0);
@@ -1114,7 +1114,7 @@ void BattleCommand::Update() {
             return;
         case 36: {
             Draw();
-            if (SpriteManager::Get().sFade[0] > 1) {
+            if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
             mCommandWindow->Reset(-1);
@@ -1160,7 +1160,7 @@ void BattleCommand::Update() {
                 return;
             }
             CloseMode(1);
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mUnk_132 = GetLowByte(v);
             data_020d433c.mBattlePlayers->mPlayers[mUnk_133]->mRecord = mUnk_132;
             GXS_SetVisiblePlane(0x11);
@@ -1181,7 +1181,7 @@ void BattleCommand::Update() {
             return;
         case 40:
             Draw();
-            if (SpriteManager::Get().sFade[0] > 1) {
+            if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
             SetCommandMessage();
@@ -1233,7 +1233,7 @@ void BattleCommand::Update() {
             if (sel == 1 || flag != 0) {
                 mUnk_12f = 0;
                 mUnk_11e = 0;
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCockpitWindow->mEnabled = 0;
                 mState          = 0x2d;
                 data_0220f540.mUnk_00 = 0x12;
@@ -1298,7 +1298,7 @@ void BattleCommand::Update() {
         case 44:
             mMessageWindow->Update();
             Draw();
-            if (SpriteManager::Get().sFade[0] > 1) {
+            if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
             SetCommandMessage();
@@ -1336,7 +1336,7 @@ void BattleCommand::Update() {
             CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
             mCommandMap->mUnk_151 = 0;
-            SpriteManager::Get().StartSubFade(2);
+            SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             data_020d433c.mGimmicks->mState = 0;
             new BattleCardEffect(0, 0xb, 0xe, 1);
             mContext->mRequest = 0;
@@ -1346,7 +1346,7 @@ void BattleCommand::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             CloseMode(0);
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             list->mUnits[(u8) (list->mUnitHandles[mCursorX][mCursorY] - 1)].mUnk_12 = 1;
@@ -1371,11 +1371,11 @@ void BattleCommand::Update() {
                 case 2:
                     if (data_020d433c.mWireless != 0) {
                         WirelessManager::Get();
-                        data_020c4030.mUnk_22a = 6;
+                        data_020c4030.mUnk_22a = WM_CALL_FAILED;
                         mState++;
                         return;
                     }
-                    SpriteManager::Get().SetFade(1, -16);
+                    SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                     mUnk_134 = 7;
                     mState = 0x39;
                     return;
@@ -1384,7 +1384,7 @@ void BattleCommand::Update() {
         case 52:
             PollModeClosed();
             if (mMode == 0) {
-                SpriteManager::Get().SetFade(1, -16);
+                SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                 mState = 0x39;
                 mUnk_134 = 1;
             }
@@ -1401,19 +1401,19 @@ void BattleCommand::Update() {
         case 54:
             PollModeClosed();
             if (mMode == 0) {
-                SpriteManager::Get().SetFade(1, -16);
+                SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                 mUnk_134 = 2;
                 mState = 0x39;
             }
             Draw();
             return;
         case 55:
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             mUnk_134 = 5;
             mState = 0x39;
             return;
         case 56:
-            SpriteManager::Get().SetFade(1, -16);
+            SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             mUnk_134 = 6;
             mState = 0x39;
             return;
@@ -1655,8 +1655,8 @@ void InitCommandSubScreen(int x, int y) {
 
 void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
-    LoadAndQueueUpload(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_PLTT, 0, "battle_u_ncl.bin", 0, 0, 0);
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
     mCommandMap->Init();
     CreateCursorModel(mCommandMap);
@@ -1736,17 +1736,17 @@ void func_ov007_0223ad70(u32 variant) {
     ChangeDir("/Game/Battle/Bg");
     if (data_020d433c.mUnk_8a_0 != 0) {
         sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x800, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1800, path, 0, 0, 0);
     } else {
         switch (data_020d433c.mFieldId) {
             case 1:
@@ -1757,30 +1757,30 @@ void func_ov007_0223ad70(u32 variant) {
                 break;
         }
         sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mFieldId);
-        LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mFieldId, variant);
-        LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mFieldId, variant);
-        LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x800, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mFieldId, variant);
-        LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mFieldId, variant);
-        LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1800, path, 0, 0, 0);
     }
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
-    LoadAndQueueUpload(1, 4, 0xa000, "battle_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0, "battle_b_obj_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0xa000, "battle_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0, "battle_b_obj_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
-    LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Card/Graphic/Small");
-    LoadAndQueueUpload(1, 4, 0x9000, "card_s_000_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 0, 0, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x9000, "card_s_000_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0, "card_s_000_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
-    LoadAndQueueUpload(1, 4, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
     if (data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->SetupLayout(8);
     }
@@ -1793,8 +1793,8 @@ void CreateCursorModel(BattleCommandMap *map);
 
 void BattleCommand::LoadTurnGraphics() {
     ChangeDir("/Game/Battle/Obj");
-    LoadAndQueueUpload(1, 4, 0x17000, "battle_b_obj_turn.nce_ncg1D.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 5, 0x120, "battle_b_obj_turn_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x17000, "battle_b_obj_turn.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_PLTT, 0x120, "battle_b_obj_turn_ncl.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
@@ -2188,10 +2188,10 @@ void BattleCommand::CloseMode(BOOL flag) {
             return;
     }
     if (flag) {
-        SpriteManager::Get().sFade[0] = 3;
+        SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
     } else {
         SpriteManager::Get();
-        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sFade[0]       = FADE_MODE_HOLD;
         SpriteManager::sBrightness[0] = -16;
     }
     mMode                = 1;
@@ -2221,7 +2221,7 @@ void BattleCommand::OpenNextMode(u32 flag) {
         case 2:
             mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
             mCommandMap->Init();
-            SpriteManager::Get().sFade[0] = 2;
+            SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             break;
         case 3:
             mCommandPage = new BattleCommandPage(0, -1);

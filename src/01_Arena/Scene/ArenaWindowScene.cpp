@@ -145,7 +145,7 @@ void ArenaWindowScene::Update() {
         }
         case 5:
             SetupWindow();
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             WirelessManager::Get().Stop();
             mState++;
             break;
@@ -163,7 +163,7 @@ void ArenaWindowScene::Update() {
             break;
         case 7:
             if (mWindow->Update(1) == 1) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
             mWindow->Draw();
@@ -188,7 +188,7 @@ void ArenaWindowScene::Update() {
             }
             break;
         case 10:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 11:
@@ -207,7 +207,7 @@ void ArenaWindowScene::Update() {
                 return;
             }
             FrameTask::Get().StartChannel(0, 0x10);
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             break;
         case 13:
@@ -273,9 +273,9 @@ void ArenaWindowScene::SetupWindow() {
     G2S_SetWndOutsidePlane(0x1f, FALSE);
     G2S_BlendNone();
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x2000, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -303,9 +303,9 @@ void ArenaWindowScene::LoadWindowGraphics() {
     G2S_SetBG1Priority(0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -338,7 +338,7 @@ void ArenaWindowScene::PrintMessage() {
     MessageFile *file = mMessages;
     text.Print(file->GetText(11), file->GetLength(11), mTextBuffer, 0x18, 4, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0,
                1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffer, mTextBufferSize, 0);
 }
 
 void ArenaWindowScene::DrawMessage() {

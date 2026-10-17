@@ -32,7 +32,7 @@ CellAnimation::~CellAnimation() {
 
 void CellAnimation::Update() {
     CellAnimFrame *entry = &mFrames[mAnimIndex];
-    if (mMode == 5) {
+    if (mMode == CELL_ANIM_MODE_STOP) {
         return;
     }
     mTimer = mTimer - mStep;
@@ -40,7 +40,7 @@ void CellAnimation::Update() {
         return;
     }
     switch (mMode) {
-    case 0: {
+    case CELL_ANIM_MODE_FORWARD_ONCE: {
         u32 next = mFrameIndex + 1;
         if (next < entry->mFrameCount) {
             mFrameIndex = next;
@@ -49,18 +49,18 @@ void CellAnimation::Update() {
         }
         break;
     }
-    case 1:
+    case CELL_ANIM_MODE_FORWARD_LOOP:
         mFrameIndex++;
         mFrameIndex = mFrameIndex % entry->mFrameCount;
         break;
-    case 2:
+    case CELL_ANIM_MODE_BACKWARD_ONCE:
         if (mFrameIndex != 0) {
             mFrameIndex--;
         } else {
             mFinished = 1;
         }
         break;
-    case 3:
+    case CELL_ANIM_MODE_BACKWARD_LOOP:
         mFrameIndex--;
         if (mFrameIndex >= entry->mFrameCount) {
             mFrameIndex = entry->mFrameCount - 1;

@@ -60,18 +60,18 @@ void BattleCardCamera::Update() {
             mUnk_24 = 0;
             mState++;
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 2;
+            SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             break;
         case 1:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 new BattleCardEffect(0, 0, 0, 0);
                 mState++;
             }
             break;
         case 3:
             SpriteManager::Get();
-            if (SpriteManager::sFade[0] <= 1) {
+            if (SpriteManager::sFade[0] <= FADE_MODE_HOLD) {
                 mState++;
             }
             break;

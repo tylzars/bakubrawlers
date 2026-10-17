@@ -199,7 +199,7 @@ void BattleBase::Update() {
     BattleEntry *entries = mBattleData->Entries();
     switch (mState) {
         case 0:
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
         case 1:
             if (UpdateCameraPath(mField3D)) {
@@ -369,7 +369,7 @@ void BattleBase::Update() {
             break;
         case 10:
             if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
-                SpriteManager::Get().StartFade(2);
+                SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
             break;
@@ -381,7 +381,7 @@ void BattleBase::Update() {
         case 12:
             if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 SoundManager::Get().StartSeqArc(0x32);
-                SpriteManager::Get().StartFade(4);
+                SpriteManager::Get().StartFade(FADE_MODE_UP);
                 mState++;
             }
             break;
@@ -471,7 +471,7 @@ BOOL BattleBase::UpdateCardSequence() {
         case 0:
             SoundManager::Get().StopSeqArcPlayerSounds(1);
             SoundManager::Get().StartSeqArc(0x30);
-            SpriteManager::Get().StartFade(4);
+            SpriteManager::Get().StartFade(FADE_MODE_UP);
             mCardStep++;
         case 1:
             if (SpriteManager::Get().IsFading()) {
@@ -756,7 +756,7 @@ BOOL BattleBase::UpdateCardSequence() {
             if (mContext->mRequest != 0) {
                 mContext->mRequest = 0;
                 SpriteManager::Get().ResetSlots();
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCardStep                      = 0x12;
                 mBattleData->mCellAnims[4]->mFrameIndex = 0;
                 s8 v = data_ov007_02279d3c[0];
@@ -952,7 +952,7 @@ BOOL BattleBase::func_ov007_0221bd84() {
     case 0:
         if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
             StartAbilitiesSlide(mSub48);
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mUnk_11++;
         }
         break;
@@ -1009,7 +1009,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
         mUnk_2a++;
         if (mUnk_2a >= 0x64) {
             mUnk_2a = 0;
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mUnk_11++;
         }
         break;

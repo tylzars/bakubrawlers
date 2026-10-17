@@ -97,7 +97,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     mUnk_79 = 0;
     mWindow = NULL;
     SpriteManager::Get();
-    SpriteManager::sFade[1] = 1;
+    SpriteManager::sFade[1] = FADE_MODE_HOLD;
     SpriteManager::sBrightness[1] = -16;
     MI_CpuClear16(mRemainingGauge, 6);
     MI_CpuClear8(mBakuganIds, 3);
@@ -133,7 +133,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
 
 UnkStruct_02076058::~UnkStruct_02076058() {
     SpriteManager::Get();
-    SpriteManager::sFade[1] = 1;
+    SpriteManager::sFade[1] = FADE_MODE_HOLD;
     SpriteManager::sBrightness[1] = -16;
     for (u8 i = 0; i < 12; i++) {
         delete mCellAnims[i];
@@ -164,12 +164,12 @@ void UnkStruct_02076058::Update() {
             LoadGraphics();
             LoadMessages();
             SpriteManager::Get();
-            SpriteManager::sFade[1] = 2;
+            SpriteManager::sFade[1] = FADE_MODE_TO_ZERO;
             mState++;
             break;
         case 1:
             SpriteManager::Get();
-            if (SpriteManager::sFade[1] <= 1) {
+            if (SpriteManager::sFade[1] <= FADE_MODE_HOLD) {
                 mState++;
             }
             Draw();
@@ -195,8 +195,8 @@ void UnkStruct_02076058::Update() {
             if (mUnk_77 != 0) {
                 mState++;
                 SpriteManager::Get();
-                SpriteManager::sFade[0] = 3;
-                SpriteManager::sFade[1] = 3;
+                SpriteManager::sFade[0] = FADE_MODE_DOWN;
+                SpriteManager::sFade[1] = FADE_MODE_DOWN;
             } else {
                 switch (mMode) {
                     case 0:
@@ -245,8 +245,8 @@ void UnkStruct_02076058::Update() {
         case 7:
             Draw();
             SpriteManager::Get();
-            SpriteManager::sFade[0] = 3;
-            SpriteManager::sFade[1] = 3;
+            SpriteManager::sFade[0] = FADE_MODE_DOWN;
+            SpriteManager::sFade[1] = FADE_MODE_DOWN;
             mState++;
             break;
         case 8:
@@ -281,9 +281,9 @@ void UnkStruct_02076058::InitDisplay() {
 
 void UnkStruct_02076058::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    LoadAndQueueUpload(1, 1, 0, "result_b_bg_00_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "result_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 7, 0, "result_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "result_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "result_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "result_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     u8 i;
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
@@ -300,7 +300,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
                 mCellAnims[i]->mCharBase = screen.GetCharBase(0);
                 mCellAnims[i]->mPaletteBase = 0;
-                mCellAnims[i]->SetMode(5);
+                mCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
                 mCellAnims[i]->mFrameIndex = mAttributes[i];
                 break;
             case 6:
@@ -309,7 +309,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i] = new CellAnimation("result_b_obj_00_nce.bin", 0, 1, 1);
                 mCellAnims[i]->mCharBase = screen.GetCharBase(0xc000);
                 mCellAnims[i]->mPaletteBase = 0;
-                mCellAnims[i]->SetMode(5);
+                mCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
                 if (mSaveEntries[i % 3] != NULL) {
                     s32 level = mSaveEntries[i % 3]->mUnk_00_0;
                     if (level < 9) {
@@ -326,7 +326,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i]->mCharBase = screen.GetCharBase(0xc000);
                 mCellAnims[i]->mPaletteBase = 0;
                 mCellAnims[i]->SetAnimation(1);
-                mCellAnims[i]->SetMode(5);
+                mCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
                 mCellAnims[i]->mFrameIndex = 0;
                 UnkStruct_02023248 *entry = mSaveEntries[i % 3];
                 if (entry != NULL) {
@@ -624,7 +624,7 @@ void UnkStruct_02076058::PrintText() {
     }
     DC_FlushRange(mTextBuffer, mTextBufferSize);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x6000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x6000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void func_020781a0(UnkStruct_02076058 *object) {

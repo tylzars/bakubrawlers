@@ -66,7 +66,7 @@ RankingCharacterView::~RankingCharacterView() {
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     ModelInstance *instance = mMyroombgModel;
     if (instance != NULL) {
-        instance->mOwnFlags = 0xf;
+        instance->mOwnFlags = MODEL_OWN_ALL;
         delete instance;
     }
     UnkStruct_0205401c *model = mCharacterModel;
@@ -313,13 +313,13 @@ void RankingCharacterView::DrawSprites() {
         if (special != 0) {
             cell->mAnimIndex = 2;
             cell->ResetAnimation();
-            mDigitCellAnims[i]->SetMode(5);
+            mDigitCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
             mDigitCellAnims[i]->Update();
             mDigitCellAnims[i]->Draw(0, gRankingDigitCellPositions[i][0], gRankingDigitCellPositions[i][1], 0);
         } else {
             cell->mAnimIndex = 0;
             cell->ResetAnimation();
-            mDigitCellAnims[i]->SetMode(5);
+            mDigitCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
             mDigitCellAnims[i]->Update();
             mDigitCellAnims[i]->DrawFrame(0, digit, gRankingDigitCellPositions[i][0], gRankingDigitCellPositions[i][1], 0);
         }
@@ -350,7 +350,7 @@ void RankingCharacterView::PrintName() {
         text.Print(file->GetText(kind), file->GetLength(kind), mTextBuffer, 0x10, 2, &height, &width, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x6000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x6000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void RankingCharacterView::ClearNameText() {

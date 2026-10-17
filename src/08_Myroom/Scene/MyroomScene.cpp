@@ -186,7 +186,7 @@ void MyroomScene::Update() {
                     mEvent->func_02067998(3);
                     break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             ctx->mInfo.mState++;
             break;
         case 3:
@@ -221,7 +221,7 @@ void MyroomScene::Update() {
         case 6:
             UpdateMenu();
             DrawText();
-            SpriteManager::Get().StartSubFade(3);
+            SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             switch (ctx->mInfo.mScroll) {
                 case 2:
                 case 4:
@@ -248,7 +248,7 @@ void MyroomScene::Update() {
             if (mEvent->IsRunning()) {
                 return;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             break;
         case 8:
@@ -265,7 +265,7 @@ void MyroomScene::Update() {
             if (ctx->mRequest == 0) {
                 return;
             }
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             break;
         case 10:
@@ -352,7 +352,7 @@ void MyroomScene::Update() {
             }
             break;
         case 17:
-            SpriteManager::Get().StartFade(3);
+            SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             ctx->mInfo.mState++;
             mWindows[0]->Draw();
             DrawText();
@@ -414,9 +414,9 @@ void MyroomScene::InitDisplay() {
 
 void MyroomScene::LoadGraphics() {
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_01_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_01_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_01_ncl.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     sub.LoadCharacters("myroom_b_obj_00.nce_ncg1D.bin", 0x5000, 0);
@@ -652,7 +652,7 @@ void MyroomScene::StartScroll() {
             window->mCellAnims[i]->ResetAnimation();
             window->mCellAnims[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
         } else if ((s8) ctx->mInfo.mUnk_06 == i) {
-            window->mCellAnims[i]->SetMode(2);
+            window->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
         }
         items[i].mFlags = 0x8000;
     }
@@ -1006,7 +1006,7 @@ void MyroomScene::PrintStatus() {
     text.Print(table->GetText(index), table->GetLength(index), mTextBuffer, 0x20, 2, &height, &width, &info->mUnk_00, 0, 2,
                0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x3000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void MyroomScene::ClearTextBuffer() {

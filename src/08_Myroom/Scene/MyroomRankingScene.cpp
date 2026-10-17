@@ -177,12 +177,12 @@ void MyroomRankingScene::Update() {
             if (mTimer > 0) {
                 break;
             }
-            SpriteManager::Get().StartFade(2);
+            SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
         case 2:
             if (mUnk_1c0 != 0) {
-                SpriteManager::Get().StartFade(3);
+                SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCharacterView->mFinishRequested = 1;
                 mState         = 4;
             } else {
@@ -298,9 +298,9 @@ void MyroomRankingScene::Init() {
     mSelectedScore = mPlayerScore;
     mCharacterView  = new RankingCharacterView(mSelectedCharacterId, mSelectedRank, mSelectedScore, 0);
     ChangeDir("/Game/Myroom/");
-    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
     mWindow = new SelectWindow(0xd, sMyroomRankingWindowItems, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
@@ -328,7 +328,7 @@ void MyroomRankingScene::Init() {
             mRows[i].mCellAnims[j]->mCharBase = sub.GetCharBase(0x7000);
             mRows[i].mCellAnims[j]->mPaletteBase   = 11;
             mRows[i].mCellAnims[j]->SetAnimation(0);
-            mRows[i].mCellAnims[j]->SetMode(5);
+            mRows[i].mCellAnims[j]->SetMode(CELL_ANIM_MODE_STOP);
         }
     }
     ChangeDir("/font/");
@@ -555,7 +555,7 @@ void MyroomRankingScene::PrintNames() {
                        0, 0, 0, 0, 1, 1);
         }
         TextManager::Get().mUse4bppFont = 0;
-        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000 + i * 0x800, mTextBuffers[i], mTextBufferSize, 0);
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x8000 + i * 0x800, mTextBuffers[i], mTextBufferSize, 0);
         i++;
     } while (i < 6);
 }

@@ -169,7 +169,7 @@ void BattleCommandPage::Update() {
                 mDrawnCardId  = mCardId;
                 mUnk_109 = mUnk_10a;
                 if (mCloseFadeKind == 0) {
-                    SpriteManager::Get().sFade[0] = 2;
+                    SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                 }
                 mState++;
             }
@@ -191,23 +191,23 @@ void BattleCommandPage::Update() {
         case 5:
             switch (mCloseFadeKind) {
                 case 1:
-                    SpriteManager::Get().sFade[0] = 3;
+                    SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
                     break;
                 case 2:
                     SpriteManager::Get();
-                    SpriteManager::sFade[0] = 4;
-                    SpriteManager::sFade[1]  = 4;
+                    SpriteManager::sFade[0] = FADE_MODE_UP;
+                    SpriteManager::sFade[1]  = FADE_MODE_UP;
                     break;
                 case 3:
                     SpriteManager::Get();
-                    SpriteManager::sFade[0] = 3;
-                    SpriteManager::sFade[1]  = 3;
+                    SpriteManager::sFade[0] = FADE_MODE_DOWN;
+                    SpriteManager::sFade[1]  = FADE_MODE_DOWN;
                     break;
             }
             mState++;
             break;
         case 6:
-            if (SpriteManager::Get().sFade[0] <= 1) {
+            if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mVisible = 0;
                 mState++;
             }
@@ -451,13 +451,13 @@ BOOL BattleCommandPage::LoadGraphics() {
         mLoadStep++;
         return FALSE;
     }
-    QueueUpload(0, 1, 0, mFiles[9], mFileSizes[9], 1);
-    QueueUpload(0, 0xb, 0, mFiles[10], mFileSizes[10], 1);
-    QueueUpload(0, 7, 0, mFiles[11], mFileSizes[11], 1);
+    QueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, mFiles[9], mFileSizes[9], 1);
+    QueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, mFiles[10], mFileSizes[10], 1);
+    QueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, mFiles[11], mFileSizes[11], 1);
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
     screen.SetObjVramMode(3);
-    QueueUpload(screen.mBgIndex, 5, 0, mFiles[0], mFileSizes[0], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x8000, mFiles[1], mFileSizes[1], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0, mFiles[0], mFileSizes[0], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ, 0x8000, mFiles[1], mFileSizes[1], 1);
     if (mNceData[0] != NULL) {
         OS_Free(mNceData[0]);
     }
@@ -487,8 +487,8 @@ BOOL BattleCommandPage::LoadGraphics() {
             mCellAnims[5]->SetAnimation(9);
         }
     }
-    QueueUpload(screen.mBgIndex, 5, 0x140, mFiles[3], mFileSizes[3], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x14000, mFiles[4], mFileSizes[4], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0x140, mFiles[3], mFileSizes[3], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ, 0x14000, mFiles[4], mFileSizes[4], 1);
     if (mNceData[1] != NULL) {
         OS_Free(mNceData[1]);
     }
@@ -510,8 +510,8 @@ BOOL BattleCommandPage::LoadGraphics() {
             mCellAnims[6]->mPaletteBase   = 10;
         }
     }
-    QueueUpload(screen.mBgIndex, 5, 0x100, mFiles[6], mFileSizes[6], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x12000, mFiles[7], mFileSizes[7], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0x100, mFiles[6], mFileSizes[6], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ, 0x12000, mFiles[7], mFileSizes[7], 1);
     if (mNceData[2] != NULL) {
         OS_Free(mNceData[2]);
     }
@@ -588,8 +588,8 @@ BOOL BattleCommandPage::LoadLargeCard() {
         return FALSE;
     }
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
-    QueueUpload(screen.mBgIndex, 0, 0, mFiles[0], mFileSizes[0], 1);
-    QueueUpload(0, 4, 0x5000, mFiles[1], mFileSizes[1], 1);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_EXT_PLTT, 0, mFiles[0], mFileSizes[0], 1);
+    QueueUpload(0, UPLOAD_KIND_OBJ, 0x5000, mFiles[1], mFileSizes[1], 1);
     return TRUE;
 }
 
@@ -705,8 +705,8 @@ void BattleCommandPage::PrintCardText(u32 index) {
                                  0x21, 0xe, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffers[1], mTextBufferSizes[1], 0);
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x4000, mTextBuffers[2], mTextBufferSizes[2], 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0, mTextBuffers[1], mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0x4000, mTextBuffers[2], mTextBufferSizes[2], 0);
 }
 
 void BattleCommandPage::DrawText() {

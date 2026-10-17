@@ -160,6 +160,13 @@ public:
 // Render data of a ModelInstance (the model file object: only the pointer at +04 is used outside this module).
 typedef ModelFile ModelInstanceData;
 
+// ModelInstance::mOwnFlags bits: what ~ModelInstance frees besides the instance (0 = nothing).
+#define MODEL_OWN_ANIM      1 // delete mAnim
+#define MODEL_OWN_FILE      2 // mModelFile->Release() and delete
+#define MODEL_OWN_TEXTURE   4 // mModelFile->mTexture->Release() and delete
+#define MODEL_OWN_ANIM_DATA 8 // mAnim->FreeAnimData()
+#define MODEL_OWN_ALL       (MODEL_OWN_ANIM | MODEL_OWN_FILE | MODEL_OWN_TEXTURE | MODEL_OWN_ANIM_DATA)
+
 // A drawable instance of an NSBMD model; deleted through its virtual destructor.
 class ModelInstance {
 public:

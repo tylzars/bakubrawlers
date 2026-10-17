@@ -4,7 +4,7 @@
 #include "types.h"
 
 // Save statuses. GetSlotStatus and WriteSlotMarker return them; the two save scenes in FileLoader.cpp pass them to
-// RequestScene, and the parent reads them back from its context's mUnk_12 (TitleScene, SaveWindow). There 0
+// RequestScene, and the parent reads them back from its context's mRequest (TitleScene, SaveWindow). There 0
 // means "no result yet" and stays a literal.
 #define SAVE_STATUS_ERROR 1    // a card read or write call failed (GetSlotStatus: only the read of the second copy)
 #define SAVE_STATUS_NO_MAGIC 2 // neither 0x19691015 nor the save magic 0x20071019 in the first word of either copy

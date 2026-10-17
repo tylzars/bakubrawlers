@@ -4,11 +4,13 @@
 | Path | Contents |
 | --- | --- |
 | `config/usa/` | `dsd` configuration: symbols, relocations and translation-unit boundaries (`delinks.txt`) |
-| `src/Main/`, `src/ITCM/` | Game code from the main ARM9 binary and ITCM |
+| `src/Main/` | Game code from the main ARM9 binary, grouped by subsystem (`Battle/`, `Game/`, `Graphics/`, `Scene/`, `System/`, `Text/`, `UI/`, `Video/`; `Unknown/` for units whose role isn't settled) |
 | `src/NN_Name/` | Game code from overlay `NN`, named once its purpose is known (e.g. `06_GameOver`); unnamed overlays use just the number |
 | `include/` | Game headers, grouped by subsystem (`include/Scene/`, ...) |
 | `libs/nds/` | C code and headers for the NitroSDK functions the game links (built with an older compiler, see `docs/compiler.md`) |
-| `libs/c/`, `libs/cpp/` | C and C++ runtime pieces |
+| `libs/nns/` | NitroSystem code the game links (G3d, sound, heaps, VRAM managers) |
+| `libs/cri/` | CRI middleware the game links (ADX / AHX audio, streams, file devices) |
+| `libs/msl/`, `libs/c/`, `libs/cpp/` | C and C++ runtime pieces |
 | `tools/` | Build scripts and analysis tools |
 | `docs/` | Notes on the compiler, decompiling and the game |
 | `extract/`, `build/` | Your ROM, its extraction and build output (never committed) |
@@ -21,8 +23,18 @@
 - Locals and parameters use `camelCase`; `i`/`j`/`k` are fine for loop counters.
 - Enum values are `UPPER_SNAKE` prefixed with their type (`BATTLE_MODE_TAG`); `#define` constants are `UPPER_SNAKE`.
 - Magic numbers get a named constant once their meaning is clear from the code, but a variable's or member's type
-  never changes to an enum type: the compiler treats enum-typed values differently and the output would move. A
-  `#define` keeps the literal exactly as written, suffix included (`0x8000u`).
+  never changes to an enum type: the compiler treats enum-typed values differently and the output would move. New
+  constants are `#define`s; a `#define` keeps the literal's value and type exactly (suffix included, `0x8000u`).
+- A constant names a value of a set: the values one member, parameter or return value takes. All the set's names
+  share a prefix (`SCENE_`, `UPLOAD_KIND_`, `WINDOW_ITEM_`) and go in the header that declares the API carrying the
+  value, or at the top of the one `.cpp` that uses them. Every site of the set uses the names; a value the code gives
+  no meaning (a sentinel, a count, a value doing another job) stays a literal with a comment. Coordinates, sizes and
+  one-off waits stay literals.
+- Recurring words keep one meaning everywhere: `m...Timer` counts down, `m...Frames` counts up, `m...FrameCount` is
+  a fixed length, `m...Handle` holds index + 1 (0 = none), `m...Visible` / `m...Enabled` are 1 when drawn / active,
+  `Update<X>` runs every frame, `Load<X>` reads a file, `Init<X>` runs once, `Setup<X>` can run again. In `libs/cri`
+  function names put the type first (`AdxStart`, `CriStmAlloc`); a locked wrapper takes the plain name and the
+  function it wraps `...Inner` or `...NoLock`.
 - A name has to be supported by what this repository shows: what the code does, the game's own strings and file
   paths, and names already given. New names carry no address (symbols.txt keeps it).
 - Anything not yet understood keeps an address-based name: functions `func_<addr>` / `func_ovNNN_<addr>`, data

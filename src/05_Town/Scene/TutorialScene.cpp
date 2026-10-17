@@ -219,7 +219,7 @@ void TutorialScene::Update() {
                 return;
             }
             InitScriptDisplay(this);
-            mEvent = new ScriptPlayer(6, 0, 1);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_TUTORIAL, 0, 1);
             mState++;
             break;
         }

@@ -28,14 +28,15 @@
 
 // Menu entries: the values HandleWindowResult stores in mInfo.mScroll for the chosen icon (not the cursor position),
 // which Update switches on to move the event camera (state 6) and to create the screen (state 10), each named after
-// the class created for it. Left as literals: 6 and 7 (ListScene(3, 0) and ListScene(4, 0); the ListScene modes are
-// not named).
+// the class created for it (LIST_EDIT / LIST_GALLERY: ListScene with LIST_MODE_EDIT / LIST_MODE_GALLERY).
 #define MYROOM_MENU_GIFT 0
 #define MYROOM_MENU_SHOOT 1
 #define MYROOM_MENU_RANKING 2
 #define MYROOM_MENU_CHARACTER_EDIT 3
 #define MYROOM_MENU_CHARA 4
 #define MYROOM_MENU_TIPS 5
+#define MYROOM_MENU_LIST_EDIT 6
+#define MYROOM_MENU_LIST_GALLERY 7
 
 // The three entries of pages 1 and 2 only (sMyroomMenu1Items / sMyroomMenu2Items, the touch test, mCellAnim).
 static const Vec2s sMyroomMenuEntryPos[3] = {
@@ -173,7 +174,7 @@ void MyroomScene::Update() {
             InitDisplay();
             LoadGraphics();
             SetupText();
-            mEvent = new ScriptPlayer(1, 0, 0);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_MYROOM, 0, 0);
             ctx->mInfo.mState++;
             break;
         case 1:
@@ -247,7 +248,7 @@ void MyroomScene::Update() {
                 case MYROOM_MENU_TIPS:
                     mEvent->func_020702e0(0x3c, 8, -606, -26, -4, -656);
                     break;
-                case 6:
+                case MYROOM_MENU_LIST_EDIT:
                     mEvent->func_020702e0(0x76, -52, -619, 0x1f, -64, -669);
                     break;
                 case MYROOM_MENU_CHARACTER_EDIT:
@@ -255,7 +256,7 @@ void MyroomScene::Update() {
                     break;
                 case MYROOM_MENU_GIFT:
                 case MYROOM_MENU_SHOOT:
-                case 7:
+                case MYROOM_MENU_LIST_GALLERY:
                     mEvent->func_020702e0(0xb6, 8, -665, 0x60, -4, -715);
                     break;
             }
@@ -310,11 +311,11 @@ void MyroomScene::Update() {
                 case MYROOM_MENU_TIPS:
                     new MyroomTipsScene();
                     break;
-                case 6:
-                    new ListScene(3, 0);
+                case MYROOM_MENU_LIST_EDIT:
+                    new ListScene(LIST_MODE_EDIT, 0);
                     break;
-                case 7:
-                    new ListScene(4, 0);
+                case MYROOM_MENU_LIST_GALLERY:
+                    new ListScene(LIST_MODE_GALLERY, 0);
                     break;
             }
             mContext->mRequest = 0;
@@ -741,7 +742,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState = 0xc;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = 6;
+                            ctx->mInfo.mScroll = MYROOM_MENU_LIST_EDIT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
@@ -785,7 +786,7 @@ void MyroomScene::HandleWindowResult() {
                 case 2:
                     switch (selection) {
                         case 0:
-                            ctx->mInfo.mScroll = 7;
+                            ctx->mInfo.mScroll = MYROOM_MENU_LIST_GALLERY;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 1:

@@ -405,7 +405,7 @@ void MapScene::Init() {
     LoadMapBackground();
     func_ov005_0221abf4();
     LoadPanelText();
-    mEvent = new ScriptPlayer(0, 0, 0);
+    mEvent = new ScriptPlayer(SCRIPT_KIND_MAP, 0, 0);
     SetupMap();
     mGlyphCount  = TextManager::Get().GlyphCount(8);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
@@ -413,20 +413,20 @@ void MapScene::Init() {
 
 void MapScene::SetupMap() {
     switch (mEvent->func_020667ec()) {
-        case 3:
+        case SCRIPT_KIND_TOURNAMENT:
             if (gSaveData[0].mUnk_24 & 1) {
-                mUnk_74 = 3;
+                mUnk_74 = MAP_TAB_TOURNAMENT;
             } else {
-                mUnk_74 = 1;
+                mUnk_74 = MAP_TAB_STORE;
                 mUnk_7c = 1;
             }
             break;
-        case 2:
-            mUnk_74 = 2;
+        case SCRIPT_KIND_PARK:
+            mUnk_74 = MAP_TAB_PARK;
             break;
         default:
             if (gSaveData[0].mUnk_42 == 5) {
-                mUnk_74 = 0;
+                mUnk_74 = MAP_TAB_MYROOM;
             }
             break;
     }

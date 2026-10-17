@@ -214,7 +214,7 @@ void TournamentScene::Update() {
         case 0:
             InitScriptDisplay();
             LoadMenu();
-            mEvent = new ScriptPlayer(3, 0, 0);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_TOURNAMENT, 0, 0);
             mMenuVisible = 0;
             mTimer  = 0x10;
             mState++;

@@ -80,7 +80,7 @@ void BakuganModel::Setup(u32 kind, u32 value, u32 mode) {
     ChangeDir("/Game/Bakugan/tex");
     TextureFile *texture = mModel->mModelFile->mTexture;
     u8 id                       = gBakuganNumbers[(u8) kind];
-    if ((u8) (mode + 0xff) <= 1) {
+    if ((u8) (mode + 0xff) <= 1) { // BAKUGAN_MODEL_MODE_M or BAKUGAN_MODEL_MODE_L
         if (kind == 0x22 && value == 0) {
             sprintf(name, "L_sphe83");
             sprintf(file, "H_sphe83");
@@ -102,13 +102,13 @@ void BakuganModel::Setup(u32 kind, u32 value, u32 mode) {
     }
     texture->FreeFile();
     ChangeDir("/");
-    if ((u8) (mode + 0xfd) <= 1) {
+    if ((u8) (mode + 0xfd) <= 1) { // BAKUGAN_MODEL_MODE_H_HOLD_FRAME or BAKUGAN_MODEL_MODE_H_LOOP
         StartAnim(0, 1);
-        if (mode == 4) {
+        if (mode == BAKUGAN_MODEL_MODE_H_LOOP) {
             mAnimUpdateEnabled = 1;
         }
     }
-    if ((u8) (mode + 0xfb) <= 1) {
+    if ((u8) (mode + 0xfb) <= 1) { // BAKUGAN_MODEL_MODE_H_NO_LOOP or BAKUGAN_MODEL_MODE_H_SPIN
         mAnimUpdateEnabled = 0;
         StartAnim(0, 0);
     }
@@ -145,7 +145,7 @@ BOOL BakuganModel::LoadModel(u8 kind) {
     }
     ChangeDir("/Game/Bakugan/mdl");
     NitroTexture *texture;
-    if ((u8) (mMode + 0xff) <= 1) {
+    if ((u8) (mMode + 0xff) <= 1) { // BAKUGAN_MODEL_MODE_M or BAKUGAN_MODEL_MODE_L
         sprintf(path, "L_sphe%02d.nsbtx", id);
         texture = new NitroTexture(path);
     } else {
@@ -153,12 +153,12 @@ BOOL BakuganModel::LoadModel(u8 kind) {
         texture = new NitroTexture(path);
     }
     NitroModel *model = new NitroModel();
-    if (mMode == 2) {
+    if (mMode == BAKUGAN_MODEL_MODE_L) {
         sprintf(path, "L_sphe%02d.nsbmd", id);
         if (!model->Load(path, texture)) {
             return FALSE;
         }
-    } else if (mMode == 1) {
+    } else if (mMode == BAKUGAN_MODEL_MODE_M) {
         sprintf(path, "M_sphe%02d.nsbmd", id);
         if (!model->Load(path, texture)) {
             return FALSE;
@@ -169,7 +169,7 @@ BOOL BakuganModel::LoadModel(u8 kind) {
             return FALSE;
         }
     }
-    if (mMode != 2 && mMode != 1) {
+    if (mMode != BAKUGAN_MODEL_MODE_L && mMode != BAKUGAN_MODEL_MODE_M) {
         sprintf(path, "H_sphe%02d_data.bin", id);
         ModelAnimData *data = new ModelAnimData(path);
         ModelAnim *anim     = new ModelAnim(data, model);
@@ -182,13 +182,13 @@ BOOL BakuganModel::LoadModel(u8 kind) {
 }
 
 void BakuganModel::Update() {
-    if (mMode == 6) {
+    if (mMode == BAKUGAN_MODEL_MODE_H_SPIN) {
         UpdateSpin();
     }
     if (!mAnimUpdateEnabled) {
         return;
     }
-    if (mMode == 3) {
+    if (mMode == BAKUGAN_MODEL_MODE_H_HOLD_FRAME) {
         mModel->mAnim->SetFrame(0x96000, 5);
     }
     if (mModel) {

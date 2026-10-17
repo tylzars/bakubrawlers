@@ -25,6 +25,13 @@
 #define STORE_SCROLL_PREV 1
 #define STORE_SCROLL_NEXT 2
 
+// Menu entries: the values HandleMenuResult stores in mInfo.mUnk_06 for menu selections 0-2, which Update switches on
+// to move the event camera (state 12) and to create the list (state 16), each named after the ListScene mode created
+// for it (LIST_MODE_STORE_BAKUGAN / STORE_CARD / STORE_GAUGE).
+#define STORE_MENU_BAKUGAN 0
+#define STORE_MENU_CARD 1
+#define STORE_MENU_GAUGE 2
+
 s32 UnlockEmblem8Or9();
 void func_02086d48();
 
@@ -120,7 +127,7 @@ void StoreScene::Update() {
             break;
         case 1:
             InitDisplay();
-            mEvent = new ScriptPlayer(4, 0, 1);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_STORE, 0, 1);
             ctx->mInfo.mState++;
             break;
         case 2:
@@ -155,7 +162,7 @@ void StoreScene::Update() {
             InitDisplay();
             LoadGraphics();
             SetupText();
-            mEvent = new ScriptPlayer(4, 0, 0);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_STORE, 0, 0);
             ctx->mInfo.mState++;
             break;
         case 7:
@@ -206,15 +213,15 @@ void StoreScene::Update() {
             DrawText();
             SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             switch (ctx->mInfo.mUnk_06) {
-                case 0:
+                case STORE_MENU_BAKUGAN:
                     mEvent->func_020702e0(sEventPositions[2][0], sEventPositions[2][1], sEventPositions[2][2],
                                           sEventPositions[2][3], sEventPositions[2][4], sEventPositions[2][5]);
                     break;
-                case 1:
+                case STORE_MENU_CARD:
                     mEvent->func_020702e0(sEventPositions[0][0], sEventPositions[0][1], sEventPositions[0][2],
                                           sEventPositions[0][3], sEventPositions[0][4], sEventPositions[0][5]);
                     break;
-                case 2:
+                case STORE_MENU_GAUGE:
                     mEvent->func_020702e0(sEventPositions[1][0], sEventPositions[1][1], sEventPositions[1][2],
                                           sEventPositions[1][3], sEventPositions[1][4], sEventPositions[1][5]);
                     break;
@@ -256,14 +263,14 @@ void StoreScene::Update() {
                 break;
             }
             switch (ctx->mInfo.mUnk_06) {
-                case 0:
-                    new ListScene(0, 0);
+                case STORE_MENU_BAKUGAN:
+                    new ListScene(LIST_MODE_STORE_BAKUGAN, 0);
                     break;
-                case 1:
-                    new ListScene(2, 0);
+                case STORE_MENU_CARD:
+                    new ListScene(LIST_MODE_STORE_CARD, 0);
                     break;
-                case 2:
-                    new ListScene(1, 0);
+                case STORE_MENU_GAUGE:
+                    new ListScene(LIST_MODE_STORE_GAUGE, 0);
                     break;
             }
             mContext->mRequest = 0;
@@ -513,15 +520,15 @@ void StoreScene::HandleMenuResult() {
     }
     switch (info->mSelection) {
         case 0:
-            info->mUnk_06 = 0;
+            info->mUnk_06 = STORE_MENU_BAKUGAN;
             info->mState  = 12;
             break;
         case 1:
-            info->mUnk_06 = 1;
+            info->mUnk_06 = STORE_MENU_CARD;
             info->mState  = 12;
             break;
         case 2:
-            info->mUnk_06 = 2;
+            info->mUnk_06 = STORE_MENU_GAUGE;
             info->mState  = 12;
             break;
         case 3:

@@ -24,14 +24,19 @@
 #include "Graphics/ModelInternal.hpp"
 
 // Wait kinds (mWaitKind): set by ExecuteCommand, run by UpdateWait while mState is 4; RunCommands goes on to the
-// next command at once only for SCRIPT_WAIT_KIND_NONE. Kinds 5 (commands 74 / 97: func_02067f30 one frame later,
-// then kind 6 when it returns TRUE) and 8 (command 234: until mUnk_14e7 is 0 again) stay literals.
+// next command at once only for SCRIPT_WAIT_KIND_NONE. Kind 8 (command 234: until mUnk_14e7 is 0 again) stays a
+// literal.
 #define SCRIPT_WAIT_KIND_NONE                  0  // UpdateWait ends the wait at once
 #define SCRIPT_WAIT_KIND_TIMER                 1  // until mWaitTimer has counted down to 0 (commands 3 and 13)
 #define SCRIPT_WAIT_KIND_MESSAGES              2  // until mMessagePos reaches mMessageCount (command 2)
 #define SCRIPT_WAIT_KIND_BRIGHTNESS            3  // until mBrightnessFrameCount is 0 (commands 25-27)
 #define SCRIPT_WAIT_KIND_LERP                  4  // steps mLerpFrames up to mLerpFrameCount, interpolating every slot
                                                   // (commands 16, 17)
+#define SCRIPT_WAIT_KIND_CHARACTER_ANIM        5  // commands 74 / 97, one frame later: func_02067f30 sets the slot's
+                                                  // mTargetAnimTableIndex and switches the character the slot has to
+                                                  // it (UpdateCharacterAnimation); a slot with no character goes on
+                                                  // to SCRIPT_WAIT_KIND_LOAD (LoadCharacter). Value < 0 releases the
+                                                  // character; -2 releases it and loads it again with the stored index
 #define SCRIPT_WAIT_KIND_LOAD                  6  // the command's LoadCharacter / LoadMap / LoadModel /
                                                   // LoadNextModelFiles / LoadSphere until TRUE (the mWaitTimer
                                                   // countdown before it never runs: every kind-6 wait starts at 0)
@@ -331,7 +336,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                         }
                     } else {
                         SetupBattle(type, index);
-                        if (mUnk_14e2 == 0 || mBattlePending == 1) {
+                        if (mUnk_14e2 == SCRIPT_KIND_MAP || mBattlePending == 1) {
                             StopWithResult(SCRIPT_RESULT_BATTLE);
                         }
                     }
@@ -391,7 +396,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     mSaveRequested = 1;
                 } else {
                     u32 next = 0;
-                    if (data_020b4324[type]->mUnk_78 != 0) {
+                    if (data_020b4324[type]->mUnk_78 != SCRIPT_KIND_MAP) {
                         next = SCRIPT_RESULT_MAP;
                     }
                     if (next != 0) {
@@ -430,10 +435,10 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
         data_020d433c.mPartners[i] = i;
     }
     switch (mUnk_14e2) {
-        case 3:
+        case SCRIPT_KIND_TOURNAMENT:
             data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
             break;
-        case 2:
+        case SCRIPT_KIND_PARK:
             data_020d433c.mNextScene = SCENE_PARK;
             break;
         default:
@@ -490,7 +495,7 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
 
 u32 ScriptPlayer::func_02066f60() {
     char path[0x80];
-    if (mUnk_14e2 == 6) {
+    if (mUnk_14e2 == SCRIPT_KIND_TUTORIAL) {
         return 0;
     }
     s32 command = func_02066814(0);
@@ -871,7 +876,7 @@ void ScriptPlayer::LoadGraphics() {
         mCutsceneCellAnim = new CellAnimation("cutscene_b_obj_nce.bin", mCutsceneAnimIndex, 1, 1);
         mCutsceneCellAnim->mCharBase = 0x1a0;
         mCutsceneCellAnim->mPaletteBase   = 0;
-        if (mUnk_14e2 == 5) {
+        if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
             mUnk_14f1 = 0;
             mSkipDisabled = 1;
         }
@@ -1479,7 +1484,8 @@ void ScriptPlayer::CreateNextSphere(u32 index) {
     }
     mSpheres[index].mNextSphere = new BakuganModel();
     u8 value = GetSphereVariant(kind);
-    mSpheres[index].mNextSphere->StoreSetup(gScriptSphereEntries[kind].mBakuganId, value, 5);
+    mSpheres[index].mNextSphere->StoreSetup(gScriptSphereEntries[kind].mBakuganId, value,
+                                            BAKUGAN_MODEL_MODE_H_NO_LOOP);
 }
 
 u8 ScriptPlayer::GetSphereVariant(u32 index) {
@@ -1500,8 +1506,12 @@ static inline fx32 CosIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
-// The mode passed to Setup is an enum local: as `u32 mode = c ? 5 : 1;` it colours differently (r6/r7 swapped).
-enum UnkStruct_02065c40_ModelMode { UNK_02065C40_MODEL_MODE_1 = 1, UNK_02065C40_MODEL_MODE_5 = 5 };
+// The mode passed to Setup is an enum local: as `u32 mode = c ? 5 : 1;` it colours differently (r6/r7 swapped). It
+// holds BAKUGAN_MODEL_MODE_* values.
+enum UnkStruct_02065c40_ModelMode {
+    UNK_02065C40_MODEL_MODE_M         = BAKUGAN_MODEL_MODE_M,
+    UNK_02065C40_MODEL_MODE_H_NO_LOOP = BAKUGAN_MODEL_MODE_H_NO_LOOP
+};
 
 BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
     if (index == 0) {
@@ -1517,9 +1527,9 @@ BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
         s32 kind = mSpheres[index].mTableIndex;
         UnkStruct_02065c40_ModelMode mode;
         if (mSpheres[index].mUnk_36 != 0) {
-            mode = UNK_02065C40_MODEL_MODE_5;
+            mode = UNK_02065C40_MODEL_MODE_H_NO_LOOP;
         } else {
-            mode = UNK_02065C40_MODEL_MODE_1;
+            mode = UNK_02065C40_MODEL_MODE_M;
         }
         ChangeDir("/");
         mSpheres[index].mSphere = new BakuganModel();
@@ -1758,7 +1768,7 @@ void ScriptPlayer::UpdateMessages() {
                 return;
             }
             u32 flag = 0;
-            if (mUnk_14e2 == 5) {
+            if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
                 flag = 1;
             }
             mStorytalkWindow->SetMessage(mMessageIndices[mMessagePos], mMessageCharacterIds[mMessagePos], flag, mTextOnly);
@@ -2109,13 +2119,13 @@ void ScriptPlayer::DrawModels() {
 
 struct UnkStruct_020a2198 {
     /* 00 */ s16 mCameraPositionX;
-    /* 02 */ s16 mCameraPositionY; // with mUnk_14e2 == 0 also command 0xb2's value
+    /* 02 */ s16 mCameraPositionY; // with mUnk_14e2 == SCRIPT_KIND_MAP also command 0xb2's value
     /* 04 */ s16 mCameraPositionZ;
     /* 06 */ s16 mCameraTargetX;
     /* 08 */ s16 mCameraTargetY;
     /* 0a */ s16 mCameraTargetZ;
     /* 0c */ s16 mCharacterX; // character 0 only
-    /* 0e */ s16 mCharacterY; // with mUnk_14e2 == 0 also command 0xaf's value
+    /* 0e */ s16 mCharacterY; // with mUnk_14e2 == SCRIPT_KIND_MAP also command 0xaf's value
     /* 10 */ s16 mCharacterZ;
     /* 12 */ s16 mCharacterRotY;
     /* 14 */ u8 mCharacterStorytalkCell2X;
@@ -2663,7 +2673,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 74:
         case 97:
             mWaitTimer = 0;
-            mWaitKind = 5;
+            mWaitKind = SCRIPT_WAIT_KIND_CHARACTER_ANIM;
             break;
         case 77:
         case 100:
@@ -3043,7 +3053,7 @@ void ScriptPlayer::UpdateWait() {
                 done = TRUE;
             }
             break;
-        case 5: {
+        case SCRIPT_WAIT_KIND_CHARACTER_ANIM: {
             u32 idx = GetCommandSlot(mCurrentCommand);
             s32 value = mCurrentValue;
             if (value == -2) {
@@ -3548,7 +3558,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     mCommands[n].mValue = unk2;
     n++;
     mModelCommandIndex = n;
-    if (mUnk_14e2 == 0) {
+    if (mUnk_14e2 == SCRIPT_KIND_MAP) {
         mCommands[n].mCommand = 0xa9;
         mCommands[n].mValue = data_020d433c.mMapTab + 0x20;
         n++;
@@ -3608,7 +3618,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     if (!(((mMessageState == 6) | ((mMessageState == 5) | (mMessageState == 7))) & (unk1 != mStorytalkWindow->mMessageIndex))) {
         return;
     }
-    if (mUnk_14e2 == 5) {
+    if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
         mMessageState = 0;
         SetNoStorytalkMessage(mStorytalkWindow);
         mMessageIndices[0] = unk1;
@@ -3619,7 +3629,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     }
     mStorytalkWindow->SetMessage((s16) unk1, mMessageCharacterIds[0], 0, 0);
     mMessageState = 2;
-    if (mUnk_14e2 != 0) {
+    if (mUnk_14e2 != SCRIPT_KIND_MAP) {
         return;
     }
     if (unk3 < 0) {

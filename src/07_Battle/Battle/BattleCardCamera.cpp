@@ -90,10 +90,10 @@ static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCam
 
 void BattleCardCamera::Init() {
     mBakugans[0] = new BakuganModel();
-    mBakugans[0]->Setup(mSide0BakuganId, mSide0Variant, 3);
+    mBakugans[0]->Setup(mSide0BakuganId, mSide0Variant, BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
     mBakugans[0]->mAnimUpdateEnabled = 1;
     mBakugans[1] = new BakuganModel();
-    mBakugans[1]->Setup(mSide1BakuganId, mSide1Variant, 3);
+    mBakugans[1]->Setup(mSide1BakuganId, mSide1Variant, BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
     mBakugans[1]->mAnimUpdateEnabled = 1;
     BakuganModel *p0 = mBakugans[0];
     fx32 height            = 0x6000;

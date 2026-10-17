@@ -232,7 +232,7 @@ void BattlePlayerList::Update() {
             SetupTutorial(this);
             break;
         case 4:
-            new ListScene(5, mUnk_2a9);
+            new ListScene(LIST_MODE_BATTLE_EDIT, mUnk_2a9);
             mContext->mRequest = 0;
             mState++;
             break;

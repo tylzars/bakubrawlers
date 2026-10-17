@@ -23,7 +23,45 @@ public:
     /* 64 */ u8 mUnk_64;
 };
 
-// Created by StoreScene (modes 0-2), MyroomScene (modes 3-4) and BattlePlayerList (mode 5).
+// Modes: the ctor's first argument, held in mMode. The three STORE modes load the list_store_b_* sub-screen files,
+// mes_storecomment and take gSaveData[0].mMoney -= mPrice on a purchase:
+// STORE_BAKUGAN lists bakugan ids picked by the data_020d4976 bits (BuildList), prices them with GetPrice, and a
+//   purchase resets the bakugan's save entry (ResetCursorBakuganEntry);
+// STORE_GAUGE lists the bakugan with a non-zero func_020231f4, prices them with GetEntryPrice (reduced by the share
+//   the entry's mGauge has of (mUnk_00_0 + 1) * 300) and a purchase opens UnkStruct_02076058(1) with
+//   SetBakugan(.., 1), which sets mRemainingGauge to (mUnk_00_0 + 1) * 300 - mGauge (UnkStruct_02076058 later moves
+//   it into the entry);
+// STORE_CARD lists card ids (GetCardInfo) and prints card rows (PrintCardNameShort).
+// EDIT (list_edit_b_* / list_edit_u_*, from MyroomScene) and BATTLE_EDIT (select_arena_b_bg_* and the /Game/Deck/ and
+// /Game/Battle/Obj/ files on the sub screen, list_edit_u_* on the main screen, from BattlePlayerList) both run the
+// slot pages and mes_DeckSelect; GALLERY loads list_gallery_b_* / list_gallery_u_*, mes_myroom and fills
+// mGalleryCounts.
+// Created by StoreScene (the STORE modes), MyroomScene (EDIT, GALLERY) and BattlePlayerList (BATTLE_EDIT).
+#define LIST_MODE_STORE_BAKUGAN 0
+#define LIST_MODE_STORE_GAUGE   1
+#define LIST_MODE_STORE_CARD    2
+#define LIST_MODE_EDIT          3
+#define LIST_MODE_GALLERY       4
+#define LIST_MODE_BATTLE_EDIT   5
+
+// Text kinds (mTextKind; SetupListTextKind / SetupDeckTextKind store them): what PrintListSceneSubScreenText prints
+// in mPromptWindow and what Update state 5 (mPromptWindow result 1) does once the window has closed. NONE: no prompt
+// (the list window and mMessageWindow run); PRICE_ABOVE_MONEY: set by a store mode when gSaveData[0].mMoney < mPrice;
+// PRICE: prints mMoney, mPrice and mMoney - mPrice, and state 5 takes mMoney -= mPrice; BAKUGAN_NAME / CARD_NAME:
+// print the cursor item's name from mBakuganNameMessages / mCardNameShortMessages and draw its mark / small card
+// (state 5 runs ResetCursorBakuganEntry / sets the card's data_020d4946 bit); READ_SLOTS / PICK_SLOTS: page 0 items
+// 0 / 1 of LIST_MODE_EDIT / BATTLE_EDIT, state 5 runs ReadSlots / PickSlots. Left literals: 3, 7, 10, 11, 12 (one mes
+// entry each; what tells them apart is the producer's condition or an unnamed follow-up state) and 5, which no code
+// stores (every switch handles it with BAKUGAN_NAME); `(u8) (mTextKind + 0xf8) <= 1` (READ_SLOTS, PICK_SLOTS) stays a
+// literal.
+#define LIST_TEXT_KIND_NONE              0
+#define LIST_TEXT_KIND_PRICE_ABOVE_MONEY 1
+#define LIST_TEXT_KIND_PRICE             2
+#define LIST_TEXT_KIND_BAKUGAN_NAME      4
+#define LIST_TEXT_KIND_CARD_NAME         6
+#define LIST_TEXT_KIND_READ_SLOTS        8
+#define LIST_TEXT_KIND_PICK_SLOTS        9
+
 class ListScene : public SceneBase {
 public:
     /* 00c */ void *mStorecommentMessages;
@@ -40,7 +78,7 @@ public:
     /* 040 */ u32 mGlyphCounts[2]; // glyph counts
     /* 048 */ SelectWindow *mPromptWindow;
     /* 04c */ SelectWindow *mListWindow;
-    /* 050 */ SelectWindow *mDeckWindow; // mode 5 only; named after its /Game/Deck/ cells
+    /* 050 */ SelectWindow *mDeckWindow; // LIST_MODE_BATTLE_EDIT only; named after its /Game/Deck/ cells
     /* 054 */ SelectWindowCursor *mPageAndRowCursor;
     /* 058 */ SelectWindowCursor *mAreaCursor;
     /* 05c */ CellAnimation *mMainScreenCellAnims[6];
@@ -72,7 +110,8 @@ public:
     // the input moved to
     /* 0fa */ u8 mCursorItem;
     /* 0fb */ s8 mTargetItem;
-    /* 0fc */ u8 mItemCount; // BuildList sets 2, with no ids, for page 0 (mPage == 0) of modes 3 / 5 with mCharacterId 0x15
+    // BuildList sets 2, with no ids, for page 0 (mPage == 0) of LIST_MODE_EDIT / BATTLE_EDIT with mCharacterId 0x15
+    /* 0fc */ u8 mItemCount;
     /* 0fd */ u8 mScroll;
     /* 0fe */ PAD(0x0fe, 0x100);
     /* 100 */ u32 mListScrolling;
@@ -82,17 +121,18 @@ public:
     /* 104 */ u8 mListFilter;
     /* 105 */ PAD(0x105, 0x106);
     /* 106 */ u16 mItemIds[0x40];
-    /* 186 */ u8 mSavedCursorItems[13]; // per page; BuildList restores mCursorItem from it outside modes 3 / 5 only
+    // per page; BuildList restores mCursorItem from it outside LIST_MODE_EDIT / BATTLE_EDIT only
+    /* 186 */ u8 mSavedCursorItems[13];
     /* 193 */ PAD(0x193, 0x194);
     // set when the page, list or slots change, cleared when served: [0] UpdateListWindow's button flags, [1]
     // LoadSlotGraphics, [2] LoadRowGraphics (and PrintRows while set)
     /* 194 */ u32 mDirtyFlags[3];
     /* 1a0 */ u8 mMainScreenState;
-    /* 1a1 */ u8 mTextKind;
+    /* 1a1 */ u8 mTextKind; // LIST_TEXT_KIND_* or one of the literal kinds listed with them
     /* 1a2 */ struct {
         u16 mCount;
         u16 mTotal;
-    } mGalleryCounts[14]; // filled by RefreshCounts (mode 4); the ctor does not set it
+    } mGalleryCounts[14]; // filled by RefreshCounts (LIST_MODE_GALLERY); the ctor does not set it
     /* 1da */ PAD(0x1da, 0x1dc);
     /* 1dc */ u32 mPrice;
     /* 1e0 */ UnkStruct_02076058 *mUnk_1e0;
@@ -152,23 +192,25 @@ public:
     u8 GetRatioFrame(u32 unk1);
     void DrawMainScreenText();
     void UpdateListScroll();
-    // nothing in mode 2, in modes 3 / 5 from page 4, in mode 4 on page 0 and from page 7; unk3 0-3 picks the VRAM
-    // area (4: offset 0)
+    // nothing in LIST_MODE_STORE_CARD, in EDIT / BATTLE_EDIT from page 4, in GALLERY on page 0 and from page 7; unk3
+    // 0-3 picks the VRAM area (4: offset 0)
     void LoadBakuganMark(u32 unk1, u32 unk2, u32 unk3);
-    // nothing in modes 0 / 1, in modes 3 / 5 on pages 1-3 unless unk3 is 1, in mode 4 below page 7
+    // nothing in LIST_MODE_STORE_BAKUGAN / STORE_GAUGE, in EDIT / BATTLE_EDIT on pages 1-3 unless unk3 is 1, in
+    // GALLERY below page 7
     void LoadSmallCard(u32 unk1, u32 unk2, u32 unk3);
     void LoadRowGraphics();
     void RefreshCommandList();
     void RefreshCommandPage();
-    // unk1 >= 0 starts that entry; < 0: modes 3 / 5 start entry 6, mCursorItem + 7 or mPage + 8, the other modes do
-    // nothing
+    // unk1 >= 0 starts that entry; < 0: LIST_MODE_EDIT / BATTLE_EDIT start entry 6, mCursorItem + 7 or mPage + 8, the
+    // other modes do nothing
     void SetMessage(s32 unk1);
     void ApplyTargetPage();
     BOOL ShouldApplyTargetPage();
     BOOL IsCommandListOrPageSettingUp();
     // windows 0 / 1 / 3 also: mButtons[unk2].mEnabled = unk3 != WINDOW_ITEM_CURSOR_SKIP
     void SetItemFlags(u32 unk1, u32 unk2, u32 unk3);
-    void LoadSlotGraphics(); // modes 3 / 5: the nine slot images with area 1; SetupMainScreenForPage loads area 0
+    // LIST_MODE_EDIT / BATTLE_EDIT: the nine slot images with area 1; SetupMainScreenForPage loads area 0
+    void LoadSlotGraphics();
     BOOL func_02080b48(u32 unk1, u32 unk2);
     void ReleaseMainScreenGraphics();
     void SetupMainScreenForPage();

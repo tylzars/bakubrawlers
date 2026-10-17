@@ -728,7 +728,7 @@ void ParkScene::Update() {
 void ParkScene::Init() {
     InitDisplay();
     LoadBackground();
-    mEvent = new ScriptPlayer(2, 0, 0);
+    mEvent = new ScriptPlayer(SCRIPT_KIND_PARK, 0, 0);
 }
 
 void ParkScene::InitDisplay() {

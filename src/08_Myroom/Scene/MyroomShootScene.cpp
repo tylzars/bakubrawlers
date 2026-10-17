@@ -332,7 +332,7 @@ void MyroomShootScene::SelectShooter(s8 index) {
             u16 effectRot[3];
             VecFx32 pos;
             mShooter = new BakuganModel();
-            mShooter->Setup(sMyroomShootBakuganKinds[mSelected], (u8) mSelected, 0);
+            mShooter->Setup(sMyroomShootBakuganKinds[mSelected], (u8) mSelected, BAKUGAN_MODEL_MODE_H);
             pos = sMyroomShootShooterPos[mSelected];
             mShooter->func_0203db70(&pos);
             mRot[0]  = 0;

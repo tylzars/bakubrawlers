@@ -596,7 +596,7 @@ void BattleTarget::Update() {
                 }
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
-                mBakugan->Setup(record->mBakuganId, record->mAttribute, 3);
+                mBakugan->Setup(record->mBakuganId, record->mAttribute, BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
                 mTimer                   = 0x78;
@@ -777,7 +777,7 @@ void BattleTarget::Init() {
     if ((u8) (record->mBakuganId + 0xfb) <= 1) {
         record->mBakuganId = list->mUnk_2b1 % 2 + 5;
     }
-    mBakugan->Setup(record->mBakuganId, record->mAttribute, 5);
+    mBakugan->Setup(record->mBakuganId, record->mAttribute, BAKUGAN_MODEL_MODE_H_NO_LOOP);
     mBakugan->mVisible = 0;
     PlaceBakugan();
     mStatusPanels = new BattleStatusPanels(0x1000, 0, 1, 1);
@@ -3737,7 +3737,7 @@ void BattleTarget::func_ov007_0225ce08() {
     mCommandMap->mStatusPanelsEnabled = 0;
     mCommandMap->Init();
     data_020d433c.mGimmicks->mState = 0;
-    mBakugan->SetupMode(3);
+    mBakugan->SetupMode(BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
     if (mUnitHandle != 0) {
         BakuganModel *pose = data_020d433c.mBattlePlayers->mUnk_29c->GetBakugan(mUnitHandle - 1);
         pose->mVisible            = 0;

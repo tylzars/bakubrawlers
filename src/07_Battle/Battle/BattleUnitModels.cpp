@@ -200,9 +200,9 @@ void BattleUnitModels::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8
     if (mBakugans[index] == 0 && mMoveStates[index] == 0) {
         mBakugans[index] = new BakuganModel();
         if (data_020d433c.mBattlePlayers->mUnitCount < 8) {
-            mBakugans[index]->Setup(a, b, 1);
+            mBakugans[index]->Setup(a, b, BAKUGAN_MODEL_MODE_M);
         } else {
-            mBakugans[index]->Setup(a, b, 2);
+            mBakugans[index]->Setup(a, b, BAKUGAN_MODEL_MODE_L);
         }
         mBakugans[index]->SetPosition(pos);
         mBakugans[index]->SetRotation(rot);

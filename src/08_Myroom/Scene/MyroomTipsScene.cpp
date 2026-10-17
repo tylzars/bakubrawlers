@@ -170,7 +170,7 @@ void MyroomTipsScene::Update() {
             InitDisplay();
             LoadGraphics();
             CreateMessage();
-            mEvent = new ScriptPlayer(5, 0, 1);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_MYROOM_TIPS, 0, 1);
             GXS_SetVisiblePlane(0x13);
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             context->mInfo.mStep++;
@@ -189,7 +189,7 @@ void MyroomTipsScene::Update() {
             Draw();
             return;
         case 3:
-            mEvent = new ScriptPlayer(5, 0, 1);
+            mEvent = new ScriptPlayer(SCRIPT_KIND_MYROOM_TIPS, 0, 1);
             SetMessage(0x2d);
             SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             context->mInfo.mStep++;

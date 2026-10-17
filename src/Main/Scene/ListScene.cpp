@@ -566,7 +566,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mCommandPageClosed  = 0;
     mPendingPlanes  = -1;
     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-    mCharacterId = mMode == 5 ? data_020d43db[mPlayer] : 0x15;
+    mCharacterId = mMode == LIST_MODE_BATTLE_EDIT ? data_020d43db[mPlayer] : 0x15;
     for (u8 i = 0; i < 2; i++) {
         mTextBuffers[i] = NULL;
         mGlyphBuffers[i] = NULL;
@@ -610,7 +610,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
         mDirtyFlags[i] = 1;
     }
     mMainScreenState = 4;
-    mTextKind = 0;
+    mTextKind = LIST_TEXT_KIND_NONE;
     mPrice = 0;
     MI_CpuClear16(&mAlphabetChar, 2);
     mFirstSlotOnly = data_020d433c.mLastBattle;
@@ -816,7 +816,7 @@ void ListScene::Update() {
             LoadSubScreenGraphics();
             LoadMessages();
             mState++;
-            if (mMode == 5) {
+            if (mMode == LIST_MODE_BATTLE_EDIT) {
                 mState = 7;
                 UpdateMainScreenAndDraw();
                 return;
@@ -855,55 +855,55 @@ void ListScene::Update() {
             mPromptWindow->Update(1);
             if (mPromptWindow->mState == 4) {
                 switch (mTextKind) {
-                    case 2:
+                    case LIST_TEXT_KIND_PRICE:
                         switch (mMode) {
-                            case 0:
+                            case LIST_MODE_STORE_BAKUGAN:
                                 gSaveData[0].mMoney -= mPrice;
-                                SetupListTextKind(this, 4);
+                                SetupListTextKind(this, LIST_TEXT_KIND_BAKUGAN_NAME);
                                 break;
-                            case 1:
+                            case LIST_MODE_STORE_GAUGE:
                                 gSaveData[0].mMoney -= mPrice;
-                                SetupListTextKind(this, 0);
+                                SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                                 mSavedCursorItems[mPage] = mCursorItem;
                                 mState           = 0x21;
                                 break;
-                            case 2:
+                            case LIST_MODE_STORE_CARD:
                                 gSaveData[0].mMoney -= mPrice;
-                                SetupListTextKind(this, 6);
+                                SetupListTextKind(this, LIST_TEXT_KIND_CARD_NAME);
                                 break;
                         }
                         SoundManager::Get().StartSeqArc(0x69);
                         break;
                     case 3:
-                        SetupListTextKind(this, 2);
+                        SetupListTextKind(this, LIST_TEXT_KIND_PRICE);
                         RefreshCommandList();
                         break;
-                    case 4:
+                    case LIST_TEXT_KIND_BAKUGAN_NAME:
                     case 5:
                         ResetCursorBakuganEntry(this);
                         SetupListTextKind(this, 10);
                         break;
                     case 10:
-                        SetupListTextKind(this, 0);
+                        SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         mState = 0x26;
                         break;
-                    case 6:
+                    case LIST_TEXT_KIND_CARD_NAME:
                         SetFlagBit(data_020d4946, mItemIds[mCursorItem]);
-                        SetupListTextKind(this, 0);
+                        SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         break;
-                    case 8:
+                    case LIST_TEXT_KIND_READ_SLOTS:
                         ReadSlots();
-                        SetupListTextKind(this, 0);
+                        SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         SoundManager::Get().StartSeqArc(0x68);
                         break;
-                    case 9:
+                    case LIST_TEXT_KIND_PICK_SLOTS:
                         PickSlots(this);
                         data_020d433c.mFlags |= 2;
-                        SetupListTextKind(this, 0);
+                        SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         SoundManager::Get().StartSeqArc(0x67);
                         break;
                     default:
-                        SetupListTextKind(this, 0);
+                        SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         break;
                 }
             }
@@ -911,7 +911,7 @@ void ListScene::Update() {
         case 6:
             mPromptWindow->Update(1);
             if (mPromptWindow->mState == 4) {
-                SetupListTextKind(this, 0);
+                SetupListTextKind(this, LIST_TEXT_KIND_NONE);
             }
             break;
         case 7:
@@ -1036,7 +1036,7 @@ void ListScene::Update() {
                 switch (mTextKind) {
                     case 0xb:
                         SoundManager::Get().StartSeqArc(0x6a);
-                        SetupDeckTextKind(this, 0);
+                        SetupDeckTextKind(this, LIST_TEXT_KIND_NONE);
                         mDeckWindow->mCellAnims[0]->SetAnimation(0);
                         mState = 0x17;
                         WirelessManager::Get();
@@ -1047,7 +1047,7 @@ void ListScene::Update() {
                         }
                         break;
                     case 0xc:
-                        SetupDeckTextKind(this, 0);
+                        SetupDeckTextKind(this, LIST_TEXT_KIND_NONE);
                         break;
                 }
             }
@@ -1056,7 +1056,7 @@ void ListScene::Update() {
         case 22:
             mPromptWindow->Update(1);
             if (mPromptWindow->mState == 4) {
-                SetupDeckTextKind(this, 0);
+                SetupDeckTextKind(this, LIST_TEXT_KIND_NONE);
             }
             UpdateMainScreenAndDraw();
             return;
@@ -1211,7 +1211,7 @@ void ListScene::Update() {
             mWndMode          = 2;
             return;
         case 43:
-            if (mMode == 3 || mMode == 5) {
+            if (mMode == LIST_MODE_EDIT || mMode == LIST_MODE_BATTLE_EDIT) {
                 StoreSlotsInSaveData();
             }
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
@@ -1281,9 +1281,9 @@ void ListScene::InitDisplay() {
     G2S_SetBG2Priority(2);
     G2S_SetBG3Priority(1);
     GX_SetVisiblePlane(0x11);
-    if (mMode == 4) {
+    if (mMode == LIST_MODE_GALLERY) {
         GXS_SetVisiblePlane(0x19);
-    } else if (mMode == 5) {
+    } else if (mMode == LIST_MODE_BATTLE_EDIT) {
         GXS_SetVisiblePlane(0x11);
     } else {
         GXS_SetVisiblePlane(0x1d);
@@ -1310,18 +1310,18 @@ void ListScene::InitDisplay() {
 
 void ListScene::SetupPagesAndList() {
     switch (mMode) {
-        case 0:
-        case 1:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
             mPageCount = 6;
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             mPageCount = 6;
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             mPageCount = 10;
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             mPageCount = 13;
             RefreshCounts();
             break;
@@ -1337,9 +1337,9 @@ void ListScene::LoadSubScreenGraphics() {
     LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     switch (mMode) {
-        case 0:
-        case 1:
-        case 2:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
+        case LIST_MODE_STORE_CARD:
             ChangeDir("/Game/List/");
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
@@ -1349,7 +1349,7 @@ void ListScene::LoadSubScreenGraphics() {
             LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
             break;
-        case 3:
+        case LIST_MODE_EDIT:
             ChangeDir("/Game/List/");
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
@@ -1359,7 +1359,7 @@ void ListScene::LoadSubScreenGraphics() {
             LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             ChangeDir("/Game/List/");
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
@@ -1369,7 +1369,7 @@ void ListScene::LoadSubScreenGraphics() {
             LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG3_SCR, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
             break;
-        case 5:
+        case LIST_MODE_BATTLE_EDIT:
             ChangeDir("/Game/Battle/Bg/");
             LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
@@ -1437,7 +1437,7 @@ void ListScene::LoadSubScreenGraphics() {
     mPromptWindow->SetCells(5, sPromptWindowCells);
     mPageAndRowCursor = new SelectWindowCursor(8, sPageAndRowCursorItems, -1);
     mAreaCursor = new SelectWindowCursor(2, sAreaCursorAndBakuganOrder.mCursor, -1);
-    if (mMode == 5) {
+    if (mMode == LIST_MODE_BATTLE_EDIT) {
         ChangeDir("/Game/Deck/");
         screen.LoadCharacters("select_deck_b_obj_01.nce_ncg1D.bin", 0x1c000, 0);
         screen.LoadPalette("select_deck_b_obj_01_ncl.bin", 0xc0, 0);
@@ -1503,27 +1503,27 @@ void ListScene::LoadMessages() {
     mAlphabetChar = *(u16 *) (alphabet + *(u16 *) (alphabet + 2) + 0xb4);
     OS_Free(alphabet);
     switch (mMode) {
-        case 0:
+        case LIST_MODE_STORE_BAKUGAN:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
             mMessageWindow->StartMessage(0xb, 0, 1);
             break;
-        case 1:
+        case LIST_MODE_STORE_GAUGE:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
             mMessageWindow->StartMessage(0xd, 0, 1);
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
             mMessageWindow->StartMessage(0xc, 0, 1);
             break;
-        case 3:
+        case LIST_MODE_EDIT:
             mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
             mMessageWindow->StartMessage(6, 0, 1);
             break;
-        case 5:
+        case LIST_MODE_BATTLE_EDIT:
             mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
             mMessageWindow->StartMessage(5, 0, 1);
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             mMessageWindow = new MessageWindow("mes_myroom", 1, 0x1b000);
             mMessageWindow->StartMessage(0x30, 0, 1);
             break;
@@ -1538,7 +1538,7 @@ void ListScene::PrintRows() {
     u8 i = 0;
     ClearSubScreenText();
     switch (mMode) {
-        case 0:
+        case LIST_MODE_STORE_BAKUGAN:
             for (; i < 4; i++) {
                 s32 index = mScroll + i;
                 if (index >= mItemCount) {
@@ -1549,7 +1549,7 @@ void ListScene::PrintRows() {
                 PrintBakuganRow((u8) mItemIds[mScroll + i], i, a, b);
             }
             break;
-        case 1:
+        case LIST_MODE_STORE_GAUGE:
             for (; i < 4; i++) {
                 if (mScroll + i >= mItemCount) {
                     break;
@@ -1559,7 +1559,7 @@ void ListScene::PrintRows() {
                 PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
             }
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             for (; i < 4; i++) {
                 if (mScroll + i >= mItemCount) {
                     break;
@@ -1567,8 +1567,8 @@ void ListScene::PrintRows() {
                 PrintCardNameShort(mItemIds[mScroll + i], i);
             }
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage == 0) {
                 break;
             }
@@ -1590,7 +1590,7 @@ void ListScene::PrintRows() {
                 }
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage == 0) {
                 break;
             }
@@ -1617,7 +1617,7 @@ void ListScene::PrintRows() {
 }
 
 void ListScene::DrawSubScreenText() {
-    if (mTextKind != 0) {
+    if (mTextKind != LIST_TEXT_KIND_NONE) {
         return;
     }
     if (mMessageWindow != NULL) {
@@ -1786,13 +1786,13 @@ void ListScene::UpdateListInput() {
                 mDirtyFlags[0] = 1;
                 RefreshCommandList();
                 RefreshCommandPage();
-                if ((mMode == 3 || mMode == 5) && mPage == 0) {
+                if ((mMode == LIST_MODE_EDIT || mMode == LIST_MODE_BATTLE_EDIT) && mPage == 0) {
                     SetMessage(-1);
                 }
                 SoundManager::Get().StartSeqArc(0);
                 return;
             case 2:
-                if (mMode == 5) {
+                if (mMode == LIST_MODE_BATTLE_EDIT) {
                     mState = 0xf;
                 } else {
                     mState = 0x2b;
@@ -1823,46 +1823,46 @@ void ListScene::UpdateListInput() {
                     return;
                 }
                 switch (mMode) {
-                    case 0:
+                    case LIST_MODE_STORE_BAKUGAN:
                         mPrice = GetPrice((u8) mItemIds[mCursorItem], mListFilter);
                         if (gSaveData[0].mMoney < mPrice) {
-                            SetupListTextKind(this, 1);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE_ABOVE_MONEY);
                         } else if (func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mListFilter) != 0) {
                             SetupListTextKind(this, 3);
                         } else {
-                            SetupListTextKind(this, 2);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE);
                         }
                         SoundManager::Get().StartSeqArc(0);
                         return;
-                    case 1: {
+                    case LIST_MODE_STORE_GAUGE: {
                         UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mListFilter);
                         mPrice                  = GetEntryPrice((u8) mItemIds[mCursorItem], mListFilter);
                         if ((s32) entry->mUnk_00_0 >= 9) {
                             SetupListTextKind(this, 7);
                         } else if (gSaveData[0].mMoney < mPrice) {
-                            SetupListTextKind(this, 1);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE_ABOVE_MONEY);
                         } else {
-                            SetupListTextKind(this, 2);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE);
                         }
                         SoundManager::Get().StartSeqArc(0);
                         return;
                     }
-                    case 2:
+                    case LIST_MODE_STORE_CARD:
                         mPrice = Table_020a39fc()[mItemIds[mCursorItem]];
                         if (gSaveData[0].mMoney < mPrice) {
-                            SetupListTextKind(this, 1);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE_ABOVE_MONEY);
                         } else {
-                            SetupListTextKind(this, 2);
+                            SetupListTextKind(this, LIST_TEXT_KIND_PRICE);
                         }
                         SoundManager::Get().StartSeqArc(0);
                         return;
-                    case 3:
-                    case 5:
+                    case LIST_MODE_EDIT:
+                    case LIST_MODE_BATTLE_EDIT:
                         if (mPage == 0) {
                             if (mCursorItem == 0) {
-                                SetupListTextKind(this, 8);
+                                SetupListTextKind(this, LIST_TEXT_KIND_READ_SLOTS);
                             } else if (mCursorItem == 1) {
-                                SetupListTextKind(this, 9);
+                                SetupListTextKind(this, LIST_TEXT_KIND_PICK_SLOTS);
                             }
                         } else if (mPage < 4) {
                             if (IsInSlots(1, (u8) mItemIds[mCursorItem], mListFilter) == 0) {
@@ -1889,7 +1889,7 @@ void ListScene::UpdateListInput() {
                 mDirtyFlags[0]            = 1;
                 RefreshCommandList();
                 RefreshCommandPage();
-                if ((mMode == 3 || mMode == 5) && mPage == 0) {
+                if ((mMode == LIST_MODE_EDIT || mMode == LIST_MODE_BATTLE_EDIT) && mPage == 0) {
                     SetMessage(-1);
                 }
                 if (act == 2) {
@@ -1900,7 +1900,7 @@ void ListScene::UpdateListInput() {
                 return;
             case 3:
             case 4:
-                if ((mMode == 3 || mMode == 5) && mPage != 0 && mPage < 4) {
+                if ((mMode == LIST_MODE_EDIT || mMode == LIST_MODE_BATTLE_EDIT) && mPage != 0 && mPage < 4) {
                     if (act == 3) {
                         mListFilter = (mListFilter + 5) % 6;
                     } else {
@@ -2027,15 +2027,15 @@ void ListScene::UpdateListWindow() {
             mListWindow->mCellAnims[6]->Rewind();
         }
         switch (mMode) {
-            case 0:
-            case 1:
-            case 2:
-            case 4:
+            case LIST_MODE_STORE_BAKUGAN:
+            case LIST_MODE_STORE_GAUGE:
+            case LIST_MODE_STORE_CARD:
+            case LIST_MODE_GALLERY:
                 SetItemFlags(0, 3, WINDOW_ITEM_CURSOR_SKIP);
                 SetItemFlags(0, 4, WINDOW_ITEM_CURSOR_SKIP);
                 break;
-            case 3:
-            case 5:
+            case LIST_MODE_EDIT:
+            case LIST_MODE_BATTLE_EDIT:
                 if (mPage != 0 && mPage < 4 && mSelectingPage == 0) {
                     SetItemFlags(0, 3, WINDOW_ITEM_NO_SLIDE_OUT);
                     SetItemFlags(0, 4, WINDOW_ITEM_NO_SLIDE_OUT);
@@ -2138,16 +2138,16 @@ void ListScene::ApplyTargetPage() {
     mPage      = mTargetPage;
     mDirtyFlags[2] = 1;
     switch (mMode) {
-        case 0:
-        case 1:
-        case 2:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
+        case LIST_MODE_STORE_CARD:
             mListFilter = mPage;
             BuildList(1);
             RefreshCommandList();
             RefreshCommandPage();
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             SetMessage(-1);
             if (mPage == 0) {
                 BuildList(1);
@@ -2176,7 +2176,7 @@ void ListScene::ApplyTargetPage() {
                 }
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage == 0) {
                 BuildList(1);
                 if (mMainScreenState == 0) {
@@ -2332,8 +2332,8 @@ void ListScene::DrawMainScreen() {
     }
     u8 i = 0;
     switch (mMode) {
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mMainScreenCellAnims[0] != NULL) {
                 mMainScreenCellAnims[0]->Draw(0, 0x80, 0x60, 0);
             }
@@ -2363,7 +2363,7 @@ void ListScene::DrawMainScreen() {
                 }
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mMainScreenCellAnims[1] != NULL) {
                 mMainScreenCellAnims[1]->Draw(i, 0x80, 0x60, i);
             }
@@ -2416,15 +2416,15 @@ void ListScene::DrawPagesAndMovingItem() {
             break;
         }
         switch (mMode) {
-            case 0:
-            case 1:
+            case LIST_MODE_STORE_BAKUGAN:
+            case LIST_MODE_STORE_GAUGE:
                 mSubScreenCellAnims[4]->DrawFrame(1, (u8) (mPageScroll + i), mPageSlideX + 0x1e + i * 0x2c, 0x26, 1);
                 break;
-            case 2:
+            case LIST_MODE_STORE_CARD:
                 mSubScreenCellAnims[5]->DrawFrame(1, (u8) (mPageScroll + i), mPageSlideX + 0x20 + i * 0x2c, 0x24, 1);
                 break;
-            case 3:
-            case 5:
+            case LIST_MODE_EDIT:
+            case LIST_MODE_BATTLE_EDIT:
                 if ((mPageScroll + i) == 0) {
                     mSubScreenCellAnims[10]->SetAnimation(0x1d);
                     mSubScreenCellAnims[10]->Draw(1, (s16) (mPageSlideX + 0x19 + i * 0x2c), 0x21, 1);
@@ -2436,7 +2436,7 @@ void ListScene::DrawPagesAndMovingItem() {
                     DrawSmallCard((mPageScroll + i) - 4, (mPageScroll + i) - 4, 1, mPageSlideX + 0x20 + i * 0x2c, 0x24);
                 }
                 break;
-            case 4:
+            case LIST_MODE_GALLERY:
                 if ((mPageScroll + i) == 0) {
                     mSubScreenCellAnims[10]->SetAnimation(0x20);
                     mSubScreenCellAnims[10]->Draw(1, (s16) (mPageSlideX + 0x19 + i * 0x2c), 0x21, 1);
@@ -2451,16 +2451,16 @@ void ListScene::DrawPagesAndMovingItem() {
     } while (i < limit);
     mSubScreenCellAnims[0]->Draw(1, 0x80, 0x60, 1);
     switch (mMode) {
-        case 0:
-        case 1:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
             mSubScreenCellAnims[1]->DrawFrame(1, 1, mPageSlideX + 0x14 - mPageScroll * 0x2c, 0x22, 1);
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             mSubScreenCellAnims[1]->DrawFrame(1, 0, mPageSlideX + 0x14 - mPageScroll * 0x2c, 0x22, 1);
             mSubScreenCellAnims[1]->DrawFrame(1, 0, mPageSlideX + 0x98 - mPageScroll * 0x2c, 0x22, 1);
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPageScroll < 6) {
                 mSubScreenCellAnims[1]->DrawFrame(1, 0, mPageSlideX + 0x40 - mPageScroll * 0x2c, 0x22, 1);
             }
@@ -2469,7 +2469,7 @@ void ListScene::DrawPagesAndMovingItem() {
                 mSubScreenCellAnims[1]->DrawFrame(1, 0, mPageSlideX + 0x148 - mPageScroll * 0x2c, 0x22, 1);
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPageScroll < 8) {
                 mSubScreenCellAnims[1]->DrawFrame(1, 1, mPageSlideX + 0x40 - mPageScroll * 0x2c, 0x22, 1);
             }
@@ -2484,7 +2484,7 @@ void ListScene::DrawPagesAndMovingItem() {
 }
 
 void ListScene::DrawRows() {
-    if (mMode == 4 && mPage == 0) {
+    if (mMode == LIST_MODE_GALLERY && mPage == 0) {
         return;
     }
     mSubScreenCellAnims[15]->Update();
@@ -2501,26 +2501,26 @@ void ListScene::DrawRows() {
             }
         } else {
             switch (mMode) {
-                case 0:
+                case LIST_MODE_STORE_BAKUGAN:
                     if (func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mListFilter) == 0) {
                         mSubScreenCellAnims[15]->Draw(1, 0x19, (s16) (mRowSlideY + 0x5b + i * 32), 2);
                     }
                     DrawBakuganMark(mListFilter, (u8) ((mScroll + i) % 4), 2, 0x1d, mRowSlideY + 0x49 + i * 32);
                     DrawMoneyAmount(GetPrice((u8) mItemIds[mScroll + i], mListFilter), i);
                     break;
-                case 1:
+                case LIST_MODE_STORE_GAUGE:
                     DrawBakuganMark(mListFilter, (u8) ((mScroll + i) % 4), 2, 0x1d, mRowSlideY + 0x49 + i * 32);
                     DrawMoneyAmount(GetEntryPrice((u8) mItemIds[mScroll + i], mListFilter), i);
                     if (IsInSlots(1, (u8) mItemIds[mScroll + i], mListFilter) != 0) {
                         mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mRowSlideY + 0x54 + i * 32), 2);
                     }
                     break;
-                case 2:
+                case LIST_MODE_STORE_CARD:
                     DrawSmallCard(mListFilter, (u8) ((mScroll + i) % 4), 2, 0x20, mRowSlideY + 0x48 + i * 32);
                     DrawMoneyAmount(Table_020a39fc()[mItemIds[mScroll + i]], i);
                     break;
-                case 3:
-                case 5:
+                case LIST_MODE_EDIT:
+                case LIST_MODE_BATTLE_EDIT:
                     if (mPage == 0) {
                         mSubScreenCellAnims[11]->DrawFrame(1, (u8) (i + 1), 0x19, mRowSlideY + 0x45 + i * 32, 2);
                         mSubScreenCellAnims[12]->SetAnimation(0x1f);
@@ -2537,7 +2537,7 @@ void ListScene::DrawRows() {
                         }
                     }
                     break;
-                case 4:
+                case LIST_MODE_GALLERY:
                     if (mPage < 7) {
                         DrawBakuganMark(mListFilter, (u8) ((mScroll + i) % 4), 2, 0x1d, mRowSlideY + 0x49 + i * 32);
                         if (IsInSlots(1, (u8) mItemIds[mScroll + i], mListFilter) != 0) {
@@ -2554,7 +2554,7 @@ void ListScene::DrawRows() {
         }
         i++;
     } while (i < count);
-    if ((mMode == 3 || mMode == 5) && mPage == 0) {
+    if ((mMode == LIST_MODE_EDIT || mMode == LIST_MODE_BATTLE_EDIT) && mPage == 0) {
         return;
     }
     DrawItemNumberAndCount();
@@ -2586,13 +2586,13 @@ void ListScene::DrawItemNumberAndCount() {
 
 void ListScene::DrawMoneyFilterButtonsAndCursor() {
     switch (mMode) {
-        case 0:
-        case 1:
-        case 2:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
+        case LIST_MODE_STORE_CARD:
             DrawMoneyAmount(gSaveData[0].mMoney, 4);
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mListWindow->mButtons[3].mEnabled != 0) {
                 mSubScreenCellAnims[7]->Update();
                 mSubScreenCellAnims[7]->Draw(1, 5, 0x6c, 1);
@@ -2640,8 +2640,8 @@ void ListScene::ReadSlots() {
 
 void ListScene::SetupMainScreenForPage() {
     switch (mMode) {
-        case 0:
-        case 1:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
             if (mCommandList != NULL) {
                 return;
             }
@@ -2650,7 +2650,7 @@ void ListScene::SetupMainScreenForPage() {
             mCommandListClosed = 0;
             RefreshCommandList();
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             if (mCommandPage != NULL) {
                 return;
             }
@@ -2659,8 +2659,8 @@ void ListScene::SetupMainScreenForPage() {
             mCommandPageClosed = 0;
             RefreshCommandPage();
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage == 0) {
                 InitAndLoadMainScreen();
                 for (u8 i = 0; i < 9; i++) {
@@ -2691,7 +2691,7 @@ void ListScene::SetupMainScreenForPage() {
             mCommandPageClosed = 0;
             RefreshCommandPage();
             return;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage == 0) {
                 InitAndLoadMainScreen();
                 SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
@@ -2720,7 +2720,7 @@ void ListScene::SetupMainScreenForPage() {
 
 void ListScene::LoadSlotGraphics() {
     SpriteManager::Get();
-    if (mMode != 3 && mMode != 5) {
+    if (mMode != LIST_MODE_EDIT && mMode != LIST_MODE_BATTLE_EDIT) {
         return;
     }
     for (u8 i = 0; i < 9; i++) {
@@ -2736,8 +2736,8 @@ void ListScene::LoadRowGraphics() {
     SpriteManager::Get();
     u8 i = 0;
     switch (mMode) {
-        case 0:
-        case 1:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
             for (; i < 3; i++) {
                 if (mScroll + i >= mItemCount) {
                     return;
@@ -2745,7 +2745,7 @@ void ListScene::LoadRowGraphics() {
                 LoadBakuganMark((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
-        case 2:
+        case LIST_MODE_STORE_CARD:
             for (; i < 3; i++) {
                 if (mScroll + i >= mItemCount) {
                     return;
@@ -2753,8 +2753,8 @@ void ListScene::LoadRowGraphics() {
                 LoadSmallCard(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage == 0) {
                 return;
             }
@@ -2774,7 +2774,7 @@ void ListScene::LoadRowGraphics() {
                 }
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage == 0) {
                 return;
             }
@@ -2820,14 +2820,15 @@ BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
 }
 
 // Fills mItemIds for the mode and sorts it, then puts the cursor back (mSavedCursorItems[mPage], or the item already in the slot in
-// modes 3/5) and clamps mScroll; unk1 != 0 scrolls to the cursor. Page 0 of modes 3/5 sets mItemCount = 2 with no ids.
+// LIST_MODE_EDIT / BATTLE_EDIT) and clamps mScroll; unk1 != 0 scrolls to the cursor. Page 0 of those two modes sets
+// mItemCount = 2 with no ids.
 void ListScene::BuildList(u32 unk1) {
     u8 i = 0;
     mItemCount = 0;
     switch (mMode) {
-        case 0:
-        case 1:
-            if (mMode == 0) {
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
+            if (mMode == LIST_MODE_STORE_BAKUGAN) {
                 for (; i < 0x29; i++) {
                     if (TestFlagBit(data_020d4976, i) && sBakuganAttributeFlags[i][mListFilter] != 0 && func_02080b48(i, mListFilter)) {
                         mItemIds[mItemCount] = i;
@@ -2838,7 +2839,7 @@ void ListScene::BuildList(u32 unk1) {
                     mItemIds[mItemCount] = 0x22;
                     mItemCount++;
                 }
-            } else if (mMode == 1) {
+            } else if (mMode == LIST_MODE_STORE_GAUGE) {
                 for (; i < 0x29; i++) {
                     if (func_020231f4(gSaveData, 0, i, mListFilter) != 0) {
                         mItemIds[mItemCount] = i;
@@ -2848,7 +2849,7 @@ void ListScene::BuildList(u32 unk1) {
             }
             SortListSceneItems(this, 1);
             break;
-        case 2: {
+        case LIST_MODE_STORE_CARD: {
             for (u16 k = 1; k < 0xd5; k++) {
                 if (TestFlagBit(data_020d497b, k) && !TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mListFilter && GetCardNumber(k) < 0x2bc) {
                     mItemIds[mItemCount] = k;
@@ -2858,8 +2859,8 @@ void ListScene::BuildList(u32 unk1) {
             SortListSceneItems(this, 0);
             break;
         }
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mCharacterId != 0x15) {
                 mItemCount = 0;
             } else if (mPage == 0) {
@@ -2901,7 +2902,7 @@ void ListScene::BuildList(u32 unk1) {
                 } while (j < mItemCount);
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage != 0) {
                 if (mPage < 7) {
                     for (; i < 0x29; i++) {
@@ -2923,7 +2924,7 @@ void ListScene::BuildList(u32 unk1) {
             }
             break;
     }
-    if (mMode != 3 && mMode != 5) {
+    if (mMode != LIST_MODE_EDIT && mMode != LIST_MODE_BATTLE_EDIT) {
         mCursorItem = mSavedCursorItems[mPage];
     }
     if (mItemCount == 0) {
@@ -2954,7 +2955,7 @@ void ListScene::RefreshCommandList() {
         return;
     }
     switch (mMode) {
-        case 0: {
+        case LIST_MODE_STORE_BAKUGAN: {
             BattleCellPair cell;
             mCommandList->func_02058240(0);
             if (mSelectingPage != 0) {
@@ -2971,7 +2972,7 @@ void ListScene::RefreshCommandList() {
             SetCommandListValues(mCommandList, mListFilter, func_02086548((u8) mItemIds[mCursorItem], mListFilter), &cell);
             return;
         }
-        case 1: {
+        case LIST_MODE_STORE_GAUGE: {
             if (mSelectingPage != 0) {
                 func_02058248(mCommandList, mPage);
                 return;
@@ -2986,8 +2987,8 @@ void ListScene::RefreshCommandList() {
             SetCommandListValues(mCommandList, mListFilter, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mListFilter), pair);
             return;
         }
-        case 3:
-        case 5: {
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT: {
             if (mPage == 0) {
                 return;
             }
@@ -3026,7 +3027,7 @@ void ListScene::RefreshCommandList() {
             SetCommandListValues(mCommandList, kind, value, pair);
             return;
         }
-        case 4: {
+        case LIST_MODE_GALLERY: {
             if (mPage == 0) {
                 return;
             }
@@ -3059,7 +3060,7 @@ void ListScene::RefreshCommandPage() {
         return;
     }
     switch (mMode) {
-        case 2:
+        case LIST_MODE_STORE_CARD:
             if (mSelectingPage != 0) {
                 SetCommandPageCard(mCommandPage, (u16) (mPage + 0xd7), -1);
                 return;
@@ -3074,8 +3075,8 @@ void ListScene::RefreshCommandPage() {
                 SetCommandPageCard(mCommandPage, mItemIds[mCursorItem], -1);
             }
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage < 4) {
                 return;
             }
@@ -3089,7 +3090,7 @@ void ListScene::RefreshCommandPage() {
                 SetCommandPageCard(mCommandPage, (u8) v, -1);
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage < 7) {
                 return;
             }
@@ -3231,15 +3232,15 @@ void ListScene::DrawBakuganMark(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5)
 
 void ListScene::LoadBakuganMark(u32 unk1, u32 unk2, u32 unk3) {
     switch (mMode) {
-        case 2:
+        case LIST_MODE_STORE_CARD:
             return;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage >= 4) {
                 return;
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage == 0) {
                 return;
             }
@@ -3330,16 +3331,16 @@ void ListScene::DrawSmallCard(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
 
 void ListScene::LoadSmallCard(u32 unk1, u32 unk2, u32 unk3) {
     switch (mMode) {
-        case 0:
-        case 1:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
             return;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage != 0 && mPage < 4 && unk3 != 1) {
                 return;
             }
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             if (mPage < 7) {
                 return;
             }
@@ -3418,13 +3419,13 @@ void ListScene::InitAndLoadMainScreen() {
     MI_CpuClearFast((void *) 0x6400000, 0x40000);
     ChangeDir("/Game/List/");
     switch (mMode) {
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "list_edit_u_bg_00_ncg.bin", 0, 0, 0);
             LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "list_edit_u_bg_00_nsc.bin", 0, 0, 0);
             break;
-        case 4:
+        case LIST_MODE_GALLERY:
             LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "list_gallery_u_bg_00_ncl.bin", 0, 0, 0);
             LoadAndQueueUpload(0, UPLOAD_KIND_BG0_CHAR, 0, "list_gallery_u_bg_00_ncg.bin", 0, 0, 0);
             LoadAndQueueUpload(0, UPLOAD_KIND_BG0_SCR, 0, "list_gallery_u_bg_00_nsc.bin", 0, 0, 0);
@@ -3589,7 +3590,7 @@ void SetupListTextKind(ListScene *self, u32 mode) {
     }
     state = 0;
     switch (mode) {
-        case 0:
+        case LIST_TEXT_KIND_NONE:
             if (self->mCommandList != NULL) {
                 self->mCommandList->SetWindowVisible(1);
             }
@@ -3600,14 +3601,14 @@ void SetupListTextKind(ListScene *self, u32 mode) {
             self->mListWindow->mEnabled = 1;
             self->mPromptWindow->mEnabled = 0;
             state                      = 0;
-            if (self->mTextKind == 10 || self->mTextKind == 6) {
+            if (self->mTextKind == 10 || self->mTextKind == LIST_TEXT_KIND_CARD_NAME) {
                 self->mSavedCursorItems[self->mPage] = self->mCursorItem;
                 self->BuildList(0);
                 self->RefreshCommandList();
                 self->RefreshCommandPage();
                 self->mDirtyFlags[2] = 1;
                 self->mDirtyFlags[0] = 1;
-            } else if ((u8) (self->mTextKind + 0xf8) <= 1) {
+            } else if ((u8) (self->mTextKind + 0xf8) <= 1) { // LIST_TEXT_KIND_READ_SLOTS or PICK_SLOTS
                 for (state = 0; state < 9; state++) {
                     if (state < 3) {
                         self->LoadBakuganMark((u8) self->mSlotValues[state], state, 0);
@@ -3626,12 +3627,12 @@ void SetupListTextKind(ListScene *self, u32 mode) {
             self->mTextKind = mode;
             self->mState  = 3;
             return;
-        case 1:
+        case LIST_TEXT_KIND_PRICE_ABOVE_MONEY:
         case 7:
         case 10:
             state = 0;
             break;
-        case 2:
+        case LIST_TEXT_KIND_PRICE:
             state = 2;
             break;
         case 3: {
@@ -3644,16 +3645,16 @@ void SetupListTextKind(ListScene *self, u32 mode) {
             flag  = 0;
             break;
         }
-        case 8:
-        case 9:
+        case LIST_TEXT_KIND_READ_SLOTS:
+        case LIST_TEXT_KIND_PICK_SLOTS:
             state = 1;
             break;
-        case 4:
+        case LIST_TEXT_KIND_BAKUGAN_NAME:
         case 5:
             self->LoadBakuganMark((u8) self->mItemIds[self->mCursorItem], state, 3);
             self->LoadBakuganMark((u8) self->mItemIds[self->mCursorItem], 1, 3);
             break;
-        case 6:
+        case LIST_TEXT_KIND_CARD_NAME:
             self->LoadSmallCard(self->mItemIds[self->mCursorItem], state, 3);
             break;
     }
@@ -3709,13 +3710,13 @@ void PrintListSceneSubScreenText(ListScene *self) {
     base  = NULL;
     index = 0;
     switch (self->mTextKind) {
-        case 0:
+        case LIST_TEXT_KIND_NONE:
             break;
-        case 1:
+        case LIST_TEXT_KIND_PRICE_ABOVE_MONEY:
             index = 3;
             base  = (u8 *) self->mStorecommentMessages;
             break;
-        case 2: {
+        case LIST_TEXT_KIND_PRICE: {
             u8 i;
             u32 msg;
             u32 value;
@@ -3753,7 +3754,7 @@ void PrintListSceneSubScreenText(ListScene *self) {
             index = 4;
             base  = (u8 *) self->mStorecommentMessages;
             break;
-        case 4:
+        case LIST_TEXT_KIND_BAKUGAN_NAME:
         case 5:
             base  = (u8 *) self->mStorecommentMessages;
             index = 9;
@@ -3761,7 +3762,7 @@ void PrintListSceneSubScreenText(ListScene *self) {
             PrintMessageF(TextManager::Get(), (MessageFile *) self->mBakuganNameMessages, self->mItemIds[self->mCursorItem], self->mTextBuffers[0], 0x1c, 0x38);
             TextManager::Get().mUse4bppFont = 0;
             break;
-        case 6:
+        case LIST_TEXT_KIND_CARD_NAME:
             base  = (u8 *) self->mStorecommentMessages;
             index = 0x16;
             TextManager::Get().mUse4bppFont = 1;
@@ -3772,11 +3773,11 @@ void PrintListSceneSubScreenText(ListScene *self) {
             base  = (u8 *) self->mStorecommentMessages;
             index = 0xf;
             break;
-        case 8:
+        case LIST_TEXT_KIND_READ_SLOTS:
             base  = (u8 *) self->mDeckSelectMessages;
             index = 0x13;
             break;
-        case 9:
+        case LIST_TEXT_KIND_PICK_SLOTS:
             base  = (u8 *) self->mDeckSelectMessages;
             index = 0x15;
             break;
@@ -3800,13 +3801,13 @@ void PrintListSceneSubScreenText(ListScene *self) {
 
 void ListScene::DrawPromptWindowContents() {
     switch (mTextKind) {
-        case 0:
+        case LIST_TEXT_KIND_NONE:
             return;
-        case 4:
+        case LIST_TEXT_KIND_BAKUGAN_NAME:
         case 5:
             DrawBakuganMark(mListFilter, 0, 3, 0x23, 0x5a);
             break;
-        case 6:
+        case LIST_TEXT_KIND_CARD_NAME:
             DrawSmallCard(mListFilter, 0, 3, 0x23, 0x5a);
             break;
     }
@@ -4109,7 +4110,7 @@ void ListScene::UpdateMainScreenAndDraw() {
     UpdateMainScreen();
     DrawMainScreen();
     DrawPromptWindowContents();
-    if (mMessageWindow != NULL && mTextKind == 0) {
+    if (mMessageWindow != NULL && mTextKind == LIST_TEXT_KIND_NONE) {
         mMessageWindow->Update();
     }
     if (mState < 0x17) {
@@ -4126,7 +4127,7 @@ void SetupDeckTextKind(ListScene *self, u32 mode) {
     }
     state = 0;
     switch (mode) {
-        case 0:
+        case LIST_TEXT_KIND_NONE:
             self->mPendingPlanes                      = 0x11;
             self->mDeckWindow->mEnabled             = 1;
             self->mDeckWindow->mCursor->mSelection = state;
@@ -4182,13 +4183,13 @@ void ListScene::SetMessage(s32 unk1) {
         return;
     }
     switch (mMode) {
-        case 0:
-        case 1:
-        case 2:
-        case 4:
+        case LIST_MODE_STORE_BAKUGAN:
+        case LIST_MODE_STORE_GAUGE:
+        case LIST_MODE_STORE_CARD:
+        case LIST_MODE_GALLERY:
             break;
-        case 3:
-        case 5:
+        case LIST_MODE_EDIT:
+        case LIST_MODE_BATTLE_EDIT:
             if (mPage == 0) {
                 if (mSelectingPage != 0) {
                     mMessageWindow->StartMessage(6, 0, 1);

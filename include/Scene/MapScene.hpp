@@ -54,7 +54,7 @@ public:
     /* 70 */ u16 mParallax;
     /* 72 */ u8 mDragging;
     /* 73 */ u8 mLastTouchX;
-    /* 74 */ s8 mUnk_74;
+    /* 74 */ s8 mUnk_74; // MAP_TAB_*: mCellAnims[1] is drawn at that sMapMenuItems entry's x + 10, y - 0x18; -1 = none
     /* 75 */ s8 mSkipDraw;
     /* 76 */ u8 mPage;
     /* 77 */ u8 mPageVisible;

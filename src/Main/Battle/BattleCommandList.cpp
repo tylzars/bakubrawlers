@@ -788,7 +788,7 @@ BOOL BattleCommandList::CreateBakuganModel() {
         return TRUE;
     }
     mBakuganModel = new BakuganModel();
-    mBakuganModel->Setup(mBakuganId, mAttribute, 6);
+    mBakuganModel->Setup(mBakuganId, mAttribute, BAKUGAN_MODEL_MODE_H_SPIN);
     VecFx32 pos;
     pos.x = -0xd000;
     pos.y = pos.x + 0xb000;

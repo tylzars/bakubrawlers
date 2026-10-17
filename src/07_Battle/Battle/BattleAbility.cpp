@@ -778,7 +778,8 @@ u8 BattleAbility::UpdateReplaceRecord() {
             ReplaceUnitRecord(data_020d433c.mBattlePlayers, mUnit, mPickIndex);
             {
                 BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mPickIndex];
-                ((BakuganModel *) mTarget->mBakugan)->Setup(record->mBakuganId, record->mAttribute, 3);
+                ((BakuganModel *) mTarget->mBakugan)->Setup(record->mBakuganId, record->mAttribute,
+                                                            BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
             }
             SpriteManager::Get();
             SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;

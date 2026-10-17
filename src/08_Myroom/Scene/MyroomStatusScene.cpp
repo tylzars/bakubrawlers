@@ -12,12 +12,12 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern const u16 data_ov008_02228660[];
-extern const VecFx32 data_ov008_02228634;
-extern const VecFx32 data_ov008_02228640;
+extern const u16 gMyroomStatusLightData[];
+extern const VecFx32 gMyroomStatusBgOffset;
+extern const VecFx32 gMyroomStatusBgScale;
 
-extern const u8 data_ov008_02228688[5][3];
-extern const u32 data_ov008_0222864c[5];
+extern const u8 gMyroomStatusLineTextPos[5][3];
+extern const u32 gMyroomStatusLineVramOffsets[5];
 
 MyroomStatusScene::MyroomStatusScene(u32 unk) :
     SceneBase(2, 0) {
@@ -35,7 +35,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mGlyphCount = 0;
-    mPalette = new ModelLightGroup(data_ov008_02228660);
+    mPalette = new ModelLightGroup(gMyroomStatusLightData);
     mUnk_50 = new Ranking();
     u32 frames = gSaveData[0].mPlayFrames;
     mHours     = frames / 216000;
@@ -170,8 +170,8 @@ void MyroomStatusScene::Draw3D() {
     DrawCell();
     MtxFx43 *view = func_020323b8();
     MtxFx43 mtx   = gIdentityMtx43;
-    VecFx32 b      = data_ov008_02228640;
-    VecFx32 a      = data_ov008_02228634;
+    VecFx32 b      = gMyroomStatusBgScale;
+    VecFx32 a      = gMyroomStatusBgOffset;
     func_01ffcf64(&mtx, &a);
     func_01ff89c0(&mtx, view, &mtx);
     mMyroombgModel->AdvanceAnim();
@@ -277,14 +277,14 @@ void MyroomStatusScene::RenderLine(u8 line) {
             break;
     }
     SpriteManager &sprites = SpriteManager::Get();
-    QueueUpload(sprites.Screen(0).mBgIndex, 4, data_ov008_0222864c[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(sprites.Screen(0).mBgIndex, 4, gMyroomStatusLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
 }
 
 void MyroomStatusScene::DrawLines() {
     for (u8 i = 0; i < 5; i++) {
-        SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, data_ov008_02228688[i][0],
-                                                     data_ov008_02228688[i][1], 0,
-                                                     (data_ov008_0222864c[i] << 11) >> 16, 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, gMyroomStatusLineTextPos[i][0],
+                                                     gMyroomStatusLineTextPos[i][1], 0,
+                                                     (gMyroomStatusLineVramOffsets[i] << 11) >> 16, 0xf, 0);
     }
 }
 

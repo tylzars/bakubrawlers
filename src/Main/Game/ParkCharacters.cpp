@@ -10,7 +10,7 @@ struct ParkEntry {
     /* 05 */ u8 mUnk_05;
     /* 06 */ u8 mUnk_06;
     /* 07 */ u8 mUnk_07;
-    /* 08 */ u8 mUnk_08;
+    /* 08 */ u8 mFieldId;
     /* 09 */ u8 mUnk_09;
     /* 0a */ u16 mUnk_0a;
 };

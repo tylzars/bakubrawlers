@@ -11,12 +11,12 @@
 #include "System/FileSystem.hpp"
 #include <nitro/gx.h>
 
-static const WindowItemRecord data_ov000_02226340[3] = {
+static const WindowItemRecord sOptionMenu3Items[3] = {
     {0, 0x1, 45, 136, 78, 20, 0x0, {-1, -1, 1, 1}, 0, 2},
     {1, 0x1, 133, 136, 78, 20, 0x0, {-1, -1, 0, 0}, 0, 2},
     {2, 0x8000, 120, 35, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov000_02226650[6] = {
+static const WindowCellRecord sOptionMainMenuCells[6] = {
     {"option_b_obj_00_nce.bin", 3, 0x0, 0, 0, 1, {3, 5, 4, 0}},
     {"option_b_obj_00_nce.bin", 6, 0x0, 0, 0, 1, {6, 8, 7, 0}},
     {"option_b_obj_00_nce.bin", 9, 0x0, 0, 0, 1, {9, 11, 10, 0}},
@@ -24,47 +24,47 @@ static const WindowCellRecord data_ov000_02226650[6] = {
     {"option_b_obj_00_nce.bin", 15, 0x0, 0, 0, 1, {15, 17, 16, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
-static const Vec2s data_ov000_02226298[4] = {
+static const Vec2s sOptionMenu3StartPos[4] = {
     {301, 136}, {389, 136}, {376, 35}, {0, 0},
 };
-static const Vec2s data_ov000_02226288[4] = {
+static const Vec2s sOptionMenu3SlidePerFrame[4] = {
     {-32, 0}, {-32, 0}, {-32, 0}, {32, 0},
 };
-static const u8 data_ov000_02226274[4] = {0x34, 0x54, 0x74, 0x0};
-static const WindowItemRecord data_ov000_022262d0[2] = {
+static const u8 sOptionSettingsRowY[4] = {0x34, 0x54, 0x74, 0x0};
+static const WindowItemRecord sOptionSettingsItems[2] = {
     {0, 0x5, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
     {1, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov000_02226308[2] = {
+static const WindowCellRecord sOptionSettingsCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
-static const WindowCellRecord data_ov000_02226538[4] = {
+static const WindowCellRecord sOptionMenu2Cells[4] = {
     {"option_b_obj_00_nce.bin", 24, 0x0, 0, 0, 1, {24, 26, 25, 0}},
     {"option_b_obj_00_nce.bin", 27, 0x0, 0, 0, 1, {27, 29, 28, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
-static const u8 data_ov000_02226278[6] = {0x60, 0x7c, 0x98, 0xb4, 0xd0, 0xec};
-static const Vec2s data_ov000_022262bc[5] = {
+static const u8 sOptionSettingsColumnX[6] = {0x60, 0x7c, 0x98, 0xb4, 0xd0, 0xec};
+static const Vec2s sOptionSettingsSlidePerFrame[5] = {
     {0, 2}, {0, 0}, {-32, 0}, {-32, 0}, {-32, 0},
 };
-static const Vec2s data_ov000_022262a8[5] = {
+static const Vec2s sOptionSettingsStartPos[5] = {
     {128, 80}, {256, 0}, {256, 52}, {256, 84}, {256, 116},
 };
-static const u8 data_ov000_02226280[8] = {0x0, 0x24, 0x12, 0x14, 0x16, 0x13, 0x15, 0x17};
-static const WindowItemRecord data_ov000_022263e8[4] = {
+static const u8 sOptionSettingsAnimIndices[8] = {0x0, 0x24, 0x12, 0x14, 0x16, 0x13, 0x15, 0x17};
+static const WindowItemRecord sOptionMenu4Items[4] = {
     {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
     {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
     {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
     {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov000_02226394[3] = {
+static const WindowCellRecord sOptionMenu3Cells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xd000, 10, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xd000, 10, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xd000, 10, 0, 1, {10, 10, 10, 0}},
 };
-static const WindowItemRecord data_ov000_022265a8[6] = {
+static const WindowItemRecord sOptionMainMenuItems[6] = {
     {0, 0x1, 48, 38, 160, 24, 0x303, {4, 1, -1, -1}, 0, 2},
     {1, 0x1, 48, 62, 160, 24, 0x303, {0, 2, -1, -1}, 0, 2},
     {2, 0x1, 48, 86, 160, 24, 0x303, {1, 3, -1, -1}, 0, 2},
@@ -72,13 +72,13 @@ static const WindowItemRecord data_ov000_022265a8[6] = {
     {4, 0x1, 48, 134, 160, 24, 0x303, {3, 0, -1, -1}, 0, 2},
     {5, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov000_02226458[4] = {
+static const WindowCellRecord sOptionMenu4Cells[4] = {
     {"option_b_obj_00_nce.bin", 30, 0x0, 0, 0, 1, {30, 32, 31, 0}},
     {"option_b_obj_00_nce.bin", 33, 0x0, 0, 0, 1, {33, 35, 34, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
-static const WindowItemRecord data_ov000_022264c8[4] = {
+static const WindowItemRecord sOptionMenu2Items[4] = {
     {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
     {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
     {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
@@ -435,11 +435,11 @@ void OptionScene::Init() {
 void OptionScene::BuildMainMenu() {
     ClearText(0);
     delete mWindow;
-    mWindow = new SelectWindow(6, data_ov000_022265a8, mSelection);
-    mWindow->SetCells(6, data_ov000_02226650);
+    mWindow = new SelectWindow(6, sOptionMainMenuItems, mSelection);
+    mWindow->SetCells(6, sOptionMainMenuCells);
     mWindow->Update(1);
     u8 sel = mSelection;
-    mWindow->mCells[sel]->SetAnimation(data_ov000_02226650[sel].mAnimIndices[2]);
+    mWindow->mCells[sel]->SetAnimation(sOptionMainMenuCells[sel].mAnimIndices[2]);
 }
 
 void OptionScene::BuildSettings() {
@@ -452,9 +452,9 @@ void OptionScene::BuildSettings() {
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = new CellAnimation("option_b_obj_00_nce.bin", data_ov000_02226280[i], 1, 1);
-        mPosX[i] = data_ov000_022262a8[i].x;
-        mPosY[i] = data_ov000_022262a8[i].y;
+        mCells[i] = new CellAnimation("option_b_obj_00_nce.bin", sOptionSettingsAnimIndices[i], 1, 1);
+        mPosX[i] = sOptionSettingsStartPos[i].x;
+        mPosY[i] = sOptionSettingsStartPos[i].y;
     }
     SaveData *data = gSaveData;
     mRow = 0;
@@ -468,21 +468,21 @@ void OptionScene::BuildSettings() {
     mCur[2] = data->mUnk_28_13;
     mTouchRow = -1;
     delete mWindow;
-    mWindow = new SelectWindow(2, data_ov000_022262d0, -1);
-    mWindow->SetCells(2, data_ov000_02226308);
+    mWindow = new SelectWindow(2, sOptionSettingsItems, -1);
+    mWindow->SetCells(2, sOptionSettingsCells);
     mWindow->Update(1);
 }
 
 void OptionScene::DrawSettings() {
     if (mSlideTimer != 0) {
         for (u8 i = 0; i < 5; i++) {
-            mPosX[i] += data_ov000_022262bc[i].x;
-            mPosY[i] += data_ov000_022262bc[i].y;
+            mPosX[i] += sOptionSettingsSlidePerFrame[i].x;
+            mPosY[i] += sOptionSettingsSlidePerFrame[i].y;
         }
         mSlideTimer--;
     }
     for (u8 i = 0; i < 3; i++) {
-        mCells[1]->Draw(1, (s16) (mPosX[2 + i] + data_ov000_02226278[mCur[i]]), data_ov000_02226274[i], 0);
+        mCells[1]->Draw(1, (s16) (mPosX[2 + i] + sOptionSettingsColumnX[mCur[i]]), sOptionSettingsRowY[i], 0);
     }
     for (u8 i = 0; i < 5; i++) {
         mCells[i]->Update();
@@ -502,7 +502,7 @@ void OptionScene::UpdateSettings() {
         if (TouchManager::Get().mPressed) {
             mTouchRow = -1;
             for (u8 i = 0; i < 3; i++) {
-                if (TouchManager::Get().IsDownIn(0, data_ov000_02226274[i], 0x100, 0x18)) {
+                if (TouchManager::Get().IsDownIn(0, sOptionSettingsRowY[i], 0x100, 0x18)) {
                     mTouchRow = i;
                     break;
                 }
@@ -512,7 +512,7 @@ void OptionScene::UpdateSettings() {
             return;
         }
         for (u8 i = 0; i < 6; i++) {
-            if (TouchManager::Get().IsDownIn(data_ov000_02226278[i], data_ov000_02226274[mTouchRow], 0x10, 0x18)) {
+            if (TouchManager::Get().IsDownIn(sOptionSettingsColumnX[i], sOptionSettingsRowY[mTouchRow], 0x10, 0x18)) {
                 mCur[mTouchRow] = i;
             }
         }
@@ -548,8 +548,8 @@ void OptionScene::UpdateSettings() {
         changed = TRUE;
     }
     if (prev != mRow) {
-        mCells[prev + 2]->SetAnimation(data_ov000_02226280[prev + 2]);
-        mCells[mRow + 2]->SetAnimation(data_ov000_02226280[mRow + 5]);
+        mCells[prev + 2]->SetAnimation(sOptionSettingsAnimIndices[prev + 2]);
+        mCells[mRow + 2]->SetAnimation(sOptionSettingsAnimIndices[mRow + 5]);
     }
     if (changed) {
         switch (mRow) {
@@ -584,11 +584,11 @@ void OptionScene::BuildMenu2() {
     mPosY[0] = 0x50;
     mSlideTimer = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, data_ov000_022264c8, (s8) (gSaveData[0].mUnk_28_6 == 0 ? 1 : 0));
-    mWindow->SetCells(4, data_ov000_02226538);
+    mWindow = new SelectWindow(4, sOptionMenu2Items, (s8) (gSaveData[0].mUnk_28_6 == 0 ? 1 : 0));
+    mWindow->SetCells(4, sOptionMenu2Cells);
     mWindow->Update(1);
     int sel = gSaveData[0].mUnk_28_6 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mAnimIndices[2]);
+    mWindow->mCells[(u8) sel]->SetAnimation(sOptionMenu2Cells[sel].mAnimIndices[2]);
 }
 
 void OptionScene::DrawMenu2() {
@@ -602,19 +602,19 @@ void OptionScene::DrawMenu2() {
 void OptionScene::BuildMenu3() {
     GX_SetVisiblePlane(0x11);
     delete mWindow;
-    mWindow = new SelectWindow(3, data_ov000_02226340, 1);
-    mWindow->SetCells(3, data_ov000_02226394);
+    mWindow = new SelectWindow(3, sOptionMenu3Items, 1);
+    mWindow->SetCells(3, sOptionMenu3Cells);
     u8 i;
     for (i = 0; i < 3; i++) {
-        mPosX[i] = data_ov000_02226298[i].x;
-        s16 y = data_ov000_02226298[i].y;
+        mPosX[i] = sOptionMenu3StartPos[i].x;
+        s16 y = sOptionMenu3StartPos[i].y;
         mPosY[i] = y;
         SelectWindow *w = mWindow;
         w->mCellPos[i].x = mPosX[i];
         w->mCellPos[i].y = y;
     }
-    mPosX[i] = data_ov000_02226298[i].x;
-    s16 y = data_ov000_02226298[i].y;
+    mPosX[i] = sOptionMenu3StartPos[i].x;
+    s16 y = sOptionMenu3StartPos[i].y;
     mPosY[i] = y;
     G2S_SetBG1Offset(mPosX[i], mPosY[i]);
     G2S_SetBG2Offset(mPosX[i], mPosY[i]);
@@ -640,15 +640,15 @@ void OptionScene::SlideStep() {
     }
     u8 i;
     for (i = 0; i < 3; i++) {
-        mPosX[i] += data_ov000_02226288[i].x;
-        mPosY[i] += data_ov000_02226288[i].y;
+        mPosX[i] += sOptionMenu3SlidePerFrame[i].x;
+        mPosY[i] += sOptionMenu3SlidePerFrame[i].y;
         SelectWindow *w = mWindow;
         s16 y = mPosY[i];
         w->mCellPos[i].x = mPosX[i];
         w->mCellPos[i].y = y;
     }
-    mPosX[i] += data_ov000_02226288[i].x;
-    mPosY[i] += data_ov000_02226288[i].y;
+    mPosX[i] += sOptionMenu3SlidePerFrame[i].x;
+    mPosY[i] += sOptionMenu3SlidePerFrame[i].y;
     G2S_SetBG1Offset(mPosX[i], mPosY[i]);
     G2S_SetBG2Offset(mPosX[i] - 0x20, mPosY[i]);
     mSlideTimer--;
@@ -678,11 +678,11 @@ void OptionScene::BuildMenu4() {
     mPosY[0] = 0x50;
     mSlideTimer = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, data_ov000_022263e8, (s8) (gSaveData[0].mUnk_28_5 == 0 ? 1 : 0));
-    mWindow->SetCells(4, data_ov000_02226458);
+    mWindow = new SelectWindow(4, sOptionMenu4Items, (s8) (gSaveData[0].mUnk_28_5 == 0 ? 1 : 0));
+    mWindow->SetCells(4, sOptionMenu4Cells);
     mWindow->Update(1);
     int sel = gSaveData[0].mUnk_28_5 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226458[sel].mAnimIndices[2]);
+    mWindow->mCells[(u8) sel]->SetAnimation(sOptionMenu4Cells[sel].mAnimIndices[2]);
 }
 
 

@@ -29,7 +29,7 @@ struct ParkEntry {
     /* 05 */ u8 mUnk_05;
     /* 06 */ u8 mUnk_06;
     /* 07 */ u8 mUnk_07;
-    /* 08 */ u8 mUnk_08;
+    /* 08 */ u8 mFieldId;
     /* 09 */ u8 mUnk_09;
     /* 0a */ union {
         u16 mUnk_0a_h;
@@ -45,7 +45,7 @@ struct ParkRandEntry {
     u8 mKind;
     u8 mPad;
 };
-static const ParkRandEntry data_ov004_0221d910[17][6] = {
+static const ParkRandEntry sParkWinLoseMessages[17][6] = {
     {{6, 1, 0}, {7, 1, 0}, {8, 1, 0}, {6, 3, 0}, {7, 3, 0}, {8, 3, 0}},
     {{9, 1, 0}, {10, 1, 0}, {11, 1, 0}, {9, 3, 0}, {10, 3, 0}, {11, 3, 0}},
     {{12, 1, 0}, {13, 1, 0}, {14, 1, 0}, {12, 3, 0}, {13, 3, 0}, {14, 3, 0}},
@@ -294,8 +294,8 @@ void ParkScene::Update() {
             if (nib == 0) {
                 pick += 3;
             }
-            u8 kind     = data_ov004_0221d910[idx][pick].mKind;
-            u16 message = data_ov004_0221d910[idx][pick].mMessage;
+            u8 kind     = sParkWinLoseMessages[idx][pick].mKind;
+            u16 message = sParkWinLoseMessages[idx][pick].mMessage;
             u8 ok;
             if (nib != 0) {
                 ok = mEvent->func_0206f9b4("mes_pm_win", idx, kind, message, 0, 2, 0);
@@ -565,7 +565,7 @@ void ParkScene::Update() {
                     case 0:
                         data_020d433c.mPlayerCount = 2;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;
@@ -576,7 +576,7 @@ void ParkScene::Update() {
                     case 1:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 1;
                         data_020d433c.mCharacterIds[0]  = 0x15;
@@ -595,7 +595,7 @@ void ParkScene::Update() {
                     case 2:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;

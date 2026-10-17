@@ -80,28 +80,28 @@ _ZN16FieldSelectScene19func_ov001_02226cb0Ev kind:function(arm,size=0x68) addr:0
 _ZN16FieldSelectScene19func_ov001_02226d18Ej kind:function(arm,size=0x30) addr:0x02226d18
 _ZN16FieldSelectScene13FindCharaItemEj kind:function(arm,size=0x2c) addr:0x02226d48
 _ZN16FieldSelectScene19func_ov001_02226d74Ev kind:function(arm,size=0xe0) addr:0x02226d74
-data_ov001_02226e54 kind:data(any) addr:0x02226e54 local
-data_ov001_02226e8c kind:data(any) addr:0x02226e8c local
-data_ov001_02226ec4 kind:data(any) addr:0x02226ec4 local
-data_ov001_02226efc kind:data(any) addr:0x02226efc local
-data_ov001_02226f34 kind:data(any) addr:0x02226f34 local
-data_ov001_02226f88 kind:data(any) addr:0x02226f88 local
-data_ov001_02226fdc kind:data(any) addr:0x02226fdc local
-data_ov001_0222704c kind:data(any) addr:0x0222704c local
-data_ov001_02227084 kind:data(any) addr:0x02227084 local
-data_ov001_022270bc kind:data(any) addr:0x022270bc local
-data_ov001_022270c0 kind:data(any) addr:0x022270c0 local
-data_ov001_022270c4 kind:data(any) addr:0x022270c4 local
-data_ov001_022270d0 kind:data(any) addr:0x022270d0 local
-data_ov001_022270dc kind:data(any) addr:0x022270dc local
-data_ov001_022270ec kind:data(any) addr:0x022270ec local
-data_ov001_02227108 kind:data(any) addr:0x02227108 local
-data_ov001_02227124 kind:data(any) addr:0x02227124 local
-data_ov001_02227140 kind:data(any) addr:0x02227140 local
-data_ov001_0222715c kind:data(any) addr:0x0222715c local
+sArenaMenuCells kind:data(any) addr:0x02226e54 local
+sArenaTwoButtonItems kind:data(any) addr:0x02226e8c local
+sArenaTwoButtonCells kind:data(any) addr:0x02226ec4 local
+sArenaSlotItems kind:data(any) addr:0x02226efc local
+sArenaThreeButtonItems kind:data(any) addr:0x02226f34 local
+sArenaThreeButtonCells kind:data(any) addr:0x02226f88 local
+sArenaMenuItems kind:data(any) addr:0x02226fdc local
+sArenaWindowTwoButtonCells kind:data(any) addr:0x0222704c local
+sArenaWindowTwoButtonItems kind:data(any) addr:0x02227084 local
+sFieldSelectFirstRowColumnX kind:data(any) addr:0x022270bc local
+sFieldSelectPairColumnX kind:data(any) addr:0x022270c0 local
+sFieldSelectFieldIds kind:data(any) addr:0x022270c4 local
+sFieldSelectSubFileIndices kind:data(any) addr:0x022270d0 local
+sFieldSelectPairSlots kind:data(any) addr:0x022270dc local
+sFieldSelectWindow2Items kind:data(any) addr:0x022270ec local
+sFieldSelectWindow3Items kind:data(any) addr:0x02227108 local
+sFieldSelectWindow2Cells kind:data(any) addr:0x02227124 local
+sFieldSelectWindow3Cells kind:data(any) addr:0x02227140 local
+sFieldSelectWindow0Cells kind:data(any) addr:0x0222715c local
 sIdItems kind:data(any) addr:0x02227194 local
-data_ov001_02227218 kind:data(any) addr:0x02227218 local
-data_ov001_02227560 kind:data(any) addr:0x02227560 local
+sFieldSelectWindow1Items kind:data(any) addr:0x02227218 local
+sFieldSelectWindow1Cells kind:data(any) addr:0x02227560 local
 OV001_DATA_START kind:data(any) addr:0x022278c0
 @1234 kind:data(any) addr:0x022278d4 local
 @1235 kind:data(any) addr:0x02227900 local

@@ -5,16 +5,16 @@
 #include "UI/SelectWindow.hpp"
 
 // Defined among the headers: where they sit among the singletons' objects sets the data layout.
-static const u8 data_ov000_02226218[2] = {2, 0x10};
-static const u8 data_ov000_02226224[6] = {3, 2, 1, 0, 5, 4};
-static const u8 data_ov000_0222621c[6] = {0, 2, 3, 4, 1, 5};
-static const u32 data_ov000_02226234[2] = {0x21, 0x44};
-static const u8 data_ov000_02226214[2] = {0x10, 0x1c};
-static const u8 data_ov000_0222622c[6] = {0, 4, 1, 2, 3, 5};
-static const WindowItemRecord data_ov000_0222623c[1] = {
+static const u8 sAttrSelTextHeights[2] = {2, 0x10};
+static const u8 sSectorToAttrib[6] = {3, 2, 1, 0, 5, 4};
+static const u8 sAttribToSaved[6] = {0, 2, 3, 4, 1, 5};
+static const u32 sAttrSelTextUnitSizes[2] = {0x21, 0x44};
+static const u8 sAttrSelTextWidths[2] = {0x10, 0x1c};
+static const u8 sSavedToAttrib[6] = {0, 4, 1, 2, 3, 5};
+static const WindowItemRecord sAttrSelCockpitItems[1] = {
     {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov000_02226258[1] = {
+static const WindowCellRecord sAttrSelCockpitCells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xd000, 12, 0, 1, {2, 3, 3, 0}},
 };
 
@@ -38,7 +38,7 @@ extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
     mState = 0;
-    mAttrib = data_ov000_0222622c[gSaveData[0].mUnk_1a_8];
+    mAttrib = sSavedToAttrib[gSaveData[0].mUnk_1a_8];
     mPulseState = 0;
     mPulseAlpha = 0;
     mUnk_10_0 = 0;
@@ -105,7 +105,7 @@ void AttrSelScene::Update() {
                         if (sector > 5) {
                             sector = 0;
                         }
-                        u8 attr = data_ov000_02226224[sector];
+                        u8 attr = sSectorToAttrib[sector];
                         if (mAttrib == attr) {
                             event = 3;
                             SoundManager::Get().StartSeqArc(0);
@@ -161,7 +161,7 @@ void AttrSelScene::Update() {
         }
         case 3:
             if (mPulseState != 2) {
-                gSaveData[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
+                gSaveData[0].mUnk_1a_8 = sAttribToSaved[mAttrib];
                 SpriteManager::Get().StartFade(3);
                 mRequest = 2;
                 mState++;
@@ -236,17 +236,17 @@ void AttrSelScene::LoadGraphics() {
     mMessageWindow->func_02065bd4(0x14, 4, 0);
     mMessageWindow->SetWidth(0xd8);
     mMessageWindow->StartMessage(0, 0, 1);
-    mSelectWindow = new SelectWindow(1, data_ov000_0222623c, -1);
-    mSelectWindow->SetCells(1, data_ov000_02226258);
+    mSelectWindow = new SelectWindow(1, sAttrSelCockpitItems, -1);
+    mSelectWindow->SetCells(1, sAttrSelCockpitCells);
     mSelectWindow->mCursor->mSelection = -1;
     TextManager::Get().SetColor(0, 0, 0xf);
     for (u8 i = 0; i < 2; i++) {
-        mBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov000_02226214[i], (s16) data_ov000_02226218[i]);
+        mBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) sAttrSelTextWidths[i], (s16) sAttrSelTextHeights[i]);
         mTextBuffer[i] = OS_Alloc(mBufferSize[i]);
         MI_CpuClear16(mTextBuffer[i], mBufferSize[i]);
-        mGlyphCount[i] = TextManager::Get().GlyphCount(data_ov000_02226214[i], data_ov000_02226218[i], data_ov000_02226234[i]);
+        mGlyphCount[i] = TextManager::Get().GlyphCount(sAttrSelTextWidths[i], sAttrSelTextHeights[i], sAttrSelTextUnitSizes[i]);
         mGlyphBuffer[i] = OS_Alloc(mGlyphCount[i] * 0xc);
-        TextManager::Get().Init(mGlyphBuffer[i], 0, 0, data_ov000_02226214[i], data_ov000_02226218[i], data_ov000_02226234[i]);
+        TextManager::Get().Init(mGlyphBuffer[i], 0, 0, sAttrSelTextWidths[i], sAttrSelTextHeights[i], sAttrSelTextUnitSizes[i]);
     }
     PrintName(mTextBuffer[0], mBufferSize[0], 0x2000, 0x10, 2, 0x21);
     mMessages = (MessageFile *) LoadFile("/font/mes_chara_edit.mes", 0, 0, 0, 0, 0);
@@ -286,7 +286,7 @@ void AttrSelScene::LoadSubBg() {
     sprintf(path, "edit_attribute_u_sub_%02d_nsc.bin", mAttrib);
     LoadAndQueueUpload(0, 10, 0, path, 0, 0, 0);
     ChangeDir("/");
-    PrintMessage(mMessages, data_ov000_0222621c[mAttrib] + 0x1d, mTextBuffer[1], mBufferSize[1], 0x4000, 0x1c, 0x10, 0x44);
+    PrintMessage(mMessages, sAttribToSaved[mAttrib] + 0x1d, mTextBuffer[1], mBufferSize[1], 0x4000, 0x1c, 0x10, 0x44);
 }
 
 void AttrSelScene::TransitionStep() {

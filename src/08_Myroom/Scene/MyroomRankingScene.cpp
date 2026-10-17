@@ -1,7 +1,7 @@
 #include "UI/SelectWindow.hpp"
-const u8 data_ov008_02228cb0[6][2] = {{0x10, 0x2e}, {0x10, 0x42}, {0x10, 0x56}, {0x10, 0x6a}, {0x10, 0x7e}, {0x10, 0x92}};
+const u8 sMyroomRankingRowCellPos[6][2] = {{0x10, 0x2e}, {0x10, 0x42}, {0x10, 0x56}, {0x10, 0x6a}, {0x10, 0x7e}, {0x10, 0x92}};
 
-const WindowCellRecord data_ov008_02228db0[9] = {
+const WindowCellRecord sMyroomRankingObj00Cells[9] = {
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 6, 0, 0, 0, 1, {6, 6, 6, 0}},
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
@@ -13,14 +13,14 @@ const WindowCellRecord data_ov008_02228db0[9] = {
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 7, 0, 0, 0, 1, {7, 7, 7, 0}},
 };
 
-const WindowCellRecord data_ov008_02228cc8[4] = {
+const WindowCellRecord sMyroomRankingScrollCells[4] = {
     {"union_b_obj_scroll_nce.bin", 4, 24576, 10, 0, 1, {4, 4, 4, 0}},
     {"union_b_obj_scroll_nce.bin", 0, 24576, 10, 0, 1, {0, 1, 1, 0}},
     {"union_b_obj_scroll_nce.bin", 2, 24576, 10, 0, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 7, 24576, 10, 0, 1, {7, 7, 7, 0}},
 };
 
-const WindowItemRecord data_ov008_02228eac[13] = {
+const WindowItemRecord sMyroomRankingWindowItems[13] = {
     {0, 0x8000, 120, 30, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
     {1, 0x8, 16, 46, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
     {2, 0x8, 16, 66, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
@@ -41,7 +41,7 @@ struct RankingDigitPos {
     /* 0 */ u8 mX;
     /* 1 */ u8 mY;
 };
-const RankingDigitPos data_ov008_02228d38[6][10] = {
+const RankingDigitPos sMyroomRankingDigitPos[6][10] = {
     {{46, 50}, {38, 50}, {30, 50}, {208, 50}, {202, 50}, {196, 50}, {190, 50}, {184, 50}, {178, 50}, {172, 50}},
     {{46, 70}, {38, 70}, {30, 70}, {208, 70}, {202, 70}, {196, 70}, {190, 70}, {184, 70}, {178, 70}, {172, 70}},
     {{46, 90}, {38, 90}, {30, 90}, {208, 90}, {202, 90}, {196, 90}, {190, 90}, {184, 90}, {178, 90}, {172, 90}},
@@ -50,7 +50,7 @@ const RankingDigitPos data_ov008_02228d38[6][10] = {
     {{46, 150}, {38, 150}, {30, 150}, {208, 150}, {202, 150}, {196, 150}, {190, 150}, {184, 150}, {178, 150}, {172, 150}},
 };
 
-const u8 data_ov008_02228cbc[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x59}, {0x37, 0x6d}, {0x37, 0x81}, {0x37, 0x95}};
+const u8 sMyroomRankingRowTextPos[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x59}, {0x37, 0x6d}, {0x37, 0x81}, {0x37, 0x95}};
 
 #include "Text/TextManager.hpp"
 #include "Scene/MyroomRankingScene.hpp"
@@ -302,7 +302,7 @@ void MyroomRankingScene::Init() {
     LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
-    mWindow = new SelectWindow(0xd, data_ov008_02228eac, -1);
+    mWindow = new SelectWindow(0xd, sMyroomRankingWindowItems, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     ChangeDir("/");
@@ -310,11 +310,11 @@ void MyroomRankingScene::Init() {
     sub.LoadPalette("Game/Myroom/myroom_ranking_b_obj_00_ncl.bin", 0, 0);
     sub.LoadCharacters("Game/2D/union_b/union_b_obj_cockpit.nce_ncg1D.bin", 0xc000, 0);
     sub.LoadPalette("Game/2D/union_b/union_b_obj_cockpit_ncl.bin", 0x180, 0);
-    mWindow->SetCells(9, data_ov008_02228db0);
+    mWindow->SetCells(9, sMyroomRankingObj00Cells);
     ChangeDir("/Game/2d/union_b/");
     sub.LoadCharacters("union_b_obj_scroll.nce_ncg1D.bin", 0x6000, 0);
     sub.LoadPalette("union_b_obj_scroll_ncl.bin", 0x140, 0);
-    mWindow->SetCells(4, data_ov008_02228cc8);
+    mWindow->SetCells(4, sMyroomRankingScrollCells);
     mEntryCount = 10;
     if (mUnk_42 > 10) {
         mEntryCount++;
@@ -359,7 +359,7 @@ void MyroomRankingScene::Init() {
         mScroll = mUnk_42 - 4;
         mRow = 3;
     }
-    Vec2s pos = {data_ov008_02228cb0[mRow][0], data_ov008_02228cb0[mRow][1]};
+    Vec2s pos = {sMyroomRankingRowCellPos[mRow][0], sMyroomRankingRowCellPos[mRow][1]};
     mWindow->mCellPos[8] = pos;
     mWindow->mCursor->SetScroll(mScroll);
     if ((s32) mUnk_42 > 10) {
@@ -376,8 +376,8 @@ void MyroomRankingScene::Draw() {
 
 void MyroomRankingScene::DrawSubScreen() {
     for (u8 i = 0; i < 6; i++) {
-        u8 y        = data_ov008_02228cbc[i][1];
-        u8 x        = data_ov008_02228cbc[i][0];
+        u8 y        = sMyroomRankingRowTextPos[i][1];
+        u8 x        = sMyroomRankingRowTextPos[i][0];
         u32 base    = (i << 11) + 0x8000;
         for (u8 j = 0; j < 2; j++) {
             SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[i], 1,
@@ -411,7 +411,7 @@ void MyroomRankingScene::DrawSubScreen() {
                 }
             }
             mRows[i].mCells[j]->Update();
-            mRows[i].mCells[j]->DrawFrame(1, digit, data_ov008_02228d38[i][j].mX, data_ov008_02228d38[i][j].mY, 0);
+            mRows[i].mCells[j]->DrawFrame(1, digit, sMyroomRankingDigitPos[i][j].mX, sMyroomRankingDigitPos[i][j].mY, 0);
         }
     }
     SelectWindow *window = mWindow;
@@ -522,7 +522,7 @@ void MyroomRankingScene::UpdateRows() {
         mRows[i].mUnk_2c = entry->mScore;
     }
     UpdateRowAnimations();
-    Vec2s pos = {data_ov008_02228cb0[mRow][0], data_ov008_02228cb0[mRow][1]};
+    Vec2s pos = {sMyroomRankingRowCellPos[mRow][0], sMyroomRankingRowCellPos[mRow][1]};
     mWindow->mCellPos[8] = pos;
     PrintNames();
 }

@@ -1,7 +1,7 @@
 #include "UI/SelectWindow.hpp"
 
-static const u16 data_ov000_02225fc8[6] = {0, 10, 50, 100, 1000, 5000};
-static const u8 data_ov000_02226044[6][12] = {
+static const u16 sSpecialNameMoney[6] = {0, 10, 50, 100, 1000, 5000};
+static const u8 sSpecialNameCodes[6][12] = {
     {0x44, 0x44, 0x49, 0x48, 0x42, 0x44, 0x49, 0x43, 0x44, 0x40, 0x47, 0x41},
     {0x41, 0x48, 0x40, 0x49, 0x47, 0x48, 0x47, 0x47, 0x42, 0x42, 0x46, 0x49},
     {0x43, 0x43, 0x42, 0x40, 0x44, 0x44, 0x42, 0x49, 0x42, 0x49, 0x42, 0x45},
@@ -9,7 +9,7 @@ static const u8 data_ov000_02226044[6][12] = {
     {0x44, 0x46, 0x48, 0x43, 0x46, 0x44, 0x47, 0x48, 0x43, 0x41, 0x45, 0x47},
     {0x48, 0x47, 0x48, 0x42, 0x48, 0x49, 0x48, 0x41, 0x42, 0x41, 0x41, 0x40},
 };
-static const WindowItemRecord data_ov000_0222608c[7] = {
+static const WindowItemRecord sNameEntryKeyboardItems[7] = {
     {0, 16, 230, 76, 28, 12, 0, {-1, -1, -1, -1}, 0, 0},
     {1, 32, 230, 56, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
     {2, 64, 230, 132, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
@@ -18,7 +18,7 @@ static const WindowItemRecord data_ov000_0222608c[7] = {
     {5, 8, 80, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
     {6, 8, 176, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov000_02226150[7] = {
+static const WindowCellRecord sNameEntryKeyboardCells[7] = {
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 0x2000, 13, 2, 1, {4, 4, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 0, 0x2000, 13, 2, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 2, 0x2000, 13, 2, 1, {2, 3, 3, 0}},
@@ -27,11 +27,11 @@ static const WindowCellRecord data_ov000_02226150[7] = {
     {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 2, 0x0, 10, 2, 1, {2, 3, 2, 0}},
     {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 4, 0x0, 10, 2, 1, {4, 5, 4, 0}},
 };
-static const WindowItemRecord data_ov000_02225fd4[2] = {
+static const WindowItemRecord sNameEntryConfirmItems[2] = {
     {0, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
     {1, 8, 89, 136, 78, 20, 0, {1, 1, 1, 1}, 0, 2},
 };
-static const WindowCellRecord data_ov000_0222600c[2] = {
+static const WindowCellRecord sNameEntryConfirmCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x10000, 0, 0, 1, {9, 9, 9, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x10000, 0, 0, 1, {0, 2, 1, 0}},
 };
@@ -208,8 +208,8 @@ void NameEntryScene::LoadGraphics() {
     screen2.SetObjVramMode(3);
     screen2.LoadCharacters("union_b_obj_scroll.nce_ncg1D.bin", 0x2000, 0);
     screen2.LoadPalette("union_b_obj_scroll_ncl.bin", 0x1a0, 0);
-    mKeyboard = new SelectWindow(7, data_ov000_0222608c, 0);
-    mKeyboard->SetCells(7, data_ov000_02226150);
+    mKeyboard = new SelectWindow(7, sNameEntryKeyboardItems, 0);
+    mKeyboard->SetCells(7, sNameEntryKeyboardCells);
     mKeyboard->mCursor->mSelection = -1;
     mKeyboard->mCursor->SetScroll(0);
     mKeyboard->mCursor->SetupScroll(0x4c, 0x84, 4, 0xc);
@@ -220,8 +220,8 @@ void NameEntryScene::LoadGraphics() {
     SpriteScreen &screen3 = SpriteManager::Get().Screen(1);
     screen3.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
     screen3.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
-    mConfirm = new SelectWindow(2, data_ov000_02225fd4, 1);
-    mConfirm->SetCells(2, data_ov000_0222600c);
+    mConfirm = new SelectWindow(2, sNameEntryConfirmItems, 1);
+    mConfirm->SetCells(2, sNameEntryConfirmCells);
     mConfirm->mEnabled = 0;
     LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
@@ -495,7 +495,7 @@ void NameEntryScene::Update() {
                 if (mSpecialNameHandle == 1) {
                     gSaveData[0].mUnk_5d2 = 1;
                 } else {
-                    u32 amount = data_ov000_02225fc8[mSpecialNameHandle - 1] * 100;
+                    u32 amount = sSpecialNameMoney[mSpecialNameHandle - 1] * 100;
                     if (amount > 9999990) {
                         amount = 9999990;
                     }
@@ -770,7 +770,7 @@ void NameEntryScene::CheckSpecialName() {
                 break;
         }
         u8 c;
-        const u8 *row = data_ov000_02226044[i];
+        const u8 *row = sSpecialNameCodes[i];
         u8 k = 0;
         match = TRUE;
         do {
@@ -803,7 +803,7 @@ void NameEntryScene::PrintMessage() {
     if (mSpecialNameHandle == 1) {
         index = 1;
     } else {
-        TextManager::Get().mUnk_10 = data_ov000_02225fc8[mSpecialNameHandle - 1];
+        TextManager::Get().mUnk_10 = sSpecialNameMoney[mSpecialNameHandle - 1];
         index = 2;
     }
     TextManager &text = TextManager::Get();

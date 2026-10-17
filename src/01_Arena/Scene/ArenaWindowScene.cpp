@@ -9,11 +9,11 @@ extern void SeedRandomFromTick();
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
 
-static const WindowCellRecord data_ov001_0222704c[2] = {
+static const WindowCellRecord sArenaWindowTwoButtonCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 8192, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 8192, 0, 0, 1, {9, 9, 9, 0}},
 };
-static const WindowItemRecord data_ov001_02227084[2] = {
+static const WindowItemRecord sArenaWindowTwoButtonItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
@@ -285,8 +285,8 @@ void ArenaWindowScene::SetupWindow() {
     if (mMenu != NULL) {
         delete mMenu;
     }
-    mMenu = new SelectWindow(2, data_ov001_02227084, -1);
-    mMenu->SetCells(2, data_ov001_0222704c);
+    mMenu = new SelectWindow(2, sArenaWindowTwoButtonItems, -1);
+    mMenu->SetCells(2, sArenaWindowTwoButtonCells);
     mMenu->mCursor->mSelection = -1;
     mMenu->mEnabled            = 0;
     mMenu->mCursor->mSelection = 0;

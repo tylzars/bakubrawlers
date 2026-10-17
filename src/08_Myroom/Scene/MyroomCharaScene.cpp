@@ -27,20 +27,20 @@ struct CharaTextPos {
     u8 mRight;
 };
 
-const u32 data_ov008_022292b8[7] = {0x10000, 0x11000, 0x12000, 0x13000, 0x14000, 0x15000, 0x16000};
+const u32 sMyroomCharaLineVramOffsets[7] = {0x10000, 0x11000, 0x12000, 0x13000, 0x14000, 0x15000, 0x16000};
 
-const WindowCellRecord data_ov008_02229378[4] = {
+const WindowCellRecord sMyroomCharaStatusCells[4] = {
     {"myroom_status_b_obj_00_nce.bin", 1, 0, 0, 1, 1, {1, 2, 2, 0}},
     {"myroom_status_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 5, 5, 0}},
     {"myroom_status_b_obj_00_nce.bin", 10, 0, 0, 1, 1, {10, 11, 11, 0}},
     {"myroom_status_b_obj_00_nce.bin", 7, 0, 0, 1, 1, {7, 8, 8, 0}},
 };
 
-const WindowCellRecord data_ov008_0222929c[1] = {
+const WindowCellRecord sMyroomCharaCockpitCells[1] = {
     {"union_b_obj_cockpit_nce.bin", 2, 0x10000, 4, 1, 1, {2, 3, 3, 0}},
 };
 
-const CharaTextPos data_ov008_0222930c[5][7] = {
+const CharaTextPos sMyroomCharaTextPos[5][7] = {
     {{0x6a, 0x37, 0x00}, {0xdc, 0x5b, 0x00}, {0xc4, 0x6d, 0x00}, {0xc4, 0x7f, 0x00}, {0xb8, 0x91, 0x00}},
     {{0x3e, 0x37, 0x00}, {0xdc, 0x49, 0x00}, {0xdc, 0x5b, 0x00}, {0xca, 0x6d, 0x00},
      {0xd0, 0x7f, 0x00}, {0xd0, 0x91, 0x00}, {0xd0, 0xa3, 0x00}},
@@ -49,13 +49,13 @@ const CharaTextPos data_ov008_0222930c[5][7] = {
      {0x12, 0x7f, 0xd0}, {0x12, 0x91, 0xd0}, {0x12, 0xa3, 0xd0}},
 };
 
-const WindowCellRecord data_ov008_022292d4[2] = {
+const WindowCellRecord sMyroomCharaPageCells[2] = {
     {"union_b_obj_page_nce.bin", 0, 0x12000, 5, 1, 1, {0, 1, 1, 0}},
     {"union_b_obj_page_nce.bin", 3, 0x12000, 5, 1, 1, {3, 4, 4, 0}},
 };
 
 // Room for 22 items; the window uses the first 7.
-const WindowItemRecord data_ov008_022293e8[22] = {
+const WindowItemRecord sMyroomCharaWindowItems[22] = {
     {0, 0x8, 40, 44, 176, 20, 0x0, {3, 1, 0, 0}, 0, 0},
     {1, 0x8, 40, 72, 176, 20, 0x0, {0, 2, 1, 1}, 0, 0},
     {2, 0x8, 40, 100, 176, 20, 0x0, {1, 3, 2, 2}, 0, 0},
@@ -335,19 +335,19 @@ void MyroomCharaScene::LoadSubGraphics() {
     LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
-    mWindow = new SelectWindow(7, data_ov008_022293e8, 0);
+    mWindow = new SelectWindow(7, sMyroomCharaWindowItems, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     sub.LoadCharacters("myroom_status_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("myroom_status_b_obj_00_ncl.bin", 0, 0);
-    mWindow->SetCells(4, data_ov008_02229378);
+    mWindow->SetCells(4, sMyroomCharaStatusCells);
     ChangeDir("/Game/2d/union_b/");
     sub.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x12000, 0);
     sub.LoadPalette("union_b_obj_page_ncl.bin", 0xa0, 0);
-    mWindow->SetCells(2, data_ov008_022292d4);
+    mWindow->SetCells(2, sMyroomCharaPageCells);
     sub.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x10000, 0);
     sub.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x80, 0);
-    mWindow->SetCells(1, data_ov008_0222929c);
+    mWindow->SetCells(1, sMyroomCharaCockpitCells);
     ChangeDir("/Game/Myroom/");
     mCell            = new CellAnimation("myroom_status_b_obj_00_nce.bin", 0, 1, 1);
     mCell->mCharBase = sub.GetCharBase(0);
@@ -598,20 +598,20 @@ void MyroomCharaScene::RenderLine(u32 line, u32 kind) {
                        0, 0, 1, 1);
             TextManager::Get().mUse4bppFont = 0;
             PrintValue(line, data_020d444e[mList[mPage * 7 + line]], 3,
-                                (s16) (data_ov008_0222930c[3][line].mRight - data_ov008_0222930c[3][line].mX), 6);
+                                (s16) (sMyroomCharaTextPos[3][line].mRight - sMyroomCharaTextPos[3][line].mX), 6);
             break;
         }
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, data_ov008_022292b8[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, sMyroomCharaLineVramOffsets[line], mTextBuffers[line], mTextBufferSize, 0);
     mLinesVisible[line] = 1;
 }
 
 void MyroomCharaScene::DrawText() {
     for (u8 i = 0; i < 7; i++) {
         if (mLinesVisible[i] != 0) {
-            SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, data_ov008_0222930c[mShownTab][i].mX,
-                                                         data_ov008_0222930c[mShownTab][i].mY, 0,
-                                                         (u16) (data_ov008_022292b8[i] >> 7), 0xf, 0);
+            SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, sMyroomCharaTextPos[mShownTab][i].mX,
+                                                         sMyroomCharaTextPos[mShownTab][i].mY, 0,
+                                                         (u16) (sMyroomCharaLineVramOffsets[i] >> 7), 0xf, 0);
         }
     }
 }

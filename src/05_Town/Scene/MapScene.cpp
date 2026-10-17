@@ -28,27 +28,27 @@ struct MapPagePos {
     s16 mId;
 };
 static const u8 data_ov005_0221fe90[5] = {1, 2, 0, 3, 0};
-static const u32 data_ov005_0221fea0[6] = {0x12, 0x13, 0x14, 0x15, 0x16, 0x17};
-static const MapPagePos data_ov005_0221feb8[4] = {
+static const u32 sMapCurrentTextIndices[6] = {0x12, 0x13, 0x14, 0x15, 0x16, 0x17};
+static const MapPagePos sMapPagePos[4] = {
     {147, 134, 147, 3},
     {224, 141, 224, 2},
     {383, 114, 320, 1},
     {471, 159, 471, 0},
 };
-static const WindowItemRecord data_ov005_0221fed8[4] = {
+static const WindowItemRecord sMapPanelWindowItems[4] = {
     {0, 1, 45, 136, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 1, 133, 136, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
     {2, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
     {3, 32768, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowItemRecord data_ov005_0221ffb8[5] = {
+static const WindowItemRecord sMapMenuItems[5] = {
     {0, 1, 4, 160, 48, 32, 0, {0, 0, 0, 1}, 0, 2},
     {1, 1, 52, 160, 48, 32, 0, {1, 1, 0, 2}, 0, 2},
     {2, 1, 100, 160, 48, 32, 0, {2, 2, 1, 3}, 0, 2},
     {3, 1, 148, 160, 48, 32, 0, {3, 3, 2, 3}, 0, 2},
     {4, 2, 200, 170, 54, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov005_02220044[5] = {
+static const WindowCellRecord sMapMenuCells[5] = {
     {"story/map_b_obj_00_nce.bin", 0, 0x0, 0, 2, 1, {0, 10, 5, 0}},
     {"story/map_b_obj_00_nce.bin", 2, 0x0, 0, 2, 1, {2, 12, 7, 0}},
     {"story/map_b_obj_00_nce.bin", 3, 0x0, 0, 2, 1, {3, 13, 8, 0}},
@@ -277,7 +277,7 @@ void MapScene::Update() {
                     mMenu->Reset((s8) mTab);
                     {
                         CellAnimation *cell = mMenu->mCells[mTab];
-                        cell->mAnimIndex = data_ov005_02220044[mTab].mAnimIndices[2];
+                        cell->mAnimIndex = sMapMenuCells[mTab].mAnimIndices[2];
                         cell->ResetAnimation();
                     }
                     mState--;
@@ -668,15 +668,15 @@ void MapScene::CreateMenu() {
     if (mMenu != NULL) {
         delete mMenu;
     }
-    mMenu = new SelectWindow(5, data_ov005_0221ffb8, -1);
-    mMenu->SetCells(5, data_ov005_02220044);
+    mMenu = new SelectWindow(5, sMapMenuItems, -1);
+    mMenu->SetCells(5, sMapMenuCells);
     mMenu->mCursor->mSelection = -1;
     mMenu->mEnabled            = 0;
     mMenu->mCursor->mSelection = mTab;
     for (u8 i = 0; i < 4; i++) {
         u32 state           = i == mTab ? 2 : 0;
         CellAnimation *cell = mMenu->mCells[i];
-        cell->mAnimIndex       = data_ov005_02220044[i].mAnimIndices[state];
+        cell->mAnimIndex       = sMapMenuCells[i].mAnimIndices[state];
         cell->ResetAnimation();
     }
     func_ov005_0221b364(mTab, TRUE);
@@ -745,7 +745,7 @@ BOOL MapScene::SetNextSceneFromTab() {
 s16 MapScene::func_ov005_0221b760(u32 index) {
     u8 found = 0;
     for (u8 i = 0; i < 4; i++) {
-        if (index == data_ov005_0221feb8[i].mId) {
+        if (index == sMapPagePos[i].mId) {
             found = i;
             break;
         }
@@ -754,7 +754,7 @@ s16 MapScene::func_ov005_0221b760(u32 index) {
         mPage = found;
         LoadPanelText2(index);
     }
-    s32 pos = data_ov005_0221feb8[found].mUnk_04 - 0x80;
+    s32 pos = sMapPagePos[found].mUnk_04 - 0x80;
     if (pos > 0xff) {
         pos = 0xff;
     } else if (pos < 0) {
@@ -817,7 +817,7 @@ void MapScene::DrawPopup() {
         return;
     }
     mCellAnims[1]->Update();
-    mCellAnims[1]->Draw(1, (s16) (data_ov005_0221ffb8[mUnk_74].mX + 10), (s16) (data_ov005_0221ffb8[mUnk_74].mY - 0x18),
+    mCellAnims[1]->Draw(1, (s16) (sMapMenuItems[mUnk_74].mX + 10), (s16) (sMapMenuItems[mUnk_74].mY - 0x18),
                         0);
 }
 
@@ -844,10 +844,10 @@ void MapScene::DrawPage() {
     if (mPageVisible == 0) {
         return;
     }
-    s16 x = data_ov005_0221feb8[mPage].mX - ((u32) mScrollPos >> 4);
+    s16 x = sMapPagePos[mPage].mX - ((u32) mScrollPos >> 4);
     if ((x > -0x40) & (x < 0x140)) {
         mCellAnims[0]->Update();
-        mCellAnims[0]->Draw(1, x, data_ov005_0221feb8[mPage].mY, 2);
+        mCellAnims[0]->Draw(1, x, sMapPagePos[mPage].mY, 2);
         DrawPanelText2(x);
     }
 }
@@ -980,14 +980,14 @@ BOOL MapScene::ShowCurrent() {
     }
     if (flag == 0) {
         TextManager::Get().mUse4bppFont = 1;
-        ShowText((u16) data_ov005_0221fea0[id - 1], 0);
+        ShowText((u16) sMapCurrentTextIndices[id - 1], 0);
         TextManager::Get().mUse4bppFont = 0;
         return TRUE;
     }
     return FALSE;
 }
 
-static const WindowCellRecord data_ov005_0221ff48[4] = {
+static const WindowCellRecord sMapPanelWindowCells[4] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xb000, 10, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xb000, 10, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xb000, 10, 0, 1, {10, 10, 10, 0}},
@@ -996,8 +996,8 @@ static const WindowCellRecord data_ov005_0221ff48[4] = {
 
 void MapScene::CreatePanelWindow() {
     delete mPanelWindow;
-    mPanelWindow = new SelectWindow(4, data_ov005_0221fed8, -1);
-    mPanelWindow->SetCells(4, data_ov005_0221ff48);
+    mPanelWindow = new SelectWindow(4, sMapPanelWindowItems, -1);
+    mPanelWindow->SetCells(4, sMapPanelWindowCells);
     mPanelWindow->mCursor->mSelection = -1;
     mPanelWindow->mCursor->mSelection = 1;
     mPanelWindow->mEnabled            = 0;
@@ -1066,12 +1066,12 @@ void MapScene::DrawPanelText2(s16 x) {
     u8 type   = mPage;
     u32 width = mTextWidth;
     s16 left  = x - (width >> 1);
-    int right = data_ov005_0221feb8[type].mX + (width >> 1);
+    int right = sMapPagePos[type].mX + (width >> 1);
     if (right > 0x1fc) {
         left = left - (right - 0x1fc);
     }
     SpriteManager::Get().Screen(1).AddOam(mText[1].mGlyphBuffer, mText[1].mGlyphCount, left,
-                                                 (s16) (data_ov005_0221feb8[mPage].mY - 0x28), 2, 0x1a0, 0xf, 0);
+                                                 (s16) (sMapPagePos[mPage].mY - 0x28), 2, 0x1a0, 0xf, 0);
 }
 
 // NOTE: returns u32 in the original; MapScene.hpp declares `void UpdatePanelWindow()` and needs `u32`.

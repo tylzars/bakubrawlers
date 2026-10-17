@@ -23,13 +23,13 @@ struct UnkStruct_020c4230 {
     /* 20 */ u16 mUnk_20;
 };
 
-struct UnkStruct_020c3938 {
+struct ScanSnapshotEntry {
     /* 00 */ PAD(0x00, 0x50);
     /* 50 */ u16 mName[12];
     /* 68 */ u16 mUnk_68;
     /* 6a */ PAD(0x6a, 0xc0);
 };
-extern UnkStruct_020c3938 data_020c3938[];
+extern ScanSnapshotEntry data_020c3938[];
 extern u8 data_020d43eb[];
 extern u8 data_020d441a[];
 extern "C" void MIi_CpuCopy16(const void *src, void *dest, u32 size);
@@ -41,7 +41,7 @@ void func_0202330c(UnkStruct_020d433c *data);
 extern UnkStruct_020c4230 data_020c4230;
 
 
-static const WindowItemRecord data_ov001_02226fdc[2][2] = {
+static const WindowItemRecord sArenaMenuItems[2][2] = {
     {
         {0, 5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
         {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
@@ -51,29 +51,29 @@ static const WindowItemRecord data_ov001_02226fdc[2][2] = {
         {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
     },
 };
-static const WindowItemRecord data_ov001_02226e8c[2] = {
+static const WindowItemRecord sArenaTwoButtonItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov001_02226f88[3] = {
+static const WindowCellRecord sArenaThreeButtonCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xc000, 7, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xc000, 7, 0, 1, {10, 10, 10, 0}},
 };
-static const WindowCellRecord data_ov001_02226e54[2] = {
+static const WindowCellRecord sArenaMenuCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 6, 2, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
 };
-static const WindowItemRecord data_ov001_02226f34[3] = {
+static const WindowItemRecord sArenaThreeButtonItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
     {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov001_02226ec4[2] = {
+static const WindowCellRecord sArenaTwoButtonCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0xc000, 7, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0xc000, 7, 0, 1, {9, 9, 9, 0}},
 };
-static const WindowItemRecord data_ov001_02226efc[2] = {
+static const WindowItemRecord sArenaSlotItems[2] = {
     {0, 1, 32, 48, 192, 40, 0, {1, 1, 0, 0}, 0, 2},
     {1, 1, 32, 96, 192, 40, 0, {0, 0, 1, 1}, 0, 2},
 };
@@ -184,8 +184,8 @@ void ArenaScene::SetSubMenuMode(u32 mode) {
             if (mSubMenu != NULL) {
                 delete mSubMenu;
             }
-            mSubMenu = new SelectWindow(3, data_ov001_02226f34, -1);
-            mSubMenu->SetCells(3, data_ov001_02226f88);
+            mSubMenu = new SelectWindow(3, sArenaThreeButtonItems, -1);
+            mSubMenu->SetCells(3, sArenaThreeButtonCells);
             mSubMenu->mCursor->mSelection = -1;
             mSubMenu->mCursor->mSelection = 1;
             PrintMessage(12);
@@ -196,8 +196,8 @@ void ArenaScene::SetSubMenuMode(u32 mode) {
             if (mSubMenu != NULL) {
                 delete mSubMenu;
             }
-            mSubMenu = new SelectWindow(2, data_ov001_02226e8c, -1);
-            mSubMenu->SetCells(2, data_ov001_02226ec4);
+            mSubMenu = new SelectWindow(2, sArenaTwoButtonItems, -1);
+            mSubMenu->SetCells(2, sArenaTwoButtonCells);
             mSubMenu->mCursor->mSelection = -1;
             mSubMenu->mCursor->mSelection = 0;
             PrintMessage(11);
@@ -435,7 +435,7 @@ void ArenaScene::Update() {
                 u8 i = 0;
                 do {
                     WirelessManager::Get();
-                    UnkStruct_020c3938 *e = &data_020c3938[i];
+                    ScanSnapshotEntry *e = &data_020c3938[i];
                     if (e != NULL && e->mUnk_68 == 0xfffc) {
                         MIi_CpuCopy16(e->mName, data_020d433c.mNames[i], 0x18);
                     }
@@ -698,7 +698,7 @@ void ArenaScene::LoadGraphics() {
     sub3.LoadPalette("union_b_obj_window_ncl.bin", 0xe0, 0);
     ChangeDir("/");
     delete mCursor;
-    mCursor = new SelectWindowCursor(2, data_ov001_02226efc, 0);
+    mCursor = new SelectWindowCursor(2, sArenaSlotItems, 0);
     if (mMessage != NULL) {
         delete mMessage;
     }
@@ -777,8 +777,8 @@ void ArenaScene::SetupVariant() {
     if (mMenu != NULL) {
         delete mMenu;
     }
-    mMenu = new SelectWindow(2, data_ov001_02226fdc[sel], 0);
-    mMenu->SetCells(2, data_ov001_02226e54);
+    mMenu = new SelectWindow(2, sArenaMenuItems[sel], 0);
+    mMenu->SetCells(2, sArenaMenuCells);
     mMenu->mCursor->mSelection       = -1;
     mMenu->mEnabled                  = 0;
     mMenu->mButtons[0].mEnabled      = 0;
@@ -848,7 +848,7 @@ void ArenaScene::ResetMenu() {
     mMenu->mCursor->mSelection = -1;
     mMenu->mEnabled            = 0;
     for (u8 i = 0; i < 2; i++) {
-        mMenu->mCells[i]->SetAnimation(data_ov001_02226e54[((const WindowItem *) data_ov001_02226fdc)[i].mId].mAnimIndices[0]);
+        mMenu->mCells[i]->SetAnimation(sArenaMenuCells[((const WindowItem *) sArenaMenuItems)[i].mId].mAnimIndices[0]);
     }
 }
 

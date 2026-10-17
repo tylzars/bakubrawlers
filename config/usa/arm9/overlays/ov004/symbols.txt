@@ -34,7 +34,7 @@ sTwoButtonItems kind:data(any) addr:0x0221d7f8 local
 sTwoButtonCells kind:data(any) addr:0x0221d830 local
 sThreeButtonCells kind:data(any) addr:0x0221d868 local
 sThreeButtonItems kind:data(any) addr:0x0221d8bc local
-data_ov004_0221d910 kind:data(any) addr:0x0221d910 local
+sParkWinLoseMessages kind:data(any) addr:0x0221d910 local
 sTextY kind:data(any) addr:0x0221daa8 local
 sEmptyDigits kind:data(any) addr:0x0221daac local
 sTextVramOffsets kind:data(any) addr:0x0221dab4 local

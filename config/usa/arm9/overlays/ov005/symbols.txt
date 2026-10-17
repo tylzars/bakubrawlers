@@ -36,8 +36,8 @@ _ZN13TutorialSceneC1Ev kind:function(arm,size=0xf4) addr:0x0221cf0c
 _ZN13TutorialSceneD1Ev kind:function(arm,size=0x128) addr:0x0221d000
 _ZN13TutorialSceneD0Ev kind:function(arm,size=0x130) addr:0x0221d128
 _ZN13TutorialScene6UpdateEv kind:function(arm,size=0x1600) addr:0x0221d258
-_Z19func_ov005_0221e858P13TutorialScene kind:function(arm,size=0x170) addr:0x0221e858
-_Z19func_ov005_0221e9c8P13TutorialScene kind:function(arm,size=0x19c) addr:0x0221e9c8
+_Z17InitScriptDisplayP13TutorialScene kind:function(arm,size=0x170) addr:0x0221e858
+_Z17InitWindowDisplayP13TutorialScene kind:function(arm,size=0x19c) addr:0x0221e9c8
 _ZN13TutorialScene12LoadGraphicsEv kind:function(arm,size=0x5b4) addr:0x0221eb64
 _ZN13TutorialScene14LoadListWindowEv kind:function(arm,size=0x35c) addr:0x0221f118
 _ZN13TutorialScene8ShowTextEi kind:function(arm,size=0x150) addr:0x0221f474
@@ -45,23 +45,23 @@ _ZN13TutorialScene12LoadListTextEv kind:function(arm,size=0x29c) addr:0x0221f5c4
 _ZN13TutorialScene10UpdateListEv kind:function(arm,size=0x2d4) addr:0x0221f860
 _ZN13TutorialScene12UpdateScrollEv kind:function(arm,size=0x44) addr:0x0221fb34
 _ZN13TutorialScene8DrawListEv kind:function(arm,size=0x194) addr:0x0221fb78
-_Z19func_ov005_0221fd0cP13TutorialScene kind:function(arm,size=0x58) addr:0x0221fd0c
+_Z13GetTutorialIdP13TutorialScene kind:function(arm,size=0x58) addr:0x0221fd0c
 _Z19func_ov005_0221fd64P13TutorialScene kind:function(arm,size=0x60) addr:0x0221fd64
-_Z19func_ov005_0221fdc4v kind:function(arm,size=0xcc) addr:0x0221fdc4
+_Z21SetupFourPlayerBattlev kind:function(arm,size=0xcc) addr:0x0221fdc4
 data_ov005_0221fe90 kind:data(any) addr:0x0221fe90 local
 @1740 kind:data(any) addr:0x0221fe98 local
-data_ov005_0221fea0 kind:data(any) addr:0x0221fea0 local
-data_ov005_0221feb8 kind:data(any) addr:0x0221feb8 local
-data_ov005_0221fed8 kind:data(any) addr:0x0221fed8 local
-data_ov005_0221ff48 kind:data(any) addr:0x0221ff48 local
-data_ov005_0221ffb8 kind:data(any) addr:0x0221ffb8 local
-data_ov005_02220044 kind:data(any) addr:0x02220044 local
-data_ov005_022200d0 kind:data(any) addr:0x022200d0 local
+sMapCurrentTextIndices kind:data(any) addr:0x0221fea0 local
+sMapPagePos kind:data(any) addr:0x0221feb8 local
+sMapPanelWindowItems kind:data(any) addr:0x0221fed8 local
+sMapPanelWindowCells kind:data(any) addr:0x0221ff48 local
+sMapMenuItems kind:data(any) addr:0x0221ffb8 local
+sMapMenuCells kind:data(any) addr:0x02220044 local
+sTutorialFirstIds kind:data(any) addr:0x022200d0 local
 data_ov005_022200d8 kind:data(any) addr:0x022200d8 local
-data_ov005_022200e8 kind:data(any) addr:0x022200e8 local
-data_ov005_0222013c kind:data(any) addr:0x0222013c local
-data_ov005_02220190 kind:data(any) addr:0x02220190 local
-data_ov005_02220238 kind:data(any) addr:0x02220238 local
+sTutorialThreeButtonItems kind:data(any) addr:0x022200e8 local
+sTutorialThreeButtonCells kind:data(any) addr:0x0222013c local
+sTutorialListItems kind:data(any) addr:0x02220190 local
+sTutorialListCells kind:data(any) addr:0x02220238 local
 OV005_DATA_START kind:data(any) addr:0x02220300
 @1283 kind:data(any) addr:0x02220314 local
 @1285 kind:data(any) addr:0x02220330 local

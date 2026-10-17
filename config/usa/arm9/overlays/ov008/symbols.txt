@@ -125,67 +125,67 @@ _ZN15MyroomTipsScene18ClearMessageBufferEv kind:function(arm,size=0x18) addr:0x0
 _ZN15MyroomTipsScene9CountTipsEv kind:function(arm,size=0xc8) addr:0x02228464
 _ZN15MyroomTipsScene14GetUnlockedTipEs kind:function(arm,size=0x80) addr:0x0222852c
 _ZN15MyroomTipsScene11UpdateTextXEv kind:function(arm,size=0x88) addr:0x022285ac
-data_ov008_02228634 kind:data(any) addr:0x02228634
-data_ov008_02228640 kind:data(any) addr:0x02228640
-data_ov008_0222864c kind:data(any) addr:0x0222864c
-data_ov008_02228660 kind:data(any) addr:0x02228660
-data_ov008_02228688 kind:data(any) addr:0x02228688
-data_ov008_022286f4 kind:data(any) addr:0x022286f4 local
-data_ov008_022286f8 kind:data(any) addr:0x022286f8 local
-data_ov008_022286fc kind:data(any) addr:0x022286fc local
-data_ov008_02228704 kind:data(any) addr:0x02228704 local
+gMyroomStatusBgOffset kind:data(any) addr:0x02228634
+gMyroomStatusBgScale kind:data(any) addr:0x02228640
+gMyroomStatusLineVramOffsets kind:data(any) addr:0x0222864c
+gMyroomStatusLightData kind:data(any) addr:0x02228660
+gMyroomStatusLineTextPos kind:data(any) addr:0x02228688
+sMyroomMenu1StatusTextIndices kind:data(any) addr:0x022286f4 local
+sMyroomMenu2StatusTextIndices kind:data(any) addr:0x022286f8 local
+sMyroomMenu0SelectedAnimIndices kind:data(any) addr:0x022286fc local
+sMyroomMenu0AnimIndices kind:data(any) addr:0x02228704 local
 data_ov008_0222870c kind:data(any) addr:0x0222870c local
-data_ov008_02228714 kind:data(any) addr:0x02228714 local
-data_ov008_02228758 kind:data(any) addr:0x02228758 local
+sMyroomMenu0StatusTextIndices kind:data(any) addr:0x02228714 local
+sMyroomMenuEntryPos kind:data(any) addr:0x02228758 local
 data_ov008_02228764 kind:data(any) addr:0x02228764 local
-data_ov008_0222877c kind:data(any) addr:0x0222877c local
-data_ov008_02228808 kind:data(any) addr:0x02228808 local
-data_ov008_02228894 kind:data(any) addr:0x02228894 local
-data_ov008_02228974 kind:data(any) addr:0x02228974 local
-data_ov008_02228a54 kind:data(any) addr:0x02228a54 local
-data_ov008_02228a56 kind:data(any) addr:0x02228a56 local
-data_ov008_02228a5c kind:data(any) addr:0x02228a5c local
-data_ov008_02228a64 kind:data(any) addr:0x02228a64 local
+sMyroomMenu1Cells kind:data(any) addr:0x0222877c local
+sMyroomMenu2Cells kind:data(any) addr:0x02228808 local
+sMyroomMenu0Items kind:data(any) addr:0x02228894 local
+sMyroomMenu0Cells kind:data(any) addr:0x02228974 local
+sMyroomGiftCellAnimPos kind:data(any) addr:0x02228a54 local
+sMyroomGiftTextDimensions kind:data(any) addr:0x02228a56 local
+sMyroomGiftTextUnitSizes kind:data(any) addr:0x02228a5c local
+sMyroomGiftGridUsed kind:data(any) addr:0x02228a64 local
 data_ov008_02228a70 kind:data(any) addr:0x02228a70 local
-data_ov008_02228a7c kind:data(any) addr:0x02228a7c local
+sMyroomGiftLayout kind:data(any) addr:0x02228a7c local
 data_ov008_02228ab8 kind:data(any) addr:0x02228ab8 local
-data_ov008_02228b28 kind:data(any) addr:0x02228b28 local
-data_ov008_02228cb0 kind:data(any) addr:0x02228cb0 local
-data_ov008_02228cbc kind:data(any) addr:0x02228cbc local
-data_ov008_02228cc8 kind:data(any) addr:0x02228cc8 local
-data_ov008_02228d38 kind:data(any) addr:0x02228d38 local
-data_ov008_02228db0 kind:data(any) addr:0x02228db0 local
-data_ov008_02228eac kind:data(any) addr:0x02228eac local
-data_ov008_02229018 kind:data(any) addr:0x02229018 local
-data_ov008_0222901a kind:data(any) addr:0x0222901a local
-data_ov008_0222901e kind:data(any) addr:0x0222901e local
-data_ov008_02229024 kind:data(any) addr:0x02229024 local
-data_ov008_0222902c kind:data(any) addr:0x0222902c local
-data_ov008_02229038 kind:data(any) addr:0x02229038 local
-data_ov008_02229044 kind:data(any) addr:0x02229044 local
-data_ov008_02229050 kind:data(any) addr:0x02229050 local
-data_ov008_0222905c kind:data(any) addr:0x0222905c local
-data_ov008_02229068 kind:data(any) addr:0x02229068 local
-data_ov008_02229080 kind:data(any) addr:0x02229080 local
-data_ov008_022290a4 kind:data(any) addr:0x022290a4 local
-data_ov008_022290cc kind:data(any) addr:0x022290cc local
+sMyroomGiftWindowItems kind:data(any) addr:0x02228b28 local
+sMyroomRankingRowCellPos kind:data(any) addr:0x02228cb0 local
+sMyroomRankingRowTextPos kind:data(any) addr:0x02228cbc local
+sMyroomRankingScrollCells kind:data(any) addr:0x02228cc8 local
+sMyroomRankingDigitPos kind:data(any) addr:0x02228d38 local
+sMyroomRankingObj00Cells kind:data(any) addr:0x02228db0 local
+sMyroomRankingWindowItems kind:data(any) addr:0x02228eac local
+sMyroomShootCellAnimPos kind:data(any) addr:0x02229018 local
+sMyroomShootTextDimensions kind:data(any) addr:0x0222901a local
+sMyroomShootGridUsed kind:data(any) addr:0x0222901e local
+sMyroomShootTextUnitSizes kind:data(any) addr:0x02229024 local
+sMyroomShootShooterAnimIndices kind:data(any) addr:0x0222902c local
+sMyroomShootEffectScriptIndices kind:data(any) addr:0x02229038 local
+sMyroomShootRoomScale kind:data(any) addr:0x02229044 local
+sMyroomShootRoomOffset kind:data(any) addr:0x02229050 local
+sMyroomShootGridPos kind:data(any) addr:0x0222905c local
+sMyroomShootBakuganKinds kind:data(any) addr:0x02229068 local
+sMyroomShootEffectRotDegrees kind:data(any) addr:0x02229080 local
+sMyroomShootLightData kind:data(any) addr:0x022290a4 local
+sMyroomShootShooterPos kind:data(any) addr:0x022290cc local
 data_ov008_02229114 kind:data(any) addr:0x02229114 local
-data_ov008_02229184 kind:data(any) addr:0x02229184 local
-data_ov008_0222929c kind:data(any) addr:0x0222929c local
-data_ov008_022292b8 kind:data(any) addr:0x022292b8 local
-data_ov008_022292d4 kind:data(any) addr:0x022292d4 local
-data_ov008_0222930c kind:data(any) addr:0x0222930c local
-data_ov008_02229378 kind:data(any) addr:0x02229378 local
-data_ov008_022293e8 kind:data(any) addr:0x022293e8 local
-data_ov008_02229650 kind:data(any) addr:0x02229650 local
+sMyroomShootWindowItems kind:data(any) addr:0x02229184 local
+sMyroomCharaCockpitCells kind:data(any) addr:0x0222929c local
+sMyroomCharaLineVramOffsets kind:data(any) addr:0x022292b8 local
+sMyroomCharaPageCells kind:data(any) addr:0x022292d4 local
+sMyroomCharaTextPos kind:data(any) addr:0x0222930c local
+sMyroomCharaStatusCells kind:data(any) addr:0x02229378 local
+sMyroomCharaWindowItems kind:data(any) addr:0x022293e8 local
+sMyroomTipsCategoryCounts kind:data(any) addr:0x02229650 local
 data_ov008_02229658 kind:data(any) addr:0x02229658 local
-data_ov008_02229660 kind:data(any) addr:0x02229660 local
-data_ov008_02229668 kind:data(any) addr:0x02229668 local
-data_ov008_02229674 kind:data(any) addr:0x02229674 local
-data_ov008_02229690 kind:data(any) addr:0x02229690 local
-data_ov008_022296ac kind:data(any) addr:0x022296ac local
-data_ov008_02229724 kind:data(any) addr:0x02229724 local
-data_ov008_022297b0 kind:data(any) addr:0x022297b0 local
+sMyroomTipsCategoryFirstBits kind:data(any) addr:0x02229660 local
+sMyroomTipsCategoryPos kind:data(any) addr:0x02229668 local
+sMyroomTipsWindowAItems kind:data(any) addr:0x02229674 local
+sMyroomTipsWindowACells kind:data(any) addr:0x02229690 local
+sMyroomTipsEntries kind:data(any) addr:0x022296ac local
+sMyroomTipsWindowBItems kind:data(any) addr:0x02229724 local
+sMyroomTipsWindowBCells kind:data(any) addr:0x022297b0 local
 __sinit_MyroomScene.cpp kind:function(arm,size=0x54) addr:0x0222983c local
 OV008_CTOR_START kind:data(word) addr:0x02229890
 OV008_DATA_START kind:data(any) addr:0x022298a0
@@ -218,8 +218,8 @@ _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1101 kind:data(any) addr:0x02229bf8 local
 @1106 kind:data(any) addr:0x02229c28 local
 @1133 kind:data(any) addr:0x02229c58 local
-data_ov008_02229c88 kind:data(any) addr:0x02229c88
-data_ov008_02229d14 kind:data(any) addr:0x02229d14
+sMyroomMenu2Items kind:data(any) addr:0x02229c88
+sMyroomMenu1Items kind:data(any) addr:0x02229d14
 @3088 kind:data(any) addr:0x02229da0 local
 @3142 kind:data(any) addr:0x02229db0 local
 @3143 kind:data(any) addr:0x02229dc0 local
@@ -251,7 +251,7 @@ _ZTV15MyroomGiftScene kind:data(any) addr:0x02229f10
 @324 kind:data(any) addr:0x0222a0dc local
 @325 kind:data(any) addr:0x0222a108 local
 @323 kind:data(any) addr:0x0222a134 local
-data_ov008_0222a160 kind:data(any) addr:0x0222a160
+sMyroomGiftEmblemCells kind:data(any) addr:0x0222a160
 @2009 kind:data(any) addr:0x0222a278 local
 @2010 kind:data(any) addr:0x0222a28c local
 @2011 kind:data(any) addr:0x0222a2a8 local
@@ -324,7 +324,7 @@ _ZTV16MyroomShootScene kind:data(any) addr:0x0222a960
 @925 kind:data(any) addr:0x0222aaa8 local
 @928 kind:data(any) addr:0x0222aad4 local
 @926 kind:data(any) addr:0x0222ab00 local
-data_ov008_0222ab2c kind:data(any) addr:0x0222ab2c local
+sMyroomShootShooterCells kind:data(any) addr:0x0222ab2c local
 @2697 kind:data(any) addr:0x0222abd4 local
 @2698 kind:data(any) addr:0x0222abe4 local
 @2699 kind:data(any) addr:0x0222abfc local

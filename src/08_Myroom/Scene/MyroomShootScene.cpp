@@ -24,20 +24,20 @@ static const WindowCellRecord data_ov008_02229114[4] = {
     {"Game/2D/union_b/union_b_obj_page_nce.bin", 0, 0x8000, 11, 0, 1, {0, 1, 1, 0}},
     {"Game/2D/union_b/union_b_obj_page_nce.bin", 3, 0x8000, 11, 0, 1, {3, 4, 4, 0}},
 };
-static const ShootPoint data_ov008_0222905c[2][3] = {
+static const ShootPoint sMyroomShootGridPos[2][3] = {
     {{0x28, 0x28}, {0x68, 0x28}, {0xa8, 0x28}},
     {{0x28, 0x68}, {0x68, 0x68}, {0xa8, 0x68}},
 };
-static const VecFx32 data_ov008_022290cc[6] = {
+static const VecFx32 sMyroomShootShooterPos[6] = {
     {0xf000, 0x5c000, 0x64000}, {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000},
     {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000},
 };
-static const VecFx32 data_ov008_02229044 = {0x1000, 0x1000, 0x1000};
-static const VecFx32 data_ov008_02229050 = {0, 0, -0xe6000};
-static const u32 data_ov008_02229024[2] = {0x44, 0x21};
-static const u16 data_ov008_02229080[6][3] = {{0, 15, 15}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-static const u8 data_ov008_0222901e[2][3] = {{1, 1, 1}, {1, 1, 1}};
-static WindowCellRecord data_ov008_0222ab2c[6] = {
+static const VecFx32 sMyroomShootRoomScale = {0x1000, 0x1000, 0x1000};
+static const VecFx32 sMyroomShootRoomOffset = {0, 0, -0xe6000};
+static const u32 sMyroomShootTextUnitSizes[2] = {0x44, 0x21};
+static const u16 sMyroomShootEffectRotDegrees[6][3] = {{0, 15, 15}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+static const u8 sMyroomShootGridUsed[2][3] = {{1, 1, 1}, {1, 1, 1}};
+static WindowCellRecord sMyroomShootShooterCells[6] = {
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 2, 0x0, 0, 1, 1, {2, 2, 2, 0}},
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 3, 0x0, 0, 1, 1, {3, 3, 3, 0}},
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 4, 0x0, 0, 1, 1, {4, 4, 4, 0}},
@@ -45,8 +45,8 @@ static WindowCellRecord data_ov008_0222ab2c[6] = {
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 6, 0x0, 0, 1, 1, {6, 6, 6, 0}},
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 7, 0x0, 0, 1, 1, {7, 7, 7, 0}},
 };
-static const u8 data_ov008_0222901a[2][2] = {{0x10, 0x12}, {0x40, 0x02}};
-static const WindowItemRecord data_ov008_02229184[10] = {
+static const u8 sMyroomShootTextDimensions[2][2] = {{0x10, 0x12}, {0x40, 0x02}};
+static const WindowItemRecord sMyroomShootWindowItems[10] = {
     {0, 0x8, 40, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8, 104, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
     {2, 0x8, 168, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
@@ -65,11 +65,11 @@ static const WindowItemRecord data_ov008_02229184[10] = {
 #include "Scene/MyroomShootScene.hpp"
 #include "Text/TextManager.hpp"
 
-static const ShootPoint data_ov008_02229018 = {0x80, 0x60};
-static const u16 data_ov008_022290a4[20] = {1, 0x7fff, 0xfbae, 0xf91f, 0xf23d};
-static const u32 data_ov008_02229068[6] = {0, 4, 7, 2, 11, 25};
-static const u8 data_ov008_0222902c[6][2] = {{2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}};
-static const u16 data_ov008_02229038[6] = {0, 2, 11, 9, 7, 8};
+static const ShootPoint sMyroomShootCellAnimPos = {0x80, 0x60};
+static const u16 sMyroomShootLightData[20] = {1, 0x7fff, 0xfbae, 0xf91f, 0xf23d};
+static const u32 sMyroomShootBakuganKinds[6] = {0, 4, 7, 2, 11, 25};
+static const u8 sMyroomShootShooterAnimIndices[6][2] = {{2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}};
+static const u16 sMyroomShootEffectScriptIndices[6] = {0, 2, 11, 9, 7, 8};
 
 MyroomShootScene::MyroomShootScene() :
     SceneBase(1000, 0) {
@@ -241,7 +241,7 @@ void MyroomShootScene::Init() {
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
-    mLights = new ModelLightGroup(data_ov008_022290a4);
+    mLights = new ModelLightGroup(sMyroomShootLightData);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -256,7 +256,7 @@ void MyroomShootScene::Init() {
     mCellAnim->SetAnimation(0);
     ChangeDir("/");
     mWindow = NULL;
-    mWindow = new SelectWindow(10, data_ov008_02229184, -1);
+    mWindow = new SelectWindow(10, sMyroomShootWindowItems, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     ChangeDir("/");
@@ -268,20 +268,20 @@ void MyroomShootScene::Init() {
     sub.LoadPalette("Game/2D/union_b/union_b_obj_page_ncl.bin", 0x160, 0);
     for (u8 i = 0; i < 6; i++) {
         if (mUnlocked[i] != 0) {
-            u8 a = data_ov008_0222902c[i][0];
-            u8 b = data_ov008_0222902c[i][1];
-            *(u8 *) &data_ov008_0222ab2c[i].mAnimIndex = a;
-            data_ov008_0222ab2c[i].mAnimIndices[0] = a;
-            data_ov008_0222ab2c[i].mAnimIndices[1] = b;
-            data_ov008_0222ab2c[i].mAnimIndices[2] = a;
+            u8 a = sMyroomShootShooterAnimIndices[i][0];
+            u8 b = sMyroomShootShooterAnimIndices[i][1];
+            *(u8 *) &sMyroomShootShooterCells[i].mAnimIndex = a;
+            sMyroomShootShooterCells[i].mAnimIndices[0] = a;
+            sMyroomShootShooterCells[i].mAnimIndices[1] = b;
+            sMyroomShootShooterCells[i].mAnimIndices[2] = a;
         } else {
-            *(u8 *) &data_ov008_0222ab2c[i].mAnimIndex = 1;
-            data_ov008_0222ab2c[i].mAnimIndices[0] = 1;
-            data_ov008_0222ab2c[i].mAnimIndices[1] = 1;
-            data_ov008_0222ab2c[i].mAnimIndices[2] = 1;
+            *(u8 *) &sMyroomShootShooterCells[i].mAnimIndex = 1;
+            sMyroomShootShooterCells[i].mAnimIndices[0] = 1;
+            sMyroomShootShooterCells[i].mAnimIndices[1] = 1;
+            sMyroomShootShooterCells[i].mAnimIndices[2] = 1;
         }
     }
-    mWindow->SetCells(6, data_ov008_0222ab2c);
+    mWindow->SetCells(6, sMyroomShootShooterCells);
     mWindow->SetCells(4, data_ov008_02229114);
     ChangeDir("/Game/Myroom/Map/");
     NitroModel *model     = new NitroModel();
@@ -298,12 +298,12 @@ void MyroomShootScene::Init() {
         mMessages = (MessageFile *) LoadFile("mes_myroom.mes", 0, 0, 0, 0, 0);
     }
     for (u8 i = 0; i < 2; i++) {
-        mTextBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov008_0222901a[i][0], (s16) data_ov008_0222901a[i][1]);
-        mGlyphCount[i]     = TextManager::Get().GlyphCount(data_ov008_0222901a[i][0], data_ov008_0222901a[i][1], data_ov008_02229024[i]);
+        mTextBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) sMyroomShootTextDimensions[i][0], (s16) sMyroomShootTextDimensions[i][1]);
+        mGlyphCount[i]     = TextManager::Get().GlyphCount(sMyroomShootTextDimensions[i][0], sMyroomShootTextDimensions[i][1], sMyroomShootTextUnitSizes[i]);
         mTextBuffers[i]    = OS_Alloc(mTextBufferSize[i]);
         ClearTextBuffers(i);
         mGlyphBuffers[i] = OS_Alloc(mGlyphCount[i] * 0xc);
-        TextManager::Get().Init(mGlyphBuffers[i], 0, 0, data_ov008_0222901a[i][0], data_ov008_0222901a[i][1], data_ov008_02229024[i]);
+        TextManager::Get().Init(mGlyphBuffers[i], 0, 0, sMyroomShootTextDimensions[i][0], sMyroomShootTextDimensions[i][1], sMyroomShootTextUnitSizes[i]);
     }
     TextManager::Get().SetColor(0, 0, 0xf);
     mMessage = new MessageWindow("mes_myroom", 1, 0x7000);
@@ -331,8 +331,8 @@ void MyroomShootScene::SelectShooter(s8 index) {
             u16 effectRot[3];
             VecFx32 pos;
             mShooter = new BakuganModel();
-            mShooter->Setup(data_ov008_02229068[mSelected], (u8) mSelected, 0);
-            pos = data_ov008_022290cc[mSelected];
+            mShooter->Setup(sMyroomShootBakuganKinds[mSelected], (u8) mSelected, 0);
+            pos = sMyroomShootShooterPos[mSelected];
             mShooter->func_0203db70(&pos);
             mRot[0]  = 0;
             mRot[1]  = 0x154;
@@ -341,11 +341,11 @@ void MyroomShootScene::SelectShooter(s8 index) {
             modelRot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
             modelRot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
             mShooter->func_0203db94(modelRot);
-            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) data_ov008_02229038[mSelected], 0, 0);
+            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mSelected], 0, 0);
             SetEffectPosition(data_020d433c.mEffects, mEffect, &pos);
-            effectRot[0] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][0] / 360.0f);
-            effectRot[1] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][1] / 360.0f);
-            effectRot[2] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][2] / 360.0f);
+            effectRot[0] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][0] / 360.0f);
+            effectRot[1] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][1] / 360.0f);
+            effectRot[2] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][2] / 360.0f);
             SetEffectRotation(data_020d433c.mEffects, mEffect, effectRot);
         }
         mTextPage = 0;
@@ -371,12 +371,12 @@ void MyroomShootScene::Draw() {
 void MyroomShootScene::DrawSprites() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
-        mCellAnim->Draw(0, data_ov008_02229018.x, data_ov008_02229018.y, 0);
+        mCellAnim->Draw(0, sMyroomShootCellAnimPos.x, sMyroomShootCellAnimPos.y, 0);
     }
     MtxFx43 *base = func_020323b8();
     MtxFx43 view  = gIdentityMtx43;
-    VecFx32 scale = data_ov008_02229044;
-    VecFx32 offset = data_ov008_02229050;
+    VecFx32 scale = sMyroomShootRoomScale;
+    VecFx32 offset = sMyroomShootRoomOffset;
     func_01ffcf64(&view, &offset);
     func_01ff89c0(&view, base, &view);
     mRoom->AdvanceAnim();
@@ -512,7 +512,7 @@ s8 MyroomShootScene::UpdateKeySelection() {
             mRow--;
         } else {
             mRow = 1;
-            if (data_ov008_0222901e[mRow][mCol] == 0) {
+            if (sMyroomShootGridUsed[mRow][mCol] == 0) {
                 mRow--;
             }
         }
@@ -521,7 +521,7 @@ s8 MyroomShootScene::UpdateKeySelection() {
         mRow++;
         if (mRow >= 2) {
             mRow = 0;
-        } else if (data_ov008_0222901e[mRow][mCol] == 0) {
+        } else if (sMyroomShootGridUsed[mRow][mCol] == 0) {
             mRow = 0;
         }
     }
@@ -531,7 +531,7 @@ s8 MyroomShootScene::UpdateKeySelection() {
             mCol--;
         } else {
             mCol = 2;
-            if (data_ov008_0222901e[mRow][mCol] == 0) {
+            if (sMyroomShootGridUsed[mRow][mCol] == 0) {
                 mCol--;
             }
         }
@@ -540,7 +540,7 @@ s8 MyroomShootScene::UpdateKeySelection() {
         mCol++;
         if (mCol >= 3) {
             mCol = 0;
-        } else if (data_ov008_0222901e[mRow][mCol] == 0) {
+        } else if (sMyroomShootGridUsed[mRow][mCol] == 0) {
             mCol = 0;
         }
     }
@@ -594,7 +594,7 @@ void MyroomShootScene::func_ov008_02223264() {
             items[9].mFlags = 0x8000;
         }
     }
-    Vec2s pos = {data_ov008_0222905c[mRow][mCol].x, data_ov008_0222905c[mRow][mCol].y};
+    Vec2s pos = {sMyroomShootGridPos[mRow][mCol].x, sMyroomShootGridPos[mRow][mCol].y};
     mWindow->mCellPos[6] = pos;
     if (mShooter == NULL) {
         return;

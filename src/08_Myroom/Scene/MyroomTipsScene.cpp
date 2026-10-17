@@ -35,9 +35,9 @@ extern "C" void func_0206f6f0(ScriptPlayer *event, const char *name, u32 id, u32
 
 const s8 data_ov008_02229658[6] = {0, 11, 17, 24, 31, 44};
 
-const u8 data_ov008_02229668[6][2] = {{0x14, 0x22}, {0x64, 0x22}, {0xb4, 0x22}, {0x14, 0x68}, {0x64, 0x68}, {0xb4, 0x68}};
+const u8 sMyroomTipsCategoryPos[6][2] = {{0x14, 0x22}, {0x64, 0x22}, {0xb4, 0x22}, {0x14, 0x68}, {0x64, 0x68}, {0xb4, 0x68}};
 
-const WindowCellRecord data_ov008_022297b0[5] = {
+const WindowCellRecord sMyroomTipsWindowBCells[5] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0, 4, 3, 1, {2, 3, 3, 0}},
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 28672, 4, 3, 1, {4, 4, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 0, 28672, 4, 3, 1, {0, 1, 1, 0}},
@@ -45,9 +45,9 @@ const WindowCellRecord data_ov008_022297b0[5] = {
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 5, 28672, 4, 3, 1, {5, 5, 5, 0}},
 };
 
-const s8 data_ov008_02229650[6] = {10, 5, 6, 6, 6, 6};
+const s8 sMyroomTipsCategoryCounts[6] = {10, 5, 6, 6, 6, 6};
 
-const TipsEntry data_ov008_022296ac[6][10] = {
+const TipsEntry sMyroomTipsEntries[6][10] = {
     {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {9, 10}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}},
     {{10, 12}, {11, 13}, {12, 14}, {13, 15}, {14, 16}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{15, 18}, {16, 19}, {17, 20}, {18, 21}, {19, 22}, {20, 23}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
@@ -56,7 +56,7 @@ const TipsEntry data_ov008_022296ac[6][10] = {
     {{33, 45}, {34, 46}, {35, 47}, {36, 48}, {37, 49}, {38, 50}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
 };
 
-const WindowItemRecord data_ov008_02229724[5] = {
+const WindowItemRecord sMyroomTipsWindowBItems[5] = {
     {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x10, 228, 48, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
     {2, 0x20, 228, 28, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
@@ -64,13 +64,13 @@ const WindowItemRecord data_ov008_02229724[5] = {
     {4, 0x8000, 238, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
 
-const WindowItemRecord data_ov008_02229674[1] = {
+const WindowItemRecord sMyroomTipsWindowAItems[1] = {
     {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
 };
 
-const u8 data_ov008_02229660[6] = {0x00, 0x10, 0x15, 0x1b, 0x0a, 0x21};
+const u8 sMyroomTipsCategoryFirstBits[6] = {0x00, 0x10, 0x15, 0x1b, 0x0a, 0x21};
 
-const WindowCellRecord data_ov008_02229690[1] = {
+const WindowCellRecord sMyroomTipsWindowACells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0, 4, 3, 1, {2, 3, 3, 0}},
 };
 
@@ -373,12 +373,12 @@ void MyroomTipsScene::LoadGraphics() {
     mNewCells[1]->mCharBase = sub.GetCharBase(0xc000);
     mNewCells[1]->mPaletteBase   = 8;
     ChangeDir("/");
-    mWindowA = new SelectWindow(1, data_ov008_02229674, 0);
-    mWindowA->SetCells(1, data_ov008_02229690);
+    mWindowA = new SelectWindow(1, sMyroomTipsWindowAItems, 0);
+    mWindowA->SetCells(1, sMyroomTipsWindowACells);
     mWindowA->mCursor->mSelection = -1;
     mWindowA->mEnabled            = 0;
-    mWindowB                      = new SelectWindow(5, data_ov008_02229724, -1);
-    mWindowB->SetCells(5, data_ov008_022297b0);
+    mWindowB                      = new SelectWindow(5, sMyroomTipsWindowBItems, -1);
+    mWindowB->SetCells(5, sMyroomTipsWindowBCells);
     mWindowB->mCursor->mSelection = -1;
     mWindowB->mCursor->mSelection = mScroll;
     mWindowB->mCursor->SetupScroll(0x30, 0x90, 4, mCount);
@@ -422,7 +422,7 @@ void MyroomTipsScene::Draw() {
                 i++;
                 continue;
             }
-            mNewCells[0]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 1);
+            mNewCells[0]->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 1);
             i++;
         } while (i < 6);
     }
@@ -434,7 +434,7 @@ void MyroomTipsScene::Draw() {
     do {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mRowGlyphCount, 0x26, (s16) (j * 32 + 0x29), 1,
                                                      (u16) ((j * 3 * 0x400 + 0x8000) >> 7), 0xf, 0);
-        if (!TEST_BIT(data_020d49a1, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
+        if (!TEST_BIT(data_020d49a1, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
             mNewCells[1]->Draw(1, 0x20, (s16) (j * 32 + 0x20), 1);
         }
         j++;
@@ -456,10 +456,10 @@ void MyroomTipsScene::func_ov008_022271f8() {
         }
         do {
             if (mUnlocked[i] == 0) {
-                mCellA->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 2);
+                mCellA->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
             } else {
                 mCells[i]->Update();
-                mCells[i]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 2);
+                mCells[i]->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
             }
             i++;
         } while (i < 6);
@@ -484,7 +484,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
 void MyroomTipsScene::func_ov008_022273f0() {
     SceneContext *context = mContext;
     if (mFlags & 1) {
-        DrawCategoryCursor(data_ov008_02229668[0], context->mInfo.mMenuResult);
+        DrawCategoryCursor(sMyroomTipsCategoryPos[0], context->mInfo.mMenuResult);
     }
     if (!(mFlags & 2)) {
         return;
@@ -528,7 +528,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
             }
         }
         if (context->mInfo.mState == 0) {
-            s32 selection = UpdateCategorySelection(data_ov008_02229668[0], 6);
+            s32 selection = UpdateCategorySelection(sMyroomTipsCategoryPos[0], 6);
             if (selection >= 0) {
                 s8 category = context->mInfo.mMenuResult;
                 if (category != selection) {
@@ -608,8 +608,8 @@ void MyroomTipsScene::func_ov008_022274f8() {
         mUnk_85 = 0;
         s32 category = (s8) context->mInfo.mMenuResult;
         u8 entry     = mIndices[mRow];
-        u16 message  = data_ov008_022296ac[category][entry].mMessage;
-        if (category == 4 && data_ov008_022296ac[category][entry].mText == 0x20) {
+        u16 message  = sMyroomTipsEntries[category][entry].mMessage;
+        if (category == 4 && sMyroomTipsEntries[category][entry].mText == 0x20) {
             if (gSaveData[0].mUnk_5bf_0) {
                 message = 0x2b;
             } else {
@@ -632,7 +632,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
         func_020705f0(mEvent);
         mEvent->func_0206f564(message, 11, -1);
         context->mInfo.mStep = 0xb;
-        int flag             = data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[mRow];
+        int flag             = sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + mIndices[mRow];
         if (!TEST_BIT(data_020d49a1, flag)) {
             SET_BIT(data_020d49a1, flag);
             mNew[(s8) context->mInfo.mMenuResult]--;
@@ -786,7 +786,7 @@ void MyroomTipsScene::PrintRows(s32 row) {
         height = 0;
         width = mTextX[i];
         s8 menu = context->mInfo.mMenuResult;
-        u16 index = data_ov008_022296ac[menu][mIndices[i]].mText;
+        u16 index = sMyroomTipsEntries[menu][mIndices[i]].mText;
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
                    0x11, 0x10, 0, 0, 1, 1, 1);
@@ -823,13 +823,13 @@ void MyroomTipsScene::CountTips() {
     for (u8 i = 0; i < 6; i++) {
         mUnlocked[i] = 0;
         mNew[i]      = 0;
-        s8 count     = data_ov008_02229650[i];
-        u8 start     = data_ov008_02229660[i];
+        s8 count     = sMyroomTipsCategoryCounts[i];
+        u8 start     = sMyroomTipsCategoryFirstBits[i];
         u8 j         = 0;
         do {
             if (TEST_BIT(data_020d499c, start + j)) {
                 mUnlocked[i]++;
-                if (!TEST_BIT(data_020d49a1, data_ov008_02229660[i] + j)) {
+                if (!TEST_BIT(data_020d49a1, sMyroomTipsCategoryFirstBits[i] + j)) {
                     mNew[i]++;
                 }
             }
@@ -842,14 +842,14 @@ u32 MyroomTipsScene::GetUnlockedTip(s16 index) {
     SceneContext *context = mContext;
     u8 i        = 0;
     do {
-        if (TEST_BIT(data_020d499c, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + i)) {
+        if (TEST_BIT(data_020d499c, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + i)) {
             index--;
             if (index < 0) {
                 return i;
             }
         }
         i++;
-    } while (i < data_ov008_02229650[(s8) context->mInfo.mMenuResult]);
+    } while (i < sMyroomTipsCategoryCounts[(s8) context->mInfo.mMenuResult]);
     return 0;
 }
 

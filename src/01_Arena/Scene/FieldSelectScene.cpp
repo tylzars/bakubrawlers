@@ -8,15 +8,15 @@ inline u32 *DataLayoutSlot() {
     static u32 sSlot;
     return &sSlot;
 }
-static const u8 data_ov001_022270c0[4] = {0x1a, 0x44, 0x94, 0xbe};
-static const u8 data_ov001_022270d0[10] = {0x6, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x7, 0x9};
-static const WindowItemRecord data_ov001_02227108[1] = {
+static const u8 sFieldSelectPairColumnX[4] = {0x1a, 0x44, 0x94, 0xbe};
+static const u8 sFieldSelectSubFileIndices[10] = {0x6, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x7, 0x9};
+static const WindowItemRecord sFieldSelectWindow3Items[1] = {
     {0, 0x1, 9, 170, 86, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowItemRecord data_ov001_022270ec[1] = {
+static const WindowItemRecord sFieldSelectWindow2Items[1] = {
     {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowItemRecord data_ov001_02227218[5][6] = {
+static const WindowItemRecord sFieldSelectWindow1Items[5][6] = {
     {
         {0, 0x1, 56, 86, 144, 18, 0, {0, 0, 0, 0}, 0, 2},
         {1, 0x1, 56, 110, 144, 18, 0, {-1, -1, -1, -1}, 0, 2},
@@ -52,14 +52,14 @@ static const WindowItemRecord data_ov001_02227218[5][6] = {
         {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
     },
 };
-static const WindowCellRecord data_ov001_0222715c[2] = {
+static const WindowCellRecord sFieldSelectWindow0Cells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
 };
-static const WindowCellRecord data_ov001_02227140[1] = {
+static const WindowCellRecord sFieldSelectWindow3Cells[1] = {
     {"/Game/Battle/Obj/select_field_b_obj_00_nce.bin", 5, 0x8000, 8, 1, 1, {5, 6, 6, 0}},
 };
-static const WindowCellRecord data_ov001_02227124[1] = {
+static const WindowCellRecord sFieldSelectWindow2Cells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
 };
 static const struct {
@@ -78,7 +78,7 @@ static const struct {
         },
     },
 };
-static const WindowCellRecord data_ov001_02227560[5][6] = {
+static const WindowCellRecord sFieldSelectWindow1Cells[5][6] = {
     {
         {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 12, 0x8000, 4, 0, 1, {11, 13, 12, 0}},
         {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 18, 0x8000, 4, 0, 1, {18, 18, 18, 0}},
@@ -114,9 +114,9 @@ static const WindowCellRecord data_ov001_02227560[5][6] = {
         {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x8000, 8, 0, 1, {10, 10, 10, 0}},
     },
 };
-static const u8 data_ov001_022270bc[4] = {0x1a, 0x52, 0x88, 0xbe};
-static const u8 data_ov001_022270dc[4][4] = {{0x0, 0x1, 0x2, 0x3}, {0x0, 0x1, 0x2, 0x3}, {0x0, 0x2, 0x1, 0x3}, {0x0, 0x3, 0x1, 0x2}};
-static const u8 data_ov001_022270c4[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7, 0x0};
+static const u8 sFieldSelectFirstRowColumnX[4] = {0x1a, 0x52, 0x88, 0xbe};
+static const u8 sFieldSelectPairSlots[4][4] = {{0x0, 0x1, 0x2, 0x3}, {0x0, 0x1, 0x2, 0x3}, {0x0, 0x2, 0x1, 0x3}, {0x0, 0x3, 0x1, 0x2}};
+static const u8 sFieldSelectFieldIds[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7, 0x0};
 
 #include "Text/TextManager.hpp"
 #include "System/WirelessManager.hpp"
@@ -266,7 +266,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
         if (j == 8) {
             mFieldUnlocked[mLocalSlot][j] = 1;
         } else {
-            u8 f = data_ov001_022270c4[j];
+            u8 f = sFieldSelectFieldIds[j];
             if (TestFlagBit(data_020d4968, f)) {
                 mFieldUnlocked[mLocalSlot][j] = 1;
                 if (!TestFlagBit(data_020d4969, f)) {
@@ -608,7 +608,7 @@ void FieldSelectScene::SetupPage() {
             break;
     }
     mWindows[0] = new SelectWindow(mUnk_33e, sIdItems.items[variant], 0);
-    mWindows[0]->SetCells(mUnk_33e, data_ov001_0222715c);
+    mWindows[0]->SetCells(mUnk_33e, sFieldSelectWindow0Cells);
     mWindows[0]->mCursor->mSelection = -1;
     mWindows[0]->mEnabled            = 0;
     if (mPageKinds[mPage] == 2) {
@@ -884,8 +884,8 @@ void FieldSelectScene::SetupPage() {
             mUnk_335 = 1;
             mUnk_336 = 1;
             mBlendTimer = 0x10;
-            mWindows[2] = new SelectWindow(1, data_ov001_022270ec, 0);
-            mWindows[2]->SetCells(1, data_ov001_02227124);
+            mWindows[2] = new SelectWindow(1, sFieldSelectWindow2Items, 0);
+            mWindows[2]->SetCells(1, sFieldSelectWindow2Cells);
             mWindows[2]->mCursor->mSelection = -1;
             break;
         }
@@ -1039,8 +1039,8 @@ void FieldSelectScene::SetupPage() {
             mUnk_337 = 1;
             UploadFieldFiles(mInput[0].mCursorItem);
             mBlendTimer    = 0x10;
-            mWindows[3] = new SelectWindow(1, data_ov001_02227108, 0);
-            mWindows[3]->SetCells(1, data_ov001_02227140);
+            mWindows[3] = new SelectWindow(1, sFieldSelectWindow3Items, 0);
+            mWindows[3]->SetCells(1, sFieldSelectWindow3Cells);
             mWindows[3]->mCursor->mSelection = -1;
             break;
         }
@@ -1134,7 +1134,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                         mFieldUnlocked[i][j] = 1;
                         break;
                     default: {
-                        u8 f = data_ov001_022270c4[j];
+                        u8 f = sFieldSelectFieldIds[j];
                         if (p[0xd + ((u32) f >> 3)] & (1 << (f % 8))) {
                             mFieldUnlocked[i][j] = 1;
                         } else {
@@ -1861,9 +1861,9 @@ void FieldSelectScene::UpdatePairCells() {
         mCells[1].mAnim->SetAnimation(1);
         mCells[2].mAnim->SetAnimation(1);
         mCells[3].mAnim->SetAnimation(1);
-        u8 a = data_ov001_022270dc[r][1];
-        u8 b = data_ov001_022270dc[r][2];
-        u8 c = data_ov001_022270dc[r][3];
+        u8 a = sFieldSelectPairSlots[r][1];
+        u8 b = sFieldSelectPairSlots[r][2];
+        u8 c = sFieldSelectPairSlots[r][3];
         mCells[0].mAnim->mFrameIndex = 0;
         mCells[a].mAnim->mFrameIndex = 0;
         mCells[b].mAnim->mFrameIndex = 1;
@@ -2242,11 +2242,11 @@ u32 FieldSelectScene::UpdatePairPage() {
                 mUnk_32c = 0;
             } else {
                 mUnk_32c                 = 1;
-                u8 a                     = data_ov001_022270dc[idx][1];
+                u8 a                     = sFieldSelectPairSlots[idx][1];
                 data_020d433c.mPartners[0] = a;
                 data_020d43d7[a]         = 0;
-                u8 b = data_ov001_022270dc[idx][2];
-                u8 c = data_ov001_022270dc[idx][3];
+                u8 b = sFieldSelectPairSlots[idx][2];
+                u8 c = sFieldSelectPairSlots[idx][3];
                 data_020d43d7[b]         = c;
                 data_020d43d7[c]         = b;
             }
@@ -2328,7 +2328,7 @@ u32 FieldSelectScene::UpdateFieldPage() {
             }
         }
         if ((mInput[0].mTaken == 1) & (mInput[0].mWindowOpen == 0)) {
-            data_020d433c.mFieldId = data_ov001_022270c4[mInput[0].mCursorItem];
+            data_020d433c.mFieldId = sFieldSelectFieldIds[mInput[0].mCursorItem];
             result                = 1;
             mUnk_32d              = 0;
         }
@@ -2347,7 +2347,7 @@ void FieldSelectScene::UploadFieldFiles(u32 idx) {
     if (mFieldUnlocked[mLocalSlot][idx] == 0 && mFieldUnlocked[0][idx] == 0) {
         sel = 9;
     } else {
-        sel = data_ov001_022270d0[idx];
+        sel = sFieldSelectSubFileIndices[idx];
     }
     QueueUpload(0, 1, 0, mFiles[sel][1], mFileSizes[sel][1], 0);
     QueueUpload(0, 0xb, 0, mFiles[sel][0], mFileSizes[sel][0], 0);
@@ -2476,8 +2476,8 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
                 }
                 break;
         }
-        mWindows[1] = new SelectWindow(count, data_ov001_02227218[set], -1);
-        mWindows[1]->SetCells(count, data_ov001_02227560[set]);
+        mWindows[1] = new SelectWindow(count, sFieldSelectWindow1Items[set], -1);
+        mWindows[1]->SetCells(count, sFieldSelectWindow1Cells[set]);
         mWindows[1]->mCursor->mSelection = -1;
         mWindows[1]->mCursor->mSelection = sel;
         mInput[slot].mWindowSelection             = sel;
@@ -2614,10 +2614,10 @@ void FieldSelectScene::Draw() {
         do {
             u8 col = 0;
             do {
-                s16 v = data_ov001_022270dc[r][col];
-                s16 x = data_ov001_022270c0[col];
+                s16 v = sFieldSelectPairSlots[r][col];
+                s16 x = sFieldSelectPairColumnX[col];
                 if (r == 0) {
-                    x = data_ov001_022270bc[col];
+                    x = sFieldSelectFirstRowColumnX[col];
                 }
                 s16 y = r * 0x24 + 0x18;
                 mPanel[1]->SetDrawArgs(v, x + 6, y + 4, 1);

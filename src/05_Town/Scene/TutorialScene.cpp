@@ -11,9 +11,9 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-static const u8 data_ov005_022200d0[8] = {0, 1, 7, 12, 14, 16, 18, 0};
+static const u8 sTutorialFirstIds[8] = {0, 1, 7, 12, 14, 16, 18, 0};
 static const s8 data_ov005_022200d8[8][2] = {{0, 0}, {13, 3}, {13, 3}, {0, 4}, {0, 3}, {13, 3}, {13, 3}, {0, 0}};
-static const WindowItemRecord data_ov005_02220190[6] = {
+static const WindowItemRecord sTutorialListItems[6] = {
     {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
     {2, 16, 228, 48, 32, 12, 0, {-1, -1, -1, -1}, 0, 0},
@@ -21,7 +21,7 @@ static const WindowItemRecord data_ov005_02220190[6] = {
     {4, 64, 228, 144, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
     {5, 32768, 238, 36, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov005_02220238[6] = {
+static const WindowCellRecord sTutorialListCells[6] = {
     {"union_b_obj_cockpit_nce.bin", 0, 24576, 3, 2, 1, {0, 1, 1, 0}},
     {"union_b_obj_cockpit_nce.bin", 2, 24576, 3, 2, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 4, 20480, 3, 2, 1, {4, 4, 4, 0}},
@@ -29,12 +29,12 @@ static const WindowCellRecord data_ov005_02220238[6] = {
     {"union_b_obj_scroll_nce.bin", 2, 20480, 3, 2, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
 };
-static const WindowItemRecord data_ov005_022200e8[3] = {
+static const WindowItemRecord sTutorialThreeButtonItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
     {2, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov005_0222013c[3] = {
+static const WindowCellRecord sTutorialThreeButtonCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
@@ -50,12 +50,12 @@ static const WindowCellRecord data_ov005_0222013c[3] = {
 
 extern "C" void func_020383f8(u32 a);
 void func_02089278();
-void func_ov005_0221fdc4();
+void SetupFourPlayerBattle();
 class TutorialScene;
 BOOL func_ov005_0221fd64(TutorialScene *scene);
-void func_ov005_0221e858(TutorialScene *scene);
-void func_ov005_0221e9c8(TutorialScene *scene);
-u8 func_ov005_0221fd0c(TutorialScene *scene);
+void InitScriptDisplay(TutorialScene *scene);
+void InitWindowDisplay(TutorialScene *scene);
+u8 GetTutorialId(TutorialScene *scene);
 
 TutorialScene::TutorialScene() :
     SceneBase(1000, 0) {
@@ -153,7 +153,7 @@ void TutorialScene::Update() {
             break;
         }
         case 1:
-            func_ov005_0221e9c8(this);
+            InitWindowDisplay(this);
             LoadListText();
             LoadGraphics();
             SpriteManager::Get().StartFade(2);
@@ -202,7 +202,7 @@ void TutorialScene::Update() {
             break;
         case 6: {
             BOOL x = FALSE;
-            switch (func_ov005_0221fd0c(this)) {
+            switch (GetTutorialId(this)) {
                 case 0xc:
                     if (data_020d433c.mUnk_86 != 0) {
                         break;
@@ -217,7 +217,7 @@ void TutorialScene::Update() {
                 mState = 0x10;
                 return;
             }
-            func_ov005_0221e858(this);
+            InitScriptDisplay(this);
             mEvent = new ScriptPlayer(6, 0, 1);
             mState++;
             break;
@@ -277,7 +277,7 @@ void TutorialScene::Update() {
             mState = 0xc;
             break;
         case 12:
-            func_ov005_0221e9c8(this);
+            InitWindowDisplay(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
             mState++;
@@ -351,7 +351,7 @@ void TutorialScene::Update() {
                 mState = 0x15;
                 return;
             }
-            func_ov005_0221e9c8(this);
+            InitWindowDisplay(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
             mState++;
@@ -393,7 +393,7 @@ void TutorialScene::Update() {
                 mState = 0x19;
                 return;
             }
-            func_ov005_0221e9c8(this);
+            InitWindowDisplay(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
             mState++;
@@ -450,7 +450,7 @@ void TutorialScene::Update() {
             data_020d433c.mPartners[1] = 1;
             data_020d433c.mFieldId = 0;
             data_020d433c.mUnk_96 = data_ov005_022200d8[idx][1];
-            u8 id = func_ov005_0221fd0c(this);
+            u8 id = GetTutorialId(this);
             if (id == 9) {
                 id = 10;
             }
@@ -460,7 +460,7 @@ void TutorialScene::Update() {
             break;
         }
         case 27:
-            func_ov005_0221fdc4();
+            SetupFourPlayerBattle();
             RequestScene(5);
             mFinished = 1;
             break;
@@ -523,7 +523,7 @@ void TutorialScene::Update() {
     }
 }
 
-void func_ov005_0221e858(TutorialScene *scene) {
+void InitScriptDisplay(TutorialScene *scene) {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
@@ -543,7 +543,7 @@ void func_ov005_0221e858(TutorialScene *scene) {
     G2S_BlendNone();
 }
 
-void func_ov005_0221e9c8(TutorialScene *scene) {
+void InitWindowDisplay(TutorialScene *scene) {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -612,8 +612,8 @@ void TutorialScene::LoadGraphics() {
     window.LoadPalette("union_b_obj_scroll_ncl.bin", 0x60, 0);
     window.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x6000, 0);
     delete mWindow;
-    mWindow = new SelectWindow(6, data_ov005_02220190, -1);
-    mWindow->SetCells(6, data_ov005_02220238);
+    mWindow = new SelectWindow(6, sTutorialListItems, -1);
+    mWindow->SetCells(6, sTutorialListCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mCursor->mSelection = 0;
     mWindow->mCursor->SetupScroll(0x30, 0x90, 4, 6);
@@ -668,8 +668,8 @@ void TutorialScene::LoadListWindow() {
     TextManager::Get().Init(mGlyphs[1].mBuffer, 1, 0, 0x18, 4, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
     delete mWindow;
-    mWindow = new SelectWindow(3, data_ov005_022200e8, -1);
-    mWindow->SetCells(3, data_ov005_0222013c);
+    mWindow = new SelectWindow(3, sTutorialThreeButtonItems, -1);
+    mWindow->SetCells(3, sTutorialThreeButtonCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mEnabled             = 0;
     mWindow->mCursor->mSelection = 1;
@@ -806,7 +806,7 @@ void TutorialScene::DrawList() {
     mCells[3]->Draw(0, 0x80, 0x60, 0);
 }
 
-u8 func_ov005_0221fd0c(TutorialScene *scene) {
+u8 GetTutorialId(TutorialScene *scene) {
     s8 a = data_020d433c.mUnk_84 - 1;
     u8 b = data_020d433c.mUnk_83;
     if (b == 2) {
@@ -815,11 +815,11 @@ u8 func_ov005_0221fd0c(TutorialScene *scene) {
             a = a + 1;
         }
     }
-    return data_ov005_022200d0[b] + a;
+    return sTutorialFirstIds[b] + a;
 }
 
 BOOL func_ov005_0221fd64(TutorialScene *scene) {
-    switch (func_ov005_0221fd0c(scene)) {
+    switch (GetTutorialId(scene)) {
         case 3:
         case 7:
         case 8:
@@ -833,7 +833,7 @@ BOOL func_ov005_0221fd64(TutorialScene *scene) {
     }
 }
 
-void func_ov005_0221fdc4() {
+void SetupFourPlayerBattle() {
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mPlayerCount = 4;
     u8 i;

@@ -19,16 +19,16 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-static const Vec2s data_ov008_02228758[3] = {
+static const Vec2s sMyroomMenuEntryPos[3] = {
     {16, 72}, {96, 72}, {176, 72},
 };
-static const u8 data_ov008_022286f8[3] = {0x3b, 0x3a, 0x39};
+static const u8 sMyroomMenu2StatusTextIndices[3] = {0x3b, 0x3a, 0x39};
 extern const s16 data_ov008_02228740[2][3] = {{58, 16, -667}, {-28, 4, -717}};
 extern const s16 data_ov008_0222871c[2][3] = {{224, 8, -595}, {146, -39, -657}};
 extern const s16 data_ov008_02228734[2][3] = {{182, 8, -665}, {96, -4, -715}};
 extern const s16 data_ov008_0222874c[2][3] = {{60, 8, -606}, {-26, -4, -656}};
-static const u8 data_ov008_02228714[5] = {0x32, 0x35, 0x31, 0x38, 0x33};
-static const WindowItemRecord data_ov008_02228894[8] = {
+static const u8 sMyroomMenu0StatusTextIndices[5] = {0x32, 0x35, 0x31, 0x38, 0x33};
+static const WindowItemRecord sMyroomMenu0Items[8] = {
     {0, 0x8000, 88, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8000, 186, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
     {2, 0x8000, 284, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
@@ -38,15 +38,15 @@ static const WindowItemRecord data_ov008_02228894[8] = {
     {6, 0x8, 0, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
     {7, 0x8, 176, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
 };
-static const u8 data_ov008_022286f4[3] = {0x34, 0x36, 0x37};
+static const u8 sMyroomMenu1StatusTextIndices[3] = {0x34, 0x36, 0x37};
 extern const s16 data_ov008_02228728[2][3] = {{118, -52, -619}, {31, -64, -669}};
-static const u8 data_ov008_022286fc[5] = {0x2, 0x5, 0x8, 0xb, 0xe};
+static const u8 sMyroomMenu0SelectedAnimIndices[5] = {0x2, 0x5, 0x8, 0xb, 0xe};
 static const u8 data_ov008_0222870c[5] = {0x4, 0x5, 0x2, 0x1, 0x3};
-static const u8 data_ov008_02228704[5] = {0x1, 0x4, 0x7, 0xa, 0xd};
+static const u8 sMyroomMenu0AnimIndices[5] = {0x1, 0x4, 0x7, 0xa, 0xd};
 static const u8 data_ov008_02228764[3][8] = {
     {3, 6, 8, 10, 4}, {5, 14, 11}, {13, 12, 15},
 };
-static const WindowCellRecord data_ov008_02228974[8] = {
+static const WindowCellRecord sMyroomMenu0Cells[8] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 1, 0x5000, 2, 2, 1, {2, 3, 2, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 4, 0x5000, 2, 2, 1, {5, 6, 5, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 7, 0x5000, 2, 2, 1, {8, 9, 8, 0}},
@@ -57,15 +57,15 @@ static const WindowCellRecord data_ov008_02228974[8] = {
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 1, 0x4000, 1, 2, 1, {1, 3, 1, 0}},
 };
 #pragma section npdata begin
-WindowItemRecord data_ov008_02229d14[5] = {
-    {0, 0x8000, data_ov008_02228758[0].x, data_ov008_02228758[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, data_ov008_02228758[1].x, data_ov008_02228758[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, data_ov008_02228758[2].x, data_ov008_02228758[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+WindowItemRecord sMyroomMenu1Items[5] = {
+    {0, 0x8000, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8000, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
     {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
     {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
 };
 #pragma section npdata end
-static const WindowCellRecord data_ov008_0222877c[5] = {
+static const WindowCellRecord sMyroomMenu1Cells[5] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 21, 0x5000, 2, 2, 1, {21, 22, 21, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 23, 0x5000, 2, 2, 1, {23, 24, 23, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 25, 0x5000, 2, 2, 1, {25, 26, 25, 0}},
@@ -73,15 +73,15 @@ static const WindowCellRecord data_ov008_0222877c[5] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 34, 0x5000, 2, 2, 1, {34, 34, 34, 0}},
 };
 #pragma section npdata begin
-WindowItemRecord data_ov008_02229c88[5] = {
-    {0, 0x8000, data_ov008_02228758[0].x, data_ov008_02228758[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, data_ov008_02228758[1].x, data_ov008_02228758[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, data_ov008_02228758[2].x, data_ov008_02228758[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+WindowItemRecord sMyroomMenu2Items[5] = {
+    {0, 0x8000, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8000, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
     {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
     {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
 };
 #pragma section npdata end
-static const WindowCellRecord data_ov008_02228808[5] = {
+static const WindowCellRecord sMyroomMenu2Cells[5] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 27, 0x5000, 2, 2, 1, {27, 28, 27, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 29, 0x5000, 2, 2, 1, {29, 30, 29, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 31, 0x5000, 2, 2, 1, {31, 32, 31, 0}},
@@ -166,7 +166,7 @@ void MyroomScene::Update() {
                 mMenus[0]->Reset(-1);
                 mMenus[0]->mCursor->mSelection = -1;
                 mMenus[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
-                mMenus[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(data_ov008_022286fc[(s8) ctx->mInfo.mUnk_06]);
+                mMenus[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0SelectedAnimIndices[(s8) ctx->mInfo.mUnk_06]);
             }
             PrintStatus();
             ctx->mInfo.mState++;
@@ -437,16 +437,16 @@ void MyroomScene::LoadGraphics() {
     if (ctx->mInfo.mMenuResult == 1) {
         selection1 = (s8) ctx->mInfo.mUnk_06;
     }
-    mMenus[1] = new SelectWindow(5, data_ov008_02229d14, selection1);
-    mMenus[1]->SetCells(5, data_ov008_0222877c);
+    mMenus[1] = new SelectWindow(5, sMyroomMenu1Items, selection1);
+    mMenus[1]->SetCells(5, sMyroomMenu1Cells);
     mMenus[1]->mCursor->mSelection = -1;
     mMenus[1]->mCursor->mSelection = selection1;
     s32 selection2                 = 0;
     if (ctx->mInfo.mMenuResult == 2) {
         selection2 = (s8) ctx->mInfo.mUnk_06;
     }
-    mMenus[2] = new SelectWindow(5, data_ov008_02229c88, selection2);
-    mMenus[2]->SetCells(5, data_ov008_02228808);
+    mMenus[2] = new SelectWindow(5, sMyroomMenu2Items, selection2);
+    mMenus[2]->SetCells(5, sMyroomMenu2Cells);
     mMenus[2]->mCursor->mSelection = -1;
     mMenus[2]->mCursor->mSelection = selection2;
     SwitchPage(mContext->mInfo.mMenuResult);
@@ -471,22 +471,22 @@ void MyroomScene::SwitchPage(u8 page) {
     switch (ctx->mInfo.mMenuResult) {
         case 0:
             delete mMenus[0];
-            mMenus[0] = new SelectWindow(8, data_ov008_02228894, (s8) ctx->mInfo.mUnk_06);
-            mMenus[0]->SetCells(8, data_ov008_02228974);
+            mMenus[0] = new SelectWindow(8, sMyroomMenu0Items, (s8) ctx->mInfo.mUnk_06);
+            mMenus[0]->SetCells(8, sMyroomMenu0Cells);
             mMenus[0]->mCursor->mSelection = -1;
             ctx->mInfo.mPrevSelection      = 0;
             break;
         case 1:
             delete mMenus[1];
-            mMenus[1] = new SelectWindow(5, data_ov008_02229d14, -1);
-            mMenus[1]->SetCells(5, data_ov008_0222877c);
+            mMenus[1] = new SelectWindow(5, sMyroomMenu1Items, -1);
+            mMenus[1]->SetCells(5, sMyroomMenu1Cells);
             mMenus[1]->mCursor->mSelection = -1;
             mMenus[1]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
             break;
         case 2:
             delete mMenus[2];
-            mMenus[2] = new SelectWindow(5, data_ov008_02229c88, -1);
-            mMenus[2]->SetCells(5, data_ov008_02228808);
+            mMenus[2] = new SelectWindow(5, sMyroomMenu2Items, -1);
+            mMenus[2]->SetCells(5, sMyroomMenu2Cells);
             mMenus[2]->mCursor->mSelection = -1;
             mMenus[2]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
             break;
@@ -584,7 +584,7 @@ void MyroomScene::UpdateMenu() {
                             u8 n = last - first + 1;
                             u8 k = 0;
                             do {
-                                if (TouchManager::Get().IsPressedIn(data_ov008_02228758[k].x, data_ov008_02228758[k].y, 0x38,
+                                if (TouchManager::Get().IsPressedIn(sMyroomMenuEntryPos[k].x, sMyroomMenuEntryPos[k].y, 0x38,
                                                                       0x30)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
                                     if (k != selection) {
@@ -632,7 +632,7 @@ void MyroomScene::UpdateMenu() {
         case 2:
             mCellAnim->Update();
             s8 cur = ctx->mInfo.mUnk_06;
-            mCellAnim->Draw(1, data_ov008_02228758[cur].x, data_ov008_02228758[cur].y, 0);
+            mCellAnim->Draw(1, sMyroomMenuEntryPos[cur].x, sMyroomMenuEntryPos[cur].y, 0);
             break;
     }
 }
@@ -650,7 +650,7 @@ void MyroomScene::StartScroll() {
     for (i = 0; i < 5; i++) {
         if (ctx->mInfo.mUnk_0a == i) {
             window->mCells[i]->ResetAnimation();
-            window->mCells[i]->SetAnimation(data_ov008_022286fc[i]);
+            window->mCells[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
         } else if ((s8) ctx->mInfo.mUnk_06 == i) {
             window->mCells[i]->SetMode(2);
         }
@@ -825,7 +825,7 @@ BOOL MyroomScene::UpdateScroll() {
         items[i].mX = step + items[i].mX;
     }
     if (ctx->mInfo.mScrollDir == 0) {
-        window->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(data_ov008_02228704[(s8) ctx->mInfo.mUnk_06]);
+        window->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0AnimIndices[(s8) ctx->mInfo.mUnk_06]);
         items[ctx->mInfo.mUnk_0a].mFlags     = 8;
         items[(s8) ctx->mInfo.mUnk_06].mFlags     = 0x8000;
         window->mCursor->mSelection          = ctx->mInfo.mUnk_0a;
@@ -870,10 +870,10 @@ void MyroomScene::RefreshCellLayout() {
         window->SetCellPos(i, pos);
         items[i].mX = pos.x;
         if ((s8) ctx->mInfo.mUnk_06 == i) {
-            window->mCells[i]->SetAnimation(data_ov008_022286fc[i]);
+            window->mCells[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
             items[i].mFlags = 8;
         } else {
-            window->mCells[i]->SetAnimation(data_ov008_02228704[i]);
+            window->mCells[i]->SetAnimation(sMyroomMenu0AnimIndices[i]);
             items[i].mFlags = 0x8000;
         }
         window->mCells[i]->ResetAnimation();
@@ -986,13 +986,13 @@ void MyroomScene::PrintStatus() {
     SceneInfo *info = &mContext->mInfo;
     switch (info->mMenuResult) {
         case 0:
-            index = data_ov008_02228714[(s8) info->mUnk_06];
+            index = sMyroomMenu0StatusTextIndices[(s8) info->mUnk_06];
             break;
         case 1:
-            index = data_ov008_022286f4[(s8) info->mUnk_06];
+            index = sMyroomMenu1StatusTextIndices[(s8) info->mUnk_06];
             break;
         case 2:
-            index = data_ov008_022286f8[(s8) info->mUnk_06];
+            index = sMyroomMenu2StatusTextIndices[(s8) info->mUnk_06];
             break;
     }
     ClearTextBuffer();

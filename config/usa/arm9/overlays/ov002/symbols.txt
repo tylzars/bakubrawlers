@@ -46,26 +46,26 @@ _ZN18TournamentSubScene19func_ov002_02220618Ev kind:function(arm,size=0x68) addr
 _ZN18TournamentSubScene12PrintProfileEv kind:function(arm,size=0x1b0) addr:0x02220680
 _ZN18TournamentSubScene12SetupProfileEv kind:function(arm,size=0x1b4) addr:0x02220830
 _ZN18TournamentSubScene15ClearTextBufferEv kind:function(arm,size=0x18) addr:0x022209e4
-data_ov002_022209fc kind:data(any) addr:0x022209fc local
-data_ov002_02220a00 kind:data(any) addr:0x02220a00 local
-data_ov002_02220a04 kind:data(any) addr:0x02220a04 local
-data_ov002_02220a08 kind:data(any) addr:0x02220a08 local
+sTournamentMenuAnimIndices kind:data(any) addr:0x022209fc local
+sTournamentMenuSelectedAnimIndices kind:data(any) addr:0x02220a00 local
+sTournamentMenuSubTextIndices kind:data(any) addr:0x02220a04 local
+sTournamentMenuMainTextIndices kind:data(any) addr:0x02220a08 local
 data_ov002_02220a0c kind:data(any) addr:0x02220a0c local
 sCounts kind:data(any) addr:0x02220a10 local
-data_ov002_02220a18 kind:data(any) addr:0x02220a18 local
+sTournamentModeMainTextIndices kind:data(any) addr:0x02220a18 local
 sTotals kind:data(any) addr:0x02220a20 local
-data_ov002_02220a28 kind:data(any) addr:0x02220a28 local
-data_ov002_02220a2e kind:data(any) addr:0x02220a2e local
+sTournamentCellPos kind:data(any) addr:0x02220a28 local
+sTournamentMoveTargets kind:data(any) addr:0x02220a2e local
 sModeTables kind:data(any) addr:0x02220a3c local
 data_ov002_02220a54 kind:data(any) addr:0x02220a54 local
 data_ov002_02220a6c kind:data(any) addr:0x02220a6c local
 sWindowCells kind:data(any) addr:0x02220ab0 local
 sWindowItems kind:data(any) addr:0x02220b04 local
-data_ov002_02220b58 kind:data(any) addr:0x02220b58 local
-data_ov002_02220bc4 kind:data(any) addr:0x02220bc4 local
-data_ov002_02220c6c kind:data(any) addr:0x02220c6c local
-data_ov002_02220d14 kind:data(any) addr:0x02220d14 local
-data_ov002_02220dd8 kind:data(any) addr:0x02220dd8 local
+sTournamentCharacterPos kind:data(any) addr:0x02220b58 local
+sTournamentMenuItems kind:data(any) addr:0x02220bc4 local
+sTournamentMenuCells kind:data(any) addr:0x02220c6c local
+sTournamentModeMenuItems kind:data(any) addr:0x02220d14 local
+sTournamentModeMenuCells kind:data(any) addr:0x02220dd8 local
 sCellPos kind:data(any) addr:0x02220e9c local
 sTouchPos kind:data(any) addr:0x02220eae local
 sMessageIds kind:data(any) addr:0x02220ec0 local

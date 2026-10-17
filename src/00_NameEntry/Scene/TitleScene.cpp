@@ -25,16 +25,16 @@
 
 void operator delete(void *ptr);
 
-static const WindowCellRecord data_ov000_02226750[2] = {
+static const WindowCellRecord sTitleTwoButtonCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x1b000, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x1b000, 0, 0, 1, {9, 9, 9, 0}},
 };
-static const WindowCellRecord data_ov000_022267dc[3] = {
+static const WindowCellRecord sTitleThreeButtonCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x1b000, 0, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x1b000, 0, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x1b000, 0, 0, 1, {10, 10, 10, 0}},
 };
-static const WindowItemRecord data_ov000_02226830[2][2] = {
+static const WindowItemRecord sTitleObj01Items[2][2] = {
     {
         {0, 0x1, 24, 84, 208, 24, 0, {0, 0, 0, 0}, 0, 1},
         {0, 0x0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, 0, 0},
@@ -44,14 +44,14 @@ static const WindowItemRecord data_ov000_02226830[2][2] = {
         {1, 0x1, 24, 64, 208, 24, 0, {0, 0, 1, 1}, 0, 2},
     },
 };
-static const WindowItemRecord data_ov000_022266fc[1] = {
+static const WindowItemRecord sTitleFullScreenItems[1] = {
     {0, 0x1, 0, 0, 255, 255, 0, {0, 0, 0, 0}, 0, 1},
 };
-static const WindowItemRecord data_ov000_02226718[2] = {
+static const WindowItemRecord sTitleTwoButtonItems[2] = {
     {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord data_ov000_022268a0[2][2] = {
+static const WindowCellRecord sTitleObj01Cells[2][2] = {
     {
         {"/Game/Title/title_b_obj_01_nce.bin", 7, 0x13000, 1, 0, 1, {6, 8, 7, 0}},
         {NULL, 0, 0x0, 0, 0, 0, {0, 0, 0, 0}},
@@ -61,14 +61,14 @@ static const WindowCellRecord data_ov000_022268a0[2][2] = {
         {"/Game/Title/title_b_obj_01_nce.bin", 3, 0x13000, 1, 0, 1, {3, 5, 4, 0}},
     },
 };
-static const WindowItemRecord data_ov000_02226910[5] = {
+static const WindowItemRecord sTitleMenuItems[5] = {
     {0, 0x1, 2, 35, 148, 25, 0, {4, 1, 0, 0}, 0, 2},
     {1, 0x1, 14, 63, 121, 25, 0, {0, 2, 1, 1}, 0, 2},
     {2, 0x1, 4, 90, 127, 25, 0, {1, 3, 2, 2}, 0, 2},
     {3, 0x1, 14, 118, 127, 25, 0, {2, 4, 3, 3}, 0, 2},
     {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, 2},
 };
-static const WindowItemRecord data_ov000_02226788[3] = {
+static const WindowItemRecord sTitleThreeButtonItems[3] = {
     {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
     {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
@@ -159,7 +159,7 @@ TitleScene::TitleScene() :
     MI_CpuClear32(mCells, sizeof(mCells));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
     MI_CpuClear32(mBufferSizes, sizeof(mBufferSizes));
-    mCursor = new SelectWindowCursor(1, data_ov000_022266fc, 0);
+    mCursor = new SelectWindowCursor(1, sTitleFullScreenItems, 0);
     mMenuSelection = data_020d433c.mUnk_7e_4;
     mSubBgIndex = mMenuSelection;
     SoundManager::Get().func_020245a4();
@@ -303,8 +303,8 @@ void TitleScene::Update() {
                     break;
             }
             delete mWindow30;
-            mWindow30 = new SelectWindow(count, data_ov000_02226830[idx], -1);
-            mWindow30->SetCells(count, data_ov000_022268a0[idx]);
+            mWindow30 = new SelectWindow(count, sTitleObj01Items[idx], -1);
+            mWindow30->SetCells(count, sTitleObj01Cells[idx]);
             mWindow30->mCursor->mSelection = -1;
             if (idx == 0) {
                 mWindow30->mCursor->mSelection = 0;
@@ -399,8 +399,8 @@ void TitleScene::Update() {
             break;
         case 13:
             delete mWindow30;
-            mWindow30 = new SelectWindow(3, data_ov000_02226788, -1);
-            mWindow30->SetCells(3, data_ov000_022267dc);
+            mWindow30 = new SelectWindow(3, sTitleThreeButtonItems, -1);
+            mWindow30->SetCells(3, sTitleThreeButtonCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 1;
             PrintText((MessageFile *) mBuf38, 8);
@@ -421,8 +421,8 @@ void TitleScene::Update() {
             break;
         case 15:
             delete mWindow30;
-            mWindow30 = new SelectWindow(3, data_ov000_02226788, -1);
-            mWindow30->SetCells(3, data_ov000_022267dc);
+            mWindow30 = new SelectWindow(3, sTitleThreeButtonItems, -1);
+            mWindow30->SetCells(3, sTitleThreeButtonCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 1;
             PrintText((MessageFile *) mBuf38, 7);
@@ -446,8 +446,8 @@ void TitleScene::Update() {
             break;
         case 17:
             delete mWindow30;
-            mWindow30 = new SelectWindow(2, data_ov000_02226718, -1);
-            mWindow30->SetCells(2, data_ov000_02226750);
+            mWindow30 = new SelectWindow(2, sTitleTwoButtonItems, -1);
+            mWindow30->SetCells(2, sTitleTwoButtonCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 0;
             PrintText((MessageFile *) mBuf38, 3);
@@ -569,7 +569,7 @@ void TitleScene::Update() {
         case 32:
             data_020d433c.mUnk_80 = 1;
             SelectWindowCursor *cursor = mCursor;
-            cursor->mItems = (WindowItem *) data_ov000_02226910;
+            cursor->mItems = (WindowItem *) sTitleMenuItems;
             cursor->mCount = 5;
             mCursor->mSelection = mMenuSelection;
             UploadSubBg(mMenuSelection);
@@ -597,8 +597,8 @@ void TitleScene::Update() {
             if (mUnk_d6) {
                 mUnk_d6 = 0;
                 delete mWindow30;
-                mWindow30 = new SelectWindow(2, data_ov000_02226718, -1);
-                mWindow30->SetCells(2, data_ov000_02226750);
+                mWindow30 = new SelectWindow(2, sTitleTwoButtonItems, -1);
+                mWindow30->SetCells(2, sTitleTwoButtonCells);
                 mWindow30->mCursor->mSelection = -1;
                 mWindow30->mCursor->mSelection = 0;
                 PrintText((MessageFile *) mBuf3c, 7);

@@ -663,27 +663,27 @@ void TitleScene::Update() {
             data_020d433c.mUnk_7e_4 = mMenuSelection;
             u32 scene;
             switch (mMenuSelection) {
-                case 0:
+                case TITLE_MENU_MAP:
                     scene = SCENE_MAP;
                     if (gSaveData[0].mUnk_5bf_0) {
                         FillParkSlots();
                     }
                     break;
-                case 1:
+                case TITLE_MENU_ARENA_WINDOW:
                     data_020d433c.mUnk_89 = 0;
                     scene = SCENE_ARENA_WINDOW;
                     break;
-                case 2:
+                case TITLE_MENU_TUTORIAL:
                     data_020d433c.mUnk_83 = 0;
                     data_020d433c.mUnk_84 = 0;
                     data_020d433c.mUnk_82 = 0;
                     scene = SCENE_TUTORIAL;
                     break;
-                case 3:
+                case TITLE_MENU_MYROOM:
                     data_020d433c.mUnk_7f = SCENE_TITLE;
                     scene = SCENE_MYROOM;
                     break;
-                case 4:
+                case TITLE_MENU_OPTION:
                     mContext->mRequest = 0;
                     new OptionScene();
                     mState = 0x29;

@@ -25,6 +25,11 @@ struct CellSlot {
     /* 10 */
 };
 
+// Requests: the values ArenaScene passes its parent ArenaWindowScene through RequestScene (mRequest). On
+// FIELD_SELECT the parent creates a FieldSelectScene; on any other non-zero value it requests SCENE_TITLE.
+#define ARENA_REQUEST_FIELD_SELECT 1
+#define ARENA_REQUEST_TITLE 2
+
 // Overlay 1: battle arena selection (select_arena_*, select_wireless_*, mes_BattleArenaMenu).
 class ArenaScene : public SceneBase {
 public:

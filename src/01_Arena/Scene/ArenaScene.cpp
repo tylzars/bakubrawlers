@@ -567,12 +567,12 @@ void ArenaScene::Update() {
             }
             break;
         case 14:
-            mRequest = 1;
+            mRequest = ARENA_REQUEST_FIELD_SELECT;
             SpriteManager::Get().StartFade(3);
             mState = 0x10;
             break;
         case 15:
-            mRequest = 2;
+            mRequest = ARENA_REQUEST_TITLE;
             SpriteManager::Get().StartFade(3);
             mState = 0x10;
             break;

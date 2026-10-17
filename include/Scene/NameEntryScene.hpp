@@ -10,6 +10,11 @@ class MessageWindow;
 class SelectWindow;
 struct MessageFile;
 
+// Keyboard tabs: the values of mTab, named after the _nsc and _ncg files UploadTabNsc / UploadTabNcg upload for each
+// (keyboard_b_bg_font_a_* / keyboard_b_bg_font_b_*). Keyboard item 4 toggles them with `+ 1` and `&= 1`.
+#define NAME_ENTRY_TAB_FONT_A 0
+#define NAME_ENTRY_TAB_FONT_B 1
+
 // Overlay 0: player name entry (8x4 character grid over two tabs, up to 12 UTF-16 characters).
 class NameEntryScene : public SceneBase {
 public:

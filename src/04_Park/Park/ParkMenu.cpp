@@ -159,13 +159,13 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
         switch (mWindow->GetSelectedId()) {
             case 4:
                 if (mCurrent != 0) {
-                    result = 1;
+                    result = PARK_MENU_SLIDE_PREV;
                     mTarget--;
                 }
                 break;
             case 5:
                 if (mCurrent < 3) {
-                    result = 2;
+                    result = PARK_MENU_SLIDE_NEXT;
                     mTarget++;
                 }
                 break;
@@ -173,10 +173,10 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
     }
     if (result == 0 && mWindow->mState == 1) {
         switch (HandleInput()) {
-            case 1:
+            case PARK_MENU_SLIDE_PREV:
                 mWindow->SetResultItem(4, 3);
                 break;
-            case 2:
+            case PARK_MENU_SLIDE_NEXT:
                 mWindow->SetResultItem(5, 3);
                 break;
         }
@@ -221,12 +221,12 @@ int ParkMenu::HandleInput() {
     int result = 0;
     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         if (mCurrent != 0) {
-            result = 1;
+            result = PARK_MENU_SLIDE_PREV;
             mTarget--;
         }
     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         if (mCurrent < mCount - 1) {
-            result = 2;
+            result = PARK_MENU_SLIDE_NEXT;
             mTarget++;
         }
     }
@@ -292,7 +292,7 @@ BOOL ParkMenu::Slide() {
         step = mTimer;
     }
     mTimer -= step;
-    if (mMode == 2) {
+    if (mMode == PARK_MENU_SLIDE_NEXT) {
         step = -step;
     }
     WindowItem *items = mWindow->mCursor->mItems;
@@ -331,7 +331,7 @@ BOOL ParkMenu::Slide() {
         }
         mWindow->mCellAnims[5]->Rewind();
         mWindow->mCellAnims[4]->Rewind();
-        if (mMode == 1) {
+        if (mMode == PARK_MENU_SLIDE_PREV) {
             CellAnimation *c = mWindow->mCellAnims[4];
             c->SetAnimation(0);
         } else {

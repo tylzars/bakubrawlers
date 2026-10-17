@@ -83,7 +83,7 @@ NameEntryScene::NameEntryScene(u8 mode) :
     mCol = 0;
     mRow = 0;
     mUnk_6a = 0;
-    mTab = 0;
+    mTab = NAME_ENTRY_TAB_FONT_A;
     mState = 0;
     mMode = mode;
     mPendingSubPlanes = -1;
@@ -544,10 +544,10 @@ void NameEntryScene::Update() {
 
 void NameEntryScene::UploadTabNsc() {
     switch (mTab) {
-        case 0:
+        case NAME_ENTRY_TAB_FONT_A:
             QueueUpload(1, 7, 0x1c0, mBuf3c + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
-        case 1:
+        case NAME_ENTRY_TAB_FONT_B:
             QueueUpload(1, 7, 0x1c0, mBuf40 + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
     }
@@ -555,10 +555,10 @@ void NameEntryScene::UploadTabNsc() {
 
 void NameEntryScene::UploadTabNcg() {
     switch (mTab) {
-        case 0:
+        case NAME_ENTRY_TAB_FONT_A:
             QueueUpload(1, 0xb, 0, mBuf44, 0x5000, 0);
             break;
-        case 1:
+        case NAME_ENTRY_TAB_FONT_B:
             QueueUpload(1, 0xb, 0, mBuf48, 0x5000, 0);
             break;
     }

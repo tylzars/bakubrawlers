@@ -9,6 +9,15 @@ class MessageWindow;
 struct SelectWindowCursor;
 struct MessageFile;
 
+// Main menu entries: the values of mMenuSelection (the cursor's selection, kept in data_020d433c.mUnk_7e_4 between
+// visits) that Update's case 40 switches on, each named after the scene it requests or, for OPTION, the OptionScene it
+// creates. The `i < 5` loops over the entries stay literals.
+#define TITLE_MENU_MAP 0
+#define TITLE_MENU_ARENA_WINDOW 1
+#define TITLE_MENU_TUTORIAL 2
+#define TITLE_MENU_MYROOM 3
+#define TITLE_MENU_OPTION 4
+
 // Overlay 0 scene with vtable 0x02227920 (title screen: movie bknd_op, main menu, then CharacterEditScene / save scene).
 class TitleScene : public SceneBase {
 public:

@@ -30,10 +30,10 @@ struct MapPagePos {
 static const u8 data_ov005_0221fe90[5] = {1, 2, 0, 3, 0};
 static const u32 sMapCurrentTextIndices[6] = {0x12, 0x13, 0x14, 0x15, 0x16, 0x17};
 static const MapPagePos sMapPagePos[4] = {
-    {147, 134, 147, 3},
-    {224, 141, 224, 2},
-    {383, 114, 320, 1},
-    {471, 159, 471, 0},
+    {147, 134, 147, MAP_TAB_TOURNAMENT},
+    {224, 141, 224, MAP_TAB_PARK},
+    {383, 114, 320, MAP_TAB_STORE},
+    {471, 159, 471, MAP_TAB_MYROOM},
 };
 static const WindowItemRecord sMapPanelWindowItems[4] = {
     {0, 1, 45, 136, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
@@ -259,7 +259,7 @@ void MapScene::Update() {
         case 13:
             mMenuWindow->Update(TRUE);
             if (mMenuWindow->mState == 4) {
-                if (mTab == 3) {
+                if (mTab == MAP_TAB_TOURNAMENT) {
                     switch (gSaveData[0].mUnk_42) {
                         case 1:
                         case 3:
@@ -622,7 +622,7 @@ BOOL MapScene::func_ov005_0221b2ac() {
         return FALSE;
     }
     mSkipDraw = 1;
-    mTab    = 2;
+    mTab    = MAP_TAB_PARK;
     return TRUE;
 }
 
@@ -722,17 +722,17 @@ void MapScrollCallback(MapScene *scene) {
 
 BOOL MapScene::SetNextSceneFromTab() {
     switch (mTab) {
-        case 0:
+        case MAP_TAB_MYROOM:
             mNextScene            = SCENE_MYROOM;
             data_020d433c.mUnk_7f = SCENE_MAP;
             break;
-        case 1:
+        case MAP_TAB_STORE:
             mNextScene = SCENE_STORE;
             break;
-        case 2:
+        case MAP_TAB_PARK:
             mNextScene = SCENE_PARK;
             break;
-        case 3:
+        case MAP_TAB_TOURNAMENT:
             mNextScene = SCENE_TOURNAMENT;
             break;
         default:
@@ -776,7 +776,7 @@ void MapScene::DrawPopup() {
     G2S_SetBlendAlpha(0, 0x17, 0x10, 8);
     mPageVisible = 1;
     switch (mTab) {
-        case 0:
+        case MAP_TAB_MYROOM:
             if (mUnk_7e_0) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
@@ -785,7 +785,7 @@ void MapScene::DrawPopup() {
                 mPageVisible = 0;
             }
             break;
-        case 1:
+        case MAP_TAB_STORE:
             if (mUnk_7e_1) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
@@ -793,7 +793,7 @@ void MapScene::DrawPopup() {
                 mPageVisible = 0;
             }
             break;
-        case 2:
+        case MAP_TAB_PARK:
             if (mUnk_7e_2) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
@@ -801,7 +801,7 @@ void MapScene::DrawPopup() {
                 mPageVisible = 0;
             }
             break;
-        case 3:
+        case MAP_TAB_TOURNAMENT:
             if (mUnk_7e_3) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
@@ -855,7 +855,7 @@ void MapScene::DrawPage() {
 void MapScene::ShowTabInfo(u32 index) {
     mUnk_7e = 0;
     switch (index) {
-        case 0:
+        case MAP_TAB_MYROOM:
             if (data_020d48f0.mRank == data_020d48f0.mPrevRank) {
                 return;
             }
@@ -865,14 +865,14 @@ void MapScene::ShowTabInfo(u32 index) {
             TextManager::Get().mUse4bppFont = 0;
             mUnk_7e_0 = 1;
             break;
-        case 1:
+        case MAP_TAB_STORE:
             if (gSaveData[0].mUnk_5b9_0 == 0) {
                 return;
             }
             ShowText(2, 0x20);
             mUnk_7e |= 2;
             break;
-        case 2:
+        case MAP_TAB_PARK:
             func_02089208();
             if (gSaveData[0].mUnk_5b9_1 == 0) {
                 return;
@@ -880,7 +880,7 @@ void MapScene::ShowTabInfo(u32 index) {
             ShowText(0x11, 0x20);
             mUnk_7e |= 4;
             break;
-        case 3:
+        case MAP_TAB_TOURNAMENT:
             if (ShowCurrent()) {
                 mUnk_7e |= 8;
             }
@@ -1035,13 +1035,13 @@ void MapScene::DrawPanelText() {
 void MapScene::LoadPanelText2(int index) {
     int id;
     switch (index) {
-        case 0:
+        case MAP_TAB_MYROOM:
             id = 0x19;
             break;
-        case 1:
+        case MAP_TAB_STORE:
             id = 0x1a;
             break;
-        case 2:
+        case MAP_TAB_PARK:
             id = 0x18;
             break;
         default:

@@ -43,6 +43,19 @@ struct FieldInput {
     /* 10 */
 };
 
+// Page kinds: the values the constructor writes into mPageKinds[] in page order and that SetupPage, UpdatePage, Draw
+// and the cursor and window helpers test through mPageKinds[mPage]. NUMBER, RULE, CHARA, FIELD and WINDOW are named
+// after the files SetupPage loads for the page (select_number_*, select_rule_*, select_ch_* with the slot names from
+// mes_StoryCharaName, select_field_*, union_b_bg_window_*); PAIR's update (UpdatePairPage) pairs the slots from
+// sFieldSelectPairSlots. END closes the list: UpdatePage stops when the next page is END or later.
+#define FIELD_SELECT_PAGE_NUMBER 0
+#define FIELD_SELECT_PAGE_RULE 1
+#define FIELD_SELECT_PAGE_CHARA 2
+#define FIELD_SELECT_PAGE_PAIR 3
+#define FIELD_SELECT_PAGE_FIELD 4
+#define FIELD_SELECT_PAGE_WINDOW 5
+#define FIELD_SELECT_PAGE_END 6
+
 // Overlay 1: battle field selection (select_field_*); a state machine on mState.
 class FieldSelectScene : public SceneBase {
 public:

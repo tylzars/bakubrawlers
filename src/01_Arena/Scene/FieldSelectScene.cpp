@@ -289,21 +289,21 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
         WirelessManager::Get();
         if (IsWirelessMode(mode)) {
             n++;
-            mPageKinds[0] = 5;
+            mPageKinds[0] = FIELD_SELECT_PAGE_WINDOW;
         }
         mPage = n;
         if (mPlayerCount < 4) {
-            mPageKinds[n++] = 0;
+            mPageKinds[n++] = FIELD_SELECT_PAGE_NUMBER;
         }
         u8 n1 = n + 1;
         u8 n2 = n1 + 1;
         u8 n3 = n2 + 1;
         u8 n4 = n3 + 1;
-        mPageKinds[n]  = 2;
-        mPageKinds[n1] = 3;
-        mPageKinds[n2] = 4;
-        mPageKinds[n3] = 1;
-        mPageKinds[n4] = 6;
+        mPageKinds[n]  = FIELD_SELECT_PAGE_CHARA;
+        mPageKinds[n1] = FIELD_SELECT_PAGE_PAIR;
+        mPageKinds[n2] = FIELD_SELECT_PAGE_FIELD;
+        mPageKinds[n3] = FIELD_SELECT_PAGE_RULE;
+        mPageKinds[n4] = FIELD_SELECT_PAGE_END;
     }
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mUnk_a7 = 0;
@@ -543,7 +543,7 @@ void FieldSelectScene::LoadGraphics() {
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("select_arena_u_obj_00_ncl.bin", 0, 0);
-    if (mPageKinds[mPage] == 0) {
+    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_NUMBER) {
         mMain.mCellAnim = new CellAnimation("select_arena_u_obj_00_nce.bin", 6, 1, 1);
     } else {
         mMain.mCellAnim = new CellAnimation("select_arena_u_obj_00_nce.bin", 3, 1, 1);
@@ -597,10 +597,10 @@ void FieldSelectScene::SetupPage() {
     }
     u32 variant;
     switch (mPageKinds[mPage]) {
-        case 0:
-        case 1:
-        case 3:
-        case 4:
+        case FIELD_SELECT_PAGE_NUMBER:
+        case FIELD_SELECT_PAGE_RULE:
+        case FIELD_SELECT_PAGE_PAIR:
+        case FIELD_SELECT_PAGE_FIELD:
             variant = 1;
             break;
         default:
@@ -611,7 +611,7 @@ void FieldSelectScene::SetupPage() {
     mWindows[0]->SetCells(mWindow0ItemCount, sFieldSelectWindow0Cells);
     mWindows[0]->mCursor->mSelection = -1;
     mWindows[0]->mEnabled            = 0;
-    if (mPageKinds[mPage] == 2) {
+    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
         mWindows[0]->mButtons[0].mEnabled = 0;
     }
     mPlayerRowsVisible = 0;
@@ -661,7 +661,7 @@ void FieldSelectScene::SetupPage() {
         mCells2[i].mUnk_09  = 1;
     }
     switch (mPageKinds[mPage]) {
-        case 0: {
+        case FIELD_SELECT_PAGE_NUMBER: {
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(0x13, 0, 1);
             } else {
@@ -703,7 +703,7 @@ void FieldSelectScene::SetupPage() {
             mBlendTimer = 0x10;
             break;
         }
-        case 1: {
+        case FIELD_SELECT_PAGE_RULE: {
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(5, 0, 1);
             } else {
@@ -775,7 +775,7 @@ void FieldSelectScene::SetupPage() {
             func_ov001_02223d70(0);
             break;
         }
-        case 2: {
+        case FIELD_SELECT_PAGE_CHARA: {
             mMessageWindow->StartMessage(6, 0, 1);
             mMain.mCellAnim->SetAnimation(3);
             ChangeDir("/Game/Battle/Bg/");
@@ -889,7 +889,7 @@ void FieldSelectScene::SetupPage() {
             mWindows[2]->mCursor->mSelection = -1;
             break;
         }
-        case 3: {
+        case FIELD_SELECT_PAGE_PAIR: {
             mPlayerCount = data_020d433c.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(0x11, 0, 1);
@@ -984,7 +984,7 @@ void FieldSelectScene::SetupPage() {
             mBlendTimer = 0x10;
             break;
         }
-        case 4: {
+        case FIELD_SELECT_PAGE_FIELD: {
             mPlayerCount = data_020d433c.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(8, 0, 1);
@@ -1044,7 +1044,7 @@ void FieldSelectScene::SetupPage() {
             mWindows[3]->mCursor->mSelection = -1;
             break;
         }
-        case 5: {
+        case FIELD_SELECT_PAGE_WINDOW: {
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(0xc, 0, 1);
             } else {
@@ -1378,7 +1378,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     }
                 }
             } else {
-                if (mPageKinds[mPage] == 2) {
+                if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
                     WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
                                                 if (mInput[mLocalSlot].mWindowOpen != 0) {
@@ -1470,12 +1470,12 @@ u32 FieldSelectScene::UpdatePage() {
     if (mLocalIsFirstSlot != 0) {
         if (mInput[0].mWindowOpen != 0) {
             switch (mPageKinds[mPage]) {
-                case 2:
+                case FIELD_SELECT_PAGE_CHARA:
                     mPanel[1]->DrawIcons();
                     mCells2[6].mCellAnim->Draw(1, 0x70, 0x2d, 0);
                     break;
-                case 4:
-                case 5:
+                case FIELD_SELECT_PAGE_FIELD:
+                case FIELD_SELECT_PAGE_WINDOW:
                     DrawWindowText();
                     break;
             }
@@ -1490,7 +1490,7 @@ u32 FieldSelectScene::UpdatePage() {
             }
         }
     } else {
-        if (mPageKinds[mPage] == 2) {
+        if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
             if (mInput[mLocalSlot].mWindowOpen != 0) {
                 mPanel[1]->DrawIcons();
                 mCells2[6].mCellAnim->Draw(1, 0x70, 0x2d, 0);
@@ -1509,22 +1509,22 @@ u32 FieldSelectScene::UpdatePage() {
     }
     u32 result;
     switch (mPageKinds[mPage]) {
-        case 5:
+        case FIELD_SELECT_PAGE_WINDOW:
             result = UpdateWindowPage();
             break;
-        case 1:
+        case FIELD_SELECT_PAGE_RULE:
             result = UpdateRulePage();
             break;
-        case 2:
+        case FIELD_SELECT_PAGE_CHARA:
             result = UpdateCharaPage();
             break;
-        case 3:
+        case FIELD_SELECT_PAGE_PAIR:
             result = UpdatePairPage();
             break;
-        case 4:
+        case FIELD_SELECT_PAGE_FIELD:
             result = UpdateFieldPage();
             break;
-        case 0:
+        case FIELD_SELECT_PAGE_NUMBER:
             result = UpdateNumberPage();
             break;
     }
@@ -1532,19 +1532,19 @@ u32 FieldSelectScene::UpdatePage() {
     switch (result) {
         case 1:
             mPage++;
-            if ((data_020d433c.mPlayerCount < 4) & (mPageKinds[mPage] == 3)) {
+            if ((data_020d433c.mPlayerCount < 4) & (mPageKinds[mPage] == FIELD_SELECT_PAGE_PAIR)) {
                 mPage++;
             }
-            if ((mShowRulePage == 0) & (mPageKinds[mPage] == 1)) {
+            if ((mShowRulePage == 0) & (mPageKinds[mPage] == FIELD_SELECT_PAGE_RULE)) {
                 mPage++;
             }
-            if (mPageKinds[mPage] >= 6) {
+            if (mPageKinds[mPage] >= FIELD_SELECT_PAGE_END) {
                 mNextScene = 1;
                 return 1;
             }
             break;
         case 2:
-            if (mPageKinds[mPage] == 2) {
+            if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
                 mPanel[1]->SetCharacter(3, -1, 0, 0);
             }
             for (;;) {
@@ -1553,8 +1553,8 @@ u32 FieldSelectScene::UpdatePage() {
                 } else {
                     return 2;
                 }
-                if (mPageKinds[mPage] != 3) {
-                    if (mPageKinds[mPage] == 2) {
+                if (mPageKinds[mPage] != FIELD_SELECT_PAGE_PAIR) {
+                    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
                         u8 i = 0;
                         do {
                             mInput[i].mTaken = 1;
@@ -1581,7 +1581,7 @@ void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
     if (value != mInput[slot].mCursorItem) {
         mInput[slot].mCursorItem = value;
         switch (mPageKinds[mPage]) {
-            case 2:
+            case FIELD_SELECT_PAGE_CHARA:
                 mCells2[slot].mX = GetCharaItemX(mInput[slot].mCursorItem);
                 mCells2[slot].mY = GetCharaItemY(mInput[slot].mCursorItem);
                 if ((slot == mLocalSlot) | ((slot >= mInputCount) && (mLocalIsFirstSlot != 0))) {
@@ -1590,7 +1590,7 @@ void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
                     playSound = 0;
                 }
                 break;
-            case 0: {
+            case FIELD_SELECT_PAGE_NUMBER: {
                 for (u8 i = 0; i < 3; i++) {
                     if (mCells2[i].mCellAnim != NULL) {
                         mCells2[i].mCellAnim->SetAnimation(i);
@@ -1600,7 +1600,7 @@ void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
                 mCells2[s].mCellAnim->SetAnimation(s + 3);
                 break;
             }
-            case 3: {
+            case FIELD_SELECT_PAGE_PAIR: {
                 for (u8 i = 0; i < 4; i++) {
                     if (i == 0) {
                         mCells2[i].mCellAnim->SetAnimation(0x19);
@@ -1617,7 +1617,7 @@ void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
                 mCells2[4].mY = s * 0x24 + 0x1a;
                 break;
             }
-            case 4:
+            case FIELD_SELECT_PAGE_FIELD:
                 mCells2[slot].mX = GetFieldItemX(mInput[slot].mCursorItem);
                 mCells2[slot].mY = GetFieldItemY(mInput[slot].mCursorItem);
                 UploadFieldFiles(mInput[slot].mCursorItem);
@@ -1631,7 +1631,7 @@ void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
 
 BOOL FieldSelectScene::TakeCursorItem(u8 slot) {
     switch (mPageKinds[mPage]) {
-        case 2:
+        case FIELD_SELECT_PAGE_CHARA:
             if (mInput[slot].mCursorItem == 0x11) {
                 do {
                     do {
@@ -1657,7 +1657,7 @@ BOOL FieldSelectScene::TakeCursorItem(u8 slot) {
             mPanel[0]->SetCharacter(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mCursorItem], (u32) (mCharacterLooks + slot * 8), 0);
             PrintSlotName(slot);
             break;
-        case 3: {
+        case FIELD_SELECT_PAGE_PAIR: {
             u8 s = mInput[0].mCursorItem;
             if (s == 0) {
                 mCells2[s].mCellAnim->SetAnimation(0x1b);
@@ -1666,10 +1666,10 @@ BOOL FieldSelectScene::TakeCursorItem(u8 slot) {
             }
             break;
         }
-        case 0:
+        case FIELD_SELECT_PAGE_NUMBER:
             mCells2[mInput[0].mCursorItem].mCellAnim->SetAnimation(mInput[0].mCursorItem + 6);
             break;
-        case 4:
+        case FIELD_SELECT_PAGE_FIELD:
             if (mInput[0].mCursorItem == 8) {
                 u8 r;
                 do {
@@ -1726,7 +1726,7 @@ BOOL FieldSelectScene::IsCursorItemBlocked(u32 slot) {
 }
 
 BOOL FieldSelectScene::func_ov001_02223914() {
-    if (mPageKinds[mPage] == 2) {
+    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
         u8 flag        = 0;
         const u8 *mode = &data_020c4258;
         u8 i           = 0;
@@ -2410,7 +2410,7 @@ void FieldSelectScene::MoveBlendToTarget() {
     if (cur == target) {
         return;
     }
-    if (mPageKinds[mPage] == 5) {
+    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_WINDOW) {
         mBlend = target;
     } else if (cur < target) {
         mBlend = cur + 1;
@@ -2439,7 +2439,7 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
         u32 count;
         u8 sel;
         switch (mPageKinds[mPage]) {
-            case 4:
+            case FIELD_SELECT_PAGE_FIELD:
                 PrintWindowText(0x12);
                 set   = 3;
                 count = 3;
@@ -2447,7 +2447,7 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
                 GXS_SetVisiblePlane(0x1f);
                 sel = 0;
                 break;
-            case 5:
+            case FIELD_SELECT_PAGE_WINDOW:
                 set   = 4;
                 count = 3;
                 sel   = 1;
@@ -2489,10 +2489,10 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
             delete mWindows[1];
         }
         mWindows[1] = NULL;
-        if (mPageKinds[mPage] == 2) {
+        if (mPageKinds[mPage] == FIELD_SELECT_PAGE_CHARA) {
             mMessageWindow->StartMessage(6, 0, 1);
         }
-        if (mPageKinds[mPage] == 4) {
+        if (mPageKinds[mPage] == FIELD_SELECT_PAGE_FIELD) {
             ClearTextBuffer();
             mPendingSubPlanes = 0x1b;
         }
@@ -2550,7 +2550,7 @@ void FieldSelectScene::Draw() {
             mCells[7].mCellAnim->Draw(0, 0x15, y, 1);
             int sel = -1;
             u8 kind = mPageKinds[mPage];
-            if (kind == 2) {
+            if (kind == FIELD_SELECT_PAGE_CHARA) {
                 if (mInputCount <= i) {
                     if (mUnk_33c > i) {
                         if (mInput[i].mTaken != 0) {
@@ -2576,7 +2576,7 @@ void FieldSelectScene::Draw() {
                 if (sIdItems.ids[mInput[i].mCursorItem] == 0x15) {
                     sel = -1;
                 }
-            } else if (kind != 0) {
+            } else if (kind != FIELD_SELECT_PAGE_NUMBER) {
                 if (i < data_020d433c.mPlayerCount) {
                     if (data_020d433c.mCharacterIds[i] != 0x15) {
                         sel = (s8) data_020d433c.mUnk_a3[i];
@@ -2776,7 +2776,7 @@ void FieldSelectScene::PrintWindowText(u32 index) {
 }
 
 void FieldSelectScene::DrawWindowText() {
-    if (mPageKinds[mPage] == 4) {
+    if (mPageKinds[mPage] == FIELD_SELECT_PAGE_FIELD) {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0x2a0, 0xf, 0);
     } else {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x38, 0, 0x2a0, 0xf, 0);

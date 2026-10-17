@@ -106,7 +106,7 @@ void ArenaWindowScene::Update() {
             if (r == 0) {
                 return;
             }
-            if (r != 1) {
+            if (r != ARENA_REQUEST_FIELD_SELECT) {
                 mState = 0x10;
                 return;
             }

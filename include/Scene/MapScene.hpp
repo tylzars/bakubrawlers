@@ -20,6 +20,14 @@ struct TextSlot {
     /* 14 */
 };
 
+// Map tabs: the values of mTab (the menu button selected in UpdateMenu), named after the scene SetNextSceneFromTab
+// requests for each; ShowTabInfo, LoadPanelText2 and DrawPopup switch on them and sMapPagePos[].mId holds one per
+// page. The bounds `sel < 4`, `sel <= 3` and `i < 4` in UpdateMenu and CreateMenu stay literals.
+#define MAP_TAB_MYROOM 0
+#define MAP_TAB_STORE 1
+#define MAP_TAB_PARK 2
+#define MAP_TAB_TOURNAMENT 3
+
 // Overlay 5: the story map (town info panels, tabs and drag-scrolled background).
 class MapScene : public SceneBase {
 public:

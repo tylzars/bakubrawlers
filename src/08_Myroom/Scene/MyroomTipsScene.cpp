@@ -213,7 +213,7 @@ void MyroomTipsScene::Update() {
             if (SpriteManager::Get().sFade[0] <= 1) {
                 mWindowA->mState = 4;
                 mWindowA->Reset(-1);
-                mFlags = 1;
+                mFlags = MYROOM_TIPS_WINDOW_A;
                 context->mInfo.mStep++;
             }
             Draw();
@@ -236,7 +236,7 @@ void MyroomTipsScene::Update() {
                 MI_CpuClear16(mTextX, 8);
                 MI_CpuFill8(mTimers, 0x3c, 4);
                 SetMessage(0x2f);
-                mFlags = 2;
+                mFlags = MYROOM_TIPS_WINDOW_B;
                 context->mInfo.mStep++;
             }
             Draw();
@@ -385,7 +385,7 @@ void MyroomTipsScene::LoadGraphics() {
     mWindowB->mEnabled = 0;
     mRow               = 0;
     LoadText();
-    mFlags = 1;
+    mFlags = MYROOM_TIPS_WINDOW_A;
 }
 
 void MyroomTipsScene::LoadText() {
@@ -409,7 +409,7 @@ void MyroomTipsScene::Draw() {
     func_ov008_022271f8();
     func_ov008_022273f0();
     DrawMessage();
-    if (mFlags & 1) {
+    if (mFlags & MYROOM_TIPS_WINDOW_A) {
         mNewCells[0]->Update();
         BOOL show = TRUE;
         if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6) {
@@ -426,7 +426,7 @@ void MyroomTipsScene::Draw() {
             i++;
         } while (i < 6);
     }
-    if (!(mFlags & 2)) {
+    if (!(mFlags & MYROOM_TIPS_WINDOW_B)) {
         return;
     }
     mNewCells[1]->Update();
@@ -443,7 +443,7 @@ void MyroomTipsScene::Draw() {
 
 void MyroomTipsScene::func_ov008_022271f8() {
     SceneContext *context = mContext;
-    if (mFlags & 1) {
+    if (mFlags & MYROOM_TIPS_WINDOW_A) {
         BOOL drawn = FALSE;
         mCellAnimA->Update();
         if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
@@ -470,7 +470,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
             mWindowA->Draw();
         }
     }
-    if (!(mFlags & 2)) {
+    if (!(mFlags & MYROOM_TIPS_WINDOW_B)) {
         return;
     }
     if (mUnk_85 == 0) {
@@ -483,10 +483,10 @@ void MyroomTipsScene::func_ov008_022271f8() {
 
 void MyroomTipsScene::func_ov008_022273f0() {
     SceneContext *context = mContext;
-    if (mFlags & 1) {
+    if (mFlags & MYROOM_TIPS_WINDOW_A) {
         DrawCategoryCursor(sMyroomTipsCategoryPos[0], context->mInfo.mMenuResult);
     }
-    if (!(mFlags & 2)) {
+    if (!(mFlags & MYROOM_TIPS_WINDOW_B)) {
         return;
     }
     mRowCells[0]->Update();
@@ -515,7 +515,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
         return;
     }
     SceneContext *context = mContext;
-    if (mFlags & 1) {
+    if (mFlags & MYROOM_TIPS_WINDOW_A) {
         mWindowA->mEnabled = 1;
         mWindowB->mEnabled = 0;
         if (mWindowA != NULL) {
@@ -558,7 +558,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
             }
         }
     }
-    u32 second = mFlags & 2;
+    u32 second = mFlags & MYROOM_TIPS_WINDOW_B;
     if (second == 0) {
         return;
     }

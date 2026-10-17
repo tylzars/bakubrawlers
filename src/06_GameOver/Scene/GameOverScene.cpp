@@ -60,9 +60,9 @@ GameOverScene::GameOverScene() :
     mSelection      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     if (data_020d433c.mUnk_8a_4 != 0) {
-        mResultWindowKind = 1;
+        mResultWindowKind = GAME_OVER_RESULT_WINDOW_NO_MAP;
     } else {
-        mResultWindowKind = 0;
+        mResultWindowKind = GAME_OVER_RESULT_WINDOW_WITH_MAP;
     }
 }
 
@@ -105,7 +105,7 @@ void GameOverScene::Update() {
             if (mResultWindow->Update(TRUE)) {
                 mSelection = mResultWindow->mCursor->mSelection;
                 BOOL retry = FALSE;
-                if (mResultWindowKind == 0) {
+                if (mResultWindowKind == GAME_OVER_RESULT_WINDOW_WITH_MAP) {
                     if (mSelection == 2) {
                         retry = TRUE;
                     }
@@ -149,7 +149,7 @@ void GameOverScene::Update() {
             break;
         case 6: {
             int next;
-            if (mResultWindowKind == 0) {
+            if (mResultWindowKind == GAME_OVER_RESULT_WINDOW_WITH_MAP) {
                 switch (mSelection) {
                     case 0:
                         next = SCENE_BATTLE_PLAYER_LIST;
@@ -230,7 +230,7 @@ void GameOverScene::LoadGraphics() {
 }
 
 void GameOverScene::CreateResultWindow() {
-    int count = mResultWindowKind == 0 ? 3 : 2;
+    int count = mResultWindowKind == GAME_OVER_RESULT_WINDOW_WITH_MAP ? 3 : 2;
     delete mResultWindow;
     mResultWindow = new SelectWindow(count, sResultItems[mResultWindowKind], -1);
     mResultWindow->SetCells(count, sResultCells[mResultWindowKind]);

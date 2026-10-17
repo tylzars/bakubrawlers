@@ -11,6 +11,11 @@ class SelectWindow;
 class ScriptPlayer;
 struct MessageFile;
 
+// mFlags bits: WINDOW_A enables, updates and draws mWindowA with the category cells and cursor; WINDOW_B does the same
+// for mWindowB with the four tip rows and their cells. The scene sets one at a time; 0 runs neither.
+#define MYROOM_TIPS_WINDOW_A 1
+#define MYROOM_TIPS_WINDOW_B 2
+
 // Overlay 8: the tips list screen (mes_TIPS_sys.mes): four tip titles that scroll sideways, a window to pick one and
 // a scroll bar. The state is kept in the scene context (mInfo.mStep).
 class MyroomTipsScene : public SceneBase {

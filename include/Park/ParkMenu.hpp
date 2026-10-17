@@ -9,13 +9,19 @@ class SelectWindow;
 class Ranking;
 struct MessageFile;
 
+// Slide directions: the values UpdateSelection and HandleInput return and UpdateSelection stores in mMode (0: none).
+// PREV moves mTarget one panel back (mTarget--), NEXT one forward (mTarget++); Slide adds its step to the panels' x
+// for PREV and subtracts it for NEXT.
+#define PARK_MENU_SLIDE_PREV 1
+#define PARK_MENU_SLIDE_NEXT 2
+
 // The park's character carousel: up to four panels slid left/right, with arrows and a number readout.
 class ParkMenu {
 public:
     /* 00 (vtable) */
     /* 04 */ u8 mCurrent;
     /* 05 */ u8 mTarget;
-    /* 06 */ u8 mMode; // 1: sliding left, 2: sliding right
+    /* 06 */ u8 mMode; // PARK_MENU_SLIDE_* stored by UpdateSelection, 0 when that call started no slide
     /* 07 */ u8 mTimer;
     /* 08 */ u8 mCount;
     /* 09 */ PAD(0x09, 0x0c);

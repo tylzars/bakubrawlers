@@ -147,9 +147,9 @@ that matches should replace it.
   the original order), BattleAbility's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
 - Index/register stand-ins: ctrdg func_02011e7c's `reg` pointer local for the 0x04000300 read (keeps the address
-  numbered among the variables), nns_snd_wavstrm func_02039a50's mix of the ADPCM_STEP macro (high nibbles) and an
+  numbered among the variables), nns_snd_wavstrm FillWavStrmBuffers's mix of the ADPCM_STEP macro (high nibbles) and an
   inline AdpcmStep (low nibbles), which only sets the locals' numbering, TP_CalcCalibrateParam's `(s16)` casts on x0/y0 (possibly not original: they make the
-  following range checks unable to fail, though the compiler still emits them), gfd_vram func_02035f54's `data_020a5898` (a second name for the +8 range of the slot
+  following range checks unable to fail, though the compiler still emits them), gfd_vram AllocTexSlotKey's `data_020a5898` (a second name for the +8 range of the slot
   table at 0x020a5890, so the loop base stays a hoisted temporary), cri_adx_dec's unread zero initialisers in func_0203f714 and func_0203fcd8 (register and
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::func_ov007_02265af8's two
@@ -157,7 +157,7 @@ that matches should replace it.
   read, the casts through `data_020a3210.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
-- Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
+- Expression stand-ins: nns_snd_wavstrm UpdateWavStrms's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
   FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
 - Judgement calls: CharacterModel::LoadPartPalette is declared void (its body is a tail call and every caller
   ignores the result; void is what keeps LoadPartTextures matching).

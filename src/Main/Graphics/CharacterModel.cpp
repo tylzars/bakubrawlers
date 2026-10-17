@@ -39,7 +39,7 @@ CharacterModel::CharacterModel() {
 
 CharacterModel::~CharacterModel() {
     if (mParts[0] != NULL) {
-        func_02031824((u8 *) mParts[0] + 4);
+        ClearRenderObjCallback((u8 *) mParts[0] + 4);
     }
     FreeParts();
     if (mHeadTextureData != NULL) {

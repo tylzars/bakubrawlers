@@ -12,10 +12,10 @@ extern void NNS_FndRemoveListObject(void *list, void *obj);
 #define NNS_FndInitList NNS_FndInitList
 #define NNS_FndAppendListObject NNS_FndAppendListObject
 #define NNS_FndRemoveListObject NNS_FndRemoveListObject
-extern int func_02036800(u32 mask);
-extern void func_02036848(u32 mask);
-extern int func_02036894(void);
-extern void func_020368dc(int slot);
+extern int ReserveChannels(u32 mask);
+extern void UnreserveChannels(u32 mask);
+extern int AllocSndResBitIndex(void);
+extern void ReleaseSndResBitIndex(int slot);
 extern void func_02008160(u32 ch, u32 fmt, void *addr, u32 loop, u32 loopStart, u32 loopEnd, u32 vol, u32 shift, u32 timer, u32 pan);
 extern void func_02008098(int slot, u32 start, u32 period, void (*cb)(void *), void *arg);
 extern u32 OS_DisableInterrupts(void);
@@ -32,15 +32,15 @@ extern void SND_WaitForCommandProc(u32);
 extern s32 func_02008bec(u32);
 extern void func_02008118(u32 mask, u32 a, u32 b);
 extern void func_02008140(u32 mask, u32 a, u32 b, u32 c);
-void func_02037558(SndStrm *s);
-void func_02037664(SndStrm *s);
-void func_020376d8(SndStrm *s);
+void StopSndStrmIfActive(SndStrm *s);
+void StopSndStrm(SndStrm *s);
+void DeactivateSndStrm(SndStrm *s);
 void func_02037708(SndStrm *s);
-void func_02037718(SndStrm *s, int phase);
+void RunSndStrmCallback(SndStrm *s, int phase);
 void func_020377c8(SndStrm *s);
 void func_02037814(SndStrm *s);
 
-void func_02037264(SndStrm *s) {   // stream init
+void InitSndStrm(SndStrm *s) {   // stream init
     if (data_022142e4 == 0) {
         NNS_FndInitList(&data_022142e8, 0);
         data_022142e4 = 1;
@@ -55,32 +55,32 @@ void func_02037264(SndStrm *s) {   // stream init
     s->registered = 0;
 }
 
-int func_020372dc(SndStrm *s, int count, u8 *chans) {   // reserve channels
+int ReserveSndStrmChannels(SndStrm *s, int count, u8 *chans) {   // reserve channels
     u32 mask = 0;
     int i;
     for (i = 0; i < count; i++) {
         s->chan[i] = chans[i];
         mask |= 1 << chans[i];
     }
-    if (func_02036800(mask) == 0) return 0;
+    if (ReserveChannels(mask) == 0) return 0;
     s->chCount = count;
     s->chMask = mask;
     return 1;
 }
 
-void func_0203733c(SndStrm *s) {   // release channels
+void UnreserveSndStrmChannels(SndStrm *s) {   // release channels
     if (s->chMask == 0) return;
-    func_02036848(s->chMask);
+    UnreserveChannels(s->chMask);
     s->chMask = 0;
     s->chCount = 0;
 }
 
-int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frames, SndStrmCallback cb, void *cbArg) {   // setup
+int SetupSndStrm(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frames, SndStrmCallback cb, void *cbArg) {   // setup
     int i;
     u32 alarmPeriod;
     u32 q;
     u32 n;
-    if (s->active) func_02037558(s);
+    if (s->active) StopSndStrmIfActive(s);
     q = size / (s->chCount * (frames << 5));
     n = q * frames;
     s->bufSize = n << 5;
@@ -89,7 +89,7 @@ int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frame
         if (fmt == 1) half >>= 1;
         alarmPeriod = timer * half / frames;
     }
-    s->slot = func_02036894();
+    s->slot = AllocSndResBitIndex();
     if (s->slot < 0) return 0;
     for (i = 0; i < s->chCount; i++) {
         u32 ch = s->chan[i];
@@ -109,7 +109,7 @@ int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frame
     {
         u32 irq = OS_DisableInterrupts();
         s->frames = 1;
-        func_02037718(s, 0);
+        RunSndStrmCallback(s, 0);
         s->frames = frames;
         OS_RestoreInterrupts(irq);
     }
@@ -124,9 +124,9 @@ void func_02037504(SndStrm *s) {   // start
     s->registered = 1;
 }
 
-void func_02037558(SndStrm *s) {   // stop if running
+void StopSndStrmIfActive(SndStrm *s) {   // stop if running
     if (!s->active) return;
-    func_02037664(s);
+    StopSndStrm(s);
 }
 
 void func_02037574(SndStrm *s, int pos) {   // seek all channels
@@ -155,7 +155,7 @@ void func_02037634(SndStrm *s, int idx, u32 v) {
     func_02008140(1 << s->chan[idx], v, v, 1);
 }
 
-void func_02037664(SndStrm *s) {   // stop
+void StopSndStrm(SndStrm *s) {   // stop
     if (s->registered) {
         u32 irq;
         func_02008034(s->chMask, 0, 1 << s->slot, 0);
@@ -166,20 +166,20 @@ void func_02037664(SndStrm *s) {   // stop
         SND_FlushCommand(1);
         SND_WaitForCommandProc(irq);
     }
-    func_020376d8(s);
+    DeactivateSndStrm(s);
 }
 
-void func_020376d8(SndStrm *s) {   // release slot and unlink
-    func_020368dc(s->slot);
+void DeactivateSndStrm(SndStrm *s) {   // release slot and unlink
+    ReleaseSndResBitIndex(s->slot);
     NNS_FndRemoveListObject(&data_022142e8, s);
     s->active = 0;
 }
 
 void func_02037708(SndStrm *s) {
-    func_02037718(s, 1);
+    RunSndStrmCallback(s, 1);
 }
 
-void func_02037718(SndStrm *s, int phase) {   // fill callback
+void RunSndStrmCallback(SndStrm *s, int phase) {   // fill callback
     u32 size = s->bufSize / s->frames;
     u32 off = size * s->pos;
     u32 base;
@@ -206,7 +206,7 @@ void func_02037814(SndStrm *s) {
     if (!s->registered) return;
     while (s->pos != 0) {
         u32 irq = OS_DisableInterrupts();
-        func_02037718(s, 1);
+        RunSndStrmCallback(s, 1);
         OS_RestoreInterrupts(irq);
     }
     func_0200800c(s->chMask, 0, 1 << s->slot, 0);

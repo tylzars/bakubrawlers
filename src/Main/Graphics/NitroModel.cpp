@@ -44,7 +44,7 @@ BOOL ModelFile::LoadData(void *file, TextureFile *texture) {
         Release();
     }
     mFile = file;
-    mResModel = GetModelByIdx(func_02033598(file), 0);
+    mResModel = GetModelByIdx(GetResMdlSet(file), 0);
     if (texture != NULL) {
         BindTexture(texture);
     }
@@ -55,7 +55,7 @@ BOOL ModelFile::func_02028ac4(const char *name) {
     if (!Load(name, NULL)) {
         return FALSE;
     }
-    func_02032d7c(mFile);
+    SetupResFile(mFile);
     return TRUE;
 }
 
@@ -63,8 +63,8 @@ void ModelFile::Release() {
     if (mFile == NULL) {
         return;
     }
-    func_0203209c(func_02033598(mFile));
-    func_02032fb4(mFile);
+    RemoveResTexFromMdlSet(GetResMdlSet(mFile));
+    ReleaseResFile(mFile);
     if (mOwnsFile) {
         OS_Free(mFile);
         mOwnsFile = 0;
@@ -79,7 +79,7 @@ void ModelFile::BindTexture(TextureFile *texture) {
         return;
     }
     mTexture = texture;
-    func_02031fec(func_02033598(mFile), texture->mTex);
+    ApplyResTexToMdlSet(GetResMdlSet(mFile), texture->mTex);
 }
 
 ModelInstance *ModelFile::CreateInstance(ModelAnim *anim) {

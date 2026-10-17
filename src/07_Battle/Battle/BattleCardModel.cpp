@@ -207,7 +207,7 @@ u32 *data_ov007_0228acf4[66] = {
     data_ov007_0227c288,
 };
 
-extern "C" s32 func_0203340c(void *dict, const char *name);
+extern "C" s32 FindDictIndexByName(void *dict, const char *name);
 extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);
 extern "C" void func_01ffd0e0(MtxFx43 *m, u16 angle);
 extern "C" void func_01ffd138(MtxFx43 *m, u16 angle);
@@ -454,7 +454,7 @@ void BattleCardModel::LoadGraphics() {
                 func_020122f4(bone, PartAt(mParts, i)->mName);
                 u8 *model  = *(u8 **) &mBaku->mModel->mRenderObj[4];
                 void *dict = model ? model + 0x40 : 0;
-                s32 index  = dict ? func_0203340c(dict, bone) : -1;
+                s32 index  = dict ? FindDictIndexByName(dict, bone) : -1;
                 mBones[i]  = index;
             }
             i++;

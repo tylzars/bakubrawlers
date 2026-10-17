@@ -36,12 +36,12 @@ typedef volatile u16 vu16;
 #define PACK2(lo, hi) (((u32)(u16)(hi) << 16) | ((u32)(u16)(lo)))
 
 extern void MIi_CpuClearFast(u32, void *, u32);
-extern int func_02037364(void *, int, void *, int, int, int, void *, void *);
+extern int SetupSndStrm(void *, int, void *, int, int, int, void *, void *);
 extern void func_02037634(void *, int, int);
 extern void func_02037574(void *, int);
 extern void func_020375e0(void *, int, int);
 extern void func_02037504(void *);
-extern void func_02037558(void *);
+extern void StopSndStrmIfActive(void *);
 extern void MI_CpuCopy8(void *, void *, int);
 extern void MI_CpuFill8(void *, int, int);
 extern void (*data_02218884)(SndOut *, void *);
@@ -62,7 +62,7 @@ int SndOutSetup(SndOut *o)
     if (o->flags & 8) return 0;
     MIi_CpuClearFast(0, o->buf, o->size);
     SndOutResetCounters(o);
-    r = func_02037364(o->timer, 1, o->buf, o->size, o->i08, o->s2c, func_02049cec, o);
+    r = SetupSndStrm(o->timer, 1, o->buf, o->size, o->i08, o->s2c, func_02049cec, o);
     func_02037634(o->timer, 0, o->u20);
     func_02037574(o->timer, o->pan);
     func_020375e0(o->timer, 0, 0);
@@ -149,7 +149,7 @@ void SndOutStop(SndOut *o)
 {
     u16 a, b;
     if (!(o->flags & 8)) return;
-    func_02037558(o->timer);
+    StopSndStrmIfActive(o->timer);
     o->flags &= ~8;
     SndOutGetSpaceAndFilled(o, &a, &b);
     if (b != 0) o->i14 += (u32)b >> 1;

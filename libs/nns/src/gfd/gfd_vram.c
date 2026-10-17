@@ -54,36 +54,36 @@ s32 func_02035e08(void) { return -1; }   // default palette VRAM free
 
 typedef struct { u32 start; u32 end; u32 enabled; u32 mapped; u32 pad10; u32 pad14; } TexSlot;   // 0x18 bytes
 extern TexSlot data_020a58ac[5];
-extern TexSlot *data_020a5890[];   // slot pointers: two for 4x4 texels, then five (written from +8 by func_02035e10)
-// The same five pointers under the second label the gap data already carries. func_02035f54's normal loop takes its
+extern TexSlot *data_020a5890[];   // slot pointers: two for 4x4 texels, then five (written from +8 by SetTexSlotOrder)
+// The same five pointers under the second label the gap data already carries. AllocTexSlotKey's normal loop takes its
 // base from a pool word for 0x020a5898 kept as a separate constant (ldr [base, i, lsl #2] with the base in lr); a
 // pointer local into data_020a5890 is coloured after the temporaries (r6), and indexing it directly folds the +8 into
 // the load. Stand-in for a layout still to be worked out, like data_020d53e4_h.
 extern TexSlot *data_020a5898[5];
 extern u16 data_022115d8;
-void func_02035e10(u32 a, u32 b, u32 c, u32 d, u32 e) {   // order the five texture slots
+void SetTexSlotOrder(u32 a, u32 b, u32 c, u32 d, u32 e) {   // order the five texture slots
     data_020a5890[2] = &data_020a58ac[a];
     data_020a5890[3] = &data_020a58ac[b];
     data_020a5890[4] = &data_020a58ac[c];
     data_020a5890[5] = &data_020a58ac[d];
     data_020a5890[6] = &data_020a58ac[e];
 }
-extern u32 func_02035f54(u32 size, int is4x4, u32 opt);
+extern u32 AllocTexSlotKey(u32 size, int is4x4, u32 opt);
 extern int func_020360c4(u32 key);
 extern u32 (*data_020a5880)(u32 size, int is4x4, u32 opt);
 extern int (*data_020a5884)(u32 key);
-extern void func_02035ee0(void);
-void func_02035e58(u16 mode, BOOL install) {   // NNS_GfdInitFrmTexVramManager
-    if (mode <= 2) func_02035e10(4, 3, 2, 0, 1);
-    else func_02035e10(4, 3, 0, 2, 1);
+extern void ResetTexSlots(void);
+void SetupTexSlots(u16 mode, BOOL install) {
+    if (mode <= 2) SetTexSlotOrder(4, 3, 2, 0, 1);
+    else SetTexSlotOrder(4, 3, 0, 2, 1);
     data_022115d8 = mode;
-    func_02035ee0();
+    ResetTexSlots();
     if (install) {
-        data_020a5880 = func_02035f54;
+        data_020a5880 = AllocTexSlotKey;
         data_020a5884 = func_020360c4;
     }
 }
-void func_02035ee0(void) {
+void ResetTexSlots(void) {
     int i;
     TexSlot *s = data_020a58ac;
     u32 n = data_022115d8;
@@ -134,7 +134,7 @@ static inline int AllocNormal(u32 *key, u32 aligned) {
     }
     return 0;
 }
-u32 func_02035f54(u32 size, int is4x4, u32 opt) {
+u32 AllocTexSlotKey(u32 size, int is4x4, u32 opt) {
     u32 key;
     u32 aligned;
     int ok;

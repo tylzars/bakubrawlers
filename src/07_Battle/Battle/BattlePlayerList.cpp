@@ -100,7 +100,7 @@ public:
 };
 
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
-extern "C" void func_02038444(u32 heap, u32 a);
+extern "C" void RestoreSndHeapState(u32 heap, u32 a);
 void SetupTutorialPlayer(BattlePlayer *player);
 void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag);
 BOOL func_0202326c(SaveData *d);
@@ -114,7 +114,7 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 void func_ov007_02269ee4(BattlePlayer *player, u32 reset);
 u32 GetTexVariant(u32 a, u32 b);
 extern u8 data_020d4444[];
-extern "C" void func_020383f8(u32 heap);
+extern "C" void RecordSndHeapState(u32 heap);
 
 static const u8 sFrameTaskIds[8] = {6, 0, 8, 9, 4, 2, 10, 1};
 BattlePlayerList::BattlePlayerList()
@@ -128,7 +128,7 @@ BattlePlayerList::BattlePlayerList()
     mUnk_2af = 0;
     mUnk_2b0 = 0;
     if (data_020d433c.mUnk_84) {
-        func_02038444(SoundManager::Get().mHeap, 2);
+        RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().func_020245a4();
     }
@@ -693,7 +693,7 @@ void BattlePlayerList::Update() {
             if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
                 SoundManager::Get().func_020245a4();
                 SoundManager::Get().LoadAndStartSeq(1);
-                func_020383f8(SoundManager::Get().mHeap);
+                RecordSndHeapState(SoundManager::Get().mHeap);
                 mState = 0x22;
                 SpriteManager::Get().StartFade(3);
                 if (mUnk_2b0 != 0) {
@@ -792,7 +792,7 @@ void BattlePlayerList::Update() {
             }
             SoundManager::Get().func_020245a4();
             SoundManager::Get().LoadAndStartSeq(1);
-            func_020383f8(SoundManager::Get().mHeap);
+            RecordSndHeapState(SoundManager::Get().mHeap);
             break;
         case 31:
             data_020d433c.mUnk_87   = 1;

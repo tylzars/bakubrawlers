@@ -6,7 +6,7 @@
 
 extern void *data_020a5798;
 extern void *data_020a5790;
-extern s32 func_0203340c(Dict *dict, const u8 *name);
+extern s32 FindDictIndexByName(Dict *dict, const u8 *name);
 extern void MIi_CpuClear16(u32 data, void *dest, u32 size);
 extern void *data_020a5794;
 extern void *func_02033714(u8 *res, u32 idx, u32 frame);
@@ -117,7 +117,7 @@ u32 func_02033994(u8 *base, u32 info, u32 idx) {   // read one byte from an anim
     }
     return p[idx >> 2];
 }
-void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // NNS_G3dAnmObjInitNsBma: map material animation entries to materials
+void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // map material animation entries to materials
     u32 i;
     u8 *mat;
     u32 n;
@@ -129,7 +129,7 @@ void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // NNS_G3dAnmObjInitNsBma: map
     MIi_CpuClear16(0, obj + 0x1a, n * 2);
     for (i = 0; i < U8(anm, 9); i++) {
         u8 *name = DictName((Dict *)(anm + 8), i);
-        s32 r = mat == 0 ? -1 : func_0203340c((Dict *)(mat + 4), name);
+        s32 r = mat == 0 ? -1 : FindDictIndexByName((Dict *)(mat + 4), name);
         if (r >= 0) ((u16 *)(obj + 0x1a))[r] = i | 0x100;
     }
 }
@@ -328,7 +328,7 @@ void func_02033f50(u8 *obj, u8 *anm, u8 *mdl) {   // map joint animation entries
     MIi_CpuClear16(0, obj + 0x1a, n * 2);
     for (i = 0; i < U8(anm, 9); i++) {
         u8 *name = DictName((Dict *)(anm + 8), i);
-        s32 r = mat == 0 ? -1 : func_0203340c((Dict *)(mat + 4), name);
+        s32 r = mat == 0 ? -1 : FindDictIndexByName((Dict *)(mat + 4), name);
         if (r >= 0) ((u16 *)(obj + 0x1a))[r] = i | 0x100;
     }
 }
@@ -350,12 +350,12 @@ void func_02034068(u8 *obj, u8 *anm, u8 *mdl) {   // map texture SRT animation e
     MIi_CpuClear16(0, obj + 0x1a, U8(obj, 0x19) * 2);
     for (i = 0; i < U8(anm, 0xd); i++) {
         u8 *name = DictName((Dict *)(anm + 0xc), i);
-        s32 r = mat == 0 ? -1 : func_0203340c((Dict *)(mat + 4), name);
+        s32 r = mat == 0 ? -1 : FindDictIndexByName((Dict *)(mat + 4), name);
         if (r >= 0) ((u16 *)(obj + 0x1a))[r] = i | 0x100;
     }
 }
 void func_02034144(ResTex *tex, u8 *name, u8 *out) {   // texture pattern: texture image parameters and scale
-    u32 *info = tex == 0 ? 0 : func_0203324c(&tex->texDict, (char *)name);
+    u32 *info = tex == 0 ? 0 : FindDictEntryByName(&tex->texDict, (char *)name);
     u32 key;
     u32 w, h;
     u32 t;
@@ -378,7 +378,7 @@ void func_02034144(ResTex *tex, u8 *name, u8 *out) {   // texture pattern: textu
     }
 }
 void func_0203421c(ResTex *tex, u8 *name, u8 *out) {   // palette pattern
-    u16 *info = (tex == 0 || tex->plttDictOfs == 0) ? 0 : func_0203324c((Dict *)((u8 *)tex + tex->plttDictOfs), (char *)name);
+    u16 *info = (tex == 0 || tex->plttDictOfs == 0) ? 0 : FindDictEntryByName((Dict *)((u8 *)tex + tex->plttDictOfs), (char *)name);
     u16 key = (u16)tex->plttKey & ~0xe0000000;
     u16 off = info[0];
     if (!(info[1] & 1)) {

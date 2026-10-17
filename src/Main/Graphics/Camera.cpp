@@ -35,7 +35,7 @@ extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, f
 // MTX_Ortho
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
-extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
+extern MtxFx33 data_02211430; // G3dGlb base rotation
 extern const VecFx32 gDefaultBaseScale;
 extern const VecFx32 gDefaultBaseTrans;
 
@@ -69,13 +69,13 @@ extern "C" void GX_ResetBankForSubBGExtPltt();
 extern "C" void GX_ResetBankForSubOBJExtPltt();
 extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 s32 GetGameHeapHandle();
-extern "C" void func_020313f8(void *obj, u32 unk2, s32 heap);
-extern "C" void func_02035e58(u32 unk1, u32 unk2);
-extern "C" void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
-extern "C" void func_02035ee0();
-extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
-extern "C" void func_0203610c(UnkStruct_SpriteManager_28 *slot);
-extern "C" void func_02032d54();
+extern "C" void InitOSHeapAllocator(void *obj, u32 unk2, s32 heap);
+extern "C" void SetupTexSlots(u32 unk1, u32 unk2);
+extern "C" void SetupPlttLnkMan(u32 unk1, void *buffer, u32 size, u32 unk4);
+extern "C" void ResetTexSlots();
+extern "C" void SaveTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void RestoreTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void InitG3d();
 extern "C" void G3X_InitMtxStack();
 extern "C" void G3X_SetToonTable(const void *unk1);
 extern "C" void G3X_SetEdgeColorTable(const void *unk1);
@@ -351,8 +351,8 @@ void CameraManager::SwapBuffers() {
 void CameraManager::ResetBaseTransform() {
     MI_Copy36B(&data_0220e848, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
-    func_020322c0(&gDefaultBaseTrans);
-    func_020322f0(&gDefaultBaseScale);
+    SetG3dGlbTrans(&gDefaultBaseTrans);
+    SetG3dGlbScale(&gDefaultBaseScale);
 }
 void CameraManager::UpdateMode() {
     if (mDirty != 0) {

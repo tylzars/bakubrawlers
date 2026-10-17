@@ -30,9 +30,9 @@ void *ModelAnimFile::CreateAnimObj(u32 index, ModelFile *model, TextureFile *tex
     if (texture != NULL) {
         texRes = texture->mTex;
     }
-    void *anm = func_020335e8(mFile, index);
-    void *mem = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, func_02031418(anm, modelRes));
-    func_02031478(mem, anm, modelRes, texRes);
+    void *anm = GetFirstBlockEntryTarget(mFile, index);
+    void *mem = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, GetAnmObjSize(anm, modelRes));
+    InitAnmObj(mem, anm, modelRes, texRes);
     return mem;
 }
 

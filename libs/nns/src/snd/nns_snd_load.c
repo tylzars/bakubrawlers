@@ -22,129 +22,129 @@ extern SndWaveHdr data_022149b4_h; // same address as data_022149b4 (second lite
 
 typedef void (*SndFreeCb)(void *, u32, u32, u32);
 void func_02038d34(void *p, u32 size, u32 x, u32 id);
-void func_02038d5c(void *p, u32 size, u32 x, u32 id);
-void func_02038d8c(void *p, u32 size, u32 x, u32 id);
-void func_02038dbc(void *p, u32 size, u32 x, u32 id);
-void func_02038ddc(void *p, u32 size, u32 wave, u32 idx);
-void func_02038cdc(void *p, u32 x, u32 id);
+void BankFileFreeCallback(void *p, u32 size, u32 x, u32 id);
+void WaveArcFileFreeCallback(void *p, u32 size, u32 x, u32 id);
+void SplitWaveArcFreeCallback(void *p, u32 size, u32 x, u32 id);
+void WaveArcEntryFreeCallback(void *p, u32 size, u32 wave, u32 idx);
+void ClearMatchingFatEntryCache(void *p, u32 x, u32 id);
 // read file `a` into a new heap block, with `cb` run when the block is freed
-void *func_02038984(u32 a, void *cb, u32 c, u32 d, SndHeap *heap) {
-    u32 size = func_020380c0(a);
+void *LoadFatEntryToHeap(u32 a, void *cb, u32 c, u32 d, SndHeap *heap) {
+    u32 size = GetFatEntrySize(a);
     void *blk;
     if (size == 0) return 0;
     if (heap == 0) return 0;
-    blk = func_02038390(heap, size + 0x20, cb, c, d);
+    blk = AllocSndHeapBlock(heap, size + 0x20, cb, c, d);
     if (blk == 0) return 0;
-    if (func_020380e8(a, blk, size, 0) != size) return 0;
+    if (ReadFatEntryData(a, blk, size, 0) != size) return 0;
     DC_StoreRange(blk, size);
     return blk;
 }
 
 u32 func_02038a24(u32 id, SndHeap *heap, int flag) {
-    u32 p = func_020381d0(id);
+    u32 p = GetFatEntryCache(id);
     if (p == 0) {
-        u32 x = flag != 0 ? (u32)func_02037d68() : 0;
-        p = (u32)func_02038984(id, func_02038d34, x, id, heap);
-        if (flag != 0 && p != 0) func_020381f8(id, p);
+        u32 x = flag != 0 ? (u32)GetCurrentSndArc() : 0;
+        p = (u32)LoadFatEntryToHeap(id, func_02038d34, x, id, heap);
+        if (flag != 0 && p != 0) SetFatEntryCache(id, p);
     }
     return p;
 }
 
 u32 func_02038a90(u32 id, SndHeap *heap, int flag) {
-    u32 p = func_020381d0(id);
+    u32 p = GetFatEntryCache(id);
     if (p == 0) {
-        u32 x = flag != 0 ? (u32)func_02037d68() : 0;
-        p = (u32)func_02038984(id, func_02038d34, x, id, heap);
-        if (flag != 0 && p != 0) func_020381f8(id, p);
+        u32 x = flag != 0 ? (u32)GetCurrentSndArc() : 0;
+        p = (u32)LoadFatEntryToHeap(id, func_02038d34, x, id, heap);
+        if (flag != 0 && p != 0) SetFatEntryCache(id, p);
     }
     return p;
 }
 
-u32 func_02038afc(u32 id, SndHeap *heap, int flag) {
-    u32 p = func_020381d0(id);
+u32 LoadBankFile(u32 id, SndHeap *heap, int flag) {
+    u32 p = GetFatEntryCache(id);
     if (p == 0) {
-        u32 x = flag != 0 ? (u32)func_02037d68() : 0;
-        p = (u32)func_02038984(id, func_02038d5c, x, id, heap);
-        if (flag != 0 && p != 0) func_020381f8(id, p);
+        u32 x = flag != 0 ? (u32)GetCurrentSndArc() : 0;
+        p = (u32)LoadFatEntryToHeap(id, BankFileFreeCallback, x, id, heap);
+        if (flag != 0 && p != 0) SetFatEntryCache(id, p);
     }
     return p;
 }
 
-u32 func_02038b68(u32 id, SndHeap *heap, int flag) {
-    u32 p = func_020381d0(id);
+u32 LoadWaveArcFile(u32 id, SndHeap *heap, int flag) {
+    u32 p = GetFatEntryCache(id);
     if (p == 0) {
-        u32 x = flag != 0 ? (u32)func_02037d68() : 0;
-        p = (u32)func_02038984(id, func_02038d8c, x, id, heap);
-        if (flag != 0 && p != 0) func_020381f8(id, p);
+        u32 x = flag != 0 ? (u32)GetCurrentSndArc() : 0;
+        p = (u32)LoadFatEntryToHeap(id, WaveArcFileFreeCallback, x, id, heap);
+        if (flag != 0 && p != 0) SetFatEntryCache(id, p);
     }
     return p;
 }
 
 // wave archive stored as separate waves: load the header, keep the offset table
-u32 func_02038bd4(u32 id, SndHeap *heap, int flag) {
+u32 LoadSplitWaveArcHeaderAndTable(u32 id, SndHeap *heap, int flag) {
     u32 total;
-    u32 p = func_020381d0(id);
+    u32 p = GetFatEntryCache(id);
     u32 tblBytes;
     if (p == 0) {
         u32 x;
         int n;
-        if (func_020380e8(id, &data_022149b4, 0x3c, 0) != 0x3c) return 0;
+        if (ReadFatEntryData(id, &data_022149b4, 0x3c, 0) != 0x3c) return 0;
         tblBytes = data_022149b4_h.count * 4;
         total = tblBytes * 2;
         if (heap == 0) return 0;
-        x = flag != 0 ? (u32)func_02037d68() : 0;
-        p = (u32)func_02038390(heap, total + 0x5c, func_02038dbc, x, id);
+        x = flag != 0 ? (u32)GetCurrentSndArc() : 0;
+        p = (u32)AllocSndHeapBlock(heap, total + 0x5c, SplitWaveArcFreeCallback, x, id);
         if (p == 0) return 0;
-        n = func_020380e8(id, (void *)p, tblBytes + 0x3c, 0);
+        n = ReadFatEntryData(id, (void *)p, tblBytes + 0x3c, 0);
         if (n != tblBytes + 0x3c) return 0;
         MI_CpuCopy8((u8 *)p + 0x3c, (u8 *)p + 0x3c + ((SndWaveHdr *)p)->count * 4, tblBytes);
         MI_CpuFill8((u8 *)p + 0x3c, 0, tblBytes);
         DC_StoreRange((void *)p, total + 0x3c);
-        if (flag != 0) func_020381f8(id, p);
+        if (flag != 0) SetFatEntryCache(id, p);
     }
     return p;
 }
 
 // free callback helper: drop the cache entry if it still points at the freed block
-void func_02038cdc(void *p, u32 x, u32 id) {
+void ClearMatchingFatEntryCache(void *p, u32 x, u32 id) {
     SndArc *old;
     u32 irq;
     if (x == 0) return;
     irq = OS_DisableInterrupts();
-    old = func_02037d50((SndArc *)x);
-    if ((u32)p == func_020381d0(id)) func_020381f8(id, 0);
-    func_02037d50(old);
+    old = SetCurrentSndArc((SndArc *)x);
+    if ((u32)p == GetFatEntryCache(id)) SetFatEntryCache(id, 0);
+    SetCurrentSndArc(old);
     OS_RestoreInterrupts(irq);
 }
 
 void func_02038d34(void *p, u32 size, u32 x, u32 id) {
-    func_02038cdc(p, x, id);
+    ClearMatchingFatEntryCache(p, x, id);
     func_020081ac(p, (u8 *)p + size);
 }
 
-void func_02038d5c(void *p, u32 size, u32 x, u32 id) {
-    func_02038cdc(p, x, id);
+void BankFileFreeCallback(void *p, u32 size, u32 x, u32 id) {
+    ClearMatchingFatEntryCache(p, x, id);
     func_020081cc(p, (u8 *)p + size);
     func_02008d28(p);
 }
 
-void func_02038d8c(void *p, u32 size, u32 x, u32 id) {
-    func_02038cdc(p, x, id);
+void WaveArcFileFreeCallback(void *p, u32 size, u32 x, u32 id) {
+    ClearMatchingFatEntryCache(p, x, id);
     func_020081ec(p, (u8 *)p + size);
     func_02008dc0(p);
 }
 
-void func_02038dbc(void *p, u32 size, u32 x, u32 id) {
-    func_02038cdc(p, x, id);
+void SplitWaveArcFreeCallback(void *p, u32 size, u32 x, u32 id) {
+    ClearMatchingFatEntryCache(p, x, id);
     func_02008dc0(p);
 }
 
-void func_02038ddc(void *p, u32 size, u32 wave, u32 idx) {   // free callback for a single wave
+void WaveArcEntryFreeCallback(void *p, u32 size, u32 wave, u32 idx) {   // free callback for a single wave
     if ((u32)p == func_02009014(wave, idx)) func_02008fe0(wave, idx, 0);
     func_020081ec(p, (u8 *)p + size);
 }
 
-int func_02038e24(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wave `idx` of a wave archive
+int LoadWaveArcEntry(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wave `idx` of a wave archive
     u32 *w = (u32 *)wave;
     u32 *ent;
     u32 size, start, end, last;
@@ -156,9 +156,9 @@ int func_02038e24(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wave `
     end = idx < last - 1 ? ent[0x40 / 4] : w[2];
     size = end - start;
     if (heap == 0) return 0;
-    blk = func_02038390(heap, size + 0x20, func_02038ddc, wave, idx);
+    blk = AllocSndHeapBlock(heap, size + 0x20, WaveArcEntryFreeCallback, wave, idx);
     if (blk == 0) return 0;
-    if (size != func_020380e8(file, blk, size, start)) return 0;
+    if (size != ReadFatEntryData(file, blk, size, start)) return 0;
     DC_StoreRange(blk, size);
     func_02008fe0(wave, idx, (u32)blk);
     return 1;
@@ -167,7 +167,7 @@ int func_02038e24(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wave `
 typedef struct { u32 a, b; } SndIter;
 typedef struct { u8 type; u8 pad; u16 a; u16 b; u16 pad6; u32 pad8; } SndWaveEnt;
 
-int func_02038eec(u32 wave, u32 bank, int idx, u32 file, SndHeap *heap) {
+int LoadBankWaveArcEntries(u32 wave, u32 bank, int idx, u32 file, SndHeap *heap) {
     SndWaveEnt ent;
     SndIter it1;
     SndIter it0;
@@ -176,7 +176,7 @@ int func_02038eec(u32 wave, u32 bank, int idx, u32 file, SndHeap *heap) {
     if (bank == 0) return 0;
     while (func_02008e28(bank, &ent, &it1) != 0) {
         if (ent.type == 1 && idx == ent.b) {
-            if (func_02038e24(wave, ent.a, file, heap) == 0) return 0;
+            if (LoadWaveArcEntry(wave, ent.a, file, heap) == 0) return 0;
         }
     }
     return 1;

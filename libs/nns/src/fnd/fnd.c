@@ -12,17 +12,17 @@ static inline u32 SetOpt(u32 attr, u16 opt) { return (attr & ~0xff) | (opt & 0xf
 extern u32 data_02211364;
 extern NNSFndList data_02211368;
 
-void NNS_FndInitList(NNSFndList *list, u16 offset) {   // NNS_FndInitList
+void NNS_FndInitList(NNSFndList *list, u16 offset) {
     list->head = 0; list->tail = 0; list->count = 0; list->offset = offset;
 }
-void func_02030898(NNSFndList *list, void *obj) {    // first-object insert
+void AddToEmptyList(NNSFndList *list, void *obj) {    // first-object insert
     NNSFndLink *l = LNK(list, obj);
     l->next = 0; l->prev = 0;
     list->head = obj; list->tail = obj;
     list->count++;
 }
-void NNS_FndAppendListObject(NNSFndList *list, void *obj) {    // NNS_FndAppendListObject
-    if (list->head == 0) { func_02030898(list, obj); return; }
+void NNS_FndAppendListObject(NNSFndList *list, void *obj) {
+    if (list->head == 0) { AddToEmptyList(list, obj); return; }
     {
         NNSFndLink *l = LNK(list, obj);
         l->prev = list->tail;
@@ -32,8 +32,8 @@ void NNS_FndAppendListObject(NNSFndList *list, void *obj) {    // NNS_FndAppendL
         list->count++;
     }
 }
-void func_02030918(NNSFndList *list, void *obj) {    // NNS_FndPrependListObject
-    if (list->head == 0) { func_02030898(list, obj); return; }
+void func_02030918(NNSFndList *list, void *obj) {
+    if (list->head == 0) { AddToEmptyList(list, obj); return; }
     {
         NNSFndLink *l = LNK(list, obj);
         l->prev = 0;
@@ -43,7 +43,7 @@ void func_02030918(NNSFndList *list, void *obj) {    // NNS_FndPrependListObject
         list->count++;
     }
 }
-void NNS_FndInsertListObject(NNSFndList *list, void *target, void *obj) {   // NNS_FndInsertListObject
+void NNS_FndInsertListObject(NNSFndList *list, void *target, void *obj) {
     if (target == 0) { NNS_FndAppendListObject(list, obj); return; }
     if (target == list->head) { func_02030918(list, obj); return; }
     {
@@ -59,7 +59,7 @@ void NNS_FndInsertListObject(NNSFndList *list, void *target, void *obj) {   // N
         list->count++;
     }
 }
-void NNS_FndRemoveListObject(NNSFndList *list, void *obj) {    // NNS_FndRemoveListObject
+void NNS_FndRemoveListObject(NNSFndList *list, void *obj) {
     NNSFndLink *l = LNK(list, obj);
     if (l->prev == 0) list->head = l->next;
     else LNK(list, l->prev)->next = l->next;
@@ -68,31 +68,31 @@ void NNS_FndRemoveListObject(NNSFndList *list, void *obj) {    // NNS_FndRemoveL
     l->prev = 0; l->next = 0;
     list->count--;
 }
-void *NNS_FndGetNextListObject(NNSFndList *list, void *obj) {   // NNS_FndGetNextListObject
+void *NNS_FndGetNextListObject(NNSFndList *list, void *obj) {
     if (obj == 0) return list->head;
     return LNK(list, obj)->next;
 }
-void *func_02030a44(NNSFndList *list, void *obj) {   // NNS_FndGetPrevListObject
+void *func_02030a44(NNSFndList *list, void *obj) {
     if (obj == 0) return list->tail;
     return LNK(list, obj)->prev;
 }
-NNSFndHeapHead *func_02030a58(NNSFndList *list, void *ptr) {   // find innermost heap containing ptr
+NNSFndHeapHead *FindInnermostHeapContaining(NNSFndList *list, void *ptr) {   // find innermost heap containing ptr
     NNSFndHeapHead *h = 0;
     while ((h = NNS_FndGetNextListObject(list, h)) != 0) {
         if ((u32)h->start <= (u32)ptr && (u32)ptr < (u32)h->end) {
-            NNSFndHeapHead *c = func_02030a58(&h->children, ptr);
+            NNSFndHeapHead *c = FindInnermostHeapContaining(&h->children, ptr);
             return c ? c : h;
         }
     }
     return 0;
 }
-NNSFndList *func_02030ac0(void *ptr) {   // list that holds the heap containing ptr
+NNSFndList *FindParentList(void *ptr) {   // list that holds the heap containing ptr
     NNSFndList *list = &data_02211368;
-    NNSFndHeapHead *h = func_02030a58(list, ptr);
+    NNSFndHeapHead *h = FindInnermostHeapContaining(list, ptr);
     if (h) list = &h->children;
     return list;
 }
-void func_02030ae8(NNSFndHeapHead *h, u32 sig, void *start, void *end, u16 opt) {
+void InitAndLinkHeapHead(NNSFndHeapHead *h, u32 sig, void *start, void *end, u16 opt) {
     u32 attr = 0;
     h->magic = sig;
     h->start = start;
@@ -104,8 +104,8 @@ void func_02030ae8(NNSFndHeapHead *h, u32 sig, void *start, void *end, u16 opt) 
         NNS_FndInitList(&data_02211368, 4);
         data_02211364 = 1;
     }
-    NNS_FndAppendListObject(func_02030ac0(h), h);
+    NNS_FndAppendListObject(FindParentList(h), h);
 }
-void func_02030b64(NNSFndHeapHead *h) {   // heap finalize: unlink from parent list
-    NNS_FndRemoveListObject(func_02030ac0(h), h);
+void UnlinkHeapHead(NNSFndHeapHead *h) {   // heap finalize: unlink from parent list
+    NNS_FndRemoveListObject(FindParentList(h), h);
 }

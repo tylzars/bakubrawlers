@@ -2,25 +2,25 @@
 #include <nnsys/private/nns_snd_arc.h>
 #include <nnsys/private/nns_snd_wavstrm.h>
 
-extern void *func_02036e10(void *a, void *b, u32 c);
-extern void *func_02036f50(void *b, void *r);
+extern void *AllocHandleSound(void *a, void *b, u32 c);
+extern void *TakePlayerHeap(void *b, void *r);
 extern void func_02036ea8(void *r);
-extern void func_02036eb4(void *r, void *p, u32 z, u32 n);
-extern void func_02036b54(void *a, u32 v);
+extern void StartSndSound(void *r, void *p, u32 z, u32 n);
+extern void SetHandleVolA(void *a, u32 v);
 extern void func_02036b68(void *a, u32 v);
-extern void func_02036ba8(void *a, u32 v);
-extern void func_02036bcc(void *a, u32 v, u32 w);
-extern int func_020387b8(int id, u32 flags, void *heap, int flag, u32 *out);
-extern int func_020386d4(int id, u32 flags, void *heap, int flag, u32 *out);
-extern void func_02037264(WavStrm *s);
+extern void SetHandleId(void *a, u32 v);
+extern void SetHandleIdPair(void *a, u32 v, u32 w);
+extern int LoadBankAndWaveArcs(int id, u32 flags, void *heap, int flag, u32 *out);
+extern int LoadSeqAndBank(int id, u32 flags, void *heap, int flag, u32 *out);
+extern void InitSndStrm(WavStrm *s);
 extern void func_02037504(WavStrm *s);
-extern void func_02037558(WavStrm *s);
+extern void StopSndStrmIfActive(WavStrm *s);
 extern void func_02037574(WavStrm *s, s32 v);
-extern void func_0203733c(WavStrm *s);
-extern void *func_02037fd0(int idx);
-extern u32 *func_02037f08(u32 id);
-extern u32 func_02038098(u32 idx);
-extern SndFileId func_020381b0(void);
+extern void UnreserveSndStrmChannels(WavStrm *s);
+extern void *GetWavStrmChannelInfo(int idx);
+extern u32 *GetWavStrmFileInfo(u32 id);
+extern u32 GetFatEntryOffset(u32 idx);
+extern SndFileId GetCurrentArcFileId(void);
 extern void func_0200a7b4(void *file);
 extern int func_0200aa24(void *file, SndFileId id);
 extern int func_0200aadc(void *file);
@@ -36,35 +36,35 @@ extern void OS_SleepThread(void *queue);
 extern void OS_CreateThread(void *thr, void *fn, void *arg, void *stack, u32 size, u32 prio);
 extern void OS_WakeupThreadDirect(void *thr);
 extern void MI_CpuCopy8(void *src, void *dst, u32 len);
-extern s32 func_0203a4e0(SndLerp *l);
+extern s32 GetRampValue(SndLerp *l);
 extern s16 data_0208f89c[];
 extern void *NNS_FndGetNextListObject(void *list, void *obj);
-extern int func_0203a52c(SndLerp *l);
-void func_02039a50(WavStrmCmd *c);
-extern void func_0203990c(WavStrm *s);
-extern void func_02039604(WavStrm *s);
-void func_0203969c(WavStrm *s);
-void func_02039700(WavStrm *s);
-void func_02039784(NNSFndList *list, WavStrm *owner);
-WavStrmCmd *func_020397f4(NNSFndList *list);
-extern void func_02039844(WavStrmCmd *c);
-extern void func_02039870(void *ptr, u32 size, WavStrm *s);
-extern void func_02039724(WavStrmMgr *m, u32 prio);
-extern void func_0203a410(WavStrmMgr *m);
-extern int func_02039400(void *heap);
-extern void func_0203a278(WavStrm *s, u32 id);
-extern int func_0203a2f8(WavStrm *s, u32 id);
-extern int func_0203a36c(WavStrm *s);
-extern int func_0203a37c(WavStrm *s, void *dst, u32 len, u32 off);
+extern int IsRampDone(SndLerp *l);
+void FillWavStrmBuffers(WavStrmCmd *c);
+extern void OpenNextWavStrmFile(WavStrm *s);
+extern void StopWavStrm(WavStrm *s);
+void CloseWavStrm(WavStrm *s);
+void ReleaseWavStrmChannelRef(WavStrm *s);
+void RemoveWavStrmCmds(NNSFndList *list, WavStrm *owner);
+WavStrmCmd *PopWavStrmCmd(NNSFndList *list);
+extern void FreeWavStrmCmd(WavStrmCmd *c);
+extern void WavStrmBufferFreeCallback(void *ptr, u32 size, WavStrm *s);
+extern void CreateWavStrmThread(WavStrmMgr *m, u32 prio);
+extern void WavStrmThreadLoop(WavStrmMgr *m);
+extern int SetupWavStrmBuffers(void *heap);
+extern void SetWavStrmAccessFns(WavStrm *s, u32 id);
+extern int OpenWavStrmFromFile(WavStrm *s, u32 id);
+extern int CloseWavStrmFile(WavStrm *s);
+extern int ReadWavStrmFile(WavStrm *s, void *dst, u32 len, u32 off);
 extern int func_0203a3b4(WavStrm *s);
-extern int func_0203a3c4(WavStrm *s, u32 id);
+extern int OpenWavStrmFromMemory(WavStrm *s, u32 id);
 
 // Sample format passed to the fill callback.
 enum StrmFormat { STRM_FORMAT_PCM8, STRM_FORMAT_PCM16 };
 extern void func_0203a3ec(WavStrm *s);
-extern int func_0203a3f0(WavStrm *s, void *dst, u32 len, u32 off);
+extern int ReadWavStrmMemory(WavStrm *s, void *dst, u32 len, u32 off);
 extern void func_0203a40c(WavStrm *s);
-extern void func_0203a514(SndLerp *l);
+extern void AdvanceRamp(SndLerp *l);
 
 // start a stream: sequence + bank + wave setup, returns 1 on success
 int func_0203913c(void *a, void *b, int c, u32 d, u8 *e, u32 f) {
@@ -72,48 +72,48 @@ int func_0203913c(void *a, void *b, int c, u32 d, u8 *e, u32 f) {
     u32 out1;
     void *r4;
     void *heap;
-    r4 = func_02036e10(a, b, d);
+    r4 = AllocHandleSound(a, b, d);
     if (r4 == 0) return 0;
-    heap = func_02036f50(b, r4);
-    if (func_020387b8(c, 6, heap, 0, &out1) != 0) {
+    heap = TakePlayerHeap(b, r4);
+    if (LoadBankAndWaveArcs(c, 6, heap, 0, &out1) != 0) {
         func_02036ea8(r4);
         return 0;
     }
-    if (func_020386d4(f, 1, heap, 0, &out2) != 0) {
+    if (LoadSeqAndBank(f, 1, heap, 0, &out2) != 0) {
         func_02036ea8(r4);
         return 0;
     }
-    func_02036eb4(r4, (u8 *)out2 + *(u32 *)(out2 + 0x18), 0, out1);
-    func_02036b54(a, e[6]);
+    StartSndSound(r4, (u8 *)out2 + *(u32 *)(out2 + 0x18), 0, out1);
+    SetHandleVolA(a, e[6]);
     func_02036b68(a, e[7]);
-    func_02036ba8(a, f);
+    SetHandleId(a, f);
     return 1;
 }
 
 int func_02039238(void *a, void *b, int c, u32 d, u32 *e, u8 *f, u32 g, u32 h) {
     u32 out;
     void *r5;
-    r5 = func_02036e10(a, b, d);
+    r5 = AllocHandleSound(a, b, d);
     if (r5 == 0) return 0;
-    if (func_020387b8(c, 6, func_02036f50(b, r5), 0, &out) != 0) {
+    if (LoadBankAndWaveArcs(c, 6, TakePlayerHeap(b, r5), 0, &out) != 0) {
         func_02036ea8(r5);
         return 0;
     }
-    func_02036eb4(r5, f + *(u32 *)(f + 0x18), e[0], out);
-    func_02036b54(a, ((u8 *)e)[6]);
+    StartSndSound(r5, f + *(u32 *)(f + 0x18), e[0], out);
+    SetHandleVolA(a, ((u8 *)e)[6]);
     func_02036b68(a, ((u8 *)e)[7]);
-    func_02036bcc(a, g, h);
+    SetHandleIdPair(a, g, h);
     return 1;
 }
 
 // The original's loops here are not strength-reduced, which only -O2 produces.
 #pragma optimization_level 2
-void func_020392fc(u32 a, void *heap) {   // initialise the stream player
+void InitWavStrms(u32 a, void *heap) {   // initialise the stream player
     int i;
     int j;
     WavStrm *s;
     if (data_022149f0.init != 0) {
-        func_02039400(heap);
+        SetupWavStrmBuffers(heap);
         return;
     }
     data_022149f0.init = 1;
@@ -127,19 +127,19 @@ void func_020392fc(u32 a, void *heap) {   // initialise the stream player
         s = &data_0221508c[j];
         s->active = 0;
         func_0200a7b4(s->file);
-        func_02037264(s);
+        InitSndStrm(s);
         s->slot = j;
         s->chCount = 0;
         s->buf = 0;
         s->bufSize = 0;
         s->cnt120 = 0;
     }
-    func_02039400(heap);
-    func_02039724(&data_02214ba0, a);
+    SetupWavStrmBuffers(heap);
+    CreateWavStrmThread(&data_02214ba0, a);
 }
 
 #pragma optimization_level reset
-int func_02039400(void *heap) {   // reserve each stream's decode buffer from the sound heap
+int SetupWavStrmBuffers(void *heap) {   // reserve each stream's decode buffer from the sound heap
     int i;
     u32 size;
     WavStrm *s = data_0221508c;
@@ -147,7 +147,7 @@ int func_02039400(void *heap) {   // reserve each stream's decode buffer from th
     void *buf;
     int j;
     for (i = 0; i < 4; i++, s++) {
-        info = func_02037fd0(i);
+        info = GetWavStrmChannelInfo(i);
         if (info != 0) {
             s->chCount = info[0];
             for (j = 0; j < info[0]; j++) {
@@ -155,9 +155,9 @@ int func_02039400(void *heap) {   // reserve each stream's decode buffer from th
             }
             if (heap != 0) {
                 size = s->chCount << 11;
-                buf = func_02038390(heap, size, func_02039870, s, 0);
+                buf = AllocSndHeapBlock(heap, size, WavStrmBufferFreeCallback, s, 0);
                 if (buf == 0) return 0;
-                func_02039604(s);
+                StopWavStrm(s);
                 s->buf = buf;
                 s->bufSize = size;
             }
@@ -166,7 +166,7 @@ int func_02039400(void *heap) {   // reserve each stream's decode buffer from th
     return 1;
 }
 
-void func_020394c8(void) {   // per-frame update of all streams
+void UpdateWavStrms(void) {   // per-frame update of all streams
     int i;
     s16 v;
     s32 sum;
@@ -174,7 +174,7 @@ void func_020394c8(void) {   // per-frame update of all streams
     for (i = 0; i < 4; i++, s++) {
         if (!s->active) continue;
         if (s->delay == 0) {
-            func_02039604(s);
+            StopWavStrm(s);
             continue;
         }
         if (s->b2 && s->f118 != 0) {
@@ -183,17 +183,17 @@ void func_020394c8(void) {   // per-frame update of all streams
             s->b2 = 0;
         }
         if (s->b1) {
-            func_0203a514(&s->pan);
+            AdvanceRamp(&s->pan);
             v = data_0208f89c[s->f154];
             // Placeholder: `- -v` only reproduces the original's operand order of the first add (`add r1, r1, r6`);
             // the real source form is not known.
-            sum = data_0208f89c[func_0203a4e0(&s->pan) >> 8] - -v + data_0208f89c[s->f158];
+            sum = data_0208f89c[GetRampValue(&s->pan) >> 8] - -v + data_0208f89c[s->f158];
             if (sum != s->f15c) {
                 func_02037574(s, sum);
                 s->f15c = sum;
             }
-            if (s->b3 && func_0203a52c(&s->pan)) {
-                func_02039604(s);
+            if (s->b3 && IsRampDone(&s->pan)) {
+                StopWavStrm(s);
             }
         }
     }
@@ -209,33 +209,33 @@ void func_020395d8(WavStrm *s) {
     s->b1 = 0;
 }
 
-void func_02039604(WavStrm *s) {   // stop a stream
+void StopWavStrm(WavStrm *s) {   // stop a stream
     OS_LockMutex(data_02215068);
     if (data_022149f0.mgr != 0) OS_LockMutex(data_022149f0.mgr->mutex);
-    if (s->b1) func_02037558(s);
+    if (s->b1) StopSndStrmIfActive(s);
     if (s->active) s->done(s);
-    func_0203969c(s);
+    CloseWavStrm(s);
     OS_UnlockMutex(data_02215068);
     if (data_022149f0.mgr != 0) OS_UnlockMutex(data_022149f0.mgr->mutex);
 }
 
-void func_0203969c(WavStrm *s) {
+void CloseWavStrm(WavStrm *s) {
     if (!s->active) return;
-    func_02039700(s);
+    ReleaseWavStrmChannelRef(s);
     s->close(s);
-    func_02039784(&data_02215080, s);
-    if (data_022149f0.mgr != 0) func_02039784(&data_022149f0.mgr->cmds, s);
+    RemoveWavStrmCmds(&data_02215080, s);
+    if (data_022149f0.mgr != 0) RemoveWavStrmCmds(&data_022149f0.mgr->cmds, s);
     func_020395d8(s);
 }
 
-void func_02039700(WavStrm *s) {
+void ReleaseWavStrmChannelRef(WavStrm *s) {
     if (s->cnt120 == 0) return;
     if (--s->cnt120 != 0) return;
-    func_0203733c(s);
+    UnreserveSndStrmChannels(s);
 }
 
-void func_02039724(WavStrmMgr *m, u32 prio) {   // create the decode thread
-    OS_CreateThread(m, func_0203a410, m, m->sleepQueue, 0x400, prio);
+void CreateWavStrmThread(WavStrmMgr *m, u32 prio) {   // create the decode thread
+    OS_CreateThread(m, WavStrmThreadLoop, m, m->sleepQueue, 0x400, prio);
     NNS_FndInitList(&m->cmds, 0);
     OS_InitMutex(m->mutex);
     ((u32 *)m->sleepQueue)[1] = 0;
@@ -243,7 +243,7 @@ void func_02039724(WavStrmMgr *m, u32 prio) {   // create the decode thread
     OS_WakeupThreadDirect(m);
 }
 
-void func_02039784(NNSFndList *list, WavStrm *owner) {   // drop every queued command of a stream
+void RemoveWavStrmCmds(NNSFndList *list, WavStrm *owner) {   // drop every queued command of a stream
     u32 irq = OS_DisableInterrupts();
     WavStrmCmd *n = NNS_FndGetNextListObject(list, 0);
     WavStrmCmd *next;
@@ -251,14 +251,14 @@ void func_02039784(NNSFndList *list, WavStrm *owner) {   // drop every queued co
         next = NNS_FndGetNextListObject(list, n);
         if (n->strm == owner) {
             NNS_FndRemoveListObject(list, n);
-            func_02039844(n);
+            FreeWavStrmCmd(n);
         }
         n = next;
     }
     OS_RestoreInterrupts(irq);
 }
 
-WavStrmCmd *func_020397f4(NNSFndList *list) {   // pop the next queued command
+WavStrmCmd *PopWavStrmCmd(NNSFndList *list) {   // pop the next queued command
     u32 irq = OS_DisableInterrupts();
     WavStrmCmd *n = NNS_FndGetNextListObject(list, 0);
     if (n != 0) {
@@ -269,29 +269,29 @@ WavStrmCmd *func_020397f4(NNSFndList *list) {   // pop the next queued command
     return n;
 }
 
-void func_02039844(WavStrmCmd *n) {   // return a command node to the free list
+void FreeWavStrmCmd(WavStrmCmd *n) {   // return a command node to the free list
     u32 irq = OS_DisableInterrupts();
     NNS_FndAppendListObject(&data_022149fc, n);
     OS_RestoreInterrupts(irq);
 }
 
-void func_02039870(void *ptr, u32 size, WavStrm *s) {   // sound-heap free callback of a stream buffer
+void WavStrmBufferFreeCallback(void *ptr, u32 size, WavStrm *s) {   // sound-heap free callback of a stream buffer
     if (ptr != s->buf) return;
     OS_LockMutex(data_02215068);
     if (data_022149f0.mgr != 0) OS_LockMutex(data_022149f0.mgr->mutex);
-    func_02039604(s);
+    StopWavStrm(s);
     s->buf = 0;
     s->bufSize = 0;
     s->chCount = 0;
     if (s->cnt120 > 0) {
-        func_0203733c(s);
+        UnreserveSndStrmChannels(s);
         s->cnt120 = 0;
     }
     OS_UnlockMutex(data_02215068);
     if (data_022149f0.mgr != 0) OS_UnlockMutex(data_022149f0.mgr->mutex);
 }
 
-void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
+void OpenNextWavStrmFile(WavStrm *s) {   // switch a stream over to its next file
     WavStrmNextIn in;
     WavStrmNextOut out;
     u32 *info;
@@ -302,12 +302,12 @@ void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
     out.id = s->f144;
     out.extra = 0;
     if (s->next(0, &in, &out, s->f140) == 0) return;
-    info = func_02037f08(out.id);
+    info = GetWavStrmFileInfo(out.id);
     if (info == 0) return;
     fmt = s->format;
     rate = s->sampleRate;
     s->close(s);
-    func_0203a278(s, *info);
+    SetWavStrmAccessFns(s, *info);
     if (s->open(s, *info) == 0) return;
     if (rate != s->sampleRate) return;
     if (fmt == 0) {
@@ -327,9 +327,9 @@ void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
 }
 
 // ADPCM index adjustment per 4-bit code (sign bit ignored).
-static const s8 data_02090a60[16] = {-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};
+static const s8 sAdpcmIndexAdjust[16] = {-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};
 // ADPCM step sizes, indexed by the running index (0..88).
-static const s16 data_02090a70[89] = {
+static const s16 sAdpcmDiffScale[89] = {
     7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21,
     23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66,
     73, 80, 88, 97, 107, 118, 130, 143, 157, 173, 190, 209,
@@ -350,7 +350,7 @@ extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
     u32 n_; \
     pred_ = (st)->pred; \
     idx_ = *(u8 *)&(st)->index; \
-    step_ = data_02090a70[idx_]; \
+    step_ = sAdpcmDiffScale[idx_]; \
     n_ = (x) & 0xf; \
     diff_ = step_ >> 3; \
     if (n_ & 4) diff_ += step_; \
@@ -358,7 +358,7 @@ extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
     if (n_ & 1) diff_ += step_ >> 2; \
     if (n_ & 8) { pred_ -= diff_; if (pred_ < -0x8000) pred_ = -0x8000; } \
     else { pred_ += diff_; if (pred_ > 0x7fff) pred_ = 0x7fff; } \
-    idx_ += data_02090a60[n_]; \
+    idx_ += sAdpcmIndexAdjust[n_]; \
     if (idx_ < 0) idx_ = 0; else if (idx_ > 0x58) idx_ = 0x58; \
     (st)->pred = (s16)pred_; \
     *(u8 *)&(st)->index = idx_; \
@@ -373,7 +373,7 @@ static inline void AdpcmStep(SndAdpcmState *st, u32 x, s16 *dst) {
     s32 step;
     pred = st->pred;
     idx = *(u8 *)&st->index;
-    step = data_02090a70[idx];
+    step = sAdpcmDiffScale[idx];
     n = x & 0xf;
     diff = step >> 3;
     if (n & 4) diff += step;
@@ -381,7 +381,7 @@ static inline void AdpcmStep(SndAdpcmState *st, u32 x, s16 *dst) {
     if (n & 1) diff += step >> 2;
     if (n & 8) { pred -= diff; if (pred < -0x8000) pred = -0x8000; }
     else { pred += diff; if (pred > 0x7fff) pred = 0x7fff; }
-    idx += data_02090a60[n];
+    idx += sAdpcmIndexAdjust[n];
     if (idx < 0) idx = 0; else if (idx > 0x58) idx = 0x58;
     st->pred = (s16)pred;
     *(u8 *)&st->index = idx;
@@ -410,7 +410,7 @@ static inline void DecodeAdpcm(u32 i, u32 n, s16 *dst, u8 *src, SndAdpcmState *s
 // reverse declaration order), and that numbering is what gives the pair loop's low-nibble step the original's
 // registers. The mixed form is a structural stand-in for that order; a single helper of either kind (all macro or
 // all inline) does not match. ADPCM_STEP evaluates its dst argument exactly once, so `dst++` there is safe.
-void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
+void FillWavStrmBuffers(WavStrmCmd *c) {   // fill one decode buffer of a stream
     WavStrm *s;
     int loopNow;
     unsigned long offset;
@@ -545,7 +545,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                 }
                 offset += outBytes;
                 remaining -= outBytes;
-                if (s->b5 && s->next != 0) func_0203990c(s);
+                if (s->b5 && s->next != 0) OpenNextWavStrmFile(s);
             }
         } while (remaining != 0);
     }
@@ -558,34 +558,34 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     if (c->phase == 0) s->f118 = 1;
 }
 
-void func_0203a278(WavStrm *s, u32 id) {   // choose file or memory access functions
-    if (func_020381d0(id) == 0) {
-        s->open = (WavStrmOpenFn)func_0203a2f8;
-        s->close = (WavStrmCloseFn)func_0203a36c;
-        s->read = (WavStrmReadFn)func_0203a37c;
+void SetWavStrmAccessFns(WavStrm *s, u32 id) {   // choose file or memory access functions
+    if (GetFatEntryCache(id) == 0) {
+        s->open = (WavStrmOpenFn)OpenWavStrmFromFile;
+        s->close = (WavStrmCloseFn)CloseWavStrmFile;
+        s->read = (WavStrmReadFn)ReadWavStrmFile;
         s->done = (WavStrmDoneFn)func_0203a3b4;
     } else {
-        s->open = (WavStrmOpenFn)func_0203a3c4;
+        s->open = (WavStrmOpenFn)OpenWavStrmFromMemory;
         s->close = (WavStrmCloseFn)func_0203a3ec;
-        s->read = (WavStrmReadFn)func_0203a3f0;
+        s->read = (WavStrmReadFn)ReadWavStrmMemory;
         s->done = (WavStrmDoneFn)func_0203a40c;
     }
 }
 
-int func_0203a2f8(WavStrm *s, u32 id) {   // open from file
+int OpenWavStrmFromFile(WavStrm *s, u32 id) {   // open from file
     SndFileId fid;
-    if (func_020380e8(id, s->hdrPad, 0x40, 0) != 0x40) return 0;
-    fid = func_020381b0();
+    if (ReadFatEntryData(id, s->hdrPad, 0x40, 0) != 0x40) return 0;
+    fid = GetCurrentArcFileId();
     if (func_0200aa24(s->file, fid) == 0) return 0;
-    s->dataBase = func_02038098(id);
+    s->dataBase = GetFatEntryOffset(id);
     return 1;
 }
 
-int func_0203a36c(WavStrm *s) {
+int CloseWavStrmFile(WavStrm *s) {
     return func_0200aadc(s->file);
 }
 
-int func_0203a37c(WavStrm *s, void *dst, u32 len, u32 off) {
+int ReadWavStrmFile(WavStrm *s, void *dst, u32 len, u32 off) {
     func_0200ac40(s->file, s->dataBase + off, 0);
     return func_0200ac30(s->file, dst, len);
 }
@@ -594,8 +594,8 @@ int func_0203a3b4(WavStrm *s) {
     return func_0200abd8(s->file);
 }
 
-int func_0203a3c4(WavStrm *s, u32 id) {   // open from memory
-    s->dataBase = func_020381d0(id);
+int OpenWavStrmFromMemory(WavStrm *s, u32 id) {   // open from memory
+    s->dataBase = GetFatEntryCache(id);
     MI_CpuCopy8((void *)s->dataBase, s->hdrPad, 0x40);
     return 1;
 }
@@ -603,7 +603,7 @@ int func_0203a3c4(WavStrm *s, u32 id) {   // open from memory
 void func_0203a3ec(WavStrm *s) {
 }
 
-int func_0203a3f0(WavStrm *s, void *dst, u32 len, u32 off) {
+int ReadWavStrmMemory(WavStrm *s, void *dst, u32 len, u32 off) {
     MI_CpuCopy8((u8 *)s->dataBase + off, dst, len);
     return len;
 }
@@ -611,19 +611,19 @@ int func_0203a3f0(WavStrm *s, void *dst, u32 len, u32 off) {
 void func_0203a40c(WavStrm *s) {
 }
 
-void func_0203a410(WavStrmMgr *m) {   // decode thread
+void WavStrmThreadLoop(WavStrmMgr *m) {   // decode thread
     WavStrmCmd *c;
     for (;;) {
         OS_SleepThread(m->sleepQueue);
         for (;;) {
             OS_LockMutex(m->mutex);
-            c = func_020397f4(&m->cmds);
+            c = PopWavStrmCmd(&m->cmds);
             if (c == 0) {
                 OS_UnlockMutex(m->mutex);
                 break;
             }
-            func_02039a50(c);
-            func_02039844(c);
+            FillWavStrmBuffers(c);
+            FreeWavStrmCmd(c);
             OS_UnlockMutex(m->mutex);
         }
     }
@@ -638,31 +638,31 @@ WavStrmEnt *func_0203a460(WavStrmTable *t, int idx) {
     return &t->ent[idx];
 }
 
-void func_0203a4a0(SndLerp *l) {   // reset a ramp
+void ClearRamp(SndLerp *l) {   // reset a ramp
     l->target = 0;
     l->cur = 0;
     l->len = 0;
     l->pos = 0;
 }
 
-void func_0203a4b8(SndLerp *l, s32 target, s32 len) {   // start a ramp from the current value
-    l->cur = func_0203a4e0(l);
+void StartRamp(SndLerp *l, s32 target, s32 len) {   // start a ramp from the current value
+    l->cur = GetRampValue(l);
     l->target = target;
     l->len = len;
     l->pos = 0;
 }
 
-s32 func_0203a4e0(SndLerp *l) {   // current ramp value
+s32 GetRampValue(SndLerp *l) {   // current ramp value
     s32 from;
     if (l->pos >= l->len) return l->target;
     from = l->cur;
     return from + (l->target - from) * l->pos / l->len;
 }
 
-void func_0203a514(SndLerp *l) {   // advance a ramp
+void AdvanceRamp(SndLerp *l) {   // advance a ramp
     if (l->pos < l->len) l->pos++;
 }
 
-int func_0203a52c(SndLerp *l) {   // has the ramp finished
+int IsRampDone(SndLerp *l) {   // has the ramp finished
     return l->pos >= l->len;
 }

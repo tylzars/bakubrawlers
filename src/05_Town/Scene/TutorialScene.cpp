@@ -48,7 +48,7 @@ static const WindowCellRecord sTutorialThreeButtonCells[3] = {
 
 
 
-extern "C" void func_020383f8(u32 a);
+extern "C" void RecordSndHeapState(u32 a);
 void FillParkSlots();
 void SetupFourPlayerBattle();
 class TutorialScene;
@@ -134,7 +134,7 @@ void TutorialScene::Update() {
             if (a) {
                 SoundManager::Get().func_020245a4();
                 SoundManager::Get().LoadAndStartSeq(1);
-                func_020383f8(SoundManager::Get().mHeap);
+                RecordSndHeapState(SoundManager::Get().mHeap);
             }
             if (b) {
                 mState = 1;

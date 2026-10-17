@@ -68,7 +68,7 @@ u8 GetCardAttributeValue(u32 id, u32 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
-extern "C" void func_020383f8(u32 heap);
+extern "C" void RecordSndHeapState(u32 heap);
 extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
 extern "C" void GXS_SetGraphicsMode(u32 unk1);
 
@@ -169,7 +169,7 @@ BattleConfrontCard::~BattleConfrontCard() {
     if (!func_ov007_02263150(data_020d433c.mBattlePlayers)) {
         if (data_020d433c.mUnk_84) {
             SoundManager::Get().LoadAndStartSeq(1);
-            func_020383f8(SoundManager::Get().mHeap);
+            RecordSndHeapState(SoundManager::Get().mHeap);
         } else {
             func_ov007_022633f8(data_020d433c.mBattlePlayers);
         }

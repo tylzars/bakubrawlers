@@ -1,4 +1,4 @@
-// NitroSystem G3d node animation evaluation in ITCM (NNS_G3dGetAnm* family), 0x01ff9b64-0x01ffae0f.
+// NitroSystem G3d node animation evaluation in ITCM, 0x01ff9b64-0x01ffae0f.
 // Compiler: 2.0/sp2p2 reproduces the single-mla "x * 3 + y" 64-bit idiom of func_01ffa1cc; sp1p5 emits the
 // double-zero mla form, so this code was built with sp2p2 or later.
 #include <nnsys/private/g3d_rs.h>

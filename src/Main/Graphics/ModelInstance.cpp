@@ -3,12 +3,12 @@
 #include "Graphics/ModelInternal.hpp"
 #include <nitro/os.h>
 
-extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
+extern MtxFx33 data_02211430; // G3dGlb base rotation
 
 ModelInstance::ModelInstance(ModelFile *model) {
     mUseBoxTest = 1;
     mModelFile = model;
-    func_02031554(mRenderObj, model->mResModel);
+    InitRenderObj(mRenderObj, model->mResModel);
     mUserData = this;
     mExtraAnim = NULL;
     mAnim   = NULL;
@@ -74,7 +74,7 @@ void ModelInstance::StartAnim(u32 a, u32 b) {
     for (u8 i = 0; i < 5; i++) {
         NNSG3dAnmObj *obj = mAnim->GetAnimObj(i);
         if (obj != NULL) {
-            func_020316c8(mRenderObj, obj);
+            AddAnmObjToRenderObj(mRenderObj, obj);
         }
     }
     mAnim->mLoop = b;
@@ -114,7 +114,7 @@ void ModelInstance::DetachAllAnims() {
         for (u8 i = 0; i < 5; i++) {
             NNSG3dAnmObj *obj = mAnim->GetAnimObj(i);
             if (obj != NULL) {
-                func_020317bc(mRenderObj, obj);
+                RemoveAnmObjFromRenderObj(mRenderObj, obj);
             }
         }
     }
@@ -130,7 +130,7 @@ void ModelInstance::AttachExtraAnim(NNSG3dAnmObj *obj) {
     if (obj == NULL) {
         return;
     }
-    func_020316c8(mRenderObj, obj);
+    AddAnmObjToRenderObj(mRenderObj, obj);
     mExtraAnim     = obj;
     obj->mFrame = 0;
 }
@@ -139,7 +139,7 @@ void ModelInstance::DetachExtraAnim() {
     if (mExtraAnim == NULL) {
         return;
     }
-    func_020317bc(mRenderObj, mExtraAnim);
+    RemoveAnmObjFromRenderObj(mRenderObj, mExtraAnim);
     mExtraAnim = NULL;
 }
 
@@ -160,7 +160,7 @@ void ModelInstance::EnableCallbackMtx() {
         return;
     }
     mCallbackMtx = new MtxFx43[((u8 *) mModelFile->mResModel)[0x17]];
-    func_02031810(mRenderObj, StoreCallbackMtx, 0, 6, 3);
+    SetRenderObjCallback(mRenderObj, StoreCallbackMtx, 0, 6, 3);
     mCallbackMtxStored = 0;
 }
 
@@ -168,7 +168,7 @@ void ModelInstance::DisableCallbackMtx() {
     if (mCallbackMtx == NULL) {
         return;
     }
-    func_02031824(mRenderObj);
+    ClearRenderObjCallback(mRenderObj);
     delete[] mCallbackMtx;
     mCallbackMtx = NULL;
 }
@@ -208,10 +208,10 @@ BOOL ModelInstance::Draw(MtxFx43 *mtx, VecFx32 *pos) {
     if (mtx != NULL) {
         MI_Copy36B(mtx, &data_02211430);
         data_02211374.mFlags &= ~0xa4;
-        func_020322c0((VecFx32 *) &mtx->_[9]);
+        SetG3dGlbTrans((VecFx32 *) &mtx->_[9]);
     }
     if (pos != NULL) {
-        func_020322f0(pos);
+        SetG3dGlbScale(pos);
     }
     func_02032284();
     if (!BoxTest()) {

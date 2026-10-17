@@ -10,7 +10,7 @@ int func_020360c4(u32 key) { return 0; }
 
 typedef struct { u32 a, b, c[4]; } Ent;
 extern Ent data_020a58ac[5];
-void func_020360cc(u32 *out) {
+void SaveTexSlotRanges(u32 *out) {
     int i;
     for (i = 0; i < 5; i++) {
         out[i * 2] = data_020a58ac[i].a;
@@ -18,7 +18,7 @@ void func_020360cc(u32 *out) {
     }
 }
 
-void func_0203610c(u32 *in) {
+void RestoreTexSlotRanges(u32 *in) {
     int i;
     for (i = 0; i < 5; i++) {
         data_020a58ac[i].a = in[i * 2];
@@ -33,7 +33,7 @@ void func_0203610c(u32 *in) {
 #define PUSH(list, n) \
     { if ((list)->head) (list)->head->prev = (n); (n)->next = (list)->head; (n)->prev = 0; (list)->head = (n); }
 
-int func_0203614c(Man *man, Pool *pool, u32 *range) {
+int MergeAdjacentFreeRegions(Man *man, Pool *pool, u32 *range) {
     Node *n = man->head;
     Node *next;
     int ret = 0;
@@ -56,9 +56,9 @@ int func_0203614c(Man *man, Pool *pool, u32 *range) {
     return ret;
 }
 
-void func_02036230(Man *man) { man->head = 0; }
+void ClearFreeRegions(Man *man) { man->head = 0; }
 
-Node *func_0203623c(Node *mem, u32 n) {
+Node *ChainNodes(Node *mem, u32 n) {
     u32 i;
     Node *prev;
     for (i = 0; i < n - 1; i++) {
@@ -70,7 +70,7 @@ Node *func_0203623c(Node *mem, u32 n) {
     return mem;
 }
 
-int func_02036288(Man *man, Pool *pool, u32 start, u32 size) {
+int AddFreeRegion(Man *man, Pool *pool, u32 start, u32 size) {
     Node *n = pool->head;
     if (n) pool->head = n->next;
     if (n != 0) {
@@ -84,7 +84,7 @@ int func_02036288(Man *man, Pool *pool, u32 start, u32 size) {
     return 0;
 }
 
-int func_020362e4(Man *man, Pool *pool, u32 *out, u32 size, u32 align) {
+int AllocFromFreeRegions(Man *man, Pool *pool, u32 *out, u32 size, u32 align) {
     u32 start;
     u32 need;
     u32 pad;
@@ -129,14 +129,14 @@ fail:
     return 0;
 }
 
-void func_02036424(Man *man, Pool *pool) {
+void MergeAllFreeRegions(Man *man, Pool *pool) {
     u32 r[2];
     Node *n = man->head;
     if (n == 0) return;
     do {
         r[0] = n->start;
         r[1] = n->start + n->size;
-        if (func_0203614c(man, pool, r) == 0) {
+        if (MergeAdjacentFreeRegions(man, pool, r) == 0) {
             n = n->next;
         } else {
             n->start = r[0];
@@ -146,12 +146,12 @@ void func_02036424(Man *man, Pool *pool) {
     } while (n);
 }
 
-int func_020364a8(Man *man, Pool *pool, u32 start, u32 size) {
+int MergeAndAddFreeRegion(Man *man, Pool *pool, u32 start, u32 size) {
     u32 r[2];
     Node *n;
     r[0] = start;
     r[1] = start + size;
-    func_0203614c(man, pool, r);
+    MergeAdjacentFreeRegions(man, pool, r);
     n = pool->head;
     if (n) pool->head = n->next;
     if (n == 0) return 0;

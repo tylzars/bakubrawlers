@@ -63,9 +63,9 @@ extern void func_0203eda4(void);
 extern void func_0203edb0(void);
 extern void func_02048808(void *, int);
 extern void CriCopyString(char *, int, char *);
-extern void func_02037264(void *);
-extern int func_020372dc(void *, int, void *);
-extern void func_0203733c(void *);
+extern void InitSndStrm(void *);
+extern int ReserveSndStrmChannels(void *, int, void *);
+extern void UnreserveSndStrmChannels(void *);
 extern void SndOutStop(void *);
 extern void func_02012464(void *, int, int);
 
@@ -529,8 +529,8 @@ CriPool *func_02049b20(int a, int b, unsigned char c, ...)
     }
     if (i == 8) return 0;
     o = i * 0x90;
-    func_02037264(data_02218888[i].h34);
-    if (func_020372dc(data_02218888[i].h34, 1, &c) == 0) return 0;
+    InitSndStrm(data_02218888[i].h34);
+    if (ReserveSndStrmChannels(data_02218888[i].h34, 1, &c) == 0) return 0;
     r5 = a * 0x1800 + b;
     data_02218888[i].i4 = r5;
     data_02218888[i].i8 = 16;
@@ -544,7 +544,7 @@ void func_02049c04(CriPool *p)
 {
     if (p == 0 || p->used == 0) return;
     SndOutStop(p);
-    func_0203733c(p->h34);
+    UnreserveSndStrmChannels(p->h34);
     p->i30 = 0;
     p->used = 0;
 }

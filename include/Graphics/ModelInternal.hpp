@@ -61,11 +61,11 @@ struct NNSG3dResMdlSet {
     /* 08 */ NNSG3dResDict mDict;
 };
 
-extern "C" NNSG3dResMdlSet *func_02033598(void *file);
-extern "C" void func_0203209c(NNSG3dResMdlSet *set);
-extern "C" void func_02032fb4(void *file);
-extern "C" void func_02032d7c(void *file);
-extern "C" void func_02031fec(NNSG3dResMdlSet *set, NNSG3dResTex *tex);
+extern "C" NNSG3dResMdlSet *GetResMdlSet(void *file);
+extern "C" void RemoveResTexFromMdlSet(NNSG3dResMdlSet *set);
+extern "C" void ReleaseResFile(void *file);
+extern "C" void SetupResFile(void *file);
+extern "C" void ApplyResTexToMdlSet(NNSG3dResMdlSet *set, NNSG3dResTex *tex);
 
 // Animation resource set (the dictionary count is at +9) and a running animation object.
 struct NNSG3dResAnmSet {
@@ -88,9 +88,9 @@ extern "C" NNSG3dResAnmSet *func_020337f4(void *file);
 extern "C" NNSG3dResAnmSet *func_020337bc(void *file);
 extern "C" NNSG3dResAnmSet *func_020337d8(void *file);
 extern "C" void func_02031518(NNSG3dAnmObj *obj, u32 id);
-extern "C" void *func_020335e8(void *file, u32 index);
-extern "C" u32 func_02031418(void *anm, void *model);
-extern "C" void func_02031478(void *mem, void *anm, void *model, void *tex);
+extern "C" void *GetFirstBlockEntryTarget(void *file, u32 index);
+extern "C" u32 GetAnmObjSize(void *anm, void *model);
+extern "C" void InitAnmObj(void *mem, void *anm, void *model, void *tex);
 
 struct NNSG3dRenderObj {
     /* 00 */ u8 mUnk_00[0x2c];
@@ -110,16 +110,16 @@ struct NNSG3dRS {
     /* ae */ u8 mUnk_ae;
 };
 
-extern "C" void func_02031554(void *renderObj, void *model);
-extern "C" void func_020316c8(void *renderObj, NNSG3dAnmObj *obj);
-extern "C" void func_020317bc(void *renderObj, NNSG3dAnmObj *obj);
-extern "C" void func_02031810(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
-extern "C" void func_02031824(void *renderObj);
+extern "C" void InitRenderObj(void *renderObj, void *model);
+extern "C" void AddAnmObjToRenderObj(void *renderObj, NNSG3dAnmObj *obj);
+extern "C" void RemoveAnmObjFromRenderObj(void *renderObj, NNSG3dAnmObj *obj);
+extern "C" void SetRenderObjCallback(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
+extern "C" void ClearRenderObjCallback(void *renderObj);
 extern "C" void func_02032cc8(MtxFx43 *mtx, void *unk2);
 extern "C" void func_01ff92a4();
 extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
-extern "C" void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
-extern "C" void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
+extern "C" void SetG3dGlbTrans(const VecFx32 *trans);
+extern "C" void SetG3dGlbScale(const VecFx32 *scale);
 extern "C" void func_02032284();
 extern "C" void func_01ffb0ec(void *renderObj);
 

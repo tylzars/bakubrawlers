@@ -54,5 +54,5 @@ extern void GX_BeginLoadTexPltt(void);      // GX_BeginLoadTexPltt
 extern void GX_LoadTexPltt(const void *src, u32 offset, u32 size);  // GX_LoadTexPltt
 extern void GX_EndLoadTexPltt(void);      // GX_EndLoadTexPltt
 extern s32 FX_Div(s32 a, s32 b);   // FX_Div
-extern void *func_0203324c(Dict *dict, const char *name);
+extern void *FindDictEntryByName(Dict *dict, const char *name);
 #endif

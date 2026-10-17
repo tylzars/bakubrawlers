@@ -11,9 +11,9 @@ extern SndCaptureBlk data_022143b4;
 extern SndCapture data_022143fc;
 extern u8 data_022143bc[];
 
-extern s32 func_0203a4e0(SndRamp *r);
-extern void func_0203a514(SndRamp *r);
-extern int func_0203a52c(SndRamp *r);
+extern s32 GetRampValue(SndRamp *r);
+extern void AdvanceRamp(SndRamp *r);
+extern int IsRampDone(SndRamp *r);
 extern void func_02008118(u32 mask, u32 a, u32 b);
 extern void func_02008034(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
 extern void func_0200800c(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
@@ -23,34 +23,34 @@ extern void SND_WaitForCommandProc(u32);
 extern int OS_ReceiveMessage(void *, u32, u32);
 extern void func_0200822c(u32, u32, u32, u32);
 extern void func_02036878(u32 mask);
-extern void func_02036848(u32 mask);
-extern void func_020368dc(int slot);
+extern void UnreserveChannels(u32 mask);
+extern void ReleaseSndResBitIndex(int slot);
 extern void MIi_CpuClear32(u32 data, void *dest, u32 size);
 extern void DC_FlushRange(void *, u32);
-void func_02037924(void);
+void StopSndCapture(void);
 
-void func_02037884(void) {   // init
+void InitSndCapture(void) {   // init
     data_022143b4.first = 0;
     data_022143b4.cap.active = 0;
 }
 
-void func_0203789c(void) {   // per-frame volume update
+void UpdateSndCapture(void) {   // per-frame volume update
     SndCapture *c = &data_022143fc;
     s32 v;
     if (data_022143b4.cap.active == 0) return;
     if (c->mode != 0) return;
-    func_0203a514(&c->ramp);
-    if (c->rampOn != 0 && func_0203a52c(&c->ramp) != 0) {
-        func_02037924();
+    AdvanceRamp(&c->ramp);
+    if (c->rampOn != 0 && IsRampDone(&c->ramp) != 0) {
+        StopSndCapture();
         return;
     }
-    v = func_0203a4e0(&c->ramp) >> 8;
+    v = GetRampValue(&c->ramp) >> 8;
     if (v == c->lastVol) return;
     func_02008118(c->chMask, v, 0);
     c->lastVol = v;
 }
 
-void func_02037924(void) {   // stop
+void StopSndCapture(void) {   // stop
     SndCapture *c = &data_022143fc;
     int use;
     u32 mask;
@@ -65,8 +65,8 @@ void func_02037924(void) {   // stop
         while (OS_ReceiveMessage(data_022143bc, 0, 0) != 0) {}
     }
     if (c->capSlots != 0) func_02036878(c->capSlots);
-    if (c->capMask != 0) func_02036848(c->capMask);
-    if (use) func_020368dc(c->alarm);
+    if (c->capMask != 0) UnreserveChannels(c->capMask);
+    if (use) ReleaseSndResBitIndex(c->alarm);
     if (c->mode == 1) func_0200822c(0, 0, 0, 0);
     c->active = 0;
 }

@@ -21,18 +21,18 @@ static inline void SetGroup(MBlock *b, u8 g) { b->attr &= ~0xff; b->attr |= g & 
 
 static inline u16 GetAllocMode(ExpHeap *h) { return h->body.flags & 1; }
 static inline u16 GetOpt(NNSFndHeapHead *h) { return h->opts & 0xff; }
-void func_02030b7c(MBRegion *r, MBlock *b) {   // block's region incl. alignment padding
+void GetMBlockRegion(MBRegion *r, MBlock *b) {   // block's region incl. alignment padding
     r->start = (u32)b - GetAlign(b);
     r->end = b->size + ((u32)b + 0x10);
 }
-MBlock *func_02030ba8(MBList *l, MBlock *b) {   // unlink, returns previous
+MBlock *UnlinkMBlock(MBList *l, MBlock *b) {   // unlink, returns previous
     MBlock *prev = b->prev;
     MBlock *next = b->next;
     if (prev) prev->next = next; else l->head = next;
     if (next) next->prev = prev; else l->tail = prev;
     return prev;
 }
-MBlock *func_02030bd0(MBList *l, MBlock *b, MBlock *prev) {   // link after prev
+MBlock *LinkMBlockAfter(MBList *l, MBlock *b, MBlock *prev) {   // link after prev
     MBlock *next;
     b->prev = prev;
     if (prev) { next = prev->next; prev->next = b; }
@@ -41,7 +41,7 @@ MBlock *func_02030bd0(MBList *l, MBlock *b, MBlock *prev) {   // link after prev
     if (next) next->prev = b; else l->tail = b;
     return b;
 }
-MBlock *func_02030c00(MBRegion *r, u16 sig) {   // make a block header at the start of a region
+MBlock *InitMBlockAtRegionStart(MBRegion *r, u16 sig) {   // make a block header at the start of a region
     MBlock *b = (MBlock *)r->start;
     b->magic = sig;
     b->attr = 0;
@@ -50,24 +50,24 @@ MBlock *func_02030c00(MBRegion *r, u16 sig) {   // make a block header at the st
     b->next = 0;
     return b;
 }
-u32 func_02030c2c(ExpBody *h, MBlock *freeBlk, u32 mem, u32 size, u16 dir) {
+u32 CarveUsedMBlock(ExpBody *h, MBlock *freeBlk, u32 mem, u32 size, u16 dir) {
     MBRegion front, rear, used;
     MBlock *prev, *b;
     u32 head;
     u32 tail;
     u32 rearEnd;
-    func_02030b7c(&front, freeBlk);
+    GetMBlockRegion(&front, freeBlk);
     head = mem - 0x10;
     tail = size + mem;
     rearEnd = front.end;
     front.end = head;
     rear.end = rearEnd;
     rear.start = tail;
-    prev = func_02030ba8(&h->freeList, freeBlk);
+    prev = UnlinkMBlock(&h->freeList, freeBlk);
     if (front.end - front.start < 0x14) front.end = front.start;
-    else prev = func_02030bd0(&h->freeList, func_02030c00(&front, 0x4652), prev);
+    else prev = LinkMBlockAfter(&h->freeList, InitMBlockAtRegionStart(&front, 0x4652), prev);
     if (rear.end - rear.start < 0x14) rear.start = rear.end;
-    else func_02030bd0(&h->freeList, func_02030c00(&rear, 0x4652), prev);
+    else LinkMBlockAfter(&h->freeList, InitMBlockAtRegionStart(&rear, 0x4652), prev);
     {
         void *clr = (void *)front.end;
         u32 n = rear.start - front.end;
@@ -75,15 +75,15 @@ u32 func_02030c2c(ExpBody *h, MBlock *freeBlk, u32 mem, u32 size, u16 dir) {
     }
     used.start = head;
     used.end = rear.start;
-    b = func_02030c00(&used, 0x5544);
+    b = InitMBlockAtRegionStart(&used, 0x5544);
     SetDir(b, dir);
     SetAlign(b, (u32)b - front.end);
     SetGroup(b, h->group);
-    func_02030bd0(&h->usedList, b, h->usedList.tail);
+    LinkMBlockAfter(&h->usedList, b, h->usedList.tail);
     return mem;
 }
 
-void *func_02030dac(ExpHeap *h, u32 size, u32 align) {   // allocate from the head end
+void *AllocFromExpFreeListHead(ExpHeap *h, u32 size, u32 align) {   // allocate from the head end
     MBlock *b;
     BOOL firstFit = GetAllocMode(h) == 0;
     MBlock *best = 0;
@@ -100,9 +100,9 @@ void *func_02030dac(ExpHeap *h, u32 size, u32 align) {   // allocate from the he
         }
     }
     if (!best) return 0;
-    return (void *)func_02030c2c(&h->body, best, bestAddr, size, 0);
+    return (void *)CarveUsedMBlock(&h->body, best, bestAddr, size, 0);
 }
-void *func_02030e60(ExpHeap *h, u32 size, u32 align) {   // allocate from the tail end
+void *AllocFromExpFreeListTail(ExpHeap *h, u32 size, u32 align) {   // allocate from the tail end
     MBlock *b;
     BOOL firstFit = GetAllocMode(h) == 0;
     MBlock *best = 0;
@@ -120,10 +120,10 @@ void *func_02030e60(ExpHeap *h, u32 size, u32 align) {   // allocate from the ta
         }
     }
     if (!best) return 0;
-    return (void *)func_02030c2c(&h->body, best, bestAddr, size, 1);
+    return (void *)CarveUsedMBlock(&h->body, best, bestAddr, size, 1);
 }
 
-BOOL func_02030f10(ExpBody *h, MBRegion *r) {   // give a region back to the free list, merging neighbours
+BOOL MergeRegionIntoFreeList(ExpBody *h, MBRegion *r) {   // give a region back to the free list, merging neighbours
     MBRegion reg = *r;
     MBlock *prev = 0;
     MBlock *b;
@@ -131,7 +131,7 @@ BOOL func_02030f10(ExpBody *h, MBRegion *r) {   // give a region back to the fre
         if ((u32)b < r->start) { prev = b; continue; }
         if ((u32)b == r->end) {
             reg.end = b->size + ((u32)b + 0x10);
-            func_02030ba8(&h->freeList, b);
+            UnlinkMBlock(&h->freeList, b);
         }
         break;
     }
@@ -139,39 +139,39 @@ BOOL func_02030f10(ExpBody *h, MBRegion *r) {   // give a region back to the fre
         u32 pe = prev->size + ((u32)prev + 0x10);
         if (pe == r->start) {
             reg.start = (u32)prev;
-            prev = func_02030ba8(&h->freeList, prev);
+            prev = UnlinkMBlock(&h->freeList, prev);
         }
     }
     if (reg.end - reg.start < 0x10) return 0;
-    func_02030bd0(&h->freeList, func_02030c00(&reg, 0x4652), prev);
+    LinkMBlockAfter(&h->freeList, InitMBlockAtRegionStart(&reg, 0x4652), prev);
     return 1;
 }
-void *func_02031000(ExpHeap *h, u32 size, s32 align) {   // NNS_FndAllocFromExpHeapEx
+void *ExpHeapAlloc(ExpHeap *h, u32 size, s32 align) {
     if (size == 0) size = 1;
     size = (size + 3) & ~3;
-    if (align >= 0) return func_02030dac(h, size, align);
-    return func_02030e60(h, size, -align);
+    if (align >= 0) return AllocFromExpFreeListHead(h, size, align);
+    return AllocFromExpFreeListTail(h, size, -align);
 }
-void func_02031030(ExpHeap *h, void *p) {   // NNS_FndFreeToExpHeap
+void ExpHeapFree(ExpHeap *h, void *p) {
     MBlock *b = (MBlock *)((u8 *)p - 0x10);
     MBRegion reg;
-    func_02030b7c(&reg, b);
-    func_02030ba8(&h->body.usedList, b);
-    func_02030f10(&h->body, &reg);
+    GetMBlockRegion(&reg, b);
+    UnlinkMBlock(&h->body.usedList, b);
+    MergeRegionIntoFreeList(&h->body, &reg);
 }
 
 typedef struct FrmState { u32 tag; void *head; void *tail; struct FrmState *next; } FrmState;
 typedef struct { void *head; void *tail; FrmState *state; } FrmBody;
 typedef struct { NNSFndHeapHead head; FrmBody body; } FrmHeap;
 
-FrmHeap *func_0203106c(FrmHeap *h, void *end, u16 opt) {   // create a frame heap over [h, end)
-    func_02030ae8(&h->head, 0x46524d48, (u8 *)h + 0x30, end, opt);
+FrmHeap *InitFrmHeapAt(FrmHeap *h, void *end, u16 opt) {   // create a frame heap over [h, end)
+    InitAndLinkHeapHead(&h->head, 0x46524d48, (u8 *)h + 0x30, end, opt);
     h->body.head = h->head.start;
     h->body.tail = h->head.end;
     h->body.state = 0;
     return h;
 }
-void *func_020310b4(FrmBody *f, u32 size, u32 align) {   // allocate from the head end
+void *AllocAtFrmHead(FrmBody *f, u32 size, u32 align) {   // allocate from the head end
     u32 oldHead = (u32)f->head;
     u32 start = (align - 1 + oldHead) & ~(align - 1);
     u32 newHead = size + start;
@@ -182,7 +182,7 @@ void *func_020310b4(FrmBody *f, u32 size, u32 align) {   // allocate from the he
     f->head = (void *)newHead;
     return (void *)start;
 }
-void *func_02031110(FrmBody *f, u32 size, u32 align) {   // allocate from the tail end
+void *AllocAtFrmTail(FrmBody *f, u32 size, u32 align) {   // allocate from the tail end
     u32 tail = (u32)f->tail;
     u32 start = (tail - size) & ~(align - 1);
     u32 n;
@@ -192,35 +192,35 @@ void *func_02031110(FrmBody *f, u32 size, u32 align) {   // allocate from the ta
     f->tail = (void *)start;
     return (void *)start;
 }
-void func_02031168(FrmHeap *h) {   // free the head end
+void ResetFrmHeadAndStates(FrmHeap *h) {   // free the head end
     h->body.head = h->head.start;
     h->body.state = 0;
 }
-void func_0203117c(FrmHeap *h) {   // free the tail end
+void ResetFrmTailAndStateTails(FrmHeap *h) {   // free the tail end
     FrmState *s;
     for (s = h->body.state; s; s = s->next) s->tail = h->head.end;
     h->body.tail = h->head.end;
 }
-FrmHeap *func_020311a8(u32 start, u32 size, u16 opt) {   // NNS_FndCreateFrmHeapEx
+FrmHeap *CreateFrmHeapInRange(u32 start, u32 size, u16 opt) {
     u32 end = (size + start) & ~3;
     start = (start + 3) & ~3;
     if (start > end || end - start < 0x30) return 0;
-    return func_0203106c((FrmHeap *)start, (void *)end, opt);
+    return InitFrmHeapAt((FrmHeap *)start, (void *)end, opt);
 }
-void func_020311e0(NNSFndHeapHead *h) { func_02030b64(h); }   // destroy
-void *func_020311ec(FrmHeap *h, u32 size, s32 align) {   // NNS_FndAllocFromFrmHeapEx
+void UnlinkFrmHeap(NNSFndHeapHead *h) { UnlinkHeapHead(h); }   // destroy
+void *FrmHeapAlloc(FrmHeap *h, u32 size, s32 align) {
     if (size == 0) size = 1;
     size = (size + 3) & ~3;
-    if (align >= 0) return func_020310b4(&h->body, size, align);
-    return func_02031110(&h->body, size, -align);
+    if (align >= 0) return AllocAtFrmHead(&h->body, size, align);
+    return AllocAtFrmTail(&h->body, size, -align);
 }
-void func_02031220(FrmHeap *h, u32 mode) {   // NNS_FndFreeToFrmHeap
-    if (mode & 1) func_02031168(h);
-    if (mode & 2) func_0203117c(h);
+void ResetFrmHeapByMask(FrmHeap *h, u32 mode) {
+    if (mode & 1) ResetFrmHeadAndStates(h);
+    if (mode & 2) ResetFrmTailAndStateTails(h);
 }
-BOOL func_0203124c(FrmHeap *h, u32 tag) {   // NNS_FndRecordStateForFrmHeap
+BOOL PushFrmState(FrmHeap *h, u32 tag) {
     void *oldHead = h->body.head;
-    FrmState *s = func_020310b4(&h->body, 0x10, 4);
+    FrmState *s = AllocAtFrmHead(&h->body, 0x10, 4);
     if (!s) return 0;
     s->tag = tag;
     s->head = oldHead;
@@ -229,7 +229,7 @@ BOOL func_0203124c(FrmHeap *h, u32 tag) {   // NNS_FndRecordStateForFrmHeap
     h->body.state = s;
     return 1;
 }
-BOOL func_0203129c(FrmHeap *h, u32 tag) {   // NNS_FndFreeByStateToFrmHeap
+BOOL RestoreFrmState(FrmHeap *h, u32 tag) {
     FrmState *s = h->body.state;
     if (tag != 0 && s != 0) {
         do {
@@ -245,37 +245,37 @@ BOOL func_0203129c(FrmHeap *h, u32 tag) {   // NNS_FndFreeByStateToFrmHeap
 }
 
 typedef struct { NNSFndHeapHead head; void *freeList; u32 unitSize; } UnitHeap;
-void *func_020312ec(void **list) {   // pop a unit from the free list
+void *PopFreeNode(void **list) {   // pop a unit from the free list
     void *n = *list;
     if (n) *list = *(void **)n;
     return n;
 }
-void *func_02031304(UnitHeap *h) {
+void *UnitHeapAlloc(UnitHeap *h) {
     void *n;
-    n = func_020312ec(&h->freeList);
+    n = PopFreeNode(&h->freeList);
     if (n) { u32 sz = h->unitSize; if (GetOpt(&h->head) & 1) MIi_CpuClear32(0, n, sz); }
     return n;
 }
-void func_02031344(UnitHeap *h, void *blk) {   // NNS_FndFreeToUnitHeap
+void UnitHeapFree(UnitHeap *h, void *blk) {
     *(void **)blk = h->freeList;
     h->freeList = blk;
 }
 
 typedef struct { const void *func; void *heap; s32 param1; s32 param2; } NNSFndAllocator;
-void *func_02031354(NNSFndAllocator *a, u32 size) { return func_02031000(a->heap, size, a->param1); }
-void func_02031368(NNSFndAllocator *a, void *p) { func_02031030(a->heap, p); }
-void *func_02031378(NNSFndAllocator *a, u32 size) { return func_020311ec(a->heap, size, a->param1); }
+void *ExpAllocatorAlloc(NNSFndAllocator *a, u32 size) { return ExpHeapAlloc(a->heap, size, a->param1); }
+void ExpAllocatorFree(NNSFndAllocator *a, void *p) { ExpHeapFree(a->heap, p); }
+void *FrmAllocatorAlloc(NNSFndAllocator *a, u32 size) { return FrmHeapAlloc(a->heap, size, a->param1); }
 void func_0203138c(void) {}
-void *func_02031390(NNSFndAllocator *a, u32 size) {
+void *UnitAllocatorAlloc(NNSFndAllocator *a, u32 size) {
     UnitHeap *h = a->heap;
     if (size > h->unitSize) return 0;
-    return func_02031304(h);
+    return UnitHeapAlloc(h);
 }
-void func_020313b0(NNSFndAllocator *a, void *p) { func_02031344(a->heap, p); }
-void *func_020313c0(NNSFndAllocator *a, u32 size) { return OS_AllocFromHeap(a->param1, (int)a->heap, size); }
-void func_020313dc(NNSFndAllocator *a, void *p) { OS_FreeToHeap(a->param1, (int)a->heap, p); }
+void UnitAllocatorFree(NNSFndAllocator *a, void *p) { UnitHeapFree(a->heap, p); }
+void *OSHeapAllocatorAlloc(NNSFndAllocator *a, u32 size) { return OS_AllocFromHeap(a->param1, (int)a->heap, size); }
+void OSHeapAllocatorFree(NNSFndAllocator *a, void *p) { OS_FreeToHeap(a->param1, (int)a->heap, p); }
 extern const u8 data_02090a58[];
-void func_020313f8(NNSFndAllocator *a, s32 arena, void *heap) {   // allocator over an OS heap
+void InitOSHeapAllocator(NNSFndAllocator *a, s32 arena, void *heap) {   // allocator over an OS heap
     a->func = data_02090a58;
     a->heap = heap;
     a->param1 = arena;

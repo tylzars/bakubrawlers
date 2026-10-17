@@ -29,8 +29,8 @@ extern "C" void DC_FlushRange(void *buffer, u32 size);
 void SetNoStorytalkMessage(StorytalkWindow *object);
 extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
-extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
-extern "C" void func_02038444(u32 a, u32 b);
+extern "C" void SaveTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void RestoreSndHeapState(u32 a, u32 b);
 
 void FillParkSlots();
 
@@ -154,7 +154,7 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
     data_020d433c.mUnk_7a = 1;
     if (data_020d433c.mUnk_84 != 0) {
-        func_02038444(SoundManager::Get().mHeap, 2);
+        RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().func_020245a4();
     }
@@ -199,7 +199,7 @@ ScriptPlayer::~ScriptPlayer() {
 void ScriptPlayer::func_020666d8() {
     SpriteManager::Get().func_0202740c();
     UnkStruct_SpriteManager_28 slot;
-    func_020360cc(&slot);
+    SaveTexSlotRanges(&slot);
     for (u8 i = 0; i < 8; i++) {
         for (u8 j = 0; j < 6; j++) {
             slot.mUnk_00[j] = data_020a23cc[i][j];

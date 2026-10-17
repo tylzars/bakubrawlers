@@ -1,4 +1,4 @@
-// NitroSystem G3d SBC renderer (NNS_G3dRenderSbc and its opcode handlers), ITCM 0x01ffae10-0x01ffc93c.
+// NitroSystem G3d SBC renderer and its opcode handlers, ITCM 0x01ffae10-0x01ffc93c.
 // Compiler: 2.0/sp1p5 (same bytes on sp2p2).
 #include <nnsys/private/g3d_rs.h>
 

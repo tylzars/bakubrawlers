@@ -8,13 +8,13 @@ extern void func_0200a7b4(void *file);
 extern int func_0200aa24(void *file, SndFileId id);
 extern int func_0200ac40(void *file, u32 pos, u32 whence);
 extern int func_0200ac30(void *file, void *dst, u32 len);
-extern void *func_02038390(void *heap, u32 size, void *cb, void *arg, u32 flags);
-extern void func_02038228(void);
-extern void func_02038234(void);
-extern void func_02038240(void);
-int func_02037b78(SndArc *arc, void *heap, u32 flag);
+extern void *AllocSndHeapBlock(void *heap, u32 size, void *cb, void *arg, u32 flags);
+extern void ArcInfoFreeCallback(void);
+extern void ArcFatFreeCallback(void);
+extern void ArcSymbFreeCallback(void);
+int LoadSndArcBlocks(SndArc *arc, void *heap, u32 flag);
 
-void func_02037af8(SndArc *arc, const char *path, void *heap, u32 flag) {   // open an archive
+void OpenSndArc(SndArc *arc, const char *path, void *heap, u32 flag) {   // open an archive
     arc->info = 0;
     arc->fat = 0;
     arc->symb = 0;
@@ -23,29 +23,29 @@ void func_02037af8(SndArc *arc, const char *path, void *heap, u32 flag) {   // o
     func_0200a7b4(arc->file);
     if (func_0200aa24(arc->file, arc->fileId) == 0) return;
     arc->opened = 1;
-    if (func_02037b78(arc, heap, flag) != 0) {
+    if (LoadSndArcBlocks(arc, heap, flag) != 0) {
         data_022149b0 = arc;
     }
 }
 
 // load the archive's blocks
-int func_02037b78(SndArc *arc, void *heap, u32 flag) {
+int LoadSndArcBlocks(SndArc *arc, void *heap, u32 flag) {
     int n;
     if (func_0200ac40(arc->file, 0, 0) == 0) return 0;
     if (func_0200ac30(arc->file, arc, 0x30) != 0x30) return 0;
     if (heap != 0) {
-        arc->info = func_02038390(heap, arc->infoSize, func_02038228, arc, 0);
+        arc->info = AllocSndHeapBlock(heap, arc->infoSize, ArcInfoFreeCallback, arc, 0);
         if (arc->info == 0) return 0;
         if (func_0200ac40(arc->file, arc->infoOff, 0) == 0) return 0;
         n = func_0200ac30(arc->file, arc->info, arc->infoSize);
         if (n == arc->infoSize) {} else return 0;
-        arc->fat = func_02038390(heap, arc->fatSize, func_02038234, arc, 0);
+        arc->fat = AllocSndHeapBlock(heap, arc->fatSize, ArcFatFreeCallback, arc, 0);
         if (arc->fat == 0) return 0;
         if (func_0200ac40(arc->file, arc->fatOff, 0) == 0) return 0;
         n = func_0200ac30(arc->file, arc->fat, arc->fatSize);
         if (n == arc->fatSize) {} else return 0;
         if (flag != 0 && arc->symbSize != 0) {
-            arc->symb = func_02038390(heap, arc->symbSize, func_02038240, arc, 0);
+            arc->symb = AllocSndHeapBlock(heap, arc->symbSize, ArcSymbFreeCallback, arc, 0);
             if (arc->symb == 0) return 0;
             if (func_0200ac40(arc->file, arc->symbOff, 0) == 0) return 0;
             n = func_0200ac30(arc->file, arc->symb, arc->symbSize);
@@ -55,13 +55,13 @@ int func_02037b78(SndArc *arc, void *heap, u32 flag) {
     return 1;
 }
 
-SndArc *func_02037d50(SndArc *arc) {   // set current archive, return the old one
+SndArc *SetCurrentSndArc(SndArc *arc) {   // set current archive, return the old one
     SndArc *old = data_022149b0;
     data_022149b0 = arc;
     return old;
 }
 
-SndArc *func_02037d68(void) {   // current archive
+SndArc *GetCurrentSndArc(void) {   // current archive
     return data_022149b0;
 }
 
@@ -76,7 +76,7 @@ static inline void *InfoPtr(void *base, u32 off) { return off == 0 ? 0 : (u8 *)b
     if (idx >= t->count) return 0; \
     return InfoPtr(arc->info, t->off[idx]);
 
-void *func_02037d78(int idx) {   // INFO sequence record
+void *GetSeqInfo(int idx) {   // INFO sequence record
     INFO_LOOKUP(0x8)
 }
 
@@ -84,43 +84,43 @@ void *func_02037ddc(int idx) {   // INFO sequence archive record
     INFO_LOOKUP(0xc)
 }
 
-void *func_02037e40(int idx) {   // INFO bank record
+void *GetBankInfo(int idx) {   // INFO bank record
     INFO_LOOKUP(0x10)
 }
 
-void *func_02037ea4(int idx) {   // INFO wave archive record
+void *GetWaveArcInfo(int idx) {   // INFO wave archive record
     INFO_LOOKUP(0x14)
 }
 
-void *func_02037f08(int idx) {   // INFO stream record
+void *GetWavStrmFileInfo(int idx) {   // INFO stream record
     INFO_LOOKUP(0x24)
 }
 
-void *func_02037f6c(int idx) {   // INFO player record
+void *GetPlayerInfo(int idx) {   // INFO player record
     INFO_LOOKUP(0x18)
 }
 
-void *func_02037fd0(int idx) {   // INFO stream player record
+void *GetWavStrmChannelInfo(int idx) {   // INFO stream player record
     INFO_LOOKUP(0x20)
 }
 
-void *func_02038034(int idx) {   // INFO group record
+void *GetGroupInfo(int idx) {   // INFO group record
     INFO_LOOKUP(0x1c)
 }
 
-u32 func_02038098(u32 idx) {   // FAT entry offset
+u32 GetFatEntryOffset(u32 idx) {   // FAT entry offset
     SndArcFat *fat = data_022149b0->fat;
     if (idx >= fat->count) return 0;
     return fat->ent[idx].offset;
 }
 
-u32 func_020380c0(u32 idx) {   // FAT entry size
+u32 GetFatEntrySize(u32 idx) {   // FAT entry size
     SndArcFat *fat = data_022149b0->fat;
     if (idx >= fat->count) return 0;
     return fat->ent[idx].size;
 }
 
-int func_020380e8(u32 idx, void *dst, int len, u32 off) {
+int ReadFatEntryData(u32 idx, void *dst, int len, u32 off) {
     int total;
     SndArc *arc;
     SndArcFatEnt *ent;

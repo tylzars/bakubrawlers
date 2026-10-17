@@ -8,56 +8,56 @@ extern u8 data_022115dc_h[];   // the manager again under a second name: the bin
 extern u32 (*data_020a5888)(u32 size, int is4pltt, u32 opt);
 extern int (*data_020a588c)(u32 key);
 
-extern u32 func_0203623c(void *mem, u32 n);
-extern void func_02036230(void *man);
-extern void func_02036288(void *man, void *tbl, u32 a, u32 base);
-extern void func_02036424(void *man, void *tbl);
-extern int func_020362e4(void *man, void *tbl, u32 *out, u32 size, u32 align);
-extern int func_020364a8(void *man, void *tbl, u32 pos, u32 size);
+extern u32 ChainNodes(void *mem, u32 n);
+extern void ClearFreeRegions(void *man);
+extern void AddFreeRegion(void *man, void *tbl, u32 a, u32 base);
+extern void MergeAllFreeRegions(void *man, void *tbl);
+extern int AllocFromFreeRegions(void *man, void *tbl, u32 *out, u32 size, u32 align);
+extern int MergeAndAddFreeRegion(void *man, void *tbl, u32 pos, u32 size);
 
-u32 func_0203658c(u32 size, int is4x4, u32 opt);
-int func_02036658(u32 key);
-void func_0203669c(void);
+u32 AllocPlttLnkKey(u32 size, int is4x4, u32 opt);
+int FreePlttLnkKey(u32 key);
+void ResetPlttLnkMan(void);
 
-void func_02036538(u32 base, void *mem, u32 memSize, u32 install) {   // initialise the link-list VRAM manager, optionally hook it as the allocator
+void SetupPlttLnkMan(u32 base, void *mem, u32 memSize, u32 install) {   // initialise the link-list VRAM manager, optionally hook it as the allocator
     data_022115dc.vramBase = base;
     data_022115dc.mem = mem;
     data_022115dc.memSize = memSize;
-    func_0203669c();
+    ResetPlttLnkMan();
     if (install) {
-        data_020a5888 = func_0203658c;
-        data_020a588c = func_02036658;
+        data_020a5888 = AllocPlttLnkKey;
+        data_020a588c = FreePlttLnkKey;
     }
 }
 
-u32 func_0203658c(u32 size, int is4x4, u32 opt) {   // allocate a texture / palette block, returns packed key
+u32 AllocPlttLnkKey(u32 size, int is4x4, u32 opt) {   // allocate a texture / palette block, returns packed key
     u32 pos;
     u32 sz;
     int ok;
     if (size == 0) sz = 8; else sz = (size + 7) & ~7;
     if (sz >= 0x7fff8) return 0;
     if (is4x4) {
-        ok = func_020362e4(&data_022115dc, data_022115e0, &pos, sz, 8);
+        ok = AllocFromFreeRegions(&data_022115dc, data_022115e0, &pos, sz, 8);
         if (pos + sz > 0x10000) {
-            func_020364a8(&data_022115dc, data_022115e0, pos, sz);
+            MergeAndAddFreeRegion(&data_022115dc, data_022115e0, pos, sz);
             return 0;
         }
     } else {
-        ok = func_020362e4(&data_022115dc, data_022115e0, &pos, sz, 16);
+        ok = AllocFromFreeRegions(&data_022115dc, data_022115e0, &pos, sz, 16);
     }
     if (ok == 0) return 0;
     return ((sz >> 3) << 16) | ((pos << 13) >> 16);
 }
 
-int func_02036658(u32 key) {   // free by key
+int FreePlttLnkKey(u32 key) {   // free by key
     u32 pos = (key & 0xffff0000) >> 16;
     u32 sz = key << 16;
-    return func_020364a8(&data_022115dc, data_022115e0, sz >> 13, pos << 3) == 0;
+    return MergeAndAddFreeRegion(&data_022115dc, data_022115e0, sz >> 13, pos << 3) == 0;
 }
 
-void func_0203669c(void) {   // reset
-    data_022115dc.pad4 = func_0203623c(data_022115dc.mem, data_022115dc.memSize >> 4);
-    func_02036230(data_022115dc_h);
-    func_02036288(data_022115dc_h, data_022115e0, 0, data_022115dc.vramBase);
-    func_02036424(data_022115dc_h, data_022115e0);
+void ResetPlttLnkMan(void) {   // reset
+    data_022115dc.pad4 = ChainNodes(data_022115dc.mem, data_022115dc.memSize >> 4);
+    ClearFreeRegions(data_022115dc_h);
+    AddFreeRegion(data_022115dc_h, data_022115e0, 0, data_022115dc.vramBase);
+    MergeAllFreeRegions(data_022115dc_h, data_022115e0);
 }

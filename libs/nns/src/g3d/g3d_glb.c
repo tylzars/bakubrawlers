@@ -1,4 +1,4 @@
-// NitroSystem G3d: global state (NNS_G3dGlb*), matrix helpers, resource setup. 0x02032130-0x02033574
+// NitroSystem G3d: global state (G3dGlb), matrix helpers, resource setup. 0x02032130-0x02033574
 #include <nnsys/private/nns_g3d.h>
 #define U16(p, o) (*(u16 *)((u8 *)(p) + (o)))
 #define U32(p, o) (*(u32 *)((u8 *)(p) + (o)))
@@ -22,7 +22,7 @@ extern void VEC_CrossProduct(void *a, void *b, void *dst);   // VEC_CrossProduct
 extern void VEC_Normalize(void *src, void *dst);   // VEC_Normalize
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
-// G3d global state (NNS_G3dGlb): one struct, which every access fits; the base translation/scale and the dirty flags sit at 0xe0/0xec/0xfc.
+// G3d global state (G3dGlb): one struct, which every access fits; the base translation/scale and the dirty flags sit at 0xe0/0xec/0xfc.
 typedef struct { s32 x, y, z; } VecFx32;
 typedef union { u32 w[0x99]; struct { u32 pad0[0x38]; VecFx32 trans; VecFx32 scale; u32 pad; u32 flag; } s; } G3dGlb;
 extern G3dGlb data_02211374;
@@ -31,7 +31,7 @@ extern G3dGlb data_02211374_b;   // same address as data_02211374: the second li
 extern u8 data_0221137c[], data_022113c0[], data_02211430[], data_02211474[], data_022114a4[], data_022114d4[], data_02211534[], data_02211574[];
 extern u32 data_022113f4[], data_0221141c[];
 
-void func_02032130(void) {   // NNS_G3dGlbInit
+void InitG3dGlb(void) {
     u32 *g = GU;
     g[0] = 0x17101610;
     g[1] = 0;
@@ -73,34 +73,34 @@ void func_02032130(void) {   // NNS_G3dGlbInit
     g[0x258 / 4] = 0;
     g[0x260 / 4] = -0x1000;
 }
-void func_02032284(void) {   // NNS_G3dGlbFlushP
+void func_02032284(void) {
     func_01ff93d8(GU[0], (u32 *)&data_02211374_b + 1, 0x3e);
     GU[0xfc / 4] &= ~1;
     GU[0xfc / 4] &= ~2;
 }
-void func_020322c0(const VecFx32 *trans) {   // NNS_G3dGlbSetBaseTrans
+void SetG3dGlbTrans(const VecFx32 *trans) {
     if (trans == 0) return;
     data_02211374.s.trans = *trans;
     data_02211374.s.flag &= ~0xa4;
 }
-void func_020322f0(const VecFx32 *scale) {   // NNS_G3dGlbSetBaseScale
+void SetG3dGlbScale(const VecFx32 *scale) {
     if (scale == 0) return;
     data_02211374.s.scale = *scale;
     data_02211374.s.flag &= ~0xa4;
 }
-void func_02032320(u32 idx, s32 x, s32 y, s32 z) {   // NNS_G3dGlbLightVector
+void func_02032320(u32 idx, s32 x, s32 y, s32 z) {
     s32 vx = x >> 3;
     s32 vy = y >> 3;
     s32 vz = z >> 3;
     data_022113f4[idx] = (vx & 0x3ff) | ((vy & 0x3ff) << 10) | ((vz & 0x3ff) << 20) | (idx << 30);
 }
-void func_0203235c(u32 idx, u32 color) {   // NNS_G3dGlbLightColor
+void func_0203235c(u32 idx, u32 color) {
     data_0221141c[idx] = color | (idx << 30);
 }
-void func_02032370(u32 diffuse, u32 ambient, BOOL setVtx) {   // NNS_G3dGlbMaterialColorDiffAmb
+void func_02032370(u32 diffuse, u32 ambient, BOOL setVtx) {
     GU[0x94 / 4] = diffuse | (ambient << 16) | ((setVtx != 0) << 15);
 }
-void func_02032394(u32 specular, u32 emission, BOOL shininess) {   // NNS_G3dGlbMaterialColorSpecEmi
+void func_02032394(u32 specular, u32 emission, BOOL shininess) {
     GU[0x98 / 4] = specular | (emission << 16) | ((shininess != 0) << 15);
 }
 void *func_020323b8(void) {   // inverse of the current position matrix (cached)
@@ -110,7 +110,7 @@ void *func_020323b8(void) {   // inverse of the current position matrix (cached)
     }
     return data_02211474;
 }
-s32 func_020323fc(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed point)
+s32 InvertMtx44(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed point)
     s32 tmp[4][4];
     s32 (*dst)[4] = (s32 (*)[4]) dstp;
     s32 piv, i, j, k, best;
@@ -151,7 +151,7 @@ s32 func_020323fc(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed
 }
 void *func_02032604(void) {   // inverse of the projection matrix (cached)
     if (!(GU[0xfc / 4] & 0x10)) {
-        func_020323fc((s32 *)data_0221137c, (s32 *)data_02211534);
+        InvertMtx44((s32 *)data_0221137c, (s32 *)data_02211534);
         GU[0xfc / 4] |= 0x10;
     }
     return data_02211534;
@@ -201,7 +201,7 @@ BOOL func_02032778(void *out, AnmObj *o, u32 idx) {   // run the animation callb
     } while (o != 0);
     return r;
 }
-void func_020327e4(s32 *v, s32 *w, s32 ratio, u32 flag) {   // accumulate a weighted vector
+void AddWeightedVec(s32 *v, s32 *w, s32 ratio, u32 flag) {   // accumulate a weighted vector
     if (flag != 0) {
         v[0] += ratio;
         v[1] += ratio;
@@ -214,7 +214,7 @@ void func_020327e4(s32 *v, s32 *w, s32 ratio, u32 flag) {   // accumulate a weig
 }
 
 typedef struct { u32 flags; s32 trans[3]; s32 pivot[3]; s32 pivot2[3]; s32 rot[9]; s32 rot2[3]; s32 scale[3]; } JntResult;
-BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: blend the joint animations of a node
+BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // blend the joint animations of a node
     u8 tmp[0x58];
     u8 keep[0x18];
     AnmObj *o;
@@ -268,9 +268,9 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
             }
             if (total == 0x1000) w = list->weight;
             else w = FX_Div(list->weight, total);
-            func_020327e4((s32 *)(out + 4), (s32 *)(tmp + 4), w, U32(tmp, 0) & 1);
-            func_020327e4((s32 *)(out + 0x10), (s32 *)(tmp + 0x10), w, U32(tmp, 0) & 8);
-            func_020327e4((s32 *)(out + 0x1c), (s32 *)(tmp + 0x1c), w, U32(tmp, 0) & 0x10);
+            AddWeightedVec((s32 *)(out + 4), (s32 *)(tmp + 4), w, U32(tmp, 0) & 1);
+            AddWeightedVec((s32 *)(out + 0x10), (s32 *)(tmp + 0x10), w, U32(tmp, 0) & 8);
+            AddWeightedVec((s32 *)(out + 0x1c), (s32 *)(tmp + 0x1c), w, U32(tmp, 0) & 0x10);
             if (!(U32(tmp, 0) & 4)) {
                 P32(out, 0x4c) += FxMul(w, P32(tmp, 0x4c));
                 P32(out, 0x50) += FxMul(w, P32(tmp, 0x50));
@@ -335,27 +335,27 @@ void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
     *(volatile u32 *)0x4000440 = 2;
 }
 extern void G3X_Init(void);
-void func_02032d54(void) {   // NNS_G3dInit
+void InitG3d(void) {
     u32 v;
     G3X_Init();
-    func_02032130();
+    InitG3dGlb();
     v = *(volatile u32 *)0x4000600;
     *(volatile u32 *)0x4000600 = (v & ~0xc0000000) | 0x80000000;
 }
 
-extern u32 func_02031840(ResTex *t);
-extern u32 func_02031854(ResTex *t);
-extern u32 func_02031980(ResTex *t);
-extern void func_02031868(ResTex *t, u32 key, u32 key4x4);
-extern void func_02031994(ResTex *t, u32 key);
+extern u32 GetTexSize(ResTex *t);
+extern u32 GetTex4x4Size(ResTex *t);
+extern u32 GetPlttSize(ResTex *t);
+extern void SetTexKeys(ResTex *t, u32 key, u32 key4x4);
+extern void SetPlttKey(ResTex *t, u32 key);
 extern void func_0203187c(ResTex *t, BOOL begin);
 extern void func_0203199c(ResTex *t, BOOL begin);
-extern void func_02031934(ResTex *t, u32 *key, u32 *key4x4);
-extern u32 func_020319ec(ResTex *t);
-extern BOOL func_02031fec(ResMdlSet *set, ResTex *t);
-extern void func_0203209c(ResMdlSet *set);
-extern void *func_02033598(void *file);
-extern void *func_020335a8(void *file);
+extern void TakeTexKeys(ResTex *t, u32 *key, u32 *key4x4);
+extern u32 TakePlttKey(ResTex *t);
+extern BOOL ApplyResTexToMdlSet(ResMdlSet *set, ResTex *t);
+extern void RemoveResTexFromMdlSet(ResMdlSet *set);
+extern void *GetResMdlSet(void *file);
+extern void *GetResTex(void *file);
 extern u32 (*data_020a5880)(u32 size, int is4x4, u32 opt);
 extern int (*data_020a5884)(u32 key);
 extern u32 (*data_020a5888)(u32 size, int is4pltt, u32 opt);
@@ -368,7 +368,7 @@ static inline u8 *MatByIdx2(ResMat *mat, u32 idx) {
     }
     return 0;
 }
-BOOL func_02032d7c(void *file) {   // NNS_G3dResDefaultSetup: allocate VRAM, upload textures, bind
+BOOL SetupResFile(void *file) {   // allocate VRAM, upload textures, bind
     u32 magic = U32(file, 0);
     ResTex *tex;
     BOOL ok1;
@@ -391,11 +391,11 @@ BOOL func_02032d7c(void *file) {   // NNS_G3dResDefaultSetup: allocate VRAM, upl
     ok1 = 1;
     ok2 = 1;
     ok3 = 1;
-    tex = func_020335a8(file);
+    tex = GetResTex(file);
     if (tex != 0) {
-        sz = func_02031840(tex);
-        sz4x4 = func_02031854(tex);
-        szP = func_02031980(tex);
+        sz = GetTexSize(tex);
+        sz4x4 = GetTex4x4Size(tex);
+        szP = GetPlttSize(tex);
         if (sz != 0) {
             key = data_020a5880(sz, 0, 0);
             if (key == 0) ok1 = 0;
@@ -420,14 +420,14 @@ BOOL func_02032d7c(void *file) {   // NNS_G3dResDefaultSetup: allocate VRAM, upl
             if (ok1) data_020a5884(key);
             return 0;
         }
-        func_02031868(tex, key, key4x4);
-        func_02031994(tex, keyP);
+        SetTexKeys(tex, key, key4x4);
+        SetPlttKey(tex, keyP);
         func_0203187c(tex, 1);
         func_0203199c(tex, 1);
     }
     if (U32(file, 0) == 0x30444d42) {
-        ResMdlSet *set = func_02033598(file);
-        if (tex != 0) func_02031fec(set, tex);
+        ResMdlSet *set = GetResMdlSet(file);
+        if (tex != 0) ApplyResTexToMdlSet(set, tex);
     }
     return 1;
 yes:
@@ -435,7 +435,7 @@ yes:
 no:
     return 0;
 }
-void func_02032fb4(void *file) {   // release what NNS_G3dResDefaultSetup set up
+void ReleaseResFile(void *file) {   // release what SetupResFile set up
     u32 magic = U32(file, 0);
     ResTex *tex;
     u32 keyP, key, key4x4;
@@ -444,8 +444,8 @@ void func_02032fb4(void *file) {   // release what NNS_G3dResDefaultSetup set up
         return;
     case 0x30444d42:
         {
-            ResMdlSet *set = func_02033598(file);
-            if (func_020335a8(file) != 0) func_0203209c(set);
+            ResMdlSet *set = GetResMdlSet(file);
+            if (GetResTex(file) != 0) RemoveResTexFromMdlSet(set);
         }
         break;
     case 0x30585442:
@@ -453,10 +453,10 @@ void func_02032fb4(void *file) {   // release what NNS_G3dResDefaultSetup set up
     default:
         return;
     }
-    tex = func_020335a8(file);
+    tex = GetResTex(file);
     if (tex == 0) return;
-    keyP = func_020319ec(tex);
-    func_02031934(tex, &key, &key4x4);
+    keyP = TakePlttKey(tex);
+    TakeTexKeys(tex, &key, &key4x4);
     if (keyP != 0) data_020a588c(keyP);
     if (key4x4 != 0) data_020a5884(key4x4);
     if (key != 0) data_020a5884(key);
@@ -490,7 +490,7 @@ void func_020331a4(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in ever
 static inline BOOL NameEq(const u32 *a, const u32 *b) {
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
 }
-void *func_0203324c(Dict *dictp, const char *namep) {   // data pointer by name, or NULL
+void *FindDictEntryByName(Dict *dictp, const char *namep) {   // data pointer by name, or NULL
     u8 *dict = (u8 *)dictp;
     const u32 *name = (const u32 *)namep;
     u8 n;
@@ -545,7 +545,7 @@ void *func_0203324c(Dict *dictp, const char *namep) {   // data pointer by name,
     }
     return 0;
 }
-s32 func_0203340c(Dict *dictp, const u8 *namep) {   // index by name, or -1
+s32 FindDictIndexByName(Dict *dictp, const u8 *namep) {   // index by name, or -1
     u8 *dict = (u8 *)dictp;
     const u32 *name = (const u32 *)namep;
     u8 n;

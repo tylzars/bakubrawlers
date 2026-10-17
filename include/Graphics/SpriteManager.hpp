@@ -42,7 +42,7 @@ struct SpriteScreen {
     void AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
 };
 
-// One of the eight slots at SpriteManager+0x828 (copied by SetSlot, set up by func_020360cc).
+// One of the eight slots at SpriteManager+0x828 (copied by SetSlot, set up by SaveTexSlotRanges).
 struct UnkStruct_SpriteManager_28 {
     /* 00 */ u32 mUnk_00[10];
     /* 28 */
@@ -53,7 +53,7 @@ class SpriteManager {
 public:
     /* 000 */ SpriteFadeDefaults mFadeDefaults;
     /* 004 */ SpriteScreen mScreens[2];
-    /* 814 */ PAD(0x814, 0x824); // initialised by func_020313f8
+    /* 814 */ PAD(0x814, 0x824); // initialised by InitOSHeapAllocator
     /* 824 */ u32 mMode;         // VRAM/display layout 1..9 chosen by SetupMode
     /* 828 */ UnkStruct_SpriteManager_28 mUnk_828[8];
     /* 968 */ u8 mSlotUsed[8];    // slot in use flags

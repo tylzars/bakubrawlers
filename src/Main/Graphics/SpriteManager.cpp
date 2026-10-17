@@ -31,7 +31,7 @@ extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, f
 // MTX_Ortho
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
-extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
+extern MtxFx33 data_02211430; // G3dGlb base rotation
 extern const VecFx32 gDefaultBaseScale;
 extern const VecFx32 gDefaultBaseTrans;
 
@@ -65,13 +65,13 @@ extern "C" void GX_ResetBankForSubBGExtPltt();
 extern "C" void GX_ResetBankForSubOBJExtPltt();
 extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 s32 GetGameHeapHandle();
-extern "C" void func_020313f8(void *obj, u32 unk2, s32 heap);
-extern "C" void func_02035e58(u32 unk1, u32 unk2);
-extern "C" void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
-extern "C" void func_02035ee0();
-extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
-extern "C" void func_0203610c(UnkStruct_SpriteManager_28 *slot);
-extern "C" void func_02032d54();
+extern "C" void InitOSHeapAllocator(void *obj, u32 unk2, s32 heap);
+extern "C" void SetupTexSlots(u32 unk1, u32 unk2);
+extern "C" void SetupPlttLnkMan(u32 unk1, void *buffer, u32 size, u32 unk4);
+extern "C" void ResetTexSlots();
+extern "C" void SaveTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void RestoreTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void InitG3d();
 extern "C" void G3X_InitMtxStack();
 extern "C" void G3X_SetToonTable(const void *unk1);
 extern "C" void G3X_SetEdgeColorTable(const void *unk1);
@@ -145,7 +145,7 @@ void SpriteManager::func_02026d90() {
 #define SET_POWCNT(extra) (reg_GX_POWCNT = (reg_GX_POWCNT & 0xfffffdf1) | (extra) | 0x200)
 
 void SpriteManager::SetupMode(u32 unk1, u32 mode) {
-    func_020313f8((u8 *) this + 0x814, 0, GetGameHeapHandle());
+    InitOSHeapAllocator((u8 *) this + 0x814, 0, GetGameHeapHandle());
     ResetVram(unk1 & 0xff);
     mMode = mode;
     switch (mode) {
@@ -305,19 +305,19 @@ void SpriteManager::ResetVram(u32 unk1) {
 }
 
 void SpriteManager::func_020273dc(u32 unk1, u32 unk2) {
-    func_02035e58(unk1, 1);
-    func_02036538(unk2, sBuffer_0220e900, 0x800, 1);
+    SetupTexSlots(unk1, 1);
+    SetupPlttLnkMan(unk2, sBuffer_0220e900, 0x800, 1);
 }
 
 void SpriteManager::func_0202740c() {
-    func_02035ee0();
+    ResetTexSlots();
     for (u8 i = 0; i < 8; i++) {
         mSlotUsed[i] = 0;
     }
 }
 
 void SpriteManager::Init3D() {
-    func_02032d54();
+    InitG3d();
     G3X_InitMtxStack();
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xffffcffd;
     G3X_SetToonTable(gToonTable);
@@ -336,7 +336,7 @@ void SpriteManager::func_02027504(s32 index) {
     if (index >= 8) {
         return;
     }
-    func_020360cc(&mUnk_828[index]);
+    SaveTexSlotRanges(&mUnk_828[index]);
     mSlotUsed[index] = 1;
 }
 
@@ -344,7 +344,7 @@ void SpriteManager::func_0202753c(s32 index) {
     if (mSlotUsed[index] == 0) {
         return;
     }
-    func_0203610c(&mUnk_828[index]);
+    RestoreTexSlotRanges(&mUnk_828[index]);
 }
 
 void SpriteManager::ClearSlotUsed(s32 index) {

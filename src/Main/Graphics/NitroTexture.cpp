@@ -4,14 +4,14 @@
 #include <nitro/mi.h>
 #include <stdio.h>
 
-extern "C" NNSG3dResTex *func_020335a8(void *file);
-extern "C" u32 func_02031840(NNSG3dResTex *tex);
-extern "C" u32 func_02031854(NNSG3dResTex *tex);
-extern "C" u32 func_02031980(NNSG3dResTex *tex);
-extern "C" void func_02031868(NNSG3dResTex *tex, u32 texKey, u32 tex4x4Key);
-extern "C" void func_02031994(NNSG3dResTex *tex, u32 plttKey);
+extern "C" NNSG3dResTex *GetResTex(void *file);
+extern "C" u32 GetTexSize(NNSG3dResTex *tex);
+extern "C" u32 GetTex4x4Size(NNSG3dResTex *tex);
+extern "C" u32 GetPlttSize(NNSG3dResTex *tex);
+extern "C" void SetTexKeys(NNSG3dResTex *tex, u32 texKey, u32 tex4x4Key);
+extern "C" void SetPlttKey(NNSG3dResTex *tex, u32 plttKey);
 
-extern "C" void *func_0203324c(void *dict, const char *name);
+extern "C" void *FindDictEntryByName(void *dict, const char *name);
 
 void NitroTexture::Load(const char *name) {
     void *file = LoadFile(name, 0, 0, 0, 0, 0);
@@ -27,7 +27,7 @@ BOOL TextureFile::LoadData(void *file) {
         Release();
     }
     mFile = file;
-    mTex  = func_020335a8(file);
+    mTex  = GetResTex(file);
     AllocVramAndUpload();
     return TRUE;
 }
@@ -76,9 +76,9 @@ void TextureFile::FreeVram() {
 }
 
 void TextureFile::AllocVramAndUpload() {
-    u32 texSize   = func_02031840(mTex);
-    u32 size4x4   = func_02031854(mTex);
-    u32 plttSize  = func_02031980(mTex);
+    u32 texSize   = GetTexSize(mTex);
+    u32 size4x4   = GetTex4x4Size(mTex);
+    u32 plttSize  = GetPlttSize(mTex);
     u32 texKey    = 0;
     if (texSize != 0) {
         texKey = data_020a5880(texSize, 0, 0);
@@ -91,8 +91,8 @@ void TextureFile::AllocVramAndUpload() {
     if (plttSize != 0) {
         plttKey = data_020a5888(plttSize, 0, 1);
     }
-    func_02031868(mTex, texKey, tex4x4Key);
-    func_02031994(mTex, plttKey);
+    SetTexKeys(mTex, texKey, tex4x4Key);
+    SetPlttKey(mTex, plttKey);
     UploadTextures();
     UploadPalettes();
     mTexHandle    = texKey;
@@ -168,7 +168,7 @@ BOOL TextureFile::UploadNamedTexture(const char *name, void *data, u32 size) {
     if (mTex == NULL) {
         entry = NULL;
     } else {
-        entry = (u32 *) func_0203324c((u8 *) mTex + 0x3c, buf);
+        entry = (u32 *) FindDictEntryByName((u8 *) mTex + 0x3c, buf);
     }
     if (entry != NULL) {
         u32 addr  = (mTex->mTexHandle << 16 >> 13) + (*entry << 16 >> 13);
@@ -201,7 +201,7 @@ BOOL TextureFile::UploadNamedPalette(const char *name, void *data, u32 size) {
     if (tex == NULL || tex->mPlttNames == 0) {
         entry = NULL;
     } else {
-        entry = (u16 *) func_0203324c((u8 *) tex + tex->mPlttNames, buf);
+        entry = (u16 *) FindDictEntryByName((u8 *) tex + tex->mPlttNames, buf);
     }
     if (entry != NULL) {
         u32 addr    = (*entry << 3) + (u16) (mTex->mPlttHandle << 3);

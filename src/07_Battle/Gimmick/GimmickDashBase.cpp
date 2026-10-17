@@ -91,7 +91,7 @@ void GimmickDashBase::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        if (target->mUnk_38 > 3) {
+        if (target->mAirFrames > 3) {
             return;
         }
         SetTargetVelocity(target, &mDir, 0);

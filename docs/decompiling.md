@@ -59,7 +59,7 @@ the function's instruction lists at chosen points: after selection, at each coal
 register colouring, and the final list. `=` marks a definition, `vN` a virtual register, `rN` a physical one,
 `[copy]` a register copy, and `--merges` logs each coalescer merge (`keep vA drop vB`).
 
-    tools/mwcc_trace.py my_variant.cpp func_ov007_0226e884 --flags-from src/07_Battle/Battle/BattleShoot.cpp \
+    tools/mwcc_trace.py my_variant.cpp UpdatePushMessages --flags-from src/07_Battle/Battle/BattleShoot.cpp \
         --at coalesce --at color --at after-color --merges > trace.txt
 
 Diff the traces of two variants to find the first stage where they part. Facts read from it so far:
@@ -177,7 +177,7 @@ that matches should replace it.
   forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
   directly after its load in all of them. Solved with enum-typed copies of the two modes, which are not
   constant-propagated, so both loads stay ahead of the compares.
-- **A u8 index coloured after its base.** In BattleTarget::func_ov007_0225ca48, BattleAbility (func_ov007_022677cc,
+- **A u8 index coloured after its base.** In BattleTarget::DrawRecordTotal, BattleAbility (func_ov007_022677cc,
   02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the original colours a u8 index load
   (`unit->mUnk_0e`, a record or row index) after the base or player pointer it indexes; every plain form colours it
   first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
@@ -450,14 +450,14 @@ Other findings from linking:
 
 - **A load folded into an address is a temporary.** `rec = &pl->mRecords[pl->mRecord]` makes the index a temporary
   coloured before `pl`; kept as its own statement it is coloured after `pl`, which let identical if/else tails merge
-  in BattleTarget::func_ov007_0225ca48. There the separate statement is an enum-typed copy of `pl->mRecord`;
+  in BattleTarget::DrawRecordTotal. There the separate statement is an enum-typed copy of `pl->mRecord`;
   computing the address in both arms is what puts the shared constant 12 before the branch.
 
 - **A local reused for an earlier, separate value** gets its later live range coloured after the loop counter
-  (BattleTarget::func_ov007_0225ac28: one `fx32 value` for the magnitude test and for `f[i]` in the loop).
+  (BattleTarget::GetHitBoxNormal: one `fx32 value` for the magnitude test and for `f[i]` in the loop).
 - **A helper called with a different constant in each arm** of an if/else is compiled per arm and merged into
   `moveq`/`movne` only after the first scheduling pass, so a later call's argument setup is not moved up into the
-  products (func_ov007_0225c098: `ScaleVec(&v, 0x14000)` / `ScaleVec(&v, 0x5000)` instead of a selected scale).
+  products (AddPushXZ: `ScaleVec(&v, 0x14000)` / `ScaleVec(&v, 0x5000)` instead of a selected scale).
 
 - **A declared 2-D member is not the same as a cast to one.** FieldSelectScene's constructor needed `u8
   mOptionBytes[5][2]` (a union view of the flat `mUnk_25c[10]`): a declared 2-D member builds the address as
@@ -483,7 +483,7 @@ Other findings from linking:
 - **Recompute differences instead of naming them.** BattleShoot::PlotLine matched once `x0 - x1` and
   `y0 - y1` were written out at each use (with an `ABS` macro) instead of held in `dx`/`dy` locals.
 - **Where a shift sits matters.** `fx32 distance = f(...) << 12;` then `FX_Mul(distance, k)` matched
-  func_ov007_0226dfb8; shifting inside the `FX_Mul` argument did not.
+  StartTouchShot; shifting inside the `FX_Mul` argument did not.
 - **A zero shared by two spilled stores keeps its own register.** With one spilled variable zeroed before a loop,
   the loop counter takes over the zero (`mov r5, #0; str r5, [sp]`); when the same zero also feeds a second spilled
   store first, mwcc emits `mov r0, #0; str; str; mov r5, r0`. BattleShoot's e884 shows

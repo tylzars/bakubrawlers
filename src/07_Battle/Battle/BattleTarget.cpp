@@ -39,31 +39,31 @@ struct GimmickBuffer {
 // original has them in this (unsorted) order, followed by the three byte tables in their own sections. Header order
 // above (Camera, Sound, Touch, Wireless, Sprite) gives the original .bss node order.
 struct TargetTables {
-    /* 000 */ u16 mUnk_00[2];
-    /* 004 */ u16 mUnk_04[5];
-    /* 00e */ u16 mUnk_0e[4];
-    /* 016 */ u16 mUnk_16[5];
-    /* 020 */ u16 mUnk_20[5];
-    /* 02c */ VecFx32 mUnk_2c;
+    /* 000 */ u16 mSpKind1HitFrameCounts[2];
+    /* 004 */ u16 mHitFrameCounts[5];
+    /* 00e */ u16 mBaseRotY[4];
+    /* 016 */ u16 mRestAngleLimits[5];
+    /* 020 */ u16 mHeadingAngleLimits[5];
+    /* 02c */ VecFx32 mIkazuchiEffectOffset;
     /* 038 */ VecFx32 mUnk_38;
-    /* 044 */ VecFx32 mUnk_44;
+    /* 044 */ VecFx32 mJumpObjCameraOffset;
     /* 050 */ u8 mUnk_50[12];
     /* 05c */ VecFx32 mUnk_5c;
-    /* 068 */ VecFx32 mUnk_68;
+    /* 068 */ VecFx32 mHitEffectOffset;
     /* 074 */ VecFx32 mUnk_74;
-    /* 080 */ u16 mUnk_80[8];
-    /* 090 */ u16 mUnk_90[8];
+    /* 080 */ u16 mSpKind3Speeds[8];
+    /* 090 */ u16 mSpKind3RotZ[8];
     /* 0a0 */ u32 mUnk_a0[5];
-    /* 0b4 */ s32 mUnk_b4[5];
-    /* 0c8 */ s32 mUnk_c8[5];
+    /* 0b4 */ s32 mHeadingMinSpeeds[5];
+    /* 0c8 */ s32 mPushScaleFactors[5];
     /* 0dc */ s32 mUnk_dc[5];
-    /* 0f0 */ s32 mUnk_f0[5];
+    /* 0f0 */ s32 mRestSpeedLimits[5];
     /* 104 */ s32 mUnk_104[8];
-    /* 124 */ VecFx32 mUnk_124[3];
-    /* 148 */ VecFx32 mUnk_148[3];
+    /* 124 */ VecFx32 mSpKind1HitCameraOffsets[3];
+    /* 148 */ VecFx32 mHitCameraOffsets[3];
 };
 
-static const TargetTables data_ov007_0227a5e0 = {
+static const TargetTables sTables = {
     {0x2d, 0x2d},
     {0x28, 0x23, 0x3c, 0x4f, 0x59},
     {0, 0xc000, 0x8000, 0x4000},
@@ -89,7 +89,7 @@ static const TargetTables data_ov007_0227a5e0 = {
 };
 static const u8 data_ov007_0227a74c[4] = {0xc, 0xa, 0xb, 0};
 static const u8 data_ov007_0227a750[4] = {0, 1, 1, 0};
-static const s8 data_ov007_0227a754[5] = {-10, -5, 0, 5, 10};
+static const s8 sShotSpeedAdjusts[5] = {-10, -5, 0, 5, 10};
 
 u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 rot, u8 player, u8 record, u8 cell, u8 flag);
 void SetUnitAB(BattlePlayerList *list, u8 a, u8 b);
@@ -124,7 +124,7 @@ static inline void SetVec(VecFx32 *v, fx32 x, fx32 y, fx32 z) {
     v->z = z;
 }
 
-// Scales v by an unsigned fx32 factor. Called with a constant in both arms of an if/else (func_ov007_0225c098): mwcc
+// Scales v by an unsigned fx32 factor. Called with a constant in both arms of an if/else (AddPushXZ): mwcc
 // merges the two copies only after scheduling, which keeps the following call's argument setup after the products.
 static inline void ScaleVec(VecFx32 *v, u32 scale) {
     v->x = (fx32) (((fx64) v->x * scale + 0x800LL) >> 12);
@@ -132,7 +132,7 @@ static inline void ScaleVec(VecFx32 *v, u32 scale) {
     v->z = (fx32) (((fx64) v->z * scale + 0x800LL) >> 12);
 }
 
-// A rotation (three u16 angles) copied as one 6-byte object; see func_ov007_0225a278 / StartShot.
+// A rotation (three u16 angles) copied as one 6-byte object; see TryRestOnCell / StartShot.
 struct Rot3 {
     u16 r[3];
 };
@@ -196,7 +196,7 @@ static inline void AddRot(BattleObstacle *o, GimmickSetData *s) {
     o->mRotX += r[0];
 }
 
-// Like AddRot, but all three sums are computed before any store (func_ov007_02254ae8, func_ov007_02257f3c).
+// Like AddRot, but all three sums are computed before any store (UpdateCollisions, HandleGimmickHit).
 static inline void AddRotAtOnce(BattleObstacle *o, GimmickSetData *s) {
     u16 *r = &s->mRotX;
     u16 y  = o->mRotY + r[1];
@@ -223,12 +223,12 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_88 = 0;
     mUnk_1c6 = 0;
     mTimer = 0;
-    mUnk_1cd = 1;
+    mInField = 1;
     mUnk_1ce = 0;
     mUnk_1cf = 0;
-    mUnk_1d0 = 0;
-    mUnk_1d1 = 0;
-    mUnk_1d2 = 0;
+    mLanded = 0;
+    mPrevLanded = 0;
+    mResult = 0;
     mUnk_1d6 = 0xe;
     mState = 0;
     mUnk_1e7_0 = 1;
@@ -255,34 +255,34 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mPrevVelocity.x = 0;
     mPrevVelocity.y = 0;
     mPrevVelocity.z = 0;
-    mUnk_7c.x = 0;
-    mUnk_7c.y = 0;
-    mUnk_7c.z = 0;
+    mCollisionNormal.x = 0;
+    mCollisionNormal.y = 0;
+    mCollisionNormal.z = 0;
     mUnk_94.x = 0;
     mUnk_94.y = 0;
     mUnk_94.z = 0;
-    mUnk_a0.x = 0;
-    mUnk_a0.y = 0;
-    mUnk_a0.z = 0;
+    mBaseVelocity.x = 0;
+    mBaseVelocity.y = 0;
+    mBaseVelocity.z = 0;
     mUnk_b8.x = 0;
     mUnk_b8.y = 0;
     mUnk_b8.z = 0;
-    mUnk_ac.x = 0;
-    mUnk_ac.y = 0;
-    mUnk_ac.z = 0;
-    mUnk_c8.x = 0;
-    mUnk_c8.y = 0;
-    mUnk_c8.z = 0;
+    mPushVelocity.x = 0;
+    mPushVelocity.y = 0;
+    mPushVelocity.z = 0;
+    mPushPerFrame.x = 0;
+    mPushPerFrame.y = 0;
+    mPushPerFrame.z = 0;
     mGravityPerFrame = 0x1c3;
-    mUnk_8c = 0x32000;
-    mUnk_40 = mUnk_3c = mUnk_38 = 1;
+    mPushScale = 0x32000;
+    mUnk_40 = mPrevAirFrames = mAirFrames = 1;
     mUnk_1ca = 0;
     mRestFrames = 0;
     mUnk_34 = 0;
     mMoveFrames = 0;
     mUnk_50 = 1;
     mUnk_54 = 1;
-    mUnk_1ea = 0;
+    mBarLength = 0;
     mUnk_44 = 0;
     mBounceFactor = 0;
     mPlayer = unk2;
@@ -299,45 +299,45 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mCameraTarget.x = 0;
     mCameraTarget.y = 0;
     mCameraTarget.z = 0;
-    mUnk_134.x = 0;
-    mUnk_134.y = 0;
-    mUnk_134.z = 0;
-    mUnk_168.x = 0;
-    mUnk_168.y = 0;
-    mUnk_168.z = 0;
-    mUnk_15c.x = 0;
-    mUnk_15c.y = 0;
-    mUnk_15c.z = 0;
+    mUnitHitVelocity.x = 0;
+    mUnitHitVelocity.y = 0;
+    mUnitHitVelocity.z = 0;
+    mHitUnitPosition.x = 0;
+    mHitUnitPosition.y = 0;
+    mHitUnitPosition.z = 0;
+    mUnitHitBakuganPosition.x = 0;
+    mUnitHitBakuganPosition.y = 0;
+    mUnitHitBakuganPosition.z = 0;
     mRoulettePalette = 0;
     mRoulettePaletteSize = 0;
     mUnk_1db = 0;
-    mUnk_1dc = 0;
+    mUnitHitCount = 0;
     mUnk_140 = 0;
     mIkazuchiTimer = 0;
     mHitGimmickType = 0;
     mUnk_1dd = 0;
-    mUnk_144 = 0;
-    mUnk_148 = 0x899a;
+    mTornadoPosition = 0;
+    mVerticalContactY = 0x899a;
     mShotEffectHandle = 0;
-    mUnk_1c2 = 0;
+    mUnitHitEffectHandle = 0;
     mUnk_1c4 = 0;
     mUnk_1e1 = 0;
-    mUnk_1de = 0;
+    mHitUnitHandle = 0;
     mUnk_1cc = 0;
     mCameraMode = 0;
-    mUnk_1e6 = 0;
+    mJumpObjCameraStep = 0;
     mUnk_17c = 0;
-    mUnk_1b0 = 0;
-    mUnk_180 = 0;
-    mUnk_188.x = 0;
-    mUnk_188.y = 0;
-    mUnk_188.z = 0;
+    mCameraRotY = 0;
+    mCameraShakeY = 0;
+    mCameraOffset.x = 0;
+    mCameraOffset.y = 0;
+    mCameraOffset.z = 0;
     mUnk_14c = 0;
     mSpKind = 0;
-    mUnk_1e0 = 0;
+    mShotSpKind = 0;
     mUnk_1be = 0;
     mCollision = 0;
-    mUnk_1e3 = 0;
+    mCollided = 0;
     mUnitCollisionBuffer = 0;
     u8 i = 0;
     do {
@@ -423,7 +423,7 @@ void BattleTarget::Update() {
                         break;
                     case 3: {
                         u32 idx = data_020d433c.mFieldId;
-                        SetDirAndPredict(mCommandMap, (u16) (0x6000 - mRotYAdjust), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
+                        SetDirAndPredict(mCommandMap, (u16) (0x6000 - mRotYAdjust), sTables.mSpKind3RotZ[idx], (u16) (sTables.mSpKind3Speeds[idx] + 0x50));
                         break;
                     }
                 }
@@ -431,13 +431,13 @@ void BattleTarget::Update() {
             case 2:
                 mPopupEnabled = 1;
                 if (mUnk_1c6 == 0) {
-                    func_ov007_02255640();
+                    UpdateMove();
                 } else {
                     mUnk_50                                         = 0;
                     data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 0;
                     mState++;
                     mPopupEnabled = 0;
-                    if (mUnk_1d2 >= 2) {
+                    if (mResult >= 2) {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
                         u8 unit                = list->Units()[(u8) (mUnitHandle - 1)].mMarker;
                         BattleMarker *marker   = &list->Markers()[unit];
@@ -462,8 +462,8 @@ void BattleTarget::Update() {
                 break;
             case 3:
                 if (mUnk_1c6 != 0) {
-                    if (mUnk_1cd == 0) {
-                        func_ov007_02255640();
+                    if (mInField == 0) {
+                        UpdateMove();
                         GimmickSetData *set = mCollision;
                         if (set) {
                             BakuganModel *pose = mBakugan;
@@ -482,7 +482,7 @@ void BattleTarget::Update() {
                 }
                 mUnk_1cb = 1;
                 mUnk_1d7 = 1;
-                if (mUnk_1d2 == 2 && mUnitHandle != 0 && mUnk_1c6 == 0x32) {
+                if (mResult == 2 && mUnitHandle != 0 && mUnk_1c6 == 0x32) {
                     switch (mSpKind) {
                         case 6:
                             data_020d433c.mBattlePlayers->mUnk_29c->SetStIconUnit(mUnitHandle - 1, 0);
@@ -492,13 +492,13 @@ void BattleTarget::Update() {
                             break;
                     }
                 }
-                if (mUnk_1c6 > data_ov007_0227a5e0.mUnk_a0[mUnk_1d2]) {
+                if (mUnk_1c6 > sTables.mUnk_a0[mResult]) {
                     SoundManager::Get().StopSeqArcPlayerSounds(0x3c);
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
                     u8 kind                = list->mPlayers[mPlayer]->mRecords[mRecord].mBakuganId;
                     u8 a                   = list->mUnitA;
                     u8 b                   = list->mUnitB;
-                    if (kind == 4 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
+                    if (kind == 4 && (mResult == 2 || (mResult == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
                         mState++;
                     } else {
                         mState = 0xb;
@@ -619,7 +619,7 @@ void BattleTarget::Update() {
                 u8 cur                 = list->mTurnPlayer;
                 u8 a                   = list->mUnitA;
                 u8 b                   = list->mUnitB;
-                if (list->mPlayers[cur]->mUnk_fa != 0 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
+                if (list->mPlayers[cur]->mUnk_fa != 0 && (mResult == 2 || (mResult == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
                     SpriteManager::Get();
                     SpriteManager::sFade[0] = FADE_MODE_DOWN;
                     mState++;
@@ -690,7 +690,7 @@ void BattleTarget::Update() {
                 if (mSpKind != 0) {
                     data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f3 = 0;
                 }
-                switch (mUnk_1d2) {
+                switch (mResult) {
                     case 0:
                     case 1:
                         RequestScene(1);
@@ -734,7 +734,7 @@ void BattleTarget::Update() {
         mBakugan->Update();
     }
     BakuganModel *pose = mBakugan;
-    if (pose && pose->mVisible && (mUnk_1cd || mUnk_1e9) && mCommandMap) {
+    if (pose && pose->mVisible && (mInField || mUnk_1e9) && mCommandMap) {
         if (mUnk_1cb == 0) {
             DrawShadowPieceXZ(mCommandMap, &mPrevPosition);
         } else {
@@ -742,7 +742,7 @@ void BattleTarget::Update() {
         }
     }
     UpdateEffects();
-    func_ov007_022573e4();
+    UpdateCameraAndDraw();
 }
 
 void BattleTarget::func_ov007_02253fbc() {
@@ -795,9 +795,9 @@ void BattleTarget::Init() {
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     SnapshotCamera();
     Camera *camera = mCamera;
-    mUnk_194.x     = camera->mPosition.x;
-    mUnk_194.y     = camera->mPosition.y;
-    mUnk_194.z     = camera->mPosition.z;
+    mCameraBasePosition.x     = camera->mPosition.x;
+    mCameraBasePosition.y     = camera->mPosition.y;
+    mCameraBasePosition.z     = camera->mPosition.z;
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.LoadCharacters("battle_shoot_b_gp.nce_ncg1D.bin", 0, 0);
@@ -880,7 +880,7 @@ void BattleTarget::LoadMapCollision() {
     mMapCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_FIELD, buf, &pos, rot, 0);
 }
 
-void BattleTarget::func_ov007_02254928(u32 unk) {
+void BattleTarget::SetMapPredictVisible(u32 unk) {
     SetPredictVisible(mCommandMap, unk);
 }
 
@@ -894,21 +894,21 @@ BOOL BattleTarget::IsHeadingToward(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 inde
     dir.y  = 0;
     diff.y = 0;
     fx32 mag = VEC_Mag(vel);
-    if (mag > data_ov007_0227a5e0.mUnk_b4[index]) {
+    if (mag > sTables.mHeadingMinSpeeds[index]) {
         VEC_Normalize(&diff, &diff);
         VEC_Normalize(&dir, &dir);
         fx32 dot = VEC_DotProduct(&diff, &dir);
         if (dot > 0x1000) {
             dot = 0x1000;
         }
-        if (FX_AcosIdx(dot) <= data_ov007_0227a5e0.mUnk_20[index]) {
+        if (FX_AcosIdx(dot) <= sTables.mHeadingAngleLimits[index]) {
             return 1;
         }
     }
     return 0;
 }
 
-void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
+void BattleTarget::LaunchHitUnit(GimmickSetData *set) {
     BattleMoveState state;
     state.mVelocity.x = 0;
     state.mVelocity.y = 0;
@@ -932,7 +932,7 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
 
 
 
-void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
+void BattleTarget::UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     VecFx32 move   = {0, 0, 0};
     VecFx32 hitOut = {0, 0, 0};
     VecFx32 vel    = {0, 0, 0};
@@ -954,7 +954,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     ceilingHit = 0;
     wallFree   = 1;
     if (mMoveFrames != 0) {
-        mUnk_1cd = 0;
+        mInField = 0;
     }
     record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     if (mCollision->mHitCount != 0) {
@@ -977,7 +977,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     }
                     if (mSpKind == 6 && unit->mPlayer != mPlayer && unit->mPlayer != mPartner && unit->mStatus != 3) {
                         SoundManager::Get().StartSeqArc(0x10);
-                        func_ov007_02254a14(set);
+                        LaunchHitUnit(set);
                         continue;
                     }
                     if (mSpKind == 4 && unit->mPlayer != mPlayer && unit->mPlayer != mPartner && unit->mStatus != 3) {
@@ -985,22 +985,22 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                         marker   = none;
                         continue;
                     }
-                    if (mUnk_1e0 == 3 && unit->mStatus != 3) {
+                    if (mShotSpKind == 3 && unit->mStatus != 3) {
                         VecFx32 v           = unit->mPos;
                         v.y                 = 0x8999;
                         mBakugan->mPosition = v;
                         mVelocity.x           = 0;
                         mVelocity.y           = 0;
                         mVelocity.z           = 0;
-                        mUnk_a0.x           = 0;
-                        mUnk_a0.y           = 0;
-                        mUnk_a0.z           = 0;
-                        mUnk_c8.x           = 0;
-                        mUnk_c8.y           = 0;
-                        mUnk_c8.z           = 0;
-                        mUnk_ac.x           = 0;
-                        mUnk_ac.y           = 0;
-                        mUnk_ac.z           = 0;
+                        mBaseVelocity.x           = 0;
+                        mBaseVelocity.y           = 0;
+                        mBaseVelocity.z           = 0;
+                        mPushPerFrame.x           = 0;
+                        mPushPerFrame.y           = 0;
+                        mPushPerFrame.z           = 0;
+                        mPushVelocity.x           = 0;
+                        mPushVelocity.y           = 0;
+                        mPushVelocity.z           = 0;
                         continue;
                     }
                     *c = 0x666;
@@ -1014,13 +1014,13 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                         (mUnk_1e1 != 0 || IsHeadingToward(&self.o.mPos, &obs.o.mPos, a, ((RecordBits *) ((u8 *) record + 2))->mIndex))) {
                         mUnk_1dd = 6;
                         mUnk_1db = 0;
-                        mUnk_15c = mBakugan->mPosition;
-                        mUnk_168 = obs.o.mPos;
-                        mUnk_1de = set->mTag;
-                        mUnk_134 = *a;
+                        mUnitHitBakuganPosition = mBakugan->mPosition;
+                        mHitUnitPosition = obs.o.mPos;
+                        mHitUnitHandle = set->mTag;
+                        mUnitHitVelocity = *a;
                         mUnk_1cb = 1;
                     } else {
-                        func_ov007_02257c80((BattleSphere *) &self.o, a, &obs.o, &hitOut, 0, 0);
+                        GetObstacleNormal((BattleSphere *) &self.o, a, &obs.o, &hitOut, 0, 0);
                         SoundManager::Get().StartSeqArc(4);
                     }
                     VEC_Add(&move, &hitOut, &move);
@@ -1060,9 +1060,9 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                             vel.z = a->z;
                             vel.y = vel.y * (none - 0x10000);
                             if (OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f == 2) {
-                                func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 1, &hit);
+                                GetObstacleNormal((BattleSphere *) &self.o, &vel, &obs.o, &move, 1, &hit);
                             } else {
-                                func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 0, &hit);
+                                GetObstacleNormal((BattleSphere *) &self.o, &vel, &obs.o, &move, 0, &hit);
                             }
                             if (move.x != 0 || move.z != 0) {
                                 SoundManager::Get().StartSeqArc(4);
@@ -1087,7 +1087,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                             break;
                         }
                         case 1:
-                            mUnk_1cd = 1;
+                            mInField = 1;
                             break;
                     }
                     break;
@@ -1099,7 +1099,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     vel.x = a->x;
                     vel.y = a->y;
                     vel.z = a->z;
-                    func_ov007_02257f3c(set, mCollision->mHitObstacleIndices[i], &vel, &move);
+                    HandleGimmickHit(set, mCollision->mHitObstacleIndices[i], &vel, &move);
                     marker = 0;
                     break;
             }
@@ -1111,8 +1111,8 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
         }
     }
     if (ceilingHit != 0) {
-        if (mUnk_1cd == 0) {
-            mUnk_1cd = 1;
+        if (mInField == 0) {
+            mInField = 1;
         }
     }
     if (a->y > 0 && move.y > 0) {
@@ -1120,7 +1120,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     }
     if (!(move.x == 0 && move.y == 0 && move.z == 0)) {
         VecFx32 pos = mBakugan->mPosition;
-        mUnk_1e3    = 1;
+        mCollided    = 1;
         if (move.x != 0) {
             pos.x = mPrevPosition.x;
         }
@@ -1131,39 +1131,39 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
         if (move.z != 0) {
             pos.z = mPrevPosition.z;
         }
-        func_ov007_022337ec(&mVelocity, &mUnk_a0, &mUnk_ac, &mUnk_b8, &move, *c, *d, movedNow);
-        fx32 mag = VEC_Mag(&mUnk_a0);
+        func_ov007_022337ec(&mVelocity, &mBaseVelocity, &mPushVelocity, &mUnk_b8, &move, *c, *d, movedNow);
+        fx32 mag = VEC_Mag(&mBaseVelocity);
         if (moved != 0 && mag <= 0x1000 && move.y != 0) {
             if (ABS(move.x) <= 0x800) {
                 if (move.x < 0) {
-                    mUnk_a0.x = -0x800;
+                    mBaseVelocity.x = -0x800;
                 } else {
-                    mUnk_a0.x = 0x800;
+                    mBaseVelocity.x = 0x800;
                 }
             } else {
-                mUnk_a0.x = move.x;
+                mBaseVelocity.x = move.x;
             }
             if (ABS(move.z) <= 0x800) {
                 if (move.z < 0) {
-                    mUnk_a0.z = -0x800;
+                    mBaseVelocity.z = -0x800;
                 } else {
-                    mUnk_a0.z = 0x800;
+                    mBaseVelocity.z = 0x800;
                 }
             } else {
-                mUnk_a0.z = move.z;
+                mBaseVelocity.z = move.z;
             }
-            mUnk_a0.y += 0x1000;
+            mBaseVelocity.y += 0x1000;
         }
         if (move.y != 0 && marker != none) {
-            mUnk_38 = none - 0x10000;
+            mAirFrames = none - 0x10000;
         }
         mBakugan->mPosition = pos;
     }
     if (move.y != 0) {
-        mUnk_148 = mPrevPosition.y;
+        mVerticalContactY = mPrevPosition.y;
     }
-    if (mUnk_1cd == 0) {
-        mUnk_1d2 = 0;
+    if (mInField == 0) {
+        mResult = 0;
         mUnk_1cb = 1;
         if (mUnk_1c6 == 0) {
             mUnk_1c6 = 1;
@@ -1172,51 +1172,51 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     *b = move;
 }
 
-void BattleTarget::func_ov007_02255640() {
+void BattleTarget::UpdateMove() {
     u32 outA = 0;
     u32 outB = 0;
     mBounceFactor = 0x533;
     if (func_ov007_022583b8()) {
         if (!func_ov007_02259af0()) {
-            if (func_ov007_0225a278()) {
+            if (TryRestOnCell()) {
                 return;
             }
-            func_ov007_02254ae8(&mVelocity, &mUnk_7c, &outA, &outB);
+            UpdateCollisions(&mVelocity, &mCollisionNormal, &outA, &outB);
         }
         StopSoundAfterVentKaze();
         mUnk_1ca = 0;
         if (data_020d433c.mTutorialId == 0 && mUnk_1dd != 4) {
-            if ((mUnk_38 == 0 && mUnk_40 != -1) || mUnk_38 == -1) {
+            if ((mAirFrames == 0 && mUnk_40 != -1) || mAirFrames == -1) {
                 if (mUnk_50 != 0) {
                     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mUnk_dc != 0) {
                         u8 n = player->mUnk_e0;
                         if (n < 3) {
-                            mUnk_a0.y += (3 - n) * 0x2666 / 3;
+                            mBaseVelocity.y += (3 - n) * 0x2666 / 3;
                             SoundManager::Get().StartSeqArc(0x43);
                             n        = n + 1;
                             mUnk_1ca = 1;
                         }
                         data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e0 = n;
-                        VEC_Add(&mUnk_a0, &mUnk_ac, &mUnk_a0);
-                        mUnk_ac.x = 0;
-                        mUnk_ac.y = 0;
-                        mUnk_ac.z = 0;
+                        VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
+                        mPushVelocity.x = 0;
+                        mPushVelocity.y = 0;
+                        mPushVelocity.z = 0;
                     }
                     player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mUnk_e4 != 0) {
                         u8 n = player->mUnk_e8;
                         if (n < 3) {
-                            mUnk_a0.y += (3 - n) * 0x2666 / 3;
+                            mBaseVelocity.y += (3 - n) * 0x2666 / 3;
                             SoundManager::Get().StartSeqArc(0x43);
                             n        = n + 1;
                             mUnk_1ca = 1;
                         }
                         data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e8 = n;
-                        VEC_Add(&mUnk_a0, &mUnk_ac, &mUnk_a0);
-                        mUnk_ac.x = 0;
-                        mUnk_ac.y = 0;
-                        mUnk_ac.z = 0;
+                        VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
+                        mPushVelocity.x = 0;
+                        mPushVelocity.y = 0;
+                        mPushVelocity.z = 0;
                     }
                 }
             }
@@ -1228,12 +1228,12 @@ void BattleTarget::func_ov007_02255640() {
         mPrevVelocity.x                = mVelocity.x;
         mPrevVelocity.y                = mVelocity.y;
         mPrevVelocity.z                = mVelocity.z;
-        mUnk_1d1                 = mUnk_1d0;
+        mPrevLanded                 = mLanded;
         mPrevHitGimmickType                 = mHitGimmickType;
-        mUnk_40                  = mUnk_38;
+        mUnk_40                  = mAirFrames;
         if (mUnk_1dd != 6) {
             pose = mBakugan;
-            func_ov007_0225745c(&pose->mPosition, &pose->mRotX, &mVelocity, &mUnk_a0, &mUnk_ac, &mUnk_38, mUnk_1ca, 0);
+            IntegrateMotion(&pose->mPosition, &pose->mRotX, &mVelocity, &mBaseVelocity, &mPushVelocity, &mAirFrames, mUnk_1ca, 0);
         }
     } else {
         BakuganModel *pose = mBakugan;
@@ -1242,21 +1242,21 @@ void BattleTarget::func_ov007_02255640() {
         mPrevPosition.z                = pose->mPosition.z;
     }
     func_ov007_02258448();
-    func_ov007_022599fc();
-    func_ov007_02255b0c();
-    mUnk_3c = mUnk_38;
+    UpdateOnMarkerCell();
+    StartLandingSound();
+    mPrevAirFrames = mAirFrames;
     mMoveFrames++;
     if (mUnk_50 != 0) {
-        if (mUnk_1d0 != 0 && mMoveFrames % 30 == 0 && mSpKind != 2) {
+        if (mLanded != 0 && mMoveFrames % 30 == 0 && mSpKind != 2) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
-            mUnk_8c              = FX_Mul(mUnk_8c, data_ov007_0227a5e0.mUnk_c8[record->mUnk_02_6]);
+            mPushScale              = FX_Mul(mPushScale, sTables.mPushScaleFactors[record->mUnk_02_6]);
         }
         if (mSpKind != 2) {
             mUnk_50--;
         }
     } else {
         mUnk_44++;
-        mUnk_8c = 0;
+        mPushScale = 0;
     }
 }
 
@@ -1270,11 +1270,11 @@ void BattleTarget::StopSoundAfterVentKaze() {
     StopSeqArc(&SoundManager::Get(), 0xf, 0x3c);
 }
 
-void BattleTarget::func_ov007_02255b0c() {
-    if (mUnk_38 != 0) {
+void BattleTarget::StartLandingSound() {
+    if (mAirFrames != 0) {
         return;
     }
-    if (mUnk_3c < 10) {
+    if (mPrevAirFrames < 10) {
         return;
     }
     SoundManager::Get().StartSeqArc(4);
@@ -1305,7 +1305,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     target.x = camera->mTarget.x;
     target.y = camera->mTarget.y;
     target.z = camera->mTarget.z;
-    VEC_Subtract(&mUnk_194, &target, &diff);
+    VEC_Subtract(&mCameraBasePosition, &target, &diff);
     int angle = -(FX_Atan2Idx(diff.x, diff.z) + 0x4000);
     MTX_ApplyRotY33(&mtx, angle);
     MTX_MultVec33(vec, &mtx, &rotated);
@@ -1339,7 +1339,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                 mUnk_11c.z = mUnk_11c.z * 15 / 16;
                 mRotZAdjust   = mRotZAdjust * 15 / 16;
             }
-            switch (mUnk_1d2) {
+            switch (mResult) {
                 case 0:
                 case 1: {
                     s32 k = mUnk_14c;
@@ -1351,9 +1351,9 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                     tp.y = u.y + (mUnk_11c.y + 0x19000);
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
-                    MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mRotYAdjust));
+                    MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mUnk_f1] - mRotYAdjust));
                     MTX_MultVec33(&pos, &rot, &pos);
-                    MTX_MultVec33(&mUnk_188, &rot, &mUnk_188);
+                    MTX_MultVec33(&mCameraOffset, &rot, &mCameraOffset);
                     pos.x = FX_Mul(pos.x, ident._[4]);
                     pos.z = FX_Mul(pos.z, ident._[8]);
                     if (target == 0) {
@@ -1361,17 +1361,17 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                     } else {
                         SetVec(&cam, target->x + pos.x, pos.y + mBakugan->mPosition.y + 0x4000, target->z + pos.z);
                     }
-                    curr = mUnk_194;
+                    curr = mCameraBasePosition;
                     VEC_Subtract(&curr, &cam, &diff);
                     s32 scale = mUnk_184;
                     diff.x    = FX_Mul(diff.x, scale);
                     diff.y    = FX_Mul(diff.y, scale);
                     diff.z    = FX_Mul(diff.z, scale);
-                    VEC_Add(&cam, &diff, &mUnk_194);
+                    VEC_Add(&cam, &diff, &mCameraBasePosition);
                     VecFx32 t;
-                    t.z = mUnk_188.z + (cam.z + diff.z);
-                    t.y = mUnk_188.y + (cam.y + diff.y);
-                    t.x = mUnk_188.x + (cam.x + diff.x);
+                    t.z = mCameraOffset.z + (cam.z + diff.z);
+                    t.y = mCameraOffset.y + (cam.y + diff.y);
+                    t.x = mCameraOffset.x + (cam.x + diff.x);
                     mCamera->mPosition = t;
                     return;
                 }
@@ -1388,24 +1388,24 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                         SetVec(&mCamera->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
                     }
                     Camera *c = mCamera;
-                    mUnk_194.x = c->mPosition.x;
-                    mUnk_194.y = c->mPosition.y;
-                    mUnk_194.z = c->mPosition.z;
+                    mCameraBasePosition.x = c->mPosition.x;
+                    mCameraBasePosition.y = c->mPosition.y;
+                    mCameraBasePosition.z = c->mPosition.z;
                     return;
                 }
                 case 4: {
-                    u8 slot = mUnk_1dc;
+                    u8 slot = mUnitHitCount;
                     if (slot == 0) {
                         return;
                     }
                     if (mSpKind == 1) {
-                        pos.x = data_ov007_0227a5e0.mUnk_124[slot - 1].x;
-                        pos.y = data_ov007_0227a5e0.mUnk_124[slot - 1].y;
-                        pos.z = data_ov007_0227a5e0.mUnk_124[slot - 1].z;
+                        pos.x = sTables.mSpKind1HitCameraOffsets[slot - 1].x;
+                        pos.y = sTables.mSpKind1HitCameraOffsets[slot - 1].y;
+                        pos.z = sTables.mSpKind1HitCameraOffsets[slot - 1].z;
                     } else {
-                        pos.x = data_ov007_0227a5e0.mUnk_148[slot - 1].x;
-                        pos.y = data_ov007_0227a5e0.mUnk_148[slot - 1].y;
-                        pos.z = data_ov007_0227a5e0.mUnk_148[slot - 1].z;
+                        pos.x = sTables.mHitCameraOffsets[slot - 1].x;
+                        pos.y = sTables.mHitCameraOffsets[slot - 1].y;
+                        pos.z = sTables.mHitCameraOffsets[slot - 1].z;
                     }
                     MTX_ApplyRotY33(&rot, mBakugan->mRotY);
                     MTX_MultVec33(&pos, &rot, &pos);
@@ -1415,9 +1415,9 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                         SetVec(&mCamera->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
                     }
                     Camera *c = mCamera;
-                    mUnk_194.x = c->mPosition.x;
-                    mUnk_194.y = c->mPosition.y;
-                    mUnk_194.z = c->mPosition.z;
+                    mCameraBasePosition.x = c->mPosition.x;
+                    mCameraBasePosition.y = c->mPosition.y;
+                    mCameraBasePosition.z = c->mPosition.z;
                     return;
                 }
                 default:
@@ -1430,7 +1430,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             tp.y = mUnk_11c.y + 0x19000;
             tp.x = mUnk_11c.x + 0x37000;
             pos = tp;
-            MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mRotYAdjust));
+            MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mUnk_f1] - mRotYAdjust));
             MTX_MultVec33(&pos, &rot, &pos);
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
@@ -1439,7 +1439,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             t.y = pos.y + mBakugan->mPosition.y + 0x4000;
             t.x = pos.x + mBakugan->mPosition.x;
             cam = t;
-            SetVec(&v, mBakugan->mPosition.x, data_ov007_0227a5e0.mUnk_104[data_020d433c.mFieldId], mBakugan->mPosition.z);
+            SetVec(&v, mBakugan->mPosition.x, sTables.mUnk_104[data_020d433c.mFieldId], mBakugan->mPosition.z);
             if (v.x < 0) {
                 v.x = v.x - 0x14000;
             } else {
@@ -1450,7 +1450,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             } else {
                 v.z = v.z + 0x14000;
             }
-            RotateVecY(&v, mUnk_1b0, &v);
+            RotateVecY(&v, mCameraRotY, &v);
             VEC_Subtract(&v, &cam, &diff);
             fx32 dz = FX_Div(diff.z, 0x14000);
             fx32 dy = FX_Div(diff.y, 0x14000);
@@ -1514,42 +1514,42 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             MTX_ApplyRotY33(&rot, (u16) (FX_Atan2Idx(mPrevVelocity.x, mPrevVelocity.z) - 0xa000));
             s32 a = FX_Atan2Idx(mPrevVelocity.y, 0x1000);
             MTX_MultVec33(&pos, &rot, &pos);
-            MTX_MultVec33(&mUnk_188, &rot, &mUnk_188);
+            MTX_MultVec33(&mCameraOffset, &rot, &mCameraOffset);
             pos.y = FX_Mul(pos.y, -FX_SinCosTable_[(a >> 4) * 2]) + 0x5a000;
-            cam.x = mUnk_194.x;
-            cam.y = mUnk_194.y;
-            cam.z = mUnk_194.z;
+            cam.x = mCameraBasePosition.x;
+            cam.y = mCameraBasePosition.y;
+            cam.z = mCameraBasePosition.z;
             VEC_Add(&pos, &mBakugan->mPosition, &pos);
             VEC_Subtract(&cam, &pos, &u);
             s32 scale = mUnk_184;
             u.x       = FX_Mul(u.x, scale);
             u.y       = FX_Mul(u.y, scale);
             u.z       = FX_Mul(u.z, scale);
-            SetVec(&mUnk_194, cam.x - u.x, mBakugan->mPosition.y + 0x5a000, cam.z - u.z);
-            VEC_Add(&cam, &mUnk_188, &cam);
+            SetVec(&mCameraBasePosition, cam.x - u.x, mBakugan->mPosition.y + 0x5a000, cam.z - u.z);
+            VEC_Add(&cam, &mCameraOffset, &cam);
             SetVec(&mCamera->mPosition, cam.x - u.x, mBakugan->mPosition.y + 0x5a000, cam.z - u.z);
             return;
         }
         case 5:
-            func_ov007_022567ac();
+            UpdateJumpObjCameraPosition();
             return;
         case 6:
             return;
     }
 }
 
-void BattleTarget::func_ov007_022567ac() {
+void BattleTarget::UpdateJumpObjCameraPosition() {
     VecFx32 c;
     VecFx32 b;
     VecFx32 a;
     VecFx32 dir;
     MtxFx33 mtx = data_0220e848;
-    switch (mUnk_1e6) {
+    switch (mJumpObjCameraStep) {
         case 0: {
             mUnk_184 = 0x333;
-            a.x     = mUnk_194.x;
-            a.y     = mUnk_194.y;
-            a.z     = mUnk_194.z;
+            a.x     = mCameraBasePosition.x;
+            a.y     = mCameraBasePosition.y;
+            a.z     = mCameraBasePosition.z;
             VecFx32 t;
             t.z = -mVelocity.z;
             t.y = -mVelocity.y;
@@ -1580,48 +1580,48 @@ void BattleTarget::func_ov007_022567ac() {
             t2.z = a.z - b.z;
             t2.y = a.y - b.y;
             t2.x = a.x - b.x;
-            mUnk_194 = t2;
+            mCameraBasePosition = t2;
             mUnk_17c--;
             if (mUnk_17c == 0) {
-                mUnk_1e6++;
+                mJumpObjCameraStep++;
             }
             break;
         }
         case 1: {
             mUnk_184 = 0x148;
-            a.x = mUnk_194.x;
-            a.y = mUnk_194.y;
-            a.z = mUnk_194.z;
+            a.x = mCameraBasePosition.x;
+            a.y = mCameraBasePosition.y;
+            a.z = mCameraBasePosition.z;
             VEC_Subtract(&mBakugan->mPosition, &a, &b);
             if (VEC_Mag(&b) >= 0x5f000) {
-                mUnk_1e6++;
-                mUnk_1e5 = 1;
+                mJumpObjCameraStep++;
+                mResetCameraOffset = 1;
             }
             break;
         }
         case 2: {
             mUnk_184 = 0x148;
-            a.x = mUnk_194.x;
-            a.y = mUnk_194.y;
-            a.z = mUnk_194.z;
+            a.x = mCameraBasePosition.x;
+            a.y = mCameraBasePosition.y;
+            a.z = mCameraBasePosition.z;
             VEC_Subtract(&mBakugan->mPosition, &a, &b);
             c.x = 0x2f800;
             c.y = 0x2f800;
             c.z = 0x2f800;
             MTX_ApplyRotY33(&mtx, FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000);
             MTX_MultVec33(&c, &mtx, &c);
-            MTX_MultVec33(&mUnk_188, &mtx, &mUnk_188);
+            MTX_MultVec33(&mCameraOffset, &mtx, &mCameraOffset);
             u16 pitch = FX_Atan2Idx(mVelocity.y, 0x1000);
             c.y       = FX_Mul(c.y, -FX_SinCosTable_[(pitch >> 4) * 2]);
             VEC_Add(&c, &mBakugan->mPosition, &c);
-            VEC_Add(&c, &data_ov007_0227a5e0.mUnk_44, &c);
+            VEC_Add(&c, &sTables.mJumpObjCameraOffset, &c);
             VEC_Subtract(&a, &c, &b);
             fx32 k = mUnk_184;
             b.x = FX_Mul(b.x, k);
             b.y = FX_Mul(b.y, k);
             b.z = FX_Mul(b.z, k);
-            SetVec(&mUnk_194, a.x - b.x, a.y - b.y, a.z - b.z);
-            VEC_Subtract(&b, &mUnk_188, &b);
+            SetVec(&mCameraBasePosition, a.x - b.x, a.y - b.y, a.z - b.z);
+            VEC_Subtract(&b, &mCameraOffset, &b);
             VecFx32 t;
             t.z = a.z - b.z;
             t.y = a.y - b.y;
@@ -1725,8 +1725,8 @@ void BattleTarget::UpdateCameraTarget(VecFx32 *target) {
         }
         case 2: {
             BakuganModel *pose = mBakugan;
-            SetVec(&mCamera->mTarget, pose->mPosition.x, mUnk_180 + pose->mPosition.y, pose->mPosition.z);
-            mUnk_180                 = FX_Mul(mUnk_180, -0xf33);
+            SetVec(&mCamera->mTarget, pose->mPosition.x, mCameraShakeY + pose->mPosition.y, pose->mPosition.z);
+            mCameraShakeY                 = FX_Mul(mCameraShakeY, -0xf33);
             return;
         }
         case 3: {
@@ -1756,24 +1756,24 @@ void BattleTarget::UpdateCamera() {
     SnapshotCamera();
 }
 
-void BattleTarget::func_ov007_022573e4() {
+void BattleTarget::UpdateCameraAndDraw() {
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14 == 0) {
         UpdateCamera();
     }
     if (mStatusPanels) {
         mStatusPanels->DrawPanels();
-        func_ov007_0225cb7c();
+        DrawBar();
     }
     if (mState != 0xd && mState != 0xe) {
-        func_ov007_0225ca48(0xff, 0xff);
+        DrawRecordTotal(0xff, 0xff);
     }
     if (mBakugan) {
         mBakugan->DrawModel();
     }
 }
 
-void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag,
+void BattleTarget::IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag,
                                        u32 mode) {
     float angle = 0;
     VecFx32 tmp = {0, 0, 0};
@@ -1794,16 +1794,16 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             angle += 360.0f;
         }
     }
-    LimitSumLength(&mUnk_ac, &mUnk_c8);
-    VEC_Add(&mUnk_ac, &mUnk_c8, &mUnk_ac);
-    mUnk_c8.x = 0;
-    mUnk_c8.y = 0;
-    mUnk_c8.z = 0;
+    LimitSumLength(&mPushVelocity, &mPushPerFrame);
+    VEC_Add(&mPushVelocity, &mPushPerFrame, &mPushVelocity);
+    mPushPerFrame.x = 0;
+    mPushPerFrame.y = 0;
+    mPushPerFrame.z = 0;
     if (flag == 0) {
         if (pos->y >= 0x899a && *counter != 0) {
             goto airborne;
         }
-        if (mUnk_1cd != 0 || mUnk_1e9 != 0) {
+        if (mInField != 0 || mUnk_1e9 != 0) {
             b->y = 0;
             if (a->y < 0) {
                 a->y = FX_Mul(a->y, -mBounceFactor);
@@ -1849,7 +1849,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
                 mUnk_b8.z = FX_Mul(mUnk_b8.z, 0xfae);
             }
             if (pos->y < 0x899a) {
-                mUnk_148 = 0x899a;
+                mVerticalContactY = 0x899a;
                 pos->y   = 0x8999;
             }
             *counter = 0;
@@ -1869,7 +1869,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             vt.x = a->x + b->x;
             *vel = vt;
         }
-        mUnk_1d0 = 1;
+        mLanded = 1;
     } else {
     airborne:
         a->y = a->y - mGravityPerFrame;
@@ -1911,8 +1911,8 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             b->x   = 0;
             b->y   = 0;
             b->z   = 0;
-            if (mUnk_1d2 == 0) {
-                mUnk_1d2 = 1;
+            if (mResult == 0) {
+                mResult = 1;
             }
             mUnk_1c6 = 1;
             mRestFrames  = 0;
@@ -1958,7 +1958,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
     pos->z += vel->z + tmp.z;
 }
 
-BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, u8 flag, u8 *outFlag) {
+BOOL BattleTarget::GetObstacleNormal(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, u8 flag, u8 *outFlag) {
     BattleHitBox box;
     VecFx32 center = sphere->mPos;
     BattleSphere ball;
@@ -1977,7 +1977,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
                 box.mRotY  = obj->mRotY;
                 box.mRotZ  = obj->mRotZ;
                 SetSphere(&ball, &center, sphere->mRadius);
-                if (func_ov007_0225ac28(&box, &ball, dir, out, flag, outFlag)) {
+                if (GetHitBoxNormal(&box, &ball, dir, out, flag, outFlag)) {
                     return 1;
                 }
                 if (outFlag == 0) {
@@ -2021,7 +2021,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
 }
 
 
-void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out) {
+void BattleTarget::HandleGimmickHit(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out) {
     fx32 mag = VEC_Mag(vel);
     BattleObstacle self = *(BattleObstacle *) ((u8 *) mCollision + 0x10);
     BattleObstacle *selfp = &self;
@@ -2041,20 +2041,20 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
             AddRotAtOnce(&self, mCollision);
             VEC_Add(&other.mPos, &set->mPosition, &other.mPos);
             AddRotAtOnceFields(&other, set);
-            func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
+            GetObstacleNormal((BattleSphere *) &self, vel, &other, out, 0, 0);
             if (out->x != 0 || out->z != 0) {
                 SoundManager::Get().StartSeqArc(4);
             }
             if (out->y > 0) {
-                if (mUnk_38 > 10) {
+                if (mAirFrames > 10) {
                     SoundManager::Get().StartSeqArc(4);
                 }
                 mPrevPosition.y = other.mPos.y + other.mHalfY + self.mHalfY;
             }
             break;
         case GIMMICK_TYPE_JUMP_OBJ:
-            if (mUnk_1e0 == 3) {
-                mUnk_1e0 = 0;
+            if (mShotSpKind == 3) {
+                mShotSpKind = 0;
             }
             break;
         case GIMMICK_TYPE_HAOS_BALL:
@@ -2073,11 +2073,11 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
             break;
         case GIMMICK_TYPE_TORNADO:
             if (record->mAttribute != 5) {
-                mUnk_144 = &set->mPosition;
+                mTornadoPosition = &set->mPosition;
                 mUnk_1dd = 1;
             }
-            if (mUnk_1e0 == 3) {
-                mUnk_1e0 = 0;
+            if (mShotSpKind == 3) {
+                mShotSpKind = 0;
             }
             break;
         case GIMMICK_TYPE_VENT_KAZE:
@@ -2095,11 +2095,11 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
             VEC_Add(&other.mPos, &set->mPosition, &other.mPos);
             AddRotAtOnceFields(&other, set);
             if (mag < 0x6800) {
-                func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
+                GetObstacleNormal((BattleSphere *) &self, vel, &other, out, 0, 0);
             }
             break;
         case GIMMICK_TYPE_HAOS_WALL:
-            mUnk_1cd = 1;
+            mInField = 1;
             break;
     }
 }
@@ -2145,21 +2145,21 @@ void BattleTarget::func_ov007_02258448() {
             mUnk_1db = 0;
             break;
         case 1:
-            func_ov007_02259494(mUnk_144);
+            UpdateTornado(mTornadoPosition);
             break;
         case 2:
             func_ov007_022585e0();
             break;
         case 3:
-            func_ov007_02258edc();
+            UpdateUnitHoming();
             mUnk_184 = 0x19a;
             break;
         case 4:
-            func_ov007_022593b4();
+            UpdateJumpObj();
             break;
         case 5: {
             VecFx32 pos = mBakugan->mPosition;
-            mUnk_1cd    = 0;
+            mInField    = 0;
             mGravityPerFrame     = 0x29;
             mCameraMode    = 6;
             mVelocity.y -= mGravityPerFrame;
@@ -2172,15 +2172,15 @@ void BattleTarget::func_ov007_02258448() {
         }
         case 6:
             mCameraMode = 0;
-            mUnk_1d2 = 4;
+            mResult = 4;
             data_020d433c.mGimmicks->mState = 0;
-            func_ov007_02258660();
+            UpdateUnitHit();
             break;
         case 7:
-            func_ov007_0225897c();
+            UpdateHaosWall();
             break;
         case 8:
-            func_ov007_02258a34();
+            UpdateIkazuchi();
             break;
     }
 }
@@ -2210,40 +2210,40 @@ void BattleTarget::func_ov007_022585e0() {
     }
 }
 
-void BattleTarget::func_ov007_02258660() {
+void BattleTarget::UpdateUnitHit() {
     switch (mUnk_1db) {
         case 0: {
             mUnk_1db++;
-            func_ov007_02258cec(&mUnk_15c, &mUnk_168, &mUnk_134, mUnk_1de);
+            StartUnitHit(&mUnitHitBakuganPosition, &mHitUnitPosition, &mUnitHitVelocity, mHitUnitHandle);
             if (mSpKind == 1) {
-                mUnk_140 = data_ov007_0227a5e0.mUnk_00[mUnk_1dc];
+                mUnk_140 = sTables.mSpKind1HitFrameCounts[mUnitHitCount];
             } else {
-                mUnk_140 = data_ov007_0227a5e0.mUnk_04[mUnk_1dc];
+                mUnk_140 = sTables.mHitFrameCounts[mUnitHitCount];
             }
             mVelocity.x = 0;
             mVelocity.y = 0;
             mVelocity.z = 0;
-            mUnk_a0.x = 0;
-            mUnk_a0.y = 0;
-            mUnk_a0.z = 0;
-            mUnk_ac.x = 0;
-            mUnk_ac.y = 0;
-            mUnk_ac.z = 0;
+            mBaseVelocity.x = 0;
+            mBaseVelocity.y = 0;
+            mBaseVelocity.z = 0;
+            mPushVelocity.x = 0;
+            mPushVelocity.y = 0;
+            mPushVelocity.z = 0;
             mUnk_b8.x = 0;
             mUnk_b8.y = 0;
             mUnk_b8.z = 0;
             SoundManager::Get().StartSeqArc(0x3c);
-            mUnk_1c2 = StartEffect(data_020d433c.mEffects, 1, 1, 0, 0);
-            if (mUnk_1c2 != 0) {
+            mUnitHitEffectHandle = StartEffect(data_020d433c.mEffects, 1, 1, 0, 0);
+            if (mUnitHitEffectHandle != 0) {
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
                 mtx._[11]   = 0;
                 mtx._[10]   = 0;
                 mtx._[9]    = 0;
                 MTX_SetTranslation43(&mtx, &mBakugan->mPosition);
-                SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
+                SetEffectMatrix(data_020d433c.mEffects, mUnitHitEffectHandle, &mtx);
             }
-            mUnk_1dc++;
-            if (mUnk_1dc <= 2) {
+            mUnitHitCount++;
+            if (mUnitHitCount <= 2) {
                 return;
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -2253,10 +2253,10 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_140               = 0;
             mUnk_1cf               = 1;
             mUnk_1c6               = 1;
-            FindMarkerCellAt(&mUnk_168, &a, &b);
+            FindMarkerCellAt(&mHitUnitPosition, &a, &b);
             mUnitHandle = AddUnit(list, &mBakugan->mPosition, mBakugan->mRotY, mPlayer, mRecord,
                                            list->mMarkerHandles[a][b] - 1, 1);
-            SetUnitAB(list, mUnk_1de - 1, *(u8 *) &list->mUnitHandles[a][b] - 1);
+            SetUnitAB(list, mHitUnitHandle - 1, *(u8 *) &list->mUnitHandles[a][b] - 1);
             new BattleCardEffect(0x1000, 0, 1, 0);
             break;
         }
@@ -2272,7 +2272,7 @@ void BattleTarget::func_ov007_02258660() {
     }
 }
 
-void BattleTarget::func_ov007_0225897c() {
+void BattleTarget::UpdateHaosWall() {
     switch (mUnk_1db) {
         case 0:
             mBakugan->mVisible = 0;
@@ -2289,7 +2289,7 @@ void BattleTarget::func_ov007_0225897c() {
             mBakugan->mVisible = 1;
             mUnk_1db          = 0;
             mUnk_1dd          = 0;
-            if (mUnk_1e0 == 3) {
+            if (mShotSpKind == 3) {
                 mUnk_1dd = 2;
             }
             BattleCpu *fighter = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCpu;
@@ -2300,12 +2300,12 @@ void BattleTarget::func_ov007_0225897c() {
     }
 }
 
-void BattleTarget::func_ov007_02258a34() {
+void BattleTarget::UpdateIkazuchi() {
     switch (mUnk_1db) {
         case 0: {
             mCameraMode = 6;
-            if (mUnk_1e0 == 3) {
-                mUnk_1e0 = 0;
+            if (mShotSpKind == 3) {
+                mShotSpKind = 0;
             }
             mUnk_1db++;
             u16 handle = StartEffect(data_020d433c.mEffects, 1, 5, 0, 0);
@@ -2314,7 +2314,7 @@ void BattleTarget::func_ov007_02258a34() {
             }
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
             VecFx32 a   = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
-            VecFx32 b   = data_ov007_0227a5e0.mUnk_2c;
+            VecFx32 b   = sTables.mIkazuchiEffectOffset;
             mtx._[11]   = 0;
             mtx._[10]   = 0;
             mtx._[9]    = 0;
@@ -2359,7 +2359,7 @@ void BattleTarget::func_ov007_02258a34() {
     }
 }
 
-BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
+BOOL BattleTarget::StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
     BattleMoveState state;
     u8 y = 0;
     u8 x = 0;
@@ -2391,7 +2391,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
         pose->mRotY       = rotY;
         pose->mRotZ       = rotZ;
         mBakugan->mAnimUpdateEnabled = 1;
-        mUnk_1d2          = 4;
+        mResult          = 4;
         other->mPosition.x = b->x;
         other->mPosition.y = b->y;
         other->mPosition.z = b->z;
@@ -2421,7 +2421,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     return 0;
 }
 
-void BattleTarget::func_ov007_02258edc() {
+void BattleTarget::UpdateUnitHoming() {
     VecFx32 v3c;
     VecFx32 v30;
     VecFx32 pos = mBakugan->mPosition;
@@ -2478,12 +2478,12 @@ void BattleTarget::func_ov007_02258edc() {
             v30.x = FX_Mul(v30.x, 0x19a);
             v30.y = FX_Mul(v30.y, 0x19a);
             v30.z = FX_Mul(v30.z, 0x19a);
-            mUnk_a0.x = v30.x;
-            mUnk_a0.y = v30.y;
-            mUnk_a0.z = v30.z;
-            mVelocity.x = mUnk_a0.x;
-            mVelocity.y = mUnk_a0.y;
-            mVelocity.z = mUnk_a0.z;
+            mBaseVelocity.x = v30.x;
+            mBaseVelocity.y = v30.y;
+            mBaseVelocity.z = v30.z;
+            mVelocity.x = mBaseVelocity.x;
+            mVelocity.y = mBaseVelocity.y;
+            mVelocity.z = mBaseVelocity.z;
             VEC_Add(&pos, &v30, &pos);
             break;
         }
@@ -2515,16 +2515,16 @@ void BattleTarget::func_ov007_02258edc() {
             mUnk_b8.x = i;
             mUnk_b8.y = i;
             mUnk_b8.z = i;
-            mUnk_ac.x = i;
-            mUnk_ac.y = i;
-            mUnk_ac.z = i;
-            VEC_Normalize(&mUnk_a0, &mUnk_a0);
-            mUnk_a0.x = FX_Mul(mUnk_a0.x, 0x3000);
-            mUnk_a0.y = FX_Mul(mUnk_a0.y, 0x3000);
-            mUnk_a0.z = FX_Mul(mUnk_a0.z, 0x3000);
-            mVelocity.x = mUnk_a0.x;
-            mVelocity.y = mUnk_a0.y;
-            mVelocity.z = mUnk_a0.z;
+            mPushVelocity.x = i;
+            mPushVelocity.y = i;
+            mPushVelocity.z = i;
+            VEC_Normalize(&mBaseVelocity, &mBaseVelocity);
+            mBaseVelocity.x = FX_Mul(mBaseVelocity.x, 0x3000);
+            mBaseVelocity.y = FX_Mul(mBaseVelocity.y, 0x3000);
+            mBaseVelocity.z = FX_Mul(mBaseVelocity.z, 0x3000);
+            mVelocity.x = mBaseVelocity.x;
+            mVelocity.y = mBaseVelocity.y;
+            mVelocity.z = mBaseVelocity.z;
             if (mShotEffectHandle != 0) {
                 FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
             }
@@ -2539,12 +2539,12 @@ void BattleTarget::func_ov007_02258edc() {
     mBakugan->SetRotation(rot);
 }
 
-void BattleTarget::func_ov007_022593b4() {
+void BattleTarget::UpdateJumpObj() {
     switch (mUnk_1db) {
         case 0:
             mUnk_1cc = 1;
             mCameraMode = 5;
-            mUnk_1e6 = 0;
+            mJumpObjCameraStep = 0;
             mUnk_17c = 10;
             mGravityPerFrame  = 0xa4;
             mUnk_1db++;
@@ -2555,7 +2555,7 @@ void BattleTarget::func_ov007_022593b4() {
                 if (mUnk_1cc == 0) {
                     return;
                 }
-                if (mUnk_38 != 0) {
+                if (mAirFrames != 0) {
                     return;
                 }
             }
@@ -2578,7 +2578,7 @@ void BattleTarget::func_ov007_022593b4() {
     }
 }
 
-void BattleTarget::func_ov007_02259494(VecFx32 *target) {
+void BattleTarget::UpdateTornado(VecFx32 *target) {
     VecFx32 pos     = mBakugan->mPosition;
     VecFx32 tgt     = *target;
     VecFx32 d;
@@ -2598,7 +2598,7 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
             d.x = FX_Mul(d.x, 0x666);
             d.y = FX_Mul(d.y, 0x666);
             d.z = FX_Mul(d.z, 0x666);
-            VEC_Add(&mUnk_a0, &d, &mUnk_a0);
+            VEC_Add(&mBaseVelocity, &d, &mBaseVelocity);
             if (!(mVelocity.x == 0 && mVelocity.y == 0 && mVelocity.z == 0)) {
                 SetVec(&v20, mVelocity.x, 0, mVelocity.z);
                 mag   = VEC_Mag(&v20);
@@ -2663,17 +2663,17 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
                 mUnk_b8.x = 0;
                 mUnk_b8.y = 0;
                 mUnk_b8.z = 0;
-                mUnk_ac.x = 0;
-                mUnk_ac.y = 0;
-                mUnk_ac.z = 0;
+                mPushVelocity.x = 0;
+                mPushVelocity.y = 0;
+                mPushVelocity.z = 0;
                 VEC_Normalize(&v14, &v14);
                 v14.x     = FX_Mul(v14.x, 0x3b33);
                 v14.y     = FX_Mul(v14.y, 0x3b33);
                 v14.z     = FX_Mul(v14.z, 0x3b33);
-                mUnk_148  = pos.y;
-                mUnk_a0.x = v14.x;
-                mUnk_a0.y = v14.y;
-                mUnk_a0.z = v14.z;
+                mVerticalContactY  = pos.y;
+                mBaseVelocity.x = v14.x;
+                mBaseVelocity.y = v14.y;
+                mBaseVelocity.z = v14.z;
                 mHitGimmickType  = 0;
                 mUnk_1dd  = 0;
                 StopSeqArc(&SoundManager::Get(), 0xf, 0x14);
@@ -2684,17 +2684,17 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
     mBakugan->SetRotation(rot);
 }
 
-void BattleTarget::func_ov007_022599fc() {
+void BattleTarget::UpdateOnMarkerCell() {
     u8 a = 0;
     u8 b = 0;
     if (FindMarkerCellAt(&mBakugan->mPosition, &a, &b)) {
-        mUnk_1da = 1;
+        mOnMarkerCell = 1;
     } else {
-        mUnk_1da = 0;
+        mOnMarkerCell = 0;
     }
 }
 
-void BattleTarget::func_ov007_02259a40(u8 a, u8 b, VecFx32 *out, VecFx32 *ref) {
+void BattleTarget::MoveClearOfUnit(u8 a, u8 b, VecFx32 *out, VecFx32 *ref) {
     VecFx32 pos;
     VecFx32 diff;
     VEC_Subtract(out, ref, &diff);
@@ -2725,18 +2725,18 @@ BOOL BattleTarget::func_ov007_02259af0() {
     state.mRot[2]     = 0;
     state.mMode       = MOVE_MODE_SLOW_LAUNCH_SPIN_X;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    if (mUnk_1e0 != 3) {
+    if (mShotSpKind != 3) {
         return 0;
     }
-    if (mUnk_7c.x != 0 || mUnk_7c.z != 0) {
+    if (mCollisionNormal.x != 0 || mCollisionNormal.z != 0) {
         mUnk_1db = 2;
-        mUnk_1e0 = 0;
+        mShotSpKind = 0;
         return 0;
     }
-    if (mUnk_38 == 0 && mMoveFrames != 0) {
-        mUnk_1e0 = 0;
+    if (mAirFrames == 0 && mMoveFrames != 0) {
+        mShotSpKind = 0;
         mUnk_1d6 = 0;
-        if (mUnk_148 != 0x899a || !FindMarkerCellAt(&mBakugan->mPosition, &a, &b)) {
+        if (mVerticalContactY != 0x899a || !FindMarkerCellAt(&mBakugan->mPosition, &a, &b)) {
             if (mUnk_1dd == 2) {
                 mUnk_1db = 2;
             }
@@ -2763,18 +2763,18 @@ BOOL BattleTarget::func_ov007_02259af0() {
             BattleUnit *unit = &list->mUnits[(u8) idx];
             if (data_020d433c.mTutorialId != 0 || (u8) (unit->mStatus + 0xfe) <= 1) {
                 if (unit->mPlayer == mPlayer) {
-                    mUnk_1d2 = 3;
+                    mResult = 3;
                     StartResult(this, 2);
                 } else if (unit->mPlayer == mPartner) {
-                    mUnk_1d2 = 1;
+                    mResult = 1;
                     func_ov007_0225b69c(a, b);
                     StartResult(this, 0x10);
                 } else {
-                    mUnk_1d2 = 3;
+                    mResult = 3;
                     StartResult(this, 0xa);
                 }
             } else if (unit->mPlayer == mPlayer || unit->mPlayer == mPartner) {
-                mUnk_1d2 = 2;
+                mResult = 2;
                 RemoveUnit(data_020d433c.mBattlePlayers, idx, 2);
                 StartResult(this, 0xa);
                 VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
@@ -2786,7 +2786,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                 }
                 list->mUnk_29c->StartMove(idx, &state);
             } else {
-                mUnk_1d2 = 4;
+                mResult = 4;
                 StartResult(this, 1);
                 VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
@@ -2797,15 +2797,15 @@ BOOL BattleTarget::func_ov007_02259af0() {
                 }
                 list->mUnk_29c->StartMove(idx, &state);
             }
-            if (mUnk_1d2 != 1) {
+            if (mResult != 1) {
                 pose     = mBakugan;
                 mUnitHandle = AddUnit(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
-                if (mUnk_1d2 != 2) {
+                if (mResult != 2) {
                     SetUnitAB(list, idx, (u8) list->mUnitHandles[a][b] - 1);
                 }
             }
         } else {
-            mUnk_1d2 = 2;
+            mResult = 2;
             pose     = mBakugan;
             mUnitHandle = AddUnit(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
             StartResult(this, 0xa);
@@ -2835,17 +2835,17 @@ BOOL BattleTarget::func_ov007_02259af0() {
             } while (j < 3);
             i++;
         } while (i < 3);
-        mUnk_180  = 0x3000;
+        mCameraShakeY  = 0x3000;
         mUnk_1c6  = 1;
         mVelocity.x = 0;
         mVelocity.y = 0;
         mVelocity.z = 0;
-        mUnk_a0.x = 0;
-        mUnk_a0.y = 0;
-        mUnk_a0.z = 0;
-        mUnk_ac.x = 0;
-        mUnk_ac.y = 0;
-        mUnk_ac.z = 0;
+        mBaseVelocity.x = 0;
+        mBaseVelocity.y = 0;
+        mBaseVelocity.z = 0;
+        mPushVelocity.x = 0;
+        mPushVelocity.y = 0;
+        mPushVelocity.z = 0;
         mUnk_b8.x = 0;
         mUnk_b8.y = 0;
         mUnk_b8.z = 0;
@@ -2854,14 +2854,14 @@ BOOL BattleTarget::func_ov007_02259af0() {
     return 0;
 }
 
-BOOL BattleTarget::func_ov007_0225a278() {
+BOOL BattleTarget::TryRestOnCell() {
     u8 a = 0;
     u8 b = 0;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (mUnk_1cf == 0) {
         BakuganModel *pose = mBakugan;
         if (pose->mPosition.y <= 0x899a) {
-            if (func_ov007_0225b4a0(&pose->mPosition, &pose->mRotX, &mVelocity, &a, &b)) {
+            if (CanRestOnCell(&pose->mPosition, &pose->mRotX, &mVelocity, &a, &b)) {
                 u8 cell = list->mMarkerHandles[a][b];
                 if (cell != 0) {
                     pose        = mBakugan;
@@ -2891,19 +2891,19 @@ BOOL BattleTarget::func_ov007_0225a278() {
                         BattleUnit *unit = &list->mUnits[(u8) (owner - 1)];
                         VecFx32 pos2     = mBakugan->mPosition;
                         VecFx32 ref      = unit->mPos;
-                        func_ov007_02259a40(a, b, &pos2, &ref);
+                        MoveClearOfUnit(a, b, &pos2, &ref);
                         pose              = mBakugan;
                         pose->mPosition.x = pos2.x;
                         pose->mPosition.y = pos2.y;
                         pose->mPosition.z = pos2.z;
-                        mUnk_1d2          = 3;
+                        mResult          = 3;
                         UpdateCameraPosition(0);
                         if (unit->mPlayer == mPlayer) {
                             StartResult(this, 2);
                         } else if (unit->mPlayer == mPartner) {
                             StartResult(this, 0x10);
                             func_ov007_0225b69c(a, b);
-                            mUnk_1d2 = 1;
+                            mResult = 1;
                             return 1;
                         } else {
                             StartResult(this, 0xa);
@@ -2914,7 +2914,7 @@ BOOL BattleTarget::func_ov007_0225a278() {
                     } else {
                         VecFx32 p3 = mBakugan->mPosition;
                         p3.y -= 0x64cd;
-                        mUnk_1d2 = 2;
+                        mResult = 2;
                         UpdateCameraPosition(0);
                         switch (mSpKind) {
                             case 5: {
@@ -3033,7 +3033,7 @@ BOOL BattleTarget::func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx3
     return 1;
 }
 
-BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag) {
+BOOL BattleTarget::GetHitBoxNormal(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag) {
     VecFx32 c[8];
     VecFx32 e1;
     VecFx32 e0;
@@ -3160,7 +3160,7 @@ BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, 
     return 1;
 }
 
-void BattleTarget::func_ov007_0225b298(s32 *pair, u8 mode, VecFx32 *out) {
+void BattleTarget::GetPushVector(s32 *pair, u8 mode, VecFx32 *out) {
     out->x = 0;
     out->y = 0;
     out->z = 0;
@@ -3203,7 +3203,7 @@ void BattleTarget::func_ov007_0225b298(s32 *pair, u8 mode, VecFx32 *out) {
     out->z = FX_Mul(out->z, 0x1000);
 }
 
-BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB) {
+BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB) {
     u8 a = 0;
     u8 b = 0;
     s32 speed;
@@ -3218,10 +3218,10 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
     }
     speed = z + x;
     record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
-    if (mUnk_1d1 != 0 && pos->y <= 0x899a) {
+    if (mPrevLanded != 0 && pos->y <= 0x899a) {
         u32 k = record->mUnk_02_9;
-        if (speed < data_ov007_0227a5e0.mUnk_f0[k]) {
-            u16 lim = data_ov007_0227a5e0.mUnk_16[k];
+        if (speed < sTables.mRestSpeedLimits[k]) {
+            u16 lim = sTables.mRestAngleLimits[k];
             if (!(*angle > lim && *angle < (u16) -lim)) {
                 if (FindMarkerCellAt(pos, &a, &b)) {
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -3282,9 +3282,9 @@ void BattleTarget::StartShot() {
     dir.y                = 0;
     dir.z                = 0;
     *(Rot3 *) rot = *(Rot3 *) player->mUnk_cc;
-    rot[1]               = rot[1] + data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1];
-    power             = (u8) (data_ov007_0227a754[record->mUnk_02_0] + player->mUnk_ec);
-    mUnk_50 = mUnk_54 = data_ov007_0227a5e0.mUnk_dc[record->mUnk_02_6];
+    rot[1]               = rot[1] + sTables.mBaseRotY[player->mUnk_f1];
+    power             = (u8) (sShotSpeedAdjusts[record->mUnk_02_0] + player->mUnk_ec);
+    mUnk_50 = mUnk_54 = sTables.mUnk_dc[record->mUnk_02_6];
     if (player->mUnk_ec == 0) {
         power = 10;
     }
@@ -3333,8 +3333,8 @@ void BattleTarget::StartShot() {
         case 3: {
             mUnk_1dd = 2;
             u8 k     = data_020d433c.mFieldId;
-            u16 a    = data_ov007_0227a5e0.mUnk_80[k];
-            u16 b    = data_ov007_0227a5e0.mUnk_90[k];
+            u16 a    = sTables.mSpKind3Speeds[k];
+            u16 b    = sTables.mSpKind3RotZ[k];
             rot[2]   = b;
             RotateDirScaled(rot, (u16) (a + 0x50), &dir, &vel);
             mShotEffectHandle  = StartEffect(data_020d433c.mEffects, 1, 0xb, 0, 0);
@@ -3345,24 +3345,24 @@ void BattleTarget::StartShot() {
             break;
         }
     }
-    mUnk_1e0  = mSpKind;
+    mShotSpKind  = mSpKind;
     mUnk_1be  = rot[1];
     SetVec(&mVelocity, vel.x, vel.y, vel.z);
-    mUnk_a0.x = mVelocity.x;
-    mUnk_a0.y = mVelocity.y;
-    mUnk_a0.z = mVelocity.z;
-    mUnk_a0.x = FX_Mul(mUnk_a0.x, 0xb800);
-    mUnk_a0.y = FX_Mul(mUnk_a0.y, 0xb800);
-    mUnk_a0.z = FX_Mul(mUnk_a0.z, 0xb800);
-    mUnk_ac.x = 0;
-    mUnk_ac.y = 0;
-    mUnk_ac.z = 0;
+    mBaseVelocity.x = mVelocity.x;
+    mBaseVelocity.y = mVelocity.y;
+    mBaseVelocity.z = mVelocity.z;
+    mBaseVelocity.x = FX_Mul(mBaseVelocity.x, 0xb800);
+    mBaseVelocity.y = FX_Mul(mBaseVelocity.y, 0xb800);
+    mBaseVelocity.z = FX_Mul(mBaseVelocity.z, 0xb800);
+    mPushVelocity.x = 0;
+    mPushVelocity.y = 0;
+    mPushVelocity.z = 0;
     mUnk_118  = player->mUnk_d8;
     mUnk_114  = -player->mUnk_d4;
-    func_ov007_0225b298((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
-    mUnk_ac.x = mUnk_94.x;
-    mUnk_ac.y = mUnk_94.y;
-    mUnk_ac.z = mUnk_94.z;
+    GetPushVector((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
+    mPushVelocity.x = mUnk_94.x;
+    mPushVelocity.y = mUnk_94.y;
+    mPushVelocity.z = mUnk_94.z;
     LoadCollisionFile(buf, 0xa);
     if (mSpKind != 5) {
         mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_BAKUGAN, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
@@ -3397,11 +3397,11 @@ void BattleTarget::StartShot() {
     mState++;
 }
 
-void BattleTarget::func_ov007_0225bf38() {
+void BattleTarget::AddPlayerPush() {
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
     mUnk_118             = player->mUnk_d8;
     mUnk_114             = player->mUnk_d4;
-    func_ov007_0225c098(&mUnk_114);
+    AddPushXZ(&mUnk_114);
 }
 
 void BattleTarget::LimitSumLength(VecFx32 *a, VecFx32 *b) {
@@ -3423,7 +3423,7 @@ void BattleTarget::LimitSumLength(VecFx32 *a, VecFx32 *b) {
     VEC_Subtract(b, &rest, b);
 }
 
-void BattleTarget::func_ov007_0225c098(s32 *pair) {
+void BattleTarget::AddPushXZ(s32 *pair) {
     VecFx32 target;
     VecFx32 cam;
     mUnk_118 = pair[1];
@@ -3431,52 +3431,52 @@ void BattleTarget::func_ov007_0225c098(s32 *pair) {
     if (mPlayer != data_020d433c.mBattlePlayers->mUnk_2a9 && data_020d433c.mTutorialId != 0) {
         return;
     }
-    if (mUnk_38 > 3) {
-        func_ov007_0225b298((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
+    if (mAirFrames > 3) {
+        GetPushVector((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
         Camera *camera = mCamera;
         target.x       = camera->mTarget.x;
         target.y       = camera->mTarget.y;
         target.z       = camera->mTarget.z;
-        cam.x          = mUnk_194.x;
-        cam.y          = mUnk_194.y;
-        cam.z          = mUnk_194.z;
+        cam.x          = mCameraBasePosition.x;
+        cam.y          = mCameraBasePosition.y;
+        cam.z          = mCameraBasePosition.z;
         func_ov007_02255b78(&target, &cam, &mUnk_94, &mUnk_94);
         if (mUnk_1dd == 2) {
             ScaleVec(&mUnk_94, 0x14000);
         } else {
             ScaleVec(&mUnk_94, 0x5000);
         }
-        VEC_Add(&mUnk_c8, &mUnk_94, &mUnk_c8);
-    } else if (mUnk_8c >= 0x800) {
+        VEC_Add(&mPushPerFrame, &mUnk_94, &mPushPerFrame);
+    } else if (mPushScale >= 0x800) {
         if (mUnk_118 == 0 && mUnk_114 == 0) {
             return;
         }
-        func_ov007_0225b298((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
+        GetPushVector((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
         Camera *camera = mCamera;
         target.x       = camera->mTarget.x;
         target.y       = camera->mTarget.y;
         target.z       = camera->mTarget.z;
-        cam.x          = mUnk_194.x;
-        cam.y          = mUnk_194.y;
-        cam.z          = mUnk_194.z;
+        cam.x          = mCameraBasePosition.x;
+        cam.y          = mCameraBasePosition.y;
+        cam.z          = mCameraBasePosition.z;
         func_ov007_02255b78(&target, &cam, &mUnk_94, &mUnk_94);
-        fx32 s    = mUnk_8c;
+        fx32 s    = mPushScale;
         mUnk_94.x = FX_Mul(mUnk_94.x, s);
         mUnk_94.y = FX_Mul(mUnk_94.y, s);
         mUnk_94.z = FX_Mul(mUnk_94.z, s);
-        VEC_Add(&mUnk_c8, &mUnk_94, &mUnk_c8);
+        VEC_Add(&mPushPerFrame, &mUnk_94, &mPushPerFrame);
     } else {
-        mUnk_8c = 0;
+        mPushScale = 0;
     }
 }
 
-void BattleTarget::func_ov007_0225c2e4(VecFx32 *v) {
+void BattleTarget::AddScaledPush(VecFx32 *v) {
     VecFx32 d;
-    fx32 scale = mUnk_8c;
+    fx32 scale = mPushScale;
     d.x = FX_Mul(v->x, scale);
     d.y = FX_Mul(v->y, scale);
     d.z = FX_Mul(v->z, scale);
-    VEC_Add(&mUnk_c8, &d, &mUnk_c8);
+    VEC_Add(&mPushPerFrame, &d, &mPushPerFrame);
 }
 
 void BattleTarget::func_ov007_0225c360(u16 *in, s32 a, u16 *out) {
@@ -3553,7 +3553,7 @@ void BattleTarget::UpdateEffects() {
                 break;
             }
             SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
-            if (mUnk_1e0 != 3) {
+            if (mShotSpKind != 3) {
                 FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
                 mShotEffectHandle = 0;
             }
@@ -3576,38 +3576,38 @@ void BattleTarget::UpdateEffects() {
             break;
         }
     }
-    if (mUnk_1c2 == 0) {
+    if (mUnitHitEffectHandle == 0) {
         return;
     }
     MtxFx43 mtx = CameraManager::Get().mMtxC[0];
     VecFx32 pos = mBakugan->mPosition;
-    VecFx32 off = data_ov007_0227a5e0.mUnk_68;
+    VecFx32 off = sTables.mHitEffectOffset;
     mtx._[11]   = 0;
     mtx._[10]   = 0;
     mtx._[9]    = 0;
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     MTX_SetTranslation43(&mtx, &pos);
-    SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
+    SetEffectMatrix(data_020d433c.mEffects, mUnitHitEffectHandle, &mtx);
 }
 
 void SetTargetVelocity(BattleTarget *target, VecFx32 *dir, int unk) {
-    target->mUnk_a0.x = dir->x;
-    target->mUnk_a0.y = dir->y;
-    target->mUnk_a0.z = dir->z;
-    target->mVelocity.x = target->mUnk_a0.x;
-    target->mVelocity.y = target->mUnk_a0.y;
-    target->mVelocity.z = target->mUnk_a0.z;
+    target->mBaseVelocity.x = dir->x;
+    target->mBaseVelocity.y = dir->y;
+    target->mBaseVelocity.z = dir->z;
+    target->mVelocity.x = target->mBaseVelocity.x;
+    target->mVelocity.y = target->mBaseVelocity.y;
+    target->mVelocity.z = target->mBaseVelocity.z;
     target->mUnk_b8.x = 0;
     target->mUnk_b8.y = 0;
     target->mUnk_b8.z = 0;
-    target->mUnk_ac.x = 0;
-    target->mUnk_ac.y = 0;
-    target->mUnk_ac.z = 0;
+    target->mPushVelocity.x = 0;
+    target->mPushVelocity.y = 0;
+    target->mPushVelocity.z = 0;
     if (unk != 0) {
-        target->mUnk_c8.x = 0;
-        target->mUnk_c8.y = 0;
-        target->mUnk_c8.z = 0;
+        target->mPushPerFrame.x = 0;
+        target->mPushPerFrame.y = 0;
+        target->mPushPerFrame.z = 0;
     }
 }
 
@@ -3615,19 +3615,19 @@ void SetTargetVelocityXyz(BattleTarget *target, int a, int b, int c, int d) {
     target->mVelocity.x = a;
     target->mVelocity.y = b;
     target->mVelocity.z = c;
-    target->mUnk_a0.x = target->mVelocity.x;
-    target->mUnk_a0.y = target->mVelocity.y;
-    target->mUnk_a0.z = target->mVelocity.z;
+    target->mBaseVelocity.x = target->mVelocity.x;
+    target->mBaseVelocity.y = target->mVelocity.y;
+    target->mBaseVelocity.z = target->mVelocity.z;
     target->mUnk_b8.x = 0;
     target->mUnk_b8.y = 0;
     target->mUnk_b8.z = 0;
-    target->mUnk_ac.x = 0;
-    target->mUnk_ac.y = 0;
-    target->mUnk_ac.z = 0;
+    target->mPushVelocity.x = 0;
+    target->mPushVelocity.y = 0;
+    target->mPushVelocity.z = 0;
     if (d != 0) {
-        target->mUnk_c8.x = 0;
-        target->mUnk_c8.y = 0;
-        target->mUnk_c8.z = 0;
+        target->mPushPerFrame.x = 0;
+        target->mPushPerFrame.y = 0;
+        target->mPushPerFrame.z = 0;
     }
 }
 
@@ -3645,7 +3645,7 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
 // address and the arm takes other registers, so the tails no longer merge.
 enum RecordSlot { RECORD_SLOT_0 };
 
-void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
+void BattleTarget::DrawRecordTotal(u32 player, u32 record) {
     BattlePlayer *pl;
     BattleRecord *rec;
     if (player == 0xff) {
@@ -3673,10 +3673,10 @@ void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     mCellAnims[0]->Draw(0, 0xf2, 0xab, 1);
 }
 
-void BattleTarget::func_ov007_0225cb7c() {
-    u8 old = mUnk_1ea;
-    mUnk_1ea = (mUnk_50 * 32 / mUnk_54 + old * 3) / 4;
-    if (old != mUnk_1ea) {
+void BattleTarget::DrawBar() {
+    u8 old = mBarLength;
+    mBarLength = (mUnk_50 * 32 / mUnk_54 + old * 3) / 4;
+    if (old != mBarLength) {
         u8 hi  = mUnk_50 * 6 / mUnk_54 + 2;
         u8 *buf = (u8 *) OS_Alloc(0x80);
         MI_CpuFill8(buf, 0, 0x80);
@@ -3686,9 +3686,9 @@ void BattleTarget::func_ov007_0225cb7c() {
                 u8 v   = (i % 32) % 4 + (i / 32) * 8;
                 u8 lo  = 1;
                 u8 up  = 1;
-                if (v < mUnk_1ea) {
+                if (v < mBarLength) {
                     lo = hi;
-                    if (v + 1 < mUnk_1ea) {
+                    if (v + 1 < mBarLength) {
                         up = hi;
                     }
                 }
@@ -3701,7 +3701,7 @@ void BattleTarget::func_ov007_0225cb7c() {
     }
     mCellAnims[2]->Draw(0, 0xbe, 0xb7, 1);
     mCellAnims[3]->Draw(0, 0xce, 0xba, 1);
-    SpriteManager::Get().Screen(0).AddOam((void *) data_ov007_0227a5e0.mUnk_50, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
+    SpriteManager::Get().Screen(0).AddOam((void *) sTables.mUnk_50, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
 }
 
 void BattleTarget::DrawRoulette() {

@@ -37,14 +37,14 @@ struct ShootPacket {
     u8 mUnk_00;
     u8 mUnk_01;
     u16 mUnk_02;
-    u16 mUnk_04;
-    u16 mUnk_06;
-    u16 mUnk_08;
-    u16 mUnk_0a;
-    u16 mUnk_0c;
-    u8 mUnk_0e;
-    u8 mUnk_0f;
-    u8 mUnk_10;
+    u16 mShotRotX;
+    u16 mShotRotY;
+    u16 mShotRotZ;
+    u16 mRotYAdjust;
+    u16 mRotZAdjust;
+    u8 mRecord;
+    u8 mShotSpeed;
+    u8 mSpKind;
 };
 
 struct BattleShootCell { // 0xc bytes
@@ -71,15 +71,15 @@ struct ShootWords7 {
 };
 
 struct BattleShootMsg { // 0x20 bytes: a message of the shoot minigame, sent to or received from a player
-    /* 00 */ u8 mUnk_00;
+    /* 00 */ u8 mType;
     /* 01 */ u8 mUnk_01;
     /* 02 */ u8 mUnk_02;
     /* 03 */ u8 mUnk_03;
     union {
         struct {
-            /* 04 */ s32 mUnk_04;
-            /* 08 */ s32 mUnk_08;
-            /* 0c */ u8 mUnk_0c;
+            /* 04 */ s32 mPushX;
+            /* 08 */ s32 mPushZ;
+            /* 0c */ u8 mMicEvent;
         };
         /* 04 */ ShootWords7 mWords;
     };
@@ -120,16 +120,16 @@ public:
     /* 615a */ PAD(0x615a, 0x615c);
     /* 615c */ u32 mTouchSumX;
     /* 6160 */ u32 mTouchSumY;
-    /* 6164 */ u32 mUnk_6164;
+    /* 6164 */ u32 mCpuPushCount;
     /* 6168 */ u16 mRotYAdjust;
     /* 616a */ u16 mRotZAdjust;
     /* 616c */ s32 mRotYAdjustPerFrame;
     /* 6170 */ s32 mRotZAdjustPerFrame;
     /* 6174 */ u16 mRotYAdjustFrames;
     /* 6176 */ u16 mRotZAdjustFrames;
-    /* 6178 */ u16 mUnk_6178;
-    /* 617a */ u16 mUnk_617a;
-    /* 617c */ u16 mUnk_617c;
+    /* 6178 */ u16 mCameraRotY;
+    /* 617a */ u16 mCameraRotYPerFrame;
+    /* 617c */ u16 mCameraRotYFrames;
     /* 617e */ u16 mUnk_617e;
     /* 6180 */ u16 mUnk_6180;
     /* 6182 */ u16 mUnk_6182;
@@ -148,19 +148,19 @@ public:
     /* 6191 */ u8 mBallXPerFrame;
     /* 6192 */ u8 mBallYPerFrame;
     /* 6193 */ u8 mShotSpeed;
-    /* 6194 */ u8 mUnk_6194;
-    /* 6195 */ u8 mUnk_6195;
+    /* 6194 */ u8 mStrokeIconStarted;
+    /* 6195 */ u8 mPredictVisible;
     /* 6196 */ u8 mSpEnabled;
     /* 6197 */ u8 mUnk_6197;
     /* 6198 */ u8 mSpKind;
     /* 6199 */ u8 mStartTouchInCorner;
     /* 619a */ u8 mMessageY;
     /* 619b */ u8 mMessageTargetY;
-    /* 619c */ u8 mUnk_619c;
+    /* 619c */ u8 mPenStrokesRemaining;
     /* 619d */ u8 mShootTextVisible;
-    /* 619e */ u8 mUnk_619e;
+    /* 619e */ u8 mCpuPushInterval;
     /* 619f */ u8 mTextWidth;
-    /* 61a0 */ u8 mUnk_61a0;
+    /* 61a0 */ u8 mPenAndIconsVisible;
     /* 61a1 */ u8 mPlotEnabled;
     /* 61a2 */ u8 mUnk_61a2;
     /* 61a3 */ u8 mSubPlanes;
@@ -182,31 +182,31 @@ public:
     void Setup();
     void LoadGraphics();
     void ClearBitmap();
-    void func_ov007_0226e884();
-    void func_ov007_0226e430();
-    void func_ov007_0226f0e8(u8 kind, s32 x, s32 z);
-    void func_ov007_0226f378();
-    void func_ov007_0226dfb8();
-    BOOL func_ov007_0226d23c();
+    void UpdatePushMessages();
+    void UpdateTurnPlayerCpu();
+    void StartPushEffect(u8 kind, s32 x, s32 z);
+    void UpdateMessageAndBall();
+    void StartTouchShot();
+    BOOL UpdateShotInput();
     void UpdateRotAdjustKeys();
-    BOOL func_ov007_0226d7ac();
+    BOOL UpdateCameraRotKeys();
     void UpdateTouch(BOOL canStart);
     void DrawMic();
     void UploadBitmap();
     void PlotLine(u8 x0, u8 y0, u8 x1, u8 y1);
     void PlotDot(u8 x, u8 y);
     void PlotPixel(u8 x, u8 y);
-    void func_ov007_0226f8a8();
+    void DrawPenAndIcons();
     BOOL TryStartPopup();
     void SetSubPlanes(u8 value);
     void LoadShootText();
     void DrawShootText();
-    void func_ov007_0226d690();
-    void func_ov007_0226e234();
+    void UpdateCameraOffset();
+    void UpdateIcons();
     void ApplyBlendAlpha();
     BOOL func_ov007_0226d214();
     u16 GetLengthXY(int a, int b);
-    u16 func_ov007_0226e390();
+    u16 GetAngleFromOriginToCpuPos();
 };
 
 extern const u16 gFieldRotZAdjust[];
@@ -219,7 +219,7 @@ BattleShoot::BattleShoot(Camera *unk1, u8 unk2)
     mShotRotX = 0;
     mShotRotY = 0x6000;
     mShotRotZ = 0x38e;
-    mUnk_619e = 0;
+    mCpuPushInterval = 0;
     mUnk_61a2 = unk2;
     mState = 0;
 }
@@ -246,7 +246,7 @@ void BattleShoot::Init(Camera *unk1) {
     mPrevTouchFrames = 0;
     mStartTouchX = 0;
     mStartTouchY = 0;
-    mUnk_6164 = 0;
+    mCpuPushCount = 0;
     mTouchX = 0;
     mTouchY = 0;
     mPrevTouchX = 0;
@@ -255,10 +255,10 @@ void BattleShoot::Init(Camera *unk1) {
     mBallYPerFrame = 0;
     mTouchSumX = 0;
     mTouchSumY = 0;
-    mUnk_6194 = 0;
+    mStrokeIconStarted = 0;
     mRotYAdjust = 0;
     mRotZAdjust = gFieldRotZAdjust[data_020d433c.mFieldId];
-    mUnk_6195 = 1;
+    mPredictVisible = 1;
     mSpEnabled = 0;
     mUnk_6197 = 0;
     mSpKind = 0;
@@ -272,12 +272,12 @@ void BattleShoot::Init(Camera *unk1) {
     mRotZAdjustPerFrame = 0xb6;
     mRotYAdjustFrames = 0;
     mRotZAdjustFrames = 0;
-    mUnk_6178 = 0;
-    mUnk_617a = 0;
-    mUnk_617c = 0;
+    mCameraRotY = 0;
+    mCameraRotYPerFrame = 0;
+    mCameraRotYFrames = 0;
     mUnk_617e = 0;
     mUnk_6180 = 0;
-    mUnk_61a0 = 1;
+    mPenAndIconsVisible = 1;
     mPlotEnabled = 1;
     mUnk_61a5 = 0;
     mMicVisible = 0;
@@ -287,7 +287,7 @@ void BattleShoot::Init(Camera *unk1) {
     mMessageTargetY = 0x80;
     mGlyphBuffer = 0;
     mGlyphCount = 0;
-    mUnk_619c = 0;
+    mPenStrokesRemaining = 0;
     mShootTextVisible = 0;
     mTextWidth = 0;
     mUnk_61a2 = 0;
@@ -400,15 +400,15 @@ void BattleShoot::Update() {
             break;
         case 4:
             if (TryStartPopup()) {
-                mUnk_61a0 = 0;
+                mPenAndIconsVisible = 0;
                 break;
             }
             if (data_020d433c.mTutorialId != 3) {
                 mWindow->Draw();
             }
-            if (func_ov007_0226d23c()) {
+            if (UpdateShotInput()) {
                 mWindow->mEnabled = 0;
-                func_ov007_0226dfb8();
+                StartTouchShot();
                 mPlotEnabled = 0;
                 mState++;
                 break;
@@ -416,7 +416,7 @@ void BattleShoot::Update() {
             if (func_ov007_0226d214()) {
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x10;
-                func_ov007_0226f378();
+                UpdateMessageAndBall();
                 return;
             }
             break;
@@ -431,7 +431,7 @@ void BattleShoot::Update() {
                     mState = 6;
                 } else {
                     mMicVisible = 1;
-                    mUnk_619c = 3;
+                    mPenStrokesRemaining = 3;
                     mShootTextVisible = 0;
                     if (data_020d433c.mUnk_83 != 0 || mUnk_61a2 != 0) {
                         mShootTextVisible = 1;
@@ -442,14 +442,14 @@ void BattleShoot::Update() {
             break;
         case 6: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            ((ShootPacket *) &data_0220f540)->mUnk_04     = mShotRotX;
-            ((ShootPacket *) &data_0220f540)->mUnk_06     = mShotRotY;
-            ((ShootPacket *) &data_0220f540)->mUnk_08     = mShotRotZ;
-            ((ShootPacket *) &data_0220f540)->mUnk_0a     = mRotYAdjust;
-            ((ShootPacket *) &data_0220f540)->mUnk_0c     = mRotZAdjust;
-            ((ShootPacket *) &data_0220f540)->mUnk_0f     = mShotSpeed;
-            ((ShootPacket *) &data_0220f540)->mUnk_10     = mSpKind;
-            ((ShootPacket *) &data_0220f540)->mUnk_0e           = list->mPlayers[list->mTurnPlayer]->mRecord;
+            ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
+            ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
+            ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
+            ((ShootPacket *) &data_0220f540)->mRotYAdjust     = mRotYAdjust;
+            ((ShootPacket *) &data_0220f540)->mRotZAdjust     = mRotZAdjust;
+            ((ShootPacket *) &data_0220f540)->mShotSpeed     = mShotSpeed;
+            ((ShootPacket *) &data_0220f540)->mSpKind     = mSpKind;
+            ((ShootPacket *) &data_0220f540)->mRecord           = list->mPlayers[list->mTurnPlayer]->mRecord;
             if (SetMessageTypeAndCheckAll(list, 8)) {
                 mState = 10;
             }
@@ -470,14 +470,14 @@ void BattleShoot::Update() {
             break;
         case 9: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            ((ShootPacket *) &data_0220f540)->mUnk_04     = mShotRotX;
-            ((ShootPacket *) &data_0220f540)->mUnk_06     = mShotRotY;
-            ((ShootPacket *) &data_0220f540)->mUnk_08     = mShotRotZ;
-            ((ShootPacket *) &data_0220f540)->mUnk_0a     = mRotYAdjust;
-            ((ShootPacket *) &data_0220f540)->mUnk_0c     = mRotZAdjust;
-            ((ShootPacket *) &data_0220f540)->mUnk_0f     = mShotSpeed;
-            ((ShootPacket *) &data_0220f540)->mUnk_10     = mSpKind;
-            ((ShootPacket *) &data_0220f540)->mUnk_0e     = 0;
+            ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
+            ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
+            ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
+            ((ShootPacket *) &data_0220f540)->mRotYAdjust     = mRotYAdjust;
+            ((ShootPacket *) &data_0220f540)->mRotZAdjust     = mRotZAdjust;
+            ((ShootPacket *) &data_0220f540)->mShotSpeed     = mShotSpeed;
+            ((ShootPacket *) &data_0220f540)->mSpKind     = mSpKind;
+            ((ShootPacket *) &data_0220f540)->mRecord     = 0;
             if (SetMessageTypeAndCheckAll(list, 8)) {
                 mState++;
             }
@@ -490,7 +490,7 @@ void BattleShoot::Update() {
                 u8 kind = mSpKind;
                 if (kind == 1 || kind == 3 || kind == 4) {
                     mRotZAdjust = 0;
-                    mRotYAdjust = func_ov007_0226e390();
+                    mRotYAdjust = GetAngleFromOriginToCpuPos();
                     mShotRotY = 0x6000;
                     mShotRotZ = 0;
                     *(u16 *) ((u8 *) mBattleTarget + 0x1b8) = mRotYAdjust;
@@ -513,21 +513,21 @@ void BattleShoot::Update() {
             if (mSpKind == 0) {
                 mUnk_6182 = 0x122;
             }
-            mUnk_619e = 0x14;
+            mCpuPushInterval = 0x14;
             mMicVisible = 1;
             if (data_020d433c.mTutorialId != 0 && data_020d433c.mBattlePlayers->mTurnPlayer != 0) {
                 mMicVisible = 0;
             }
             mPlotEnabled = 0;
-            mUnk_619c = 3;
+            mPenStrokesRemaining = 3;
             mShootTextVisible = 0;
             if (data_020d433c.mUnk_83 != 0) {
-                mUnk_619c = 0;
+                mPenStrokesRemaining = 0;
             } else if (mUnk_61a2 != 0) {
                 mShootTextVisible = 1;
             }
             if (mSpKind == 5) {
-                mUnk_619c = 0;
+                mPenStrokesRemaining = 0;
                 mShootTextVisible = 0;
             }
             mState++;
@@ -551,18 +551,18 @@ void BattleShoot::Update() {
         case 12:
             if (!TryStartPopup()) {
                 if (mContext->mRequest != 0) {
-                    mUnk_61a0 = 0;
+                    mPenAndIconsVisible = 0;
                     mMicTargetY = 0x30;
                     mUnk_6182 = 0x122;
                     mState = 15;
                 } else {
-                    if (mUnk_61a0 != 0 && mBattleTarget->mUnk_1d7 != 0) {
+                    if (mPenAndIconsVisible != 0 && mBattleTarget->mUnk_1d7 != 0) {
                         u8 i = 0;
                         do {
                             mIcons[i].mTimer = 0;
                             i++;
                         } while (i < 5);
-                        mUnk_61a0 = 0;
+                        mPenAndIconsVisible = 0;
                         mMicTargetY = 0x30;
                         mUnk_6182 = 0x122;
                     }
@@ -573,12 +573,12 @@ void BattleShoot::Update() {
                     if (mBattleTarget->mUnk_1cb == 0) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         if (l->mPlayers[l->mTurnPlayer]->IsCpu()) {
-                            func_ov007_0226e430();
+                            UpdateTurnPlayerCpu();
                         }
-                        func_ov007_0226e234();
-                        func_ov007_0226e884();
+                        UpdateIcons();
+                        UpdatePushMessages();
                     }
-                    func_ov007_0226d690();
+                    UpdateCameraOffset();
                 }
             }
             break;
@@ -592,7 +592,7 @@ void BattleShoot::Update() {
                 case 1:
                     mState = mReturnState;
                     if (mState == 4) {
-                        mUnk_61a0 = 1;
+                        mPenAndIconsVisible = 1;
                         mPlotEnabled = 1;
                         mState = 3;
                     } else {
@@ -629,9 +629,9 @@ void BattleShoot::Update() {
             }
             break;
     }
-    func_ov007_0226f378();
-    if (mUnk_61a0 != 0 && mState != 14) {
-        func_ov007_0226f8a8();
+    UpdateMessageAndBall();
+    if (mPenAndIconsVisible != 0 && mState != 14) {
+        DrawPenAndIcons();
     }
     if (mMicVisible != 0) {
         DrawMic();
@@ -950,7 +950,7 @@ struct BattleShootCurve { // pairs at gShootCurves
 };
 extern const BattleShootCurve gShootCurves[5];
 
-BOOL BattleShoot::func_ov007_0226d23c() {
+BOOL BattleShoot::UpdateShotInput() {
     BOOL moving = FALSE;
     if (mPrevTouchFrames != 0 && mTouchFrames != 0) {
         if (mStartTouchInCorner == 0) {
@@ -964,7 +964,7 @@ BOOL BattleShoot::func_ov007_0226d23c() {
         mCells[0].mX = (mCells[0].mX + 0x80) / 2;
         mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
     }
-    if (func_ov007_0226d7ac()) {
+    if (UpdateCameraRotKeys()) {
         return 0;
     }
     if (mPrevTouchFrames != 0) {
@@ -1034,16 +1034,16 @@ BOOL BattleShoot::func_ov007_0226d23c() {
         mBattleTarget->mRotZAdjust = mRotZAdjust;
     }
     if (InputManager::Get().IsPressed(0x400)) {
-        mUnk_6195 = (mUnk_6195 + 1) & 1;
-        mBattleTarget->func_ov007_02254928(mUnk_6195);
+        mPredictVisible = (mPredictVisible + 1) & 1;
+        mBattleTarget->SetMapPredictVisible(mPredictVisible);
     }
     return 0;
 }
 
-void BattleShoot::func_ov007_0226d690() {
-    if (mBattleTarget->mUnk_1e5 != 0) {
+void BattleShoot::UpdateCameraOffset() {
+    if (mBattleTarget->mResetCameraOffset != 0) {
         mUnk_6180               = 0;
-        mBattleTarget->mUnk_1e5 = 0;
+        mBattleTarget->mResetCameraOffset = 0;
     }
     if (InputManager::Get().IsDown(0x200) | InputManager::Get().IsDown(0x100)) {
         if (mUnk_6180 < 0x1e) {
@@ -1057,16 +1057,16 @@ void BattleShoot::func_ov007_0226d690() {
     u16 value            = mUnk_6180;
     s32 spread           = value * 0x1800;
     BattleTarget *target = mBattleTarget;
-    target->mUnk_188.x   = spread;
-    target->mUnk_188.y   = value << 12;
-    target->mUnk_188.z   = spread;
+    target->mCameraOffset.x   = spread;
+    target->mCameraOffset.y   = value << 12;
+    target->mCameraOffset.z   = spread;
 }
 
 extern "C" void MTX_ApplyRotZ43(MtxFx43 *mtx, s32 angle);
 extern const u8 gPlayerEffectIds[];
 extern const VecFx32 data_ov007_0227bcac;
 
-BOOL BattleShoot::func_ov007_0226d7ac() {
+BOOL BattleShoot::UpdateCameraRotKeys() {
     if (InputManager::Get().IsDown(0x200) | InputManager::Get().IsDown(0x100)) {
         if (mUnk_617e < 0x14) {
             mUnk_617e++;
@@ -1081,31 +1081,31 @@ BOOL BattleShoot::func_ov007_0226d7ac() {
         mRotYAdjustFrames = 0;
         mBattleTarget->mCameraMode = 1;
         if (InputManager::Get().IsDown(KEY_LEFT)) {
-            mUnk_6178 -= mUnk_617a;
-            mUnk_617c++;
-            if (mUnk_617c == 0) {
-                mUnk_617c = 0xffff;
+            mCameraRotY -= mCameraRotYPerFrame;
+            mCameraRotYFrames++;
+            if (mCameraRotYFrames == 0) {
+                mCameraRotYFrames = 0xffff;
             }
         }
         if (InputManager::Get().IsDown(KEY_RIGHT)) {
-            mUnk_6178 += mUnk_617a;
-            mUnk_617c++;
-            if (mUnk_617c == 0) {
-                mUnk_617c = 0xffff;
+            mCameraRotY += mCameraRotYPerFrame;
+            mCameraRotYFrames++;
+            if (mCameraRotYFrames == 0) {
+                mCameraRotYFrames = 0xffff;
             }
         }
         if (KeysReleased(InputManager::Get(), KEY_LEFT) | KeysReleased(InputManager::Get(), KEY_RIGHT)) {
-            mUnk_617c = 0;
+            mCameraRotYFrames = 0;
         }
-        if (mUnk_617c >= 0x19) {
-            mUnk_617a = (mUnk_617c - 0x19) / 2 * 0x12 + 0x5b;
-            if (mUnk_617a > 0x12 + 0xff) {
-                mUnk_617a = 0x12 + 0xff;
+        if (mCameraRotYFrames >= 0x19) {
+            mCameraRotYPerFrame = (mCameraRotYFrames - 0x19) / 2 * 0x12 + 0x5b;
+            if (mCameraRotYPerFrame > 0x12 + 0xff) {
+                mCameraRotYPerFrame = 0x12 + 0xff;
             }
         } else {
-            mUnk_617a = 0x5b;
+            mCameraRotYPerFrame = 0x5b;
         }
-        mBattleTarget->mUnk_1b0 = mUnk_6178;
+        mBattleTarget->mCameraRotY = mCameraRotY;
         mBattleTarget->mUnk_17c = mUnk_617e - 1;
         ClearBitmap();
         return 1;
@@ -1113,18 +1113,18 @@ BOOL BattleShoot::func_ov007_0226d7ac() {
     return 0;
 }
 
-extern const s32 data_ov007_0227bcc4[3];
-struct BattleShootRange { // at data_ov007_0227bcf8
+extern const s32 gCpuPushScales[3];
+struct BattleShootRange { // at gCpuPushIntervalRanges
     u32 mLow;
     u32 mHigh;
 };
-extern const BattleShootRange data_ov007_0227bcf8[3];
+extern const BattleShootRange gCpuPushIntervalRanges[3];
 extern MtxFx33 data_0220e848;
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern "C" void MTX_MultVec33(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 
 void BattleShoot::UpdateRotAdjustKeys() {
-    mUnk_617c = 0;
+    mCameraRotYFrames = 0;
     mBattleTarget->mCameraMode = 0;
     if (InputManager::Get().IsDown(KEY_LEFT)) {
         if ((u16) (mRotYAdjust + 0x8000 - mRotYAdjustPerFrame) > 0x6aab) {
@@ -1223,7 +1223,7 @@ u16 BattleShoot::GetLengthXY(int a, int b) {
     return VEC_Mag(&v) >> 12;
 }
 
-void BattleShoot::func_ov007_0226dfb8() {
+void BattleShoot::StartTouchShot() {
     s32 diff = mStartTouchX - mTouchX;
     if (diff < 0) {
         diff = -diff;
@@ -1277,7 +1277,7 @@ void BattleShoot::func_ov007_0226dfb8() {
     }
 }
 
-void BattleShoot::func_ov007_0226e234() {
+void BattleShoot::UpdateIcons() {
     if (!mIcons[0].mCellAnim) {
         return;
     }
@@ -1285,9 +1285,9 @@ void BattleShoot::func_ov007_0226e234() {
         mBlendAlpha++;
         ApplyBlendAlpha();
     }
-    if (mUnk_6194 != 0) {
+    if (mStrokeIconStarted != 0) {
         if (mTouchFrames == 0) {
-            mUnk_6194 = 0;
+            mStrokeIconStarted = 0;
         }
         return;
     }
@@ -1315,18 +1315,18 @@ void BattleShoot::func_ov007_0226e234() {
                 mIcons[i].mYPerFrame = 0;
                 mIcons[i].mRotation = FX_Atan2Idx(-(mStartTouchX - mTouchX), mStartTouchY - mTouchY);
                 mIcons[i].mTimer = distance > 0x20 ? 0x20 : distance;
-                mUnk_6194         = 1;
+                mStrokeIconStarted         = 1;
                 break;
             }
             i++;
         } while (i < 5);
-        if (mUnk_619c != 0) {
-            mUnk_619c--;
+        if (mPenStrokesRemaining != 0) {
+            mPenStrokesRemaining--;
         }
     }
 }
 
-u16 BattleShoot::func_ov007_0226e390() {
+u16 BattleShoot::GetAngleFromOriginToCpuPos() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 index               = list->mTurnPlayer;
     VecFx32 cpuPos         = list->mPlayers[index]->mCpu->mPos;
@@ -1340,7 +1340,7 @@ u16 BattleShoot::func_ov007_0226e390() {
     return second - first;
 }
 
-void BattleShoot::func_ov007_0226e430() {
+void BattleShoot::UpdateTurnPlayerCpu() {
     VecFx32 v;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     BattleCpu *cpu         = list->mPlayers[list->mTurnPlayer]->mCpu;
@@ -1361,7 +1361,7 @@ void BattleShoot::func_ov007_0226e430() {
     }
     if (cpu->mUsingTargets == 1) {
         BattleTarget *bt = mBattleTarget;
-        if (bt->mUnk_1dd == 4 && bt->mUnk_38 == 0 && bt->mUnk_40 == 0) {
+        if (bt->mUnk_1dd == 4 && bt->mAirFrames == 0 && bt->mUnk_40 == 0) {
             cpu->NextTarget();
         }
         if (mBattleTarget->mMoveFrames == cpu->mUnk_54) {
@@ -1369,10 +1369,10 @@ void BattleShoot::func_ov007_0226e430() {
         }
     }
     BattleTarget *target = mBattleTarget;
-    if (target->mUnk_1d0 == 0 || target->mUnk_1dd == 4) {
+    if (target->mLanded == 0 || target->mUnk_1dd == 4) {
         return;
     }
-    if (target->mMoveFrames % mUnk_619e != 0) {
+    if (target->mMoveFrames % mCpuPushInterval != 0) {
         return;
     }
     BakuganModel *pose = target->mBakugan;
@@ -1384,19 +1384,19 @@ void BattleShoot::func_ov007_0226e430() {
         v.y = 0;
         v.z = 0;
     } else {
-        s32 k = data_ov007_0227bcc4[cpu->mUnk_77];
+        s32 k = gCpuPushScales[cpu->mUnk_77];
         v.x   = FX_Mul(v.x, k);
         v.y   = FX_Mul(v.y, k);
         v.z   = FX_Mul(v.z, k);
     }
-    if (mBattleTarget->mUnk_1e3 != 0) {
+    if (mBattleTarget->mCollided != 0) {
         MtxFx33 m = data_0220e848;
         MTX_ApplyRotY33(&m, 0x5555);
         MTX_MultVec33(&v, &m, &v);
         v.x = FX_Mul(v.x, 0xa000);
         v.y = FX_Mul(v.y, 0xa000);
         v.z = FX_Mul(v.z, 0xa000);
-        mBattleTarget->mUnk_1e3 = 0;
+        mBattleTarget->mCollided = 0;
     }
     if (mBattleTarget->mHitGimmickType == GIMMICK_TYPE_BLOCK) {
         if (VEC_Mag(&mBattleTarget->mVelocity) > 0) {
@@ -1405,28 +1405,28 @@ void BattleShoot::func_ov007_0226e430() {
             v.y             = t->mVelocity.y;
             v.z             = t->mVelocity.z;
             VEC_Normalize(&v, &v);
-            s32 k = data_ov007_0227bcc4[cpu->mUnk_77];
+            s32 k = gCpuPushScales[cpu->mUnk_77];
             v.x   = FX_Mul(v.x, k);
             v.y   = FX_Mul(v.y, k);
             v.z   = FX_Mul(v.z, k);
         }
     }
-    mBattleTarget->func_ov007_0225c2e4(&v);
-    if (mUnk_6164 % 5 == 0) {
+    mBattleTarget->AddScaledPush(&v);
+    if (mCpuPushCount % 5 == 0) {
         s32 out[2];
         mBattleTarget->func_ov007_02255c04(&v, out);
-        func_ov007_0226f0e8(data_020d433c.mBattlePlayers->mTurnPlayer, out[0], out[1]);
+        StartPushEffect(data_020d433c.mBattlePlayers->mTurnPlayer, out[0], out[1]);
     }
-    u8 roll = MATH_Rand32(&gRandom, (u8) (data_ov007_0227bcf8[cpu->mUnk_77].mHigh - data_ov007_0227bcf8[cpu->mUnk_77].mLow));
-    mUnk_619e = roll + data_ov007_0227bcf8[cpu->mUnk_77].mLow;
-    mUnk_6164++;
+    u8 roll = MATH_Rand32(&gRandom, (u8) (gCpuPushIntervalRanges[cpu->mUnk_77].mHigh - gCpuPushIntervalRanges[cpu->mUnk_77].mLow));
+    mCpuPushInterval = roll + gCpuPushIntervalRanges[cpu->mUnk_77].mLow;
+    mCpuPushCount++;
 }
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 struct Bytes2 { u8 b[2]; };
 
-void BattleShoot::func_ov007_0226e884() {
+void BattleShoot::UpdatePushMessages() {
     s32 animState;
     s32 sumX;
     s32 sumZ;
@@ -1490,18 +1490,18 @@ void BattleShoot::func_ov007_0226e884() {
         if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
             WirelessManager::Get();
             if (!IsWirelessMode(mode)) {
-                mMsgs[i].mUnk_00 = ((u8 *) &data_0220f540)[0];
+                mMsgs[i].mType = ((u8 *) &data_0220f540)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) &data_0220f540)[1];
                 *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) &data_0220f540) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) &data_0220f540 + 4);
             } else {
-                mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
+                mMsgs[i].mType = ((u8 *) p + 0x100)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
                 *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) p + 0x100) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
             }
         } else {
-            mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
+            mMsgs[i].mType = ((u8 *) p + 0x100)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
                 *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) p + 0x100) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
@@ -1517,10 +1517,10 @@ void BattleShoot::func_ov007_0226e884() {
             s32 outZ = 0;
             if (mBattleTarget->mMoveFrames <= cpu->mUnk_5c) {
                 cpu->GetOffset(&outX, &outZ);
-                mMsgs[i].mUnk_00        = 9;
-                mMsgs[i].mUnk_04        = outX;
-                mMsgs[i].mUnk_08        = outZ;
-                mMsgs[i].mUnk_0c        = 0;
+                mMsgs[i].mType        = 9;
+                mMsgs[i].mPushX        = outX;
+                mMsgs[i].mPushZ        = outZ;
+                mMsgs[i].mMicEvent        = 0;
                 u16 limit = cpu->mOffsetFrameCounts[cpu->mOffsetEntryIndex];
                 cpu->mOffsetFrames++;
                 if (cpu->mOffsetFrames >= limit) {
@@ -1537,11 +1537,11 @@ void BattleShoot::func_ov007_0226e884() {
         i = 0;
         do {
             if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu == 0) {
-                if (mMsgs[i].mUnk_04 != 0) {
-                    mMsgs[i].mUnk_04 = FX_Mul(mMsgs[i].mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
+                if (mMsgs[i].mPushX != 0) {
+                    mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
-                if (mMsgs[i].mUnk_08 != 0) {
-                    mMsgs[i].mUnk_08 = FX_Mul(mMsgs[i].mUnk_08, data_ov007_0227bcb8[me->mUnk_f7]);
+                if (mMsgs[i].mPushZ != 0) {
+                    mMsgs[i].mPushZ = FX_Mul(mMsgs[i].mPushZ, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
             }
             i++;
@@ -1553,19 +1553,19 @@ void BattleShoot::func_ov007_0226e884() {
     charged = 0;
     power   = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_dc;
     spread  = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4;
-    if (!(mBattleTarget->mUnk_1dd == 4 && mBattleTarget->mUnk_38 <= 0x1e)) {
+    if (!(mBattleTarget->mUnk_1dd == 4 && mBattleTarget->mAirFrames <= 0x1e)) {
         i = 0;
         do {
             s32 msgX;
             s32 msgZ;
             BattleShootMsg *m = &mMsgs[i];
-            if (m->mUnk_00 == 9) {
-                msgX = m->mUnk_04;
-                msgZ = m->mUnk_08;
+            if (m->mType == 9) {
+                msgX = m->mPushX;
+                msgZ = m->mPushZ;
                 if (self == i) {
                     sumX += msgX;
                     sumZ += msgZ;
-                    if (!(m->mUnk_0c != 0 && mBattleTarget->mUnk_1cc != 1)) {
+                    if (!(m->mMicEvent != 0 && mBattleTarget->mUnk_1cc != 1)) {
                     } else {
                         animState = 1;
                         charged   = 1;
@@ -1575,7 +1575,7 @@ void BattleShoot::func_ov007_0226e884() {
                     u8 count = mOtherPlayerCount;
                     sumX += msgX * 30 / 100 / count;
                     sumZ += msgZ * 30 / 100 / count;
-                    if (m->mUnk_0c != 0) {
+                    if (m->mMicEvent != 0) {
                         animState = 1;
                         spread += 0x7b / count;
                         charged = 1;
@@ -1583,7 +1583,7 @@ void BattleShoot::func_ov007_0226e884() {
                 }
                 sent = 1;
                 if (self == i || !(mBattleTarget->mSpKind == 5 || mBattleTarget->mUnk_1cc == 1)) {
-                    func_ov007_0226f0e8(i, msgX, msgZ);
+                    StartPushEffect(i, msgX, msgZ);
                 }
             }
             i++;
@@ -1615,7 +1615,7 @@ void BattleShoot::func_ov007_0226e884() {
         BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[self];
         pl->mUnk_d4 = sumX;
         pl->mUnk_d8 = sumZ;
-        mBattleTarget->func_ov007_0225bf38();
+        mBattleTarget->AddPlayerPush();
     }
     if (data_020d433c.mUnk_9a_0 && data_020d433c.mUnk_83 == 0) {
         if (mUnk_61a5 != animState) {
@@ -1631,7 +1631,7 @@ void BattleShoot::func_ov007_0226e884() {
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
-void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
+void BattleShoot::StartPushEffect(u8 kind, s32 x, s32 z) {
     if ((x | z) == 0) {
         return;
     }
@@ -1677,7 +1677,7 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
 }
 
-void BattleShoot::func_ov007_0226f378() {
+void BattleShoot::UpdateMessageAndBall() {
     if (mMessageWindow) {
         u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mUnk_fa;
         if (mMessageId != id) {
@@ -1787,11 +1787,11 @@ void BattleShoot::ApplyBlendAlpha() {
     G2S_SetBlendAlpha(2, 0x31, 0x10 - value, value);
 }
 
-void BattleShoot::func_ov007_0226f8a8() {
+void BattleShoot::DrawPenAndIcons() {
     if (!mIcons[0].mCellAnim) {
         return;
     }
-    if (mUnk_619c != 0) {
+    if (mPenStrokesRemaining != 0) {
         mCells[3].mCellAnim->Update();
         mCells[3].mCellAnim->Draw(1, mCells[3].mX, mCells[3].mY, mCells[3].mUnk_08);
         if (mShootTextVisible != 0) {

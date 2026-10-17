@@ -40,9 +40,9 @@ void GimmickUnk_022308a8::Update() {
         mState++;
         break;
     case 1: {
-        if (mCollision && mCollision->mHitCount == 1 && !data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1da &&
+        if (mCollision && mCollision->mHitCount == 1 && !data_020d433c.mBattlePlayers->mBattleTarget->mOnMarkerCell &&
             data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y <= 0x899a &&
-            data_020d433c.mBattlePlayers->mBattleTarget->mUnk_44 <= 0x5dc && data_020d433c.mBattlePlayers->mBattleTarget->mUnk_38 <= 3) {
+            data_020d433c.mBattlePlayers->mBattleTarget->mUnk_44 <= 0x5dc && data_020d433c.mBattlePlayers->mBattleTarget->mAirFrames <= 3) {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
             BattleRecord *r = &p->mRecords[p->mRecord];
             if (!mSoundStarted) {
@@ -74,8 +74,8 @@ void GimmickUnk_022308a8::Update() {
             mPullPerFrame.x = FX_Mul(mPullPerFrame.x, 0x19a);
             mPullPerFrame.y = FX_Mul(mPullPerFrame.y, 0x19a);
             mPullPerFrame.z = FX_Mul(mPullPerFrame.z, 0x19a);
-            VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &mPullPerFrame,
-                          &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
+            VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &mPullPerFrame,
+                          &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
         } else if (mSoundStarted) {
             StopSeqArc(&SoundManager::Get(), 0x64, 10);
             mSoundStarted = 0;

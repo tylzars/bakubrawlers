@@ -135,7 +135,7 @@ void GimmickPyrusEruption::Update() {
         d.x      = -FX_Div(d.x, len);
         d.y      = y;
         d.z      = z;
-        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &d, &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
         mState++;
         mPushed = 1;
         break;

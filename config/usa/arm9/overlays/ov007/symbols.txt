@@ -644,57 +644,57 @@ _ZN12BattleTarget4InitEv kind:function(arm,size=0x770) addr:0x02254020
 _ZN12BattleTarget12PlaceBakuganEv kind:function(arm,size=0x54) addr:0x02254790
 _ZN12BattleTarget18LoadUnitCollisionsEv kind:function(arm,size=0xb4) addr:0x022547e4
 _ZN12BattleTarget16LoadMapCollisionEv kind:function(arm,size=0x90) addr:0x02254898
-_ZN12BattleTarget19func_ov007_02254928Ej kind:function(arm,size=0x10) addr:0x02254928
+_ZN12BattleTarget20SetMapPredictVisibleEj kind:function(arm,size=0x10) addr:0x02254928
 _ZN12BattleTarget15IsHeadingTowardEP7VecFx32S1_S1_h kind:function(arm,size=0xdc) addr:0x02254938
-_ZN12BattleTarget19func_ov007_02254a14EP14GimmickSetData kind:function(arm,size=0xd4) addr:0x02254a14
-_ZN12BattleTarget19func_ov007_02254ae8EP7VecFx32S1_PjS2_ kind:function(arm,size=0xb58) addr:0x02254ae8
-_ZN12BattleTarget19func_ov007_02255640Ev kind:function(arm,size=0x45c) addr:0x02255640
+_ZN12BattleTarget13LaunchHitUnitEP14GimmickSetData kind:function(arm,size=0xd4) addr:0x02254a14
+_ZN12BattleTarget16UpdateCollisionsEP7VecFx32S1_PjS2_ kind:function(arm,size=0xb58) addr:0x02254ae8
+_ZN12BattleTarget10UpdateMoveEv kind:function(arm,size=0x45c) addr:0x02255640
 _ZN12BattleTarget22StopSoundAfterVentKazeEv kind:function(arm,size=0x70) addr:0x02255a9c
-_ZN12BattleTarget19func_ov007_02255b0cEv kind:function(arm,size=0x6c) addr:0x02255b0c
+_ZN12BattleTarget17StartLandingSoundEv kind:function(arm,size=0x6c) addr:0x02255b0c
 _ZN12BattleTarget19func_ov007_02255b78EP7VecFx32S1_S1_S1_ kind:function(arm,size=0x8c) addr:0x02255b78
 _ZN12BattleTarget19func_ov007_02255c04EP7VecFx32Pi kind:function(arm,size=0xb0) addr:0x02255c04
 _ZN12BattleTarget20UpdateCameraPositionEP7VecFx32 kind:function(arm,size=0xaf8) addr:0x02255cb4
-_ZN12BattleTarget19func_ov007_022567acEv kind:function(arm,size=0x4a0) addr:0x022567ac
+_ZN12BattleTarget27UpdateJumpObjCameraPositionEv kind:function(arm,size=0x4a0) addr:0x022567ac
 _ZN12BattleTarget18UpdateCameraTargetEP7VecFx32 kind:function(arm,size=0x588) addr:0x02256c4c
 _ZN12BattleTarget12UpdateCameraEv kind:function(arm,size=0x210) addr:0x022571d4
-_ZN12BattleTarget19func_ov007_022573e4Ev kind:function(arm,size=0x78) addr:0x022573e4
-_ZN12BattleTarget19func_ov007_0225745cEP7VecFx32PtS1_S1_S1_Pjhj kind:function(arm,size=0x824) addr:0x0225745c
-_ZN12BattleTarget19func_ov007_02257c80EP12BattleSphereP7VecFx32P14BattleObstacleS3_hPh kind:function(arm,size=0x2bc) addr:0x02257c80
-_ZN12BattleTarget19func_ov007_02257f3cEP14GimmickSetDatajP7VecFx32S3_ kind:function(arm,size=0x47c) addr:0x02257f3c
+_ZN12BattleTarget19UpdateCameraAndDrawEv kind:function(arm,size=0x78) addr:0x022573e4
+_ZN12BattleTarget15IntegrateMotionEP7VecFx32PtS1_S1_S1_Pjhj kind:function(arm,size=0x824) addr:0x0225745c
+_ZN12BattleTarget17GetObstacleNormalEP12BattleSphereP7VecFx32P14BattleObstacleS3_hPh kind:function(arm,size=0x2bc) addr:0x02257c80
+_ZN12BattleTarget16HandleGimmickHitEP14GimmickSetDatajP7VecFx32S3_ kind:function(arm,size=0x47c) addr:0x02257f3c
 _ZN12BattleTarget19func_ov007_022583b8Ev kind:function(arm,size=0x90) addr:0x022583b8
 _ZN12BattleTarget19func_ov007_02258448Ev kind:function(arm,size=0x198) addr:0x02258448
 _ZN12BattleTarget19func_ov007_022585e0Ev kind:function(arm,size=0x80) addr:0x022585e0
-_ZN12BattleTarget19func_ov007_02258660Ev kind:function(arm,size=0x31c) addr:0x02258660
-_ZN12BattleTarget19func_ov007_0225897cEv kind:function(arm,size=0xb8) addr:0x0225897c
-_ZN12BattleTarget19func_ov007_02258a34Ev kind:function(arm,size=0x2b8) addr:0x02258a34
-_ZN12BattleTarget19func_ov007_02258cecEP7VecFx32S1_S1_h kind:function(arm,size=0x1f0) addr:0x02258cec
-_ZN12BattleTarget19func_ov007_02258edcEv kind:function(arm,size=0x4d8) addr:0x02258edc
-_ZN12BattleTarget19func_ov007_022593b4Ev kind:function(arm,size=0xe0) addr:0x022593b4
-_ZN12BattleTarget19func_ov007_02259494EP7VecFx32 kind:function(arm,size=0x568) addr:0x02259494
-_ZN12BattleTarget19func_ov007_022599fcEv kind:function(arm,size=0x44) addr:0x022599fc
-_ZN12BattleTarget19func_ov007_02259a40EhhP7VecFx32S1_ kind:function(arm,size=0xb0) addr:0x02259a40
+_ZN12BattleTarget13UpdateUnitHitEv kind:function(arm,size=0x31c) addr:0x02258660
+_ZN12BattleTarget14UpdateHaosWallEv kind:function(arm,size=0xb8) addr:0x0225897c
+_ZN12BattleTarget14UpdateIkazuchiEv kind:function(arm,size=0x2b8) addr:0x02258a34
+_ZN12BattleTarget12StartUnitHitEP7VecFx32S1_S1_h kind:function(arm,size=0x1f0) addr:0x02258cec
+_ZN12BattleTarget16UpdateUnitHomingEv kind:function(arm,size=0x4d8) addr:0x02258edc
+_ZN12BattleTarget13UpdateJumpObjEv kind:function(arm,size=0xe0) addr:0x022593b4
+_ZN12BattleTarget13UpdateTornadoEP7VecFx32 kind:function(arm,size=0x568) addr:0x02259494
+_ZN12BattleTarget18UpdateOnMarkerCellEv kind:function(arm,size=0x44) addr:0x022599fc
+_ZN12BattleTarget15MoveClearOfUnitEhhP7VecFx32S1_ kind:function(arm,size=0xb0) addr:0x02259a40
 _ZN12BattleTarget19func_ov007_02259af0Ev kind:function(arm,size=0x788) addr:0x02259af0
-_ZN12BattleTarget19func_ov007_0225a278Ev kind:function(arm,size=0x65c) addr:0x0225a278
+_ZN12BattleTarget13TryRestOnCellEv kind:function(arm,size=0x65c) addr:0x0225a278
 _ZN12BattleTarget21IntersectSegmentPlaneEP7VecFx32S1_P11BattlePlanePiS1_ kind:function(arm,size=0xf4) addr:0x0225a8d4
 _ZN12BattleTarget29IntersectSegmentTrianglePlaneEP7VecFx32S1_S1_S1_S1_PiS1_ kind:function(arm,size=0xb8) addr:0x0225a9c8
 _ZN12BattleTarget19TestPointInHitBoxXZEP12BattleHitBoxP7VecFx32 kind:function(arm,size=0x120) addr:0x0225aa80
 _ZN12BattleTarget19func_ov007_0225aba0EP7VecFx32S1_S1_PiS1_ kind:function(arm,size=0x88) addr:0x0225aba0
-_ZN12BattleTarget19func_ov007_0225ac28EP12BattleHitBoxP12BattleSphereP7VecFx32S5_hPh kind:function(arm,size=0x670) addr:0x0225ac28
-_ZN12BattleTarget19func_ov007_0225b298EPihP7VecFx32 kind:function(arm,size=0x208) addr:0x0225b298
-_ZN12BattleTarget19func_ov007_0225b4a0EP7VecFx32PtS1_PhS3_ kind:function(arm,size=0x1fc) addr:0x0225b4a0
+_ZN12BattleTarget15GetHitBoxNormalEP12BattleHitBoxP12BattleSphereP7VecFx32S5_hPh kind:function(arm,size=0x670) addr:0x0225ac28
+_ZN12BattleTarget13GetPushVectorEPihP7VecFx32 kind:function(arm,size=0x208) addr:0x0225b298
+_ZN12BattleTarget13CanRestOnCellEP7VecFx32PtS1_PhS3_ kind:function(arm,size=0x1fc) addr:0x0225b4a0
 _ZN12BattleTarget19func_ov007_0225b69cEhh kind:function(arm,size=0x34) addr:0x0225b69c
 _ZN12BattleTarget9StartShotEv kind:function(arm,size=0x868) addr:0x0225b6d0
-_ZN12BattleTarget19func_ov007_0225bf38Ev kind:function(arm,size=0x38) addr:0x0225bf38
+_ZN12BattleTarget13AddPlayerPushEv kind:function(arm,size=0x38) addr:0x0225bf38
 _ZN12BattleTarget14LimitSumLengthEP7VecFx32S1_ kind:function(arm,size=0x128) addr:0x0225bf70
-_ZN12BattleTarget19func_ov007_0225c098EPi kind:function(arm,size=0x24c) addr:0x0225c098
-_ZN12BattleTarget19func_ov007_0225c2e4EP7VecFx32 kind:function(arm,size=0x7c) addr:0x0225c2e4
+_ZN12BattleTarget9AddPushXZEPi kind:function(arm,size=0x24c) addr:0x0225c098
+_ZN12BattleTarget13AddScaledPushEP7VecFx32 kind:function(arm,size=0x7c) addr:0x0225c2e4
 _ZN12BattleTarget19func_ov007_0225c360EPtiS0_ kind:function(arm,size=0x17c) addr:0x0225c360
 _ZN12BattleTarget13UpdateEffectsEv kind:function(arm,size=0x484) addr:0x0225c4dc
 _Z17SetTargetVelocityP12BattleTargetP7VecFx32i kind:function(arm,size=0x60) addr:0x0225c960
 _Z20SetTargetVelocityXyzP12BattleTargetiiii kind:function(arm,size=0x58) addr:0x0225c9c0
 _Z19func_ov007_0225ca18P12BattleTargetii kind:function(arm,size=0x30) addr:0x0225ca18
-_ZN12BattleTarget19func_ov007_0225ca48Ejj kind:function(arm,size=0x134) addr:0x0225ca48
-_ZN12BattleTarget19func_ov007_0225cb7cEv kind:function(arm,size=0x1f0) addr:0x0225cb7c
+_ZN12BattleTarget15DrawRecordTotalEjj kind:function(arm,size=0x134) addr:0x0225ca48
+_ZN12BattleTarget7DrawBarEv kind:function(arm,size=0x1f0) addr:0x0225cb7c
 _ZN12BattleTarget12DrawRouletteEv kind:function(arm,size=0x9c) addr:0x0225cd6c
 _ZN12BattleTarget19func_ov007_0225ce08Ev kind:function(arm,size=0x270) addr:0x0225ce08
 _ZN12BattleTarget19func_ov007_0225d078Ev kind:function(arm,size=0x14) addr:0x0225d078
@@ -803,18 +803,18 @@ _ZN11BattleShoot13LoadShootTextEv kind:function(arm,size=0x340) addr:0x0226c798
 _ZN11BattleShoot13DrawShootTextEv kind:function(arm,size=0xc4) addr:0x0226cad8
 _ZN11BattleShoot11UpdateTouchEi kind:function(arm,size=0x678) addr:0x0226cb9c
 _ZN11BattleShoot19func_ov007_0226d214Ev kind:function(arm,size=0x28) addr:0x0226d214
-_ZN11BattleShoot19func_ov007_0226d23cEv kind:function(arm,size=0x454) addr:0x0226d23c
-_ZN11BattleShoot19func_ov007_0226d690Ev kind:function(arm,size=0x11c) addr:0x0226d690
-_ZN11BattleShoot19func_ov007_0226d7acEv kind:function(arm,size=0x2fc) addr:0x0226d7ac
+_ZN11BattleShoot15UpdateShotInputEv kind:function(arm,size=0x454) addr:0x0226d23c
+_ZN11BattleShoot18UpdateCameraOffsetEv kind:function(arm,size=0x11c) addr:0x0226d690
+_ZN11BattleShoot19UpdateCameraRotKeysEv kind:function(arm,size=0x2fc) addr:0x0226d7ac
 _ZN11BattleShoot19UpdateRotAdjustKeysEv kind:function(arm,size=0x47c) addr:0x0226daa8
 _ZN11BattleShoot11GetLengthXYEii kind:function(arm,size=0x94) addr:0x0226df24
-_ZN11BattleShoot19func_ov007_0226dfb8Ev kind:function(arm,size=0x27c) addr:0x0226dfb8
-_ZN11BattleShoot19func_ov007_0226e234Ev kind:function(arm,size=0x15c) addr:0x0226e234
-_ZN11BattleShoot19func_ov007_0226e390Ev kind:function(arm,size=0xa0) addr:0x0226e390
-_ZN11BattleShoot19func_ov007_0226e430Ev kind:function(arm,size=0x454) addr:0x0226e430
-_ZN11BattleShoot19func_ov007_0226e884Ev kind:function(arm,size=0x864) addr:0x0226e884
-_ZN11BattleShoot19func_ov007_0226f0e8Ehii kind:function(arm,size=0x290) addr:0x0226f0e8
-_ZN11BattleShoot19func_ov007_0226f378Ev kind:function(arm,size=0x224) addr:0x0226f378
+_ZN11BattleShoot14StartTouchShotEv kind:function(arm,size=0x27c) addr:0x0226dfb8
+_ZN11BattleShoot11UpdateIconsEv kind:function(arm,size=0x15c) addr:0x0226e234
+_ZN11BattleShoot26GetAngleFromOriginToCpuPosEv kind:function(arm,size=0xa0) addr:0x0226e390
+_ZN11BattleShoot19UpdateTurnPlayerCpuEv kind:function(arm,size=0x454) addr:0x0226e430
+_ZN11BattleShoot18UpdatePushMessagesEv kind:function(arm,size=0x864) addr:0x0226e884
+_ZN11BattleShoot15StartPushEffectEhii kind:function(arm,size=0x290) addr:0x0226f0e8
+_ZN11BattleShoot20UpdateMessageAndBallEv kind:function(arm,size=0x224) addr:0x0226f378
 _ZN11BattleShoot7DrawMicEv kind:function(arm,size=0x68) addr:0x0226f59c
 _ZN11BattleShoot11ClearBitmapEv kind:function(arm,size=0x40) addr:0x0226f604
 _ZN11BattleShoot12UploadBitmapEv kind:function(arm,size=0x54) addr:0x0226f644
@@ -822,7 +822,7 @@ _ZN11BattleShoot8PlotLineEhhhh kind:function(arm,size=0xd4) addr:0x0226f698
 _ZN11BattleShoot7PlotDotEhh kind:function(arm,size=0xb4) addr:0x0226f76c
 _ZN11BattleShoot9PlotPixelEhh kind:function(arm,size=0x5c) addr:0x0226f820
 _ZN11BattleShoot15ApplyBlendAlphaEv kind:function(arm,size=0x2c) addr:0x0226f87c
-_ZN11BattleShoot19func_ov007_0226f8a8Ev kind:function(arm,size=0x140) addr:0x0226f8a8
+_ZN11BattleShoot15DrawPenAndIconsEv kind:function(arm,size=0x140) addr:0x0226f8a8
 _ZN11BattleShoot13TryStartPopupEv kind:function(arm,size=0x144) addr:0x0226f9e8
 _ZN11BattleShoot12SetSubPlanesEh kind:function(arm,size=0x24) addr:0x0226fb2c
 _Z14ApplySubPlanesPv kind:function(arm,size=0x24) addr:0x0226fb50
@@ -1149,10 +1149,10 @@ sRetryItems kind:data(any) addr:0x0227a45c local
 sRetryCells kind:data(any) addr:0x0227a4b0 local
 sPrizeTable kind:data(any) addr:0x0227a504 local
 @1682 kind:data(any) addr:0x0227a5dc local
-data_ov007_0227a5e0 kind:data(any) addr:0x0227a5e0 local
+sTables kind:data(any) addr:0x0227a5e0 local
 data_ov007_0227a74c kind:data(any) addr:0x0227a74c local
 data_ov007_0227a750 kind:data(any) addr:0x0227a750 local
-data_ov007_0227a754 kind:data(any) addr:0x0227a754 local
+sShotSpeedAdjusts kind:data(any) addr:0x0227a754 local
 data_ov007_0227a75c kind:data(any) addr:0x0227a75c local
 data_ov007_0227a764 kind:data(any) addr:0x0227a764 local
 data_ov007_0227a770 kind:data(any) addr:0x0227a770 local
@@ -1223,10 +1223,10 @@ gShootCurves kind:data(any) addr:0x0227bca0
 data_ov007_0227bca1 kind:data(any) addr:0x0227bca1
 data_ov007_0227bcac kind:data(any) addr:0x0227bcac
 data_ov007_0227bcb8 kind:data(any) addr:0x0227bcb8
-data_ov007_0227bcc4 kind:data(any) addr:0x0227bcc4
+gCpuPushScales kind:data(any) addr:0x0227bcc4
 gFieldRotZAdjust kind:data(any) addr:0x0227bcd0
 gDotOffsets kind:data(any) addr:0x0227bce0
-data_ov007_0227bcf8 kind:data(any) addr:0x0227bcf8
+gCpuPushIntervalRanges kind:data(any) addr:0x0227bcf8
 data_ov007_0227bcfc kind:data(any) addr:0x0227bcfc
 sShootCells kind:data(any) addr:0x0227bd10 local
 sShootItems kind:data(any) addr:0x0227bd2c local

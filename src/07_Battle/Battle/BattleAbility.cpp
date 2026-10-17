@@ -476,7 +476,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             result = 0;
             break;
         case 5:
-            if (mTarget->mUnk_1d2 == 2) {
+            if (mTarget->mResult == 2) {
                 u8 x;
                 u8 y;
                 u8 n         = 0;
@@ -559,7 +559,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             break;
         }
         case 7:
-            if (mTarget->mUnk_1d2 == 2) {
+            if (mTarget->mResult == 2) {
                 result = 0;
             }
             break;
@@ -854,9 +854,9 @@ u8 BattleAbility::func_ov007_02265af8() {
                 SetTransformPosition(mTarget->mBakugan, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mTarget->mBakugan->mPosition;
                 VecFx32 b = *(VecFx32 *) unit;
-                mTarget->func_ov007_02259a40(marker->mCellX, marker->mCellY, &a, &b);
+                mTarget->MoveClearOfUnit(marker->mCellX, marker->mCellY, &a, &b);
                 mTarget->mBakugan->mPosition = a;
-                mTarget->mUnk_1d2       = 3;
+                mTarget->mResult       = 3;
                 mTarget->mBakugan->mVisible = 0;
                 // Both indices are read as their own statements (volatile placeholders), the list before them.
                 u8 ri;
@@ -937,14 +937,14 @@ u8 BattleAbility::func_ov007_02265fac() {
                 SetTransformPosition(mTarget->mBakugan, mUnk_54.x, 0x899a, mUnk_54.z);
                 u8 idx = mUnk_29;
                 if (idx == 0xff) {
-                    mTarget->mUnk_1d2 = 2;
+                    mTarget->mResult = 2;
                 } else {
                     VecFx32 a = mTarget->mBakugan->mPosition;
                     VecFx32 b = *(VecFx32 *) &data_020d433c.mBattlePlayers->mUnits[idx];
-                    mTarget->func_ov007_02259a40(marker->mCellX, marker->mCellY, &a, &b);
+                    mTarget->MoveClearOfUnit(marker->mCellX, marker->mCellY, &a, &b);
                     mTarget->mBakugan->mPosition = a;
                     SetUnitAB(data_020d433c.mBattlePlayers, mUnk_29, mUnit);
-                    mTarget->mUnk_1d2 = 3;
+                    mTarget->mResult = 3;
                 }
                 mTarget->mBakugan->mVisible = 0;
                 VecFx32 c;
@@ -1058,7 +1058,7 @@ u8 BattleAbility::func_ov007_022665ec() {
             }
             break;
     }
-    mTarget->func_ov007_0225ca48(0xff, 0xff);
+    mTarget->DrawRecordTotal(0xff, 0xff);
     OrbitCamera(this);
     return done;
 }
@@ -1145,7 +1145,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             break;
         }
         case 2:
-            mTarget->func_ov007_0225ca48(0xff, 0xff);
+            mTarget->DrawRecordTotal(0xff, 0xff);
             OrbitCamera(this);
             if (func_ov007_0226745c(this, mPlayer, mRecord)) {
                 mStep++;
@@ -1153,7 +1153,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             break;
         case 3:
             func_ov007_0226745c(this, mPlayer, mRecord);
-            mTarget->func_ov007_0225ca48(0xff, 0xff);
+            mTarget->DrawRecordTotal(0xff, 0xff);
             OrbitCamera(this);
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -1220,7 +1220,7 @@ u8 BattleAbility::func_ov007_02266a28() {
         }
         case 7: {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mUnk_71[mUnk_70]];
-            mTarget->func_ov007_0225ca48(unit->mPlayer, unit->mRecord);
+            mTarget->DrawRecordTotal(unit->mPlayer, unit->mRecord);
             OrbitCamera(this);
             if (func_ov007_0226745c(this, unit->mPlayer, unit->mRecord)) {
                 mStep++;
@@ -1229,7 +1229,7 @@ u8 BattleAbility::func_ov007_02266a28() {
         }
         case 8: {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mUnk_71[mUnk_70]];
-            mTarget->func_ov007_0225ca48(unit->mPlayer, unit->mRecord);
+            mTarget->DrawRecordTotal(unit->mPlayer, unit->mRecord);
             OrbitCamera(this);
             func_ov007_0226745c(this, unit->mPlayer, unit->mRecord);
             mUnk_1a++;
@@ -1483,7 +1483,7 @@ BOOL func_ov007_022677cc(BattleAbility *self) {
 
 enum UnitCompare { UNIT_COMPARE_0, UNIT_COMPARE_1, UNIT_COMPARE_2 };
 u32 func_ov007_02267884(BattleAbility *self) {
-    if (self->mTarget->mUnk_1d2 != 3) {
+    if (self->mTarget->mResult != 3) {
         return 0;
     }
     BattleUnit *units    = data_020d433c.mBattlePlayers->mUnits;

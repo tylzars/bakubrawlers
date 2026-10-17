@@ -97,7 +97,7 @@ void GimmickVentKaze::Update() {
             MTX_ApplyRotY33(&m, mRotY);
         }
         MTX_MultVec33(&c, &m, &c);
-        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
         break;
     }
     case 2:

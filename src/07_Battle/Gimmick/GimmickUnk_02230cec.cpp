@@ -37,10 +37,10 @@ void GimmickUnk_02230cec::Update() {
         if (target->mBakugan->mPosition.y > 0x899a) {
             return;
         }
-        if (target->mUnk_1da) {
+        if (target->mOnMarkerCell) {
             return;
         }
-        if (target->mUnk_38 > 3) {
+        if (target->mAirFrames > 3) {
             return;
         }
         if (target->mMoveFrames < 5) {

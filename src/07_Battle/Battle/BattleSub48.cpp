@@ -22,7 +22,7 @@ enum EntryIndex { ENTRY_INDEX_0 };
 
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
-    mUnk_0c = 0;
+    mState = 0;
     mUnk_0d = 0;
     mUnk_0e_0 = 0;
     mUnk_0e_1 = 0;
@@ -30,12 +30,12 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     mUnk_0e_3 = 0;
     mUnk_0e_4 = 0;
     mUnk_0f = 0;
-    mUnk_14 = 0;
-    mUnk_38 = 0xc0;
-    mUnk_3a = 10;
+    mStepFrames = 0;
+    mAbilitiesY = 0xc0;
+    mAbilitiesYPerFrame = 10;
     mUnk_3c = mode;
-    mUnk_40 = data;
-    BattleEntry *entries = mUnk_40->mEntries;
+    mData = data;
+    BattleEntry *entries = mData->mEntries;
     u8 i = 0;
     do {
         mAnims[i] = 0;
@@ -59,14 +59,14 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
                 }
             }
             u8 c = data_ov007_022790c0[mUnk_12[k]];
-            mUnk_16 = 90;
+            mCircleY = 90;
             int step = (u16) (c * 0x2aaa + 0xc000) >> 4;
             mPos[k][0] = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
-            mPos[k][1] = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+            mPos[k][1] = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
             k++;
         } while (k < 2);
         if (!entries[0].mUnk_0f_5 && !entries[1].mUnk_0f_5) {
-            mUnk_0c = 1;
+            mState = 1;
         } else {
             u32 left = 8;
             u32 right = 0xdc;
@@ -79,7 +79,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     } else {
         mUnk_0e |= 8;
     }
-    func_ov007_02224444();
+    LoadGraphics();
 }
 
 BattleSub48::~BattleSub48() {
@@ -93,7 +93,7 @@ BattleSub48::~BattleSub48() {
     } while (i < 15);
 }
 
-void BattleSub48::func_ov007_02224270() {
+void BattleSub48::LoadCharactersAndPalettes() {
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
@@ -132,9 +132,9 @@ void BattleSub48::func_ov007_02224270() {
     ChangeDir("/");
 }
 
-void BattleSub48::func_ov007_02224444() {
-    func_ov007_02224270();
-    BattleEntry *entries = mUnk_40->Entries();
+void BattleSub48::LoadGraphics() {
+    LoadCharactersAndPalettes();
+    BattleEntry *entries = mData->Entries();
     int kind;
     int other;
     u8 i;
@@ -251,24 +251,24 @@ void BattleSub48::func_ov007_02224444() {
 }
 
 void BattleSub48::Update() {
-    switch (mUnk_0c) {
+    switch (mState) {
         case 1:
-            func_ov007_02224c90();
+            DrawCircleAndSides();
             break;
         case 2:
-            mUnk_38 = mUnk_38 - mUnk_3a;
-            mUnk_3a = mUnk_3a - 2;
-            if (mUnk_3a < 2) {
-                mUnk_3a = 2;
+            mAbilitiesY = mAbilitiesY - mAbilitiesYPerFrame;
+            mAbilitiesYPerFrame = mAbilitiesYPerFrame - 2;
+            if (mAbilitiesYPerFrame < 2) {
+                mAbilitiesYPerFrame = 2;
             }
-            if (mUnk_38 <= 0x8c) {
-                mUnk_38 = 0x8c;
-                mUnk_0c++;
+            if (mAbilitiesY <= 0x8c) {
+                mAbilitiesY = 0x8c;
+                mState++;
             }
-            func_ov007_02224fdc();
+            DrawAbilitiesAndSides();
             break;
         case 3:
-            func_ov007_02224fdc();
+            DrawAbilitiesAndSides();
             break;
         case 4:
             mFinished = 1;
@@ -279,7 +279,7 @@ void BattleSub48::Update() {
 extern const u8 data_ov007_022790bc[];
 
 u8 BattleSub48::func_ov007_02224a70() {
-    if (mUnk_0c == 0) {
+    if (mState == 0) {
         return 1;
     }
     u8 i;
@@ -293,21 +293,21 @@ u8 BattleSub48::func_ov007_02224a70() {
                 i++;
             } while (i < 2);
             mUnk_0e |= 2;
-            mUnk_14 = 0;
+            mStepFrames = 0;
             mUnk_0d++;
             break;
         }
         case 1:
-            mUnk_14++;
-            if (mUnk_14 > 0x78) {
-                mUnk_14 = 0;
+            mStepFrames++;
+            if (mStepFrames > 0x78) {
+                mStepFrames = 0;
                 mUnk_0e &= ~2;
                 mUnk_0d++;
             }
             break;
         case 2:
-            mUnk_16 += 3;
-            if (mUnk_16 >= 250) {
+            mCircleY += 3;
+            if (mCircleY >= 250) {
                 mUnk_0d++;
             }
             break;
@@ -316,9 +316,9 @@ u8 BattleSub48::func_ov007_02224a70() {
             mPos[0][1] = mPos[0][1] + mVel[0][1];
             mPos[1][0] = mPos[1][0] + mVel[1][0];
             mPos[1][1] = mPos[1][1] + mVel[1][1];
-            mUnk_14++;
-            if (mUnk_14 >= 0x3c) {
-                mUnk_14 = 0;
+            mStepFrames++;
+            if (mStepFrames >= 0x3c) {
+                mStepFrames = 0;
                 i = 0;
                 do {
                     s32 value = data_ov007_022790c8[mUnk_0f][mUnk_12[i]];
@@ -340,8 +340,8 @@ u8 BattleSub48::func_ov007_02224a70() {
     return ret;
 }
 
-void BattleSub48::func_ov007_02224c90() {
-    mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
+void BattleSub48::DrawCircleAndSides() {
+    mAnims[13]->Draw(0, 0x6e, (s16) mCircleY, 1);
     u16 x;
     u16 y;
     int step;
@@ -354,7 +354,7 @@ void BattleSub48::func_ov007_02224c90() {
             if (mAnims[slot]->mAnimIndex != 2) {
                 step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
-                y = (float) (u32) mUnk_16 + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+                y = (float) (u32) mCircleY + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
                 mAnims[slot]->Update();
                 mAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
             }
@@ -362,15 +362,15 @@ void BattleSub48::func_ov007_02224c90() {
         if (data_ov007_022790c0[mUnk_12[0]] != c && data_ov007_022790c0[mUnk_12[1]] != c) {
             step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
-            y = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+            y = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
             mAnims[14]->DrawFrame(0, i, x, y, 1);
         }
         i++;
     } while (i < 6);
-    func_ov007_02224ef8();
+    DrawSides();
 }
 
-void BattleSub48::func_ov007_02224ef8() {
+void BattleSub48::DrawSides() {
     u8 i = 0;
     do {
         u16 x = mPos[i][0];
@@ -387,16 +387,16 @@ void BattleSub48::func_ov007_02224ef8() {
 
 // The original reloads xs[i] after the if/else instead of reusing the value both arms loaded: the reload indexes
 // through an enum-typed copy of i, which mwcc does not identify with i.
-void BattleSub48::func_ov007_02224fdc() {
+void BattleSub48::DrawAbilitiesAndSides() {
     s16 y;
     s16 xs[2];
     BattleEntry *entries;
     s16 x;
     u8 i;
-    y = mUnk_38;
+    y = mAbilitiesY;
     xs[0] = 0x24;
     xs[1] = 0xdc;
-    entries = mUnk_40->mEntries;
+    entries = mData->mEntries;
     i = 0;
     if (y >= 0xc0) {
         return;
@@ -462,17 +462,17 @@ void BattleSub48::func_ov007_02224fdc() {
     if (mUnk_0e_3) {
         return;
     }
-    func_ov007_02224ef8();
+    DrawSides();
 }
 
 void func_ov007_022252a8(BattleSub48 *obj) {
-    obj->mUnk_38 = 0xc0;
-    obj->mUnk_3a = 10;
-    obj->mUnk_0c = 2;
+    obj->mAbilitiesY = 0xc0;
+    obj->mAbilitiesYPerFrame = 10;
+    obj->mState = 2;
 }
 
 void func_ov007_022252c4(BattleSub48 *obj) {
-    obj->mUnk_0c = 0;
+    obj->mState = 0;
 }
 
 int func_ov007_022252d0(int x1, int y1, int x2, int y2) {

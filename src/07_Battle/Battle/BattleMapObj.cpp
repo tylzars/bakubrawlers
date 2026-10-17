@@ -32,7 +32,7 @@ void BattleMapObjPart::func_ov007_022490ac(TextureFile *texture, const char *nsb
 }
 
 BattleMapObj::BattleMapObj(int unk1) {
-    mUnk_20 = unk1;
+    mKind = unk1;
     MI_CpuClear32(this, 0x20);
     mCount = 0;
 }
@@ -53,21 +53,21 @@ BattleMapObj::~BattleMapObj() {
     }
 }
 
-void BattleMapObj::func_ov007_02249200(const char *nsbtx, const char *nsbmd, const char *data, u32 flag) {
+void BattleMapObj::AddPart(const char *nsbtx, const char *nsbmd, const char *data, u32 flag) {
     mParts[mCount] = new BattleMapObjPart();
     mParts[mCount]->LoadFiles(nsbtx, nsbmd, data, 1);
     mParts[mCount]->mModel->mUseBoxTest = flag;
     mCount++;
 }
 
-void BattleMapObj::func_ov007_0224927c(TextureFile *texture, const char *nsbmd, const char *data, u32 flag) {
+void BattleMapObj::AddPartWithTexture(TextureFile *texture, const char *nsbmd, const char *data, u32 flag) {
     mParts[mCount] = new BattleMapObjPart();
     mParts[mCount]->func_ov007_022490ac(texture, nsbmd, data, 1);
     mParts[mCount]->mModel->mUseBoxTest = flag;
     mCount++;
 }
 
-void BattleMapObj::func_ov007_022492f8(const BattleMapObjTable *table) {
+void BattleMapObj::AddTableParts(const BattleMapObjTable *table) {
     char path[0x20];
     char name[0x20];
     char data[0x20];
@@ -79,9 +79,9 @@ void BattleMapObj::func_ov007_022492f8(const BattleMapObjTable *table) {
         const BattleMapObjEntry *entry = &table->mEntries[i];
         if (entry->mHasData != 0) {
             sprintf(data, "%s_data.bin", table->mEntries[i].mName);
-            func_ov007_0224927c(texture, name, data, table->mEntries[i].mFlag);
+            AddPartWithTexture(texture, name, data, table->mEntries[i].mFlag);
         } else {
-            func_ov007_0224927c(texture, name, 0, entry->mFlag);
+            AddPartWithTexture(texture, name, 0, entry->mFlag);
         }
         i++;
     } while (i < table->mCount);
@@ -93,33 +93,33 @@ extern const BattleMapObjTable data_ov007_0227a2fc[];
 extern const VecFx32 data_ov007_0227a13c;
 extern const VecFx32 data_ov007_0227a148;
 
-void BattleMapObj::func_ov007_022493fc() {
+void BattleMapObj::Load() {
     ChangeDir("/Game/Battle/3d/Map");
-    switch (mUnk_20) {
+    switch (mKind) {
         case 9:
-            func_ov007_02249200("throwfield00.nsbtx", "throwfield00.nsbmd", "throwfield00_data.bin", 1);
+            AddPart("throwfield00.nsbtx", "throwfield00.nsbmd", "throwfield00_data.bin", 1);
             break;
         case 11:
-            func_ov007_02249200("throwfield01.nsbtx", "throwfield01.nsbmd", "throwfield01_data.bin", 0);
+            AddPart("throwfield01.nsbtx", "throwfield01.nsbmd", "throwfield01_data.bin", 0);
             break;
         case 12:
-            func_ov007_02249200("realpop.nsbtx", "realpop.nsbmd", 0, 0);
+            AddPart("realpop.nsbtx", "realpop.nsbmd", 0, 0);
             break;
         case 13:
-            func_ov007_02249200("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
+            AddPart("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
             break;
         case 10:
-            func_ov007_022492f8(&data_ov007_0227a2bc[data_020d433c.mFieldId]);
+            AddTableParts(&data_ov007_0227a2bc[data_020d433c.mFieldId]);
             break;
         default:
-            func_ov007_022492f8(&data_ov007_0227a2fc[mUnk_20]);
+            AddTableParts(&data_ov007_0227a2fc[mKind]);
             break;
     }
     ChangeDir("/");
 }
 
-void BattleMapObj::func_ov007_0224954c() {
-    if (mUnk_20 == 9) {
+void BattleMapObj::Draw() {
+    if (mKind == 9) {
         MtxFx43 *camera = func_020323b8();
         MtxFx43 mtx     = gIdentityMtx43;
         VecFx32 scale   = data_ov007_0227a13c;

@@ -159,7 +159,7 @@ void BattleObj00::Update() {
             }
             SpriteManager::Get().SetupMode(1, 7);
             mMap = new BattleCommandMap(data_020d433c.mFieldId);
-            mMap->vfunc_0c();
+            mMap->Init();
             data_020d433c.mGimmicks->mState = 1;
             func_ov007_022482a8(mMap);
             mUnk_32++;
@@ -324,7 +324,7 @@ void BattleObj00::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            func_02055624(mPage, 1);
+            CloseCommandPage(mPage, 1);
             mContext->mUnk_12 = 0;
             mUnk_32           = 0x10;
             return;
@@ -381,7 +381,7 @@ void BattleObj00::Update() {
             G2S_SetWndOutsidePlane(0x11, FALSE);
             mMap = new BattleCommandMap(data_020d433c.mFieldId);
             mMap->mUnk_151 = 0;
-            mMap->vfunc_0c();
+            mMap->Init();
             func_ov007_02247e00(mMap);
             data_020d433c.mGimmicks->mState = 0;
             mUnk_32                         = 0x13;

@@ -108,7 +108,7 @@ void UnkStruct_02071d24::Update() {
             mState++;
             break;
         case 1:
-            if (mCommandList->func_020583f0() != 0) {
+            if (mCommandList->IsSettingUp() != 0) {
                 break;
             }
             SpriteManager::Get();
@@ -134,7 +134,7 @@ void UnkStruct_02071d24::Update() {
             break;
         case 4: {
             WindowItem *items;
-            if (mCommandList->func_0205b0c4() != 0) {
+            if (mCommandList->IsCountingUp() != 0) {
                 mUnk_52 = 1;
             } else {
                 items = mWindow->mCursor->mItems;
@@ -191,7 +191,7 @@ void UnkStruct_02071d24::Update() {
             break;
         }
         case 6:
-            if (mCommandList->func_0205b0c4() != 0) {
+            if (mCommandList->IsCountingUp() != 0) {
                 mUnk_52 = 1;
             } else {
                 mUnk_52 = 0;
@@ -210,7 +210,7 @@ void UnkStruct_02071d24::Update() {
         case 7:
             func_02072dfc();
             if (mCommandList != NULL) {
-                func_0205821c(mCommandList);
+                CloseCommandList(mCommandList);
                 mContext->mUnk_12 = 0;
             }
             mState++;
@@ -312,7 +312,7 @@ void UnkStruct_02071d24::func_02072b60() {
         total = 0x3de - base;
     }
     base += total;
-    mCommandList->func_0205b048(total);
+    mCommandList->StartCountUp(total);
     func_020231c0(gSaveData, current, base);
 }
 
@@ -512,7 +512,7 @@ void UnkStruct_02071d24::func_020733d4() {
         }
         if (mUnk_64[next] != 0) {
             if (mCommandList != NULL) {
-                func_02058260(mCommandList, mBakuganIds[next], mUnk_5e[next], -1);
+                SetCommandListBakugan(mCommandList, mBakuganIds[next], mUnk_5e[next], -1);
             }
             mUnk_4f = 0;
             mBakuganSubAnim->mFrameIndex = mUnk_5e[mBakuganIndex];

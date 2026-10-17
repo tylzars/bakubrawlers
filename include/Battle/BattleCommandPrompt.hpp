@@ -22,43 +22,43 @@ struct BattlePromptSlot {
 // 0x98 bytes, ctor 0225d08c: the prompt of the command screen (page/list of cells to pick from).
 class BattleCommandPrompt : public SceneBase {
 public:
-    /* 0c */ CellAnimation *mUnk_0c[3];
-    /* 18 */ CellAnimation *mUnk_18;
-    /* 1c */ CellAnimation *mUnk_1c;
-    /* 20 */ CellAnimation *mUnk_20[3];
-    /* 2c */ MessageWindow *mUnk_2c;
-    /* 30 */ BattleCommandPage *mUnk_30;
-    /* 34 */ BattleCommandList *mUnk_34;
-    /* 38 */ SelectWindow *mUnk_38;
+    /* 0c */ CellAnimation *mBakuganSubCellAnims[3];
+    /* 18 */ CellAnimation *mCursorAnim;
+    /* 1c */ CellAnimation *mDigitAnim;
+    /* 20 */ CellAnimation *mStateCellAnims[3];
+    /* 2c */ MessageWindow *mMessageWindow;
+    /* 30 */ BattleCommandPage *mCommandPage;
+    /* 34 */ BattleCommandList *mCommandList;
+    /* 38 */ SelectWindow *mWindow;
     /* 3c */ CharacterIcons *mUnk_3c;
-    /* 40 */ CellAnimation *mUnk_40[3];
-    /* 4c */ u32 mUnk_4c;
-    /* 50 */ s16 mUnk_50;
-    /* 52 */ u16 mUnk_52[6];
-    /* 5e */ u16 mUnk_5e[6];
-    /* 6a */ u8 mUnk_6a[6];
-    /* 70 */ BattleRecord *mUnk_70[6];
-    /* 88 */ u16 mUnk_88;
-    /* 8a */ u8 mUnk_8a;
-    /* 8b */ u8 mUnk_8b;
-    /* 8c */ u8 mUnk_8c;
+    /* 40 */ CellAnimation *mCharacterIconCellAnims[3];
+    /* 4c */ u32 mCharOffset;
+    /* 50 */ s16 mSlideX;
+    /* 52 */ u16 mCardIds[6];
+    /* 5e */ u16 mNextScenes[6];
+    /* 6a */ u8 mKinds[6];
+    /* 70 */ BattleRecord *mRecords[6];
+    /* 88 */ u16 mSlideOutDelayFrames;
+    /* 8a */ u8 mState;
+    /* 8b */ u8 mMode;
+    /* 8c */ u8 mPlayer;
     /* 8d */ u8 mUnk_8d;
-    /* 8e */ u8 mUnk_8e;
-    /* 8f */ u8 mUnk_8f;
-    /* 90 */ u8 mUnk_90;
+    /* 8e */ u8 mStep;
+    /* 8f */ u8 mCursorPos;
+    /* 90 */ u8 mScroll;
     /* 91 */ u8 mUnk_91;
-    /* 92 */ u8 mUnk_92;
-    /* 93 */ u8 mUnk_93;
-    /* 94 */ u8 mUnk_94[4];
+    /* 92 */ u8 mCount;
+    /* 93 */ u8 mCollectMode;
+    /* 94 */ u8 mDisabledBits[4];
     /* 98 */
 
     BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 charOffset, u8 player);
     virtual ~BattleCommandPrompt();
     virtual void Update();
-    void func_ov007_0225e6d4();
-    void func_ov007_0225f0c4(const BattlePromptSlot *slot);
-    void func_ov007_0225f200();
+    void Load();
+    void CollectCards(const BattlePromptSlot *slot);
+    void CollectRecords();
 };
 
-void func_ov007_0225e68c(BattleCommandPrompt *prompt, u32 flag); // releases the prompt
+void CloseCommandPrompt(BattleCommandPrompt *prompt, u32 flag); // releases the prompt
 extern "C" u8 func_ov007_0225f0bc(u32 v);

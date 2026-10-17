@@ -43,7 +43,7 @@ ConfrontEmblem02::~ConfrontEmblem02() {
 }
 
 void ConfrontEmblem02::func_ov007_0221de78(u8 side) {
-    mSide = func_ov007_0221d348(2);
+    mSide = BattleRand32(2);
     mState = 0;
     mUnk_07_1 = 0;
     mPhase = 0;
@@ -216,10 +216,10 @@ ConfrontBg02::~ConfrontBg02() {
     }
 }
 
-void ConfrontBg02::func_ov007_02219888(BattleData *data, u32 mode) {
+void ConfrontBg02::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
-    vfunc_28();
+    InitSubScreen();
+    LoadGraphics();
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
@@ -236,7 +236,7 @@ void ConfrontBg02::func_ov007_02219888(BattleData *data, u32 mode) {
     }
 }
 
-void ConfrontBg02::func_ov007_0221a624() {
+void ConfrontBg02::InitSubScreen() {
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -249,7 +249,7 @@ void ConfrontBg02::func_ov007_0221a624() {
     G2S_BlendNone();
 }
 
-void ConfrontBg02::vfunc_28() {
+void ConfrontBg02::LoadGraphics() {
     char path[0x80];
     BattleData *data = mData;
     u8 spectator = IsSpectator();
@@ -300,7 +300,7 @@ void ConfrontBg02::vfunc_34() {
         if (!spectator) {
             func_ov007_0221ef34();
         } else {
-            func_ov007_0221d348(0xffff);
+            BattleRand32(0xffff);
         }
     }
     u8 spectator = IsSpectator();
@@ -355,7 +355,7 @@ void ConfrontBg02::vfunc_3c() {
     }
 }
 
-u8 ConfrontBg02::vfunc_40(int a) {
+u8 ConfrontBg02::UpdateTouch(int a) {
     mSide = a;
     s32 result = -1;
     for (u8 i = 0; i < 4; i++) {
@@ -404,7 +404,7 @@ void ConfrontBg02::func_ov007_0221ee70() {
     ConfrontEmblemStep *step = data_ov007_02278bf8;
     for (; i < 5; i++) {
         total += step->mUntil;
-        if (mUnk_16 < total) {
+        if (mElapsedFrames < total) {
             if (mStep != step) {
                 mStep = step;
             }
@@ -416,11 +416,11 @@ void ConfrontBg02::func_ov007_0221ee70() {
 
 BOOL ConfrontBg02::func_ov007_0221eec8() {
     BOOL result = FALSE;
-    if (mUnk_20->mUnk_02 - mUnk_16 >= 10) {
+    if (mParam->mBattleFrameCount - mElapsedFrames >= 10) {
         if (mDelay != 0) {
             mDelay--;
         } else {
-            mDelay = func_ov007_0221d348(mStep->mMaxDelay - mStep->mMinDelay);
+            mDelay = BattleRand32(mStep->mMaxDelay - mStep->mMinDelay);
             mDelay += mStep->mMinDelay;
             result = TRUE;
         }
@@ -438,7 +438,7 @@ void ConfrontBg02::func_ov007_0221ef34() {
         }
     }
     if (!found) {
-        func_ov007_0221d348(0xffff);
+        BattleRand32(0xffff);
     }
 }
 

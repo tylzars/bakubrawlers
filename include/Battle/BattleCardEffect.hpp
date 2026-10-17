@@ -20,22 +20,22 @@ class BattleCardEffect : public SceneBase {
 public:
     /* 0c */ CellAnimation *mAnim;
     /* 10 */ u8 mState;
-    /* 11 */ u8 mUnk_11; // palette variant for kinds >= 0x11
+    /* 11 */ u8 mAnimPairIndex; // palette variant for kinds >= 0x11
     /* 12 */ PAD(0x12, 0x14);
-    /* 14 */ u32 mUnk_14; // character offset passed to SpriteScreen::LoadCharacters
+    /* 14 */ u32 mCharOffset; // character offset passed to SpriteScreen::LoadCharacters
     /* 18 */ u8 mPalette;
     /* 19 */ u8 mKind;
     /* 1a */ u8 mTimer;
-    /* 1b */ u8 mUnk_1b;
+    /* 1b */ u8 mSetNextScene;
     /* 1c */
 
     BattleCardEffect(u32 charOffset, u32 palette, u32 kind, u32 unk4);
     virtual ~BattleCardEffect();
     /* 08 */ virtual void Update();
 
-    void func_ov007_022716e8(); // load the animation files
-    int func_ov007_02271888();  // update and draw, TRUE when the animation finished
-    void func_ov007_02271648();
-    void func_ov007_02271684();
-    void func_ov007_022716a8();
+    void LoadAnimation(); // load the animation files
+    int UpdateAnimation();  // update and draw, TRUE when the animation finished
+    void SetFirstAnimation();
+    void SetMiddleAnimation();
+    void SetLastAnimation();
 };

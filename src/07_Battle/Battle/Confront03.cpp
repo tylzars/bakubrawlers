@@ -39,8 +39,8 @@ ConfrontEmblem03::~ConfrontEmblem03() {
 }
 
 void ConfrontEmblem03::func_ov007_0221f1b8(u8 slot, int flag) {
-    mUnk_14 = (float) ((slot % 4) * 64 + 0x10 + func_ov007_0221d348(0x20));
-    mUnk_18 = (float) ((slot / 4) * 32 + 0x68 + func_ov007_0221d348(2));
+    mUnk_14 = (float) ((slot % 4) * 64 + 0x10 + BattleRand32(0x20));
+    mUnk_18 = (float) ((slot / 4) * 32 + 0x68 + BattleRand32(2));
     mUnk_04 = 0;
     mUnk_0a = 0;
     mUnk_07_1 = 0;
@@ -207,10 +207,10 @@ Confront03::~Confront03() {
     }
 }
 
-void Confront03::func_ov007_02219888(BattleData *data, u32 mode) {
+void Confront03::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
-    vfunc_28();
+    InitSubScreen();
+    LoadGraphics();
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
@@ -222,7 +222,7 @@ void Confront03::func_ov007_02219888(BattleData *data, u32 mode) {
     }
 }
 
-void Confront03::func_ov007_0221a624() {
+void Confront03::InitSubScreen() {
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -235,7 +235,7 @@ void Confront03::func_ov007_0221a624() {
     G2S_BlendNone();
 }
 
-void Confront03::vfunc_28() {
+void Confront03::LoadGraphics() {
     BOOL spectator = IsSpectator();
     if ((u8) spectator) {
         return;
@@ -255,16 +255,16 @@ void Confront03::vfunc_28() {
 
 void Confront03::vfunc_34() {
     if (func_ov007_0221fe4c()) {
-        u8 count = func_ov007_0221d348(mUnk_70->mUnk_04);
+        u8 count = BattleRand32(mUnk_70->mUnk_04);
         u8 i = 0;
         do {
             BOOL spectator = IsSpectator();
             if (!(u8) spectator) {
                 func_ov007_0221feb8();
             } else {
-                func_ov007_0221d348(0xffff);
-                func_ov007_0221d348(0xffff);
-                func_ov007_0221d348(0xffff);
+                BattleRand32(0xffff);
+                BattleRand32(0xffff);
+                BattleRand32(0xffff);
             }
             i++;
         } while (i < count);
@@ -315,13 +315,13 @@ void Confront03::vfunc_3c() {
     } while (i < 4);
 }
 
-u8 Confront03::vfunc_40(int a) {
+u8 Confront03::UpdateTouch(int a) {
     ConfrontEmblem03 *emblem = mEmblems[mUnk_6c];
     if (emblem->mUnk_04 == 0 && emblem->mUnk_0a == 1) {
         mUnk_68++;
         if (mUnk_68 >= 0x14) {
             mUnk_68 = 0;
-            func_ov007_0221bb28(-1, -1);
+            SetPenPosition(-1, -1);
             mUnk_6c++;
             if (mUnk_6c >= 4) {
                 mUnk_6c = 0;
@@ -330,7 +330,7 @@ u8 Confront03::vfunc_40(int a) {
             ConfrontEmblem03 *cur = mEmblems[mUnk_6c];
             s16 y = (s16) cur->mUnk_18;
             s16 x = (s16) cur->mUnk_14;
-            func_ov007_0221bb28(x, y);
+            SetPenPosition(x, y);
         }
     }
     mUnk_6d = a;
@@ -363,11 +363,11 @@ void Confront03::vfunc_44(int index, u16 count) {
 
 BOOL Confront03::func_ov007_0221fe4c() {
     BOOL result = FALSE;
-    if (mUnk_20->mUnk_02 - mUnk_16 >= 0x28) {
+    if (mParam->mBattleFrameCount - mElapsedFrames >= 0x28) {
         if (mUnk_74 != 0) {
             mUnk_74--;
         } else {
-            mUnk_74 = func_ov007_0221d348(mUnk_70->mUnk_03 - mUnk_70->mUnk_02);
+            mUnk_74 = BattleRand32(mUnk_70->mUnk_03 - mUnk_70->mUnk_02);
             mUnk_74 += mUnk_70->mUnk_02;
             result = TRUE;
         }
@@ -400,10 +400,10 @@ void Confront03::func_ov007_0221feb8() {
         u8 j = 0;
         do {
             if (mEmblems[j]->func_ov007_0221f57c()) {
-                int pick = free[func_ov007_0221d348(n) & 0xff];
+                int pick = free[BattleRand32(n) & 0xff];
                 if (!mUnk_18_1 && (u16) (pick + 0xffff) <= 1) {
-                    func_ov007_0221d348(0xffff);
-                    func_ov007_0221d348(0xffff);
+                    BattleRand32(0xffff);
+                    BattleRand32(0xffff);
                 } else {
                     mEmblems[j]->func_ov007_0221f1b8(pick, mUnk_6d);
                     mUnk_6e = mUnk_6e | (u16) (1 << pick);
@@ -417,9 +417,9 @@ void Confront03::func_ov007_0221feb8() {
     if (found) {
         return;
     }
-    func_ov007_0221d348(0xffff);
-    func_ov007_0221d348(0xffff);
-    func_ov007_0221d348(0xffff);
+    BattleRand32(0xffff);
+    BattleRand32(0xffff);
+    BattleRand32(0xffff);
 }
 
 BOOL Confront03::func_ov007_0221bd84() {

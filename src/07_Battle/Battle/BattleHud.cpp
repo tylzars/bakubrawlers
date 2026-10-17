@@ -23,7 +23,7 @@
 #include <stdio.h>
 
 // Externals of other battle files.
-u32 func_ov007_0221d348(u32 max);
+u32 BattleRand32(u32 max);
 // Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
 extern const u8 data_ov007_02279178[];
 extern const u32 data_ov007_02279184[];
@@ -34,8 +34,8 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     mUnk_0c = mode;
     mUnk_10 = 0;
     mUnk_12 = 0;
-    mUnk_13 = 0;
-    mUnk_14 = 0;
+    mPushPercent = 0;
+    mPushPercentFixed = 0;
     mUnk_20 = 0;
     mUnk_22_0 = 0;
     mUnk_22_1 = 0;
@@ -50,37 +50,37 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     mUnk_23_2 = 0;
     mUnk_24 = 0;
     mChoice = (s8 (*)[2]) choice;
-    mUnk_98 = 0;
-    mUnk_9c = 0;
-    mUnk_9f = 0;
+    mCountdownFrames = 0;
+    mCountdownFrameCount = 0;
+    mStartPushPercent = 0;
     mUnk_c0 = 0;
     mUnk_c3 = 0;
-    mUnk_114 = 0;
-    mUnk_115 = 0;
-    mUnk_116 = 0;
+    mShakeSign = 0;
+    mShakeFrames = 0;
+    mShakeCount = 0;
     mUnk_117_0 = 0;
     mUnk_117_1 = 0;
     mUnk_117_2 = 0;
     mUnk_117_3 = 0;
-    mUnk_120 = 0;
-    mUnk_124 = 0;
-    mUnk_126 = 0;
-    mUnk_128 = 0;
-    mUnk_129 = 0;
-    mUnk_12b = 0;
-    mUnk_12c = 0;
-    mUnk_12e = 0;
+    mAbilityXPerFrame = 0;
+    mLargeCardYPerFrame = 0;
+    mLargeCardY = 0;
+    mLargeCardOpen = 0;
+    mLargeCardClosing = 0;
+    mState = 0;
+    mPenX = 0;
+    mPenY = 0;
     mData = data;
     mParam = param;
-    mUnk_18 = 8;
-    mUnk_1a = 0xb8;
+    mSide0X = 8;
+    mSide1X = 0xb8;
     mUnk_1c[1] = 0;
     mUnk_1c[0] = mUnk_1c[1];
-    mUnk_28[0] = mUnk_28[1] = 0;
+    mLastPush[0] = mLastPush[1] = 0;
     mUnk_26 = mUnk_27 = 0;
     mUnk_122[0] = mUnk_122[1] = 0;
-    mUnk_a0[0] = mUnk_a0[1] = 0;
-    mUnk_a8[0] = mUnk_a8[1] = 0;
+    mBarFillPerFrame[0] = mBarFillPerFrame[1] = 0;
+    mBarFill[0] = mBarFill[1] = 0;
     u8 i = 0;
     do {
         mAnims[i] = 0;
@@ -94,15 +94,15 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
         mObjs[i] = new BattleObj01(5, 0x7000);
         i++;
     } while (i < 15);
-    mUnk_108 = 32.0f;
-    mUnk_10c = 224.0f;
-    mUnk_110 = 96.0f / (float) mParam->mUnk_02;
+    mSide0PlayerAnimX = 32.0f;
+    mSide1PlayerAnimX = 224.0f;
+    mPlayerAnimXPerFrame = 96.0f / (float) mParam->mBattleFrameCount;
     mUnk_118[0] = 1;
     mUnk_118[1] = 1;
-    mUnk_11c[0] = -32;
-    mUnk_11c[1] = 0x120;
-    mUnk_11a = mUnk_11b = 0;
-    func_ov007_022257e0();
+    mAbilityX[0] = -32;
+    mAbilityX[1] = 0x120;
+    mAbility0SlideState = mAbility1SlideState = 0;
+    Init();
 }
 
 BattleHud::~BattleHud() {
@@ -122,7 +122,7 @@ BattleHud::~BattleHud() {
         }
         i++;
     } while (i < 15);
-    mData->mUnk_6c->mUnk_27 = 0;
+    mData->mMessageWindow->mUnk_27 = 0;
 }
 
 extern const u32 data_ov007_02279d44;
@@ -130,7 +130,7 @@ extern const s8 data_ov007_02279d40;
 u16 func_02065c20(u32 id);
 u8 GetCardInfo(u32 id, u32 kind);
 
-void BattleHud::func_ov007_022257e0() {
+void BattleHud::Init() {
     BattleEntry *entries = mData->mEntries;
     ChangeDir("/Game/Confrontation/Bg/");
     LoadAndQueueUpload(1, 1, 0, "vs_b_bg_01_ncl.bin", 0, 0, 0);
@@ -171,7 +171,7 @@ void BattleHud::func_ov007_022257e0() {
     if (mUnk_0c >= 2) {
         n = 1;
     } else {
-        n = mParam->mUnk_00 + 1;
+        n = mParam->mKind + 1;
     }
     sprintf(path, "vs_cutin_cbattle%02d.nce_ncg1D.bin", n);
     screen.LoadCharacters(path, 0xe000, 0);
@@ -250,20 +250,20 @@ void BattleHud::func_ov007_022257e0() {
     mAnims[21]->mCharBase = screen.GetCharBase(0x14000);
     mAnims[21]->mPaletteBase = 9;
     if (mUnk_0c < 2) {
-        switch (mParam->mUnk_00) {
+        switch (mParam->mKind) {
             case 0:
-                mUnk_12c = 0x80;
-                mUnk_12e = 0x82;
+                mPenX = 0x80;
+                mPenY = 0x82;
                 mAnims[21]->SetAnimation(0);
                 break;
             case 3:
-                mUnk_12c = 0x80;
-                mUnk_12e = 0x82;
+                mPenX = 0x80;
+                mPenY = 0x82;
                 mAnims[21]->SetAnimation(1);
                 break;
             case 1:
-                mUnk_12c = 0x80;
-                mUnk_12e = 0x82;
+                mPenX = 0x80;
+                mPenY = 0x82;
             case 2:
                 mAnims[21]->SetAnimation(2);
                 break;
@@ -274,11 +274,11 @@ void BattleHud::func_ov007_022257e0() {
         }
     } else {
         if (mUnk_0c == 4) {
-            mUnk_12c = 0xd2;
+            mPenX = 0xd2;
         } else {
-            mUnk_12c = 0x26;
+            mPenX = 0x26;
         }
-        mUnk_12e = 0x82;
+        mPenY = 0x82;
         mAnims[21]->SetAnimation(0);
     }
     ChangeDir("/");
@@ -314,21 +314,21 @@ void BattleHud::func_ov007_022257e0() {
             }
             card = func_02065c20(e->mUnk_12);
         }
-        func_ov007_0222644c(i, card);
+        LoadSmallCard(i, card);
         i++;
     } while (i < 2);
     if (mUnk_0c >= 2) {
         mUnk_117_1 = 1;
     }
-    func_ov007_02226614();
-    mData->mUnk_6c->LoadMessageFile("mes_ControlBattle");
+    LoadCountdown();
+    mData->mMessageWindow->LoadMessageFile("mes_ControlBattle");
     if ((u32) mUnk_0c <= 1) {
-        mData->mUnk_6c->StartMessage(mParam->mUnk_00, 0, 1);
+        mData->mMessageWindow->StartMessage(mParam->mKind, 0, 1);
     } else {
-        mData->mUnk_6c->StartMessage(6, 0, 1);
+        mData->mMessageWindow->StartMessage(6, 0, 1);
     }
-    mData->mUnk_6c->mUnk_27 = 1;
-    func_ov007_02226ab8();
+    mData->mMessageWindow->mUnk_27 = 1;
+    SetupCountdown();
     i = 0;
     do {
         if (entries[i].mUnk_0f_1) {
@@ -338,7 +338,7 @@ void BattleHud::func_ov007_022257e0() {
     } while (i < 2);
 }
 
-void BattleHud::func_ov007_0222644c(u8 side, int card) {
+void BattleHud::LoadSmallCard(u8 side, int card) {
     u8 index;
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     BattleEntry *entries = mData->mEntries;
@@ -365,7 +365,7 @@ void BattleHud::func_ov007_0222644c(u8 side, int card) {
     ChangeDir("/");
 }
 
-void BattleHud::func_ov007_02226614() {
+void BattleHud::LoadCountdown() {
     CellAnimation *old = mAnims[22];
     if (old) {
         delete old;
@@ -388,16 +388,16 @@ void BattleHud::Update() {
         mFinished = 1;
         return;
     }
-    switch (mUnk_12b) {
+    switch (mState) {
         case 1:
             if (data_020d433c.mTutorialId == 0xe || (data_020d433c.mTutorialId >= 7 && data_020d433c.mTutorialId <= 10)) {
-                mUnk_12b = 2;
+                mState = 2;
                 data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
                 data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
-                func_ov007_02226ab8();
-                mUnk_12b = 3;
+                SetupCountdown();
+                mState = 3;
             }
             break;
         case 2: {
@@ -409,8 +409,8 @@ void BattleHud::Update() {
                 data_020d433c.mBattlePlayers->mUnk_2af++;
                 u8 n = data_020d433c.mBattlePlayers->mUnk_2af;
                 if (n > limit) {
-                    func_ov007_02226ab8();
-                    mUnk_12b = 3;
+                    SetupCountdown();
+                    mState = 3;
                     G2S_SetBlendBrightness(0x1f, 0);
                 } else {
                     data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(n, 0x64, 0, 0);
@@ -420,35 +420,35 @@ void BattleHud::Update() {
         }
         case 3:
             if (func_ov007_02226c70()) {
-                mUnk_12b = 0;
+                mState = 0;
             }
             break;
         case 4:
-            func_ov007_02226e7c();
-            mUnk_12b++;
+            StartSwap();
+            mState++;
         case 5:
-            if (func_ov007_02226f1c()) {
-                mUnk_12b = 0;
+            if (UpdateSwap()) {
+                mState = 0;
             }
             break;
         case 6:
-            func_ov007_02226fc8();
-            mUnk_12b++;
+            StartBarSlide();
+            mState++;
         case 7:
-            if (func_ov007_02227068()) {
-                mUnk_12b = 0;
+            if (UpdateBarSlide()) {
+                mState = 0;
             }
             break;
         case 8:
-            func_ov007_02227128();
-            mUnk_12b++;
+            StartCountdown();
+            mState++;
         case 9:
-            if (func_ov007_02227158()) {
-                mUnk_12b = 0;
+            if (UpdateCountdown()) {
+                mState = 0;
             }
             break;
     }
-    func_ov007_02227730();
+    Draw();
 }
 
 void func_ov007_02226a34(void *obj) {
@@ -458,28 +458,28 @@ void func_ov007_02226a34(void *obj) {
 void func_ov007_02226a44(BattleHud *obj, u32 state) {
     switch (state) {
         case 0:
-            obj->mUnk_12b = 0;
+            obj->mState = 0;
             break;
         case 1:
-            obj->mUnk_12b = 1;
+            obj->mState = 1;
             break;
         case 2:
-            obj->mUnk_12b = 4;
+            obj->mState = 4;
             break;
         case 3:
-            obj->mUnk_12b = 6;
+            obj->mState = 6;
             break;
         case 4:
-            obj->mUnk_12b = 8;
+            obj->mState = 8;
             break;
     }
 }
 
 u8 func_ov007_02226aa0(BattleHud *obj) {
-    return obj->mUnk_12b ? 1 : 0;
+    return obj->mState ? 1 : 0;
 }
 
-void BattleHud::func_ov007_02226ab8() {
+void BattleHud::SetupCountdown() {
     u32 hi;
     u32 lo;
     int swapped;
@@ -500,44 +500,44 @@ void BattleHud::func_ov007_02226ab8() {
     }
     if ((int) hi / (int) lo >= 2) {
         if (swapped == 0) {
-            mUnk_9f = 0x59;
+            mStartPushPercent = 0x59;
         } else {
-            mUnk_9f = 0xb;
+            mStartPushPercent = 0xb;
         }
     } else {
-        mUnk_9f = (int) (lo * 100) / (int) hi;
-        mUnk_9f >>= 1;
+        mStartPushPercent = (int) (lo * 100) / (int) hi;
+        mStartPushPercent >>= 1;
         if (swapped == 0) {
-            mUnk_9f = 100 - mUnk_9f;
+            mStartPushPercent = 100 - mStartPushPercent;
         }
     }
-    mUnk_9c = mAnims[22]->GetDuration();
-    u8 pct = mUnk_9f;
-    mUnk_a0[0] = (float) pct / (float) mUnk_9c / 100.0f;
-    mUnk_a0[1] = (float) (u8) (100 - pct) / (float) mUnk_9c / 100.0f;
+    mCountdownFrameCount = mAnims[22]->GetDuration();
+    u8 pct = mStartPushPercent;
+    mBarFillPerFrame[0] = (float) pct / (float) mCountdownFrameCount / 100.0f;
+    mBarFillPerFrame[1] = (float) (u8) (100 - pct) / (float) mCountdownFrameCount / 100.0f;
     u8 i = 0;
     do {
         int v = entries[i].mUnk_00;
         if (v > 20) {
             mUnk_100[i] = v / 20;
         }
-        mUnk_102[i] = mUnk_9c / mUnk_100[i];
+        mUnk_102[i] = mCountdownFrameCount / mUnk_100[i];
         i++;
     } while (i < 2);
     mUnk_104[0] = mUnk_102[0];
     mUnk_104[1] = mUnk_102[1];
-    mUnk_b0[0] = entries[0].mUnk_00;
-    mUnk_b0[1] = entries[1].mUnk_00;
-    mUnk_b8[0] = mUnk_b0[0] / (float) mUnk_9c;
-    mUnk_b8[1] = mUnk_b0[1] / (float) mUnk_9c;
-    mUnk_20 = mParam->mUnk_01;
+    mDrawnValues[0] = entries[0].mUnk_00;
+    mDrawnValues[1] = entries[1].mUnk_00;
+    mDrawnValuesPerFrame[0] = mDrawnValues[0] / (float) mCountdownFrameCount;
+    mDrawnValuesPerFrame[1] = mDrawnValues[1] / (float) mCountdownFrameCount;
+    mUnk_20 = mParam->mCutinDelayFrameCount;
 }
 
 BOOL BattleHud::func_ov007_02226c70() {
     u8 done = 0;
-    mUnk_a8[0] = mUnk_a8[0] + mUnk_a0[0];
-    mUnk_a8[1] = mUnk_a8[1] + mUnk_a0[1];
-    if (mUnk_98 == mUnk_9c - mUnk_c0) {
+    mBarFill[0] = mBarFill[0] + mBarFillPerFrame[0];
+    mBarFill[1] = mBarFill[1] + mBarFillPerFrame[1];
+    if (mCountdownFrames == mCountdownFrameCount - mUnk_c0) {
         mAnims[3]->SetAnimation(10);
         mAnims[4]->SetAnimation(9);
     }
@@ -549,36 +549,36 @@ BOOL BattleHud::func_ov007_02226c70() {
                 mUnk_104[i] = 0;
                 mUnk_100[i]--;
                 if (i == 0) {
-                    func_ov007_022275c0(0, 0x28, 0xb4, 6);
+                    StartObject(0, 0x28, 0xb4, 6);
                 } else {
-                    func_ov007_022275c0(1, 0xd8, 0xb4, 6);
+                    StartObject(1, 0xd8, 0xb4, 6);
                 }
             }
         }
-        if (mUnk_b0[i] - mUnk_b8[i] < 0.0f) {
-            mUnk_b0[i] = 0;
+        if (mDrawnValues[i] - mDrawnValuesPerFrame[i] < 0.0f) {
+            mDrawnValues[i] = 0;
         } else {
-            mUnk_b0[i] -= mUnk_b8[i];
+            mDrawnValues[i] -= mDrawnValuesPerFrame[i];
         }
         i++;
     } while (i < 2);
-    func_ov007_02227158();
-    mUnk_98++;
-    if (mUnk_98 >= mUnk_9c) {
-        mUnk_13 = mUnk_9f;
-        int fixed = mUnk_13 << 12;
+    UpdateCountdown();
+    mCountdownFrames++;
+    if (mCountdownFrames >= mCountdownFrameCount) {
+        mPushPercent = mStartPushPercent;
+        int fixed = mPushPercent << 12;
         float rounded;
-        if (mUnk_13 != 0) {
+        if (mPushPercent != 0) {
             rounded = 0.5f + (float) fixed;
         } else {
             rounded = (float) fixed - 0.5f;
         }
-        mUnk_14 = (s32) rounded;
+        mPushPercentFixed = (s32) rounded;
         mUnk_22_3 = 1;
     }
-    if (mUnk_a8[0] > 0.5f) {
+    if (mBarFill[0] > 0.5f) {
         func_ov007_02227460(0);
-    } else if (mUnk_a8[1] > 0.5f) {
+    } else if (mBarFill[1] > 0.5f) {
         func_ov007_02227460(1);
     }
     if (mUnk_22_3 == 1 && mUnk_c3 == 0) {
@@ -587,11 +587,11 @@ BOOL BattleHud::func_ov007_02226c70() {
     return done;
 }
 
-void BattleHud::func_ov007_02226e7c() {
+void BattleHud::StartSwap() {
     BattleData *data = mData;
-    mUnk_a0[0] = mUnk_a0[1] = 0;
-    mUnk_98 = 0;
-    u32 pos = mUnk_13;
+    mBarFillPerFrame[0] = mBarFillPerFrame[1] = 0;
+    mCountdownFrames = 0;
+    u32 pos = mPushPercent;
     u8 other = 100 - pos;
     u16 diff;
     if (pos > other) {
@@ -601,37 +601,37 @@ void BattleHud::func_ov007_02226e7c() {
         diff = other - pos;
         mUnk_23_0 = 0;
     }
-    mUnk_a0[mUnk_23_0] = (float) diff / 20.0f;
+    mBarFillPerFrame[mUnk_23_0] = (float) diff / 20.0f;
     u16 first = data->mEntries[0].mUnk_00;
     u16 second = data->mEntries[1].mUnk_00;
     mData->mEntries[0].mUnk_00 = second;
     mData->mEntries[1].mUnk_00 = first;
-    func_ov007_02227128();
+    StartCountdown();
 }
 
-BOOL BattleHud::func_ov007_02226f1c() {
-    mUnk_98++;
-    if (mUnk_98 > 0x14) {
-        mUnk_98 = 0x15;
+BOOL BattleHud::UpdateSwap() {
+    mCountdownFrames++;
+    if (mCountdownFrames > 0x14) {
+        mCountdownFrames = 0x15;
     } else {
         u8 idx = mUnk_23_0;
-        float v = mUnk_a0[idx];
+        float v = mBarFillPerFrame[idx];
         float f;
         if (v > 0.0f) {
-            f = 0.5f + 4096.0f * mUnk_a0[idx];
+            f = 0.5f + 4096.0f * mBarFillPerFrame[idx];
         } else {
-            f = 4096.0f * mUnk_a0[idx] - 0.5f;
+            f = 4096.0f * mBarFillPerFrame[idx] - 0.5f;
         }
-        func_ov007_02227490(idx, (s32) f, 1, 0, 0);
+        Push(idx, (s32) f, 1, 0, 0);
     }
-    return func_ov007_02227158();
+    return UpdateCountdown();
 }
 
-void BattleHud::func_ov007_02226fc8() {
+void BattleHud::StartBarSlide() {
     BattleData *data = mData;
     mUnk_22_3 = 0;
-    mUnk_a8[0] = (float) mUnk_13 / 100.0f;
-    mUnk_a8[1] = 1.0f - mUnk_a8[0];
+    mBarFill[0] = (float) mPushPercent / 100.0f;
+    mBarFill[1] = 1.0f - mBarFill[0];
     if (data->mEntries[0].mUnk_10) {
         mAnims[3]->SetAnimation(8);
         mUnk_27 = 1;
@@ -640,41 +640,41 @@ void BattleHud::func_ov007_02226fc8() {
         mUnk_26 = 1;
     }
     mUnk_10 = 0;
-    if (mUnk_128) {
-        func_ov007_022286c8();
+    if (mLargeCardOpen) {
+        CloseLargeCard();
     }
 }
 
-BOOL BattleHud::func_ov007_02227068() {
+BOOL BattleHud::UpdateBarSlide() {
     BattleData *data = mData;
     if (data->mEntries[0].mUnk_10) {
-        mUnk_a8[0] += 0.025f;
-        mUnk_a8[1] -= 0.025f;
-        if (mUnk_a8[0] >= 1.0f) {
-            mUnk_a8[0] = 1.0f;
-            mUnk_a8[1] = 0;
+        mBarFill[0] += 0.025f;
+        mBarFill[1] -= 0.025f;
+        if (mBarFill[0] >= 1.0f) {
+            mBarFill[0] = 1.0f;
+            mBarFill[1] = 0;
             mUnk_26 = 1;
         }
     } else {
-        mUnk_a8[0] -= 0.025f;
-        mUnk_a8[1] += 0.025f;
-        if (mUnk_a8[1] >= 1.0f) {
-            mUnk_a8[0] = 0;
-            mUnk_a8[1] = 1.0f;
+        mBarFill[0] -= 0.025f;
+        mBarFill[1] += 0.025f;
+        if (mBarFill[1] >= 1.0f) {
+            mBarFill[0] = 0;
+            mBarFill[1] = 1.0f;
             mUnk_27 = 1;
         }
     }
     return mUnk_26 == 1 && mUnk_27 == 1;
 }
 
-void BattleHud::func_ov007_02227128() {
+void BattleHud::StartCountdown() {
     mUnk_22_2 = 0;
     mUnk_22_1 = 0;
     mUnk_22_0 = 0;
     mAnims[22]->ResetAnimation();
 }
 
-BOOL BattleHud::func_ov007_02227158() {
+BOOL BattleHud::UpdateCountdown() {
     switch (mAnims[22]->mFrameIndex) {
         case 5:
             if (!mUnk_22_0) {
@@ -703,18 +703,18 @@ BOOL BattleHud::func_ov007_02227158() {
         mAnims[22]->Draw(0, 0x80, 0x60, 0);
         return 0;
     }
-    if (mUnk_128) {
+    if (mLargeCardOpen) {
         mUnk_117_0 = 1;
     }
     return 1;
 }
 
-BOOL BattleHud::func_ov007_022273b4() {
+BOOL BattleHud::SlideSidesOut() {
     if (mUnk_0c != 2 && mUnk_0c != 3) {
-        mUnk_18 -= 10;
+        mSide0X -= 10;
     }
     if (mUnk_0c != 2 && mUnk_0c != 4) {
-        mUnk_1a += 10;
+        mSide1X += 10;
     }
     mUnk_10 += 10;
     if (mUnk_10 >= 0x48) {
@@ -729,15 +729,15 @@ BOOL BattleHud::func_ov007_022273b4() {
 }
 
 void func_ov007_02227434(BattleHud *obj) {
-    obj->mUnk_108 = obj->mUnk_108 + obj->mUnk_110;
-    obj->mUnk_10c = obj->mUnk_10c - obj->mUnk_110;
+    obj->mSide0PlayerAnimX = obj->mSide0PlayerAnimX + obj->mPlayerAnimXPerFrame;
+    obj->mSide1PlayerAnimX = obj->mSide1PlayerAnimX - obj->mPlayerAnimXPerFrame;
 }
 
 void BattleHud::func_ov007_02227460(int side) {
     mAnims[5]->SetAnimation(0x13 + mData->mEntries[side].mUnk_0d_4);
 }
 
-void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
+void BattleHud::Push(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
     s32 delta = value * count;
     if (boost) {
         delta = FX_Mul(delta, 0x1800);
@@ -745,9 +745,9 @@ void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bo
     if (useLevel) {
         u8 pos;
         if (mode == 0) {
-            pos = mUnk_13;
+            pos = mPushPercent;
         } else {
-            pos = 100 - mUnk_13;
+            pos = 100 - mPushPercent;
         }
         u8 idx = pos / 10;
         if (idx >= 5) {
@@ -755,23 +755,23 @@ void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bo
         }
         delta = FX_Mul(delta, data_ov007_0227918c[idx]);
     }
-    mUnk_28[mode] = delta;
+    mLastPush[mode] = delta;
     if (mode == 0) {
-        mUnk_14 += delta;
-        if (mUnk_14 >= 0x64000) {
-            mUnk_14 = 0x63000;
+        mPushPercentFixed += delta;
+        if (mPushPercentFixed >= 0x64000) {
+            mPushPercentFixed = 0x63000;
         }
-        mUnk_13 = mUnk_14 >> 12;
+        mPushPercent = mPushPercentFixed >> 12;
     } else if (mode == 1) {
-        if (mUnk_14 <= delta) {
-            mUnk_14 = 0x1000;
+        if (mPushPercentFixed <= delta) {
+            mPushPercentFixed = 0x1000;
         } else {
-            mUnk_14 -= delta;
-            if (mUnk_14 < 0x1000) {
-                mUnk_14 = 0x1000;
+            mPushPercentFixed -= delta;
+            if (mPushPercentFixed < 0x1000) {
+                mPushPercentFixed = 0x1000;
             }
         }
-        mUnk_13 = mUnk_14 >> 12;
+        mPushPercent = mPushPercentFixed >> 12;
     }
 }
 
@@ -784,7 +784,7 @@ u8 BattleHud::func_ov007_022275a0(u32 value, u8 a, u8 b) {
     return result;
 }
 
-BOOL BattleHud::func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag) {
+BOOL BattleHud::StartObject(u8 side, s16 x, s16 y, u8 flag) {
     BOOL result = 0;
     s16 ty;
     u16 angle;
@@ -792,19 +792,19 @@ BOOL BattleHud::func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag) {
     u8 i;
     if (!mUnk_22_3) {
         if (side == 0) {
-            ty = (s16) (s32) (32.0f + 192.0f * mUnk_a8[0]);
+            ty = (s16) (s32) (32.0f + 192.0f * mBarFill[0]);
         } else {
-            ty = (s16) (s32) (32.0f + 192.0f * (1.0f - mUnk_a8[1]) - 20.0f);
+            ty = (s16) (s32) (32.0f + 192.0f * (1.0f - mBarFill[1]) - 20.0f);
         }
     } else {
-        s16 base = mUnk_13 * 0xc0 / 100;
+        s16 base = mPushPercent * 0xc0 / 100;
         if (side == 0) {
             ty = base + 0x1e;
         } else {
             ty = base + 0x32;
         }
     }
-    angle = func_ov007_0221d348(0xffff);
+    angle = BattleRand32(0xffff);
     motion = 0;
     if (flag == 5) {
         motion = 1;
@@ -822,41 +822,41 @@ BOOL BattleHud::func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag) {
     return result;
 }
 
-void BattleHud::func_ov007_02227730() {
+void BattleHud::Draw() {
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
     u8 i;
-    mData->func_ov007_0223db20(0, 8, 0x1e);
-    mData->func_ov007_0223db20(1, 0xb8, 0x1e);
-    mData->mUnk_70->DrawIcons();
+    mData->DrawCharacterIcons(0, 8, 0x1e);
+    mData->DrawCharacterIcons(1, 0xb8, 0x1e);
+    mData->mCharacterIcons->DrawIcons();
     if (mUnk_22_6) {
         s16 pos[2];
-        pos[0] = mUnk_18;
-        pos[1] = mUnk_1a;
+        pos[0] = mSide0X;
+        pos[1] = mSide1X;
         i = 0;
         do {
                         if (selected == mChoice[i][0] || selected == mChoice[i][1]) {
-                if (mUnk_114 != 0) {
+                if (mShakeSign != 0) {
                     pos[i] += 4;
                 } else {
                     pos[i] -= 4;
                 }
-                mUnk_115++;
-                if (mUnk_115 >= 2) {
-                    mUnk_115 = 0;
-                    mUnk_114 ^= 1;
+                mShakeFrames++;
+                if (mShakeFrames >= 2) {
+                    mShakeFrames = 0;
+                    mShakeSign ^= 1;
                 }
             }
             i++;
         } while (i < 2);
-        mData->func_ov007_0223de88(0, pos[0], 0x5a, 2, mUnk_b0[0]);
-        mData->func_ov007_0223de88(1, pos[1], 0x5a, 2, mUnk_b0[1]);
+        mData->DrawBakuganAndNumber(0, pos[0], 0x5a, 2, mDrawnValues[0]);
+        mData->DrawBakuganAndNumber(1, pos[1], 0x5a, 2, mDrawnValues[1]);
         if (mUnk_22_7) {
-            func_ov007_022273b4();
+            SlideSidesOut();
         }
     }
     mAnims[5]->Draw(1, 0x80, 0x22, 1);
-    mAnims[6]->Draw(1, mUnk_108, 0x54, 1);
-    mAnims[7]->Draw(1, mUnk_10c, 0x54, 1);
+    mAnims[6]->Draw(1, mSide0PlayerAnimX, 0x54, 1);
+    mAnims[7]->Draw(1, mSide1PlayerAnimX, 0x54, 1);
     if (mUnk_22_3) {
         u8 j = 12;
         i = 0;
@@ -895,20 +895,20 @@ void BattleHud::func_ov007_02227730() {
                 mAnims[9]->SetAnimation(2);
             }
         }
-        if (mAnims[9]->mAnimIndex == 1 && mUnk_12c >= 0) {
+        if (mAnims[9]->mAnimIndex == 1 && mPenX >= 0) {
             if (mUnk_0c == 2) {
                 mUnk_24++;
                 if (mUnk_24 >= 0x28) {
                     mUnk_24 = 0;
-                    if (mUnk_12c == 0x26) {
-                        mUnk_12c = 0xd2;
+                    if (mPenX == 0x26) {
+                        mPenX = 0xd2;
                     } else {
-                        mUnk_12c = 0x26;
+                        mPenX = 0x26;
                     }
                 }
             }
             mAnims[21]->Update();
-            mAnims[21]->Draw(1, mUnk_12c, mUnk_12e, 0);
+            mAnims[21]->Draw(1, mPenX, mPenY, 0);
         }
         mAnims[9]->Update();
         mAnims[9]->Draw(1, 0x80, 0x6e, 0);
@@ -927,8 +927,8 @@ void BattleHud::func_ov007_02227730() {
         mAnims[8]->Update();
         mAnims[8]->Draw(1, 0x80, 0x6e, 0);
     }
-    func_ov007_022286e0();
-    mData->mUnk_6c->Update();
+    DrawAbilitiesAndCards();
+    mData->mMessageWindow->Update();
 }
 
 void BattleHud::func_ov007_02227bbc(u8 index) {
@@ -952,13 +952,13 @@ void BattleHud::func_ov007_02227c54() {
     u8 i;
     u8 j;
     if (!mUnk_22_3) {
-        if (mUnk_26 == 0 && mUnk_a8[0] != 0.0f) {
-            s16 x = (s16) (s32) (192.0f * mUnk_a8[0] + 32.0f + 8.0f);
+        if (mUnk_26 == 0 && mBarFill[0] != 0.0f) {
+            s16 x = (s16) (s32) (192.0f * mBarFill[0] + 32.0f + 8.0f);
             mAnims[3]->Update();
             mAnims[3]->Draw(1, x, 0x42, 1);
         }
-        if (mUnk_27 == 0 && mUnk_a8[1] != 0.0f) {
-            s16 x = (s16) (s32) (192.0f * (1.0f - mUnk_a8[1]) + 32.0f - 8.0f);
+        if (mUnk_27 == 0 && mBarFill[1] != 0.0f) {
+            s16 x = (s16) (s32) (192.0f * (1.0f - mBarFill[1]) + 32.0f - 8.0f);
             mAnims[4]->Update();
             mAnims[4]->Draw(1, x, 0x42, 1);
         }
@@ -972,22 +972,22 @@ void BattleHud::func_ov007_02227c54() {
         int x = 0x20;
         int frame = 0;
         do {
-            if (mUnk_a8[i] >= 0.01f) {
+            if (mBarFill[i] >= 0.01f) {
                 float f;
-                if (mUnk_a8[i] >= 0.5f) {
+                if (mBarFill[i] >= 0.5f) {
                     mAnims[j]->SetAnimation(frame);
-                    if (mUnk_a8[i] > 0.0f) {
-                        f = 0.5f + 4096.0f * mUnk_a8[i];
+                    if (mBarFill[i] > 0.0f) {
+                        f = 0.5f + 4096.0f * mBarFill[i];
                     } else {
-                        f = 4096.0f * mUnk_a8[i] - 0.5f;
+                        f = 4096.0f * mBarFill[i] - 0.5f;
                     }
                     mAnims[j]->DrawTransformed(1, x, 0x40, 3, (s32) f, 0x1000, 0);
                 } else {
                     mAnims[j]->SetAnimation(frame + 1);
-                    if (mUnk_a8[i] > 0.0f) {
-                        f = 0.5f + 4096.0f * mUnk_a8[i];
+                    if (mBarFill[i] > 0.0f) {
+                        f = 0.5f + 4096.0f * mBarFill[i];
                     } else {
-                        f = 4096.0f * mUnk_a8[i] - 0.5f;
+                        f = 4096.0f * mBarFill[i] - 0.5f;
                     }
                     mAnims[j]->DrawTransformed(1, x, 0x40, 3, (s32) f << 1, 0x1000, 0);
                 }
@@ -999,16 +999,16 @@ void BattleHud::func_ov007_02227c54() {
         } while (i < 2);
         return;
     }
-    if (mUnk_13 > 0x32) {
+    if (mPushPercent > 0x32) {
         func_ov007_02227460(0);
-    } else if (mUnk_13 < 0x32) {
+    } else if (mPushPercent < 0x32) {
         func_ov007_02227460(1);
     } else {
         func_ov007_02227460(mUnk_12);
         mUnk_12 ^= 1;
     }
     if (mUnk_122[0] != 0 || mUnk_122[1] != 0) {
-        s16 x = (u16) (mUnk_13 * 0xc0 / 100 + 0x20);
+        s16 x = (u16) (mPushPercent * 0xc0 / 100 + 0x20);
         j = 3;
         i = 0;
         do {
@@ -1026,11 +1026,11 @@ void BattleHud::func_ov007_02227c54() {
     } else {
         if (!mUnk_117_3) {
             u8 cur = mAnims[2]->mAnimIndex;
-            if (mUnk_28[0] != 0 && mUnk_28[1] != 0) {
+            if (mLastPush[0] != 0 && mLastPush[1] != 0) {
                 u8 want;
-                if (mUnk_28[0] > mUnk_28[1]) {
+                if (mLastPush[0] > mLastPush[1]) {
                     want = 5;
-                } else if (mUnk_28[0] < mUnk_28[1]) {
+                } else if (mLastPush[0] < mLastPush[1]) {
                     want = 4;
                 } else {
                     want = 6;
@@ -1039,7 +1039,7 @@ void BattleHud::func_ov007_02227c54() {
                     mAnims[2]->ResetAnimation();
                     mAnims[2]->SetAnimation(want);
                 }
-            } else if (mUnk_28[0] == 0 && mUnk_28[1] == 0) {
+            } else if (mLastPush[0] == 0 && mLastPush[1] == 0) {
                 if (cur != 6) {
                     if (mUnk_1c[0] == 0 && mUnk_1c[1] == 0) {
                         mAnims[2]->ResetAnimation();
@@ -1050,7 +1050,7 @@ void BattleHud::func_ov007_02227c54() {
                 i = 0;
                 j = 5;
                 do {
-                    if (mUnk_28[i] != 0) {
+                    if (mLastPush[i] != 0) {
                         if (mUnk_1c[(u8) (i ^ 1)] != 0) {
                             mAnims[2]->ResetAnimation();
                             mAnims[2]->SetAnimation(6);
@@ -1075,15 +1075,15 @@ void BattleHud::func_ov007_02227c54() {
             } while (i < 2);
             mAnims[2]->Update();
         }
-        mAnims[2]->Draw(1, (s16) (u16) (mUnk_13 * 0xc0 / 100 + 0x20), 0x42, 1);
+        mAnims[2]->Draw(1, (s16) (u16) (mPushPercent * 0xc0 / 100 + 0x20), 0x42, 1);
     }
-    mUnk_28[0] = mUnk_28[1] = 0;
+    mLastPush[0] = mLastPush[1] = 0;
     i = 0;
     do {
         mObjs[i]->Update();
         i++;
     } while (i < 15);
-    float p = (float) mUnk_13 / 100.0f;
+    float p = (float) mPushPercent / 100.0f;
     float f;
     if (1.0f - p >= 0.5f) {
         mAnims[1]->SetAnimation(2);
@@ -1123,8 +1123,8 @@ void BattleHud::func_ov007_02227c54() {
 
 void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b) {
     obj->mUnk_118[a] = 0;
-    obj->mUnk_11c[0] = -32;
-    obj->mUnk_11c[1] = 0x120;
+    obj->mAbilityX[0] = -32;
+    obj->mAbilityX[1] = 0x120;
     obj->mUnk_117 |= 0xc;
 }
 
@@ -1135,43 +1135,43 @@ void func_ov007_0222847c(BattleHud *obj) {
     }
 }
 
-void BattleHud::func_ov007_022284a0(int side) {
+void BattleHud::StartAbilitySlideIn(int side) {
     if (side == 0) {
-        mUnk_11a = 1;
+        mAbility0SlideState = 1;
     } else {
-        mUnk_11b = 1;
+        mAbility1SlideState = 1;
     }
-    mUnk_120 = 20;
+    mAbilityXPerFrame = 20;
 }
 
-void BattleHud::func_ov007_022284c0(int side) {
+void BattleHud::StartAbilitySlideOut(int side) {
     if (side == 0) {
-        mUnk_11a = 2;
+        mAbility0SlideState = 2;
     } else {
-        mUnk_11b = 2;
+        mAbility1SlideState = 2;
     }
-    mUnk_120 = 20;
+    mAbilityXPerFrame = 20;
 }
 
-void BattleHud::func_ov007_022284e0(int side) {
+void BattleHud::StartAbilitySlideAcross(int side) {
     if (side == 0) {
-        mUnk_11a = 2;
-        mUnk_11b = 3;
+        mAbility0SlideState = 2;
+        mAbility1SlideState = 3;
     } else {
-        mUnk_11a = 3;
-        mUnk_11b = 2;
+        mAbility0SlideState = 3;
+        mAbility1SlideState = 2;
     }
-    mUnk_120 = 20;
+    mAbilityXPerFrame = 20;
 }
 
-BOOL BattleHud::func_ov007_02228514() {
-    return mUnk_11a == 0 && mUnk_11b == 0;
+BOOL BattleHud::IsAbilitySlideDone() {
+    return mAbility0SlideState == 0 && mAbility1SlideState == 0;
 }
 
-void BattleHud::func_ov007_02228530(int card) {
-    mUnk_128 = 1;
-    mUnk_126 = 0xb4;
-    mUnk_124 = 0x14;
+void BattleHud::OpenLargeCard(int card) {
+    mLargeCardOpen = 1;
+    mLargeCardY = 0xb4;
+    mLargeCardYPerFrame = 0x14;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     u32 id = func_02065c20(card);
     ChangeDir("/Game/Card/Graphic/Large");
@@ -1188,92 +1188,92 @@ void BattleHud::func_ov007_02228530(int card) {
     ChangeDir("/");
 }
 
-void BattleHud::func_ov007_022286c8() {
-    mUnk_129 = 1;
-    mUnk_124 = 0x14;
+void BattleHud::CloseLargeCard() {
+    mLargeCardClosing = 1;
+    mLargeCardYPerFrame = 0x14;
 }
 
-void BattleHud::func_ov007_022286e0() {
+void BattleHud::DrawAbilitiesAndCards() {
     s16 y;
     u8 side;
     BattleEntry *entries = mData->mEntries;
-    if (mUnk_11a != 0 || mUnk_11b != 0) {
-        mUnk_120 -= 1;
-        if (mUnk_120 < 4) {
-            mUnk_120 = 4;
+    if (mAbility0SlideState != 0 || mAbility1SlideState != 0) {
+        mAbilityXPerFrame -= 1;
+        if (mAbilityXPerFrame < 4) {
+            mAbilityXPerFrame = 4;
         }
     }
-    switch (mUnk_11a) {
+    switch (mAbility0SlideState) {
         case 1:
-            mUnk_11c[0] += mUnk_120;
-            if (mUnk_11c[0] >= 0x80) {
-                mUnk_11c[0] = 0x80;
-                mUnk_11a = 0;
+            mAbilityX[0] += mAbilityXPerFrame;
+            if (mAbilityX[0] >= 0x80) {
+                mAbilityX[0] = 0x80;
+                mAbility0SlideState = 0;
             }
             break;
         case 2:
-            mUnk_11c[0] -= mUnk_120;
-            if (mUnk_11c[0] <= -32) {
-                mUnk_11c[0] = -32;
-                mUnk_11a = 0;
+            mAbilityX[0] -= mAbilityXPerFrame;
+            if (mAbilityX[0] <= -32) {
+                mAbilityX[0] = -32;
+                mAbility0SlideState = 0;
             }
             break;
         case 3:
-            mUnk_11c[0] += mUnk_120;
-            if (mUnk_11c[0] >= 0x120) {
-                mUnk_11c[0] = 0x120;
-                mUnk_11a = 0;
+            mAbilityX[0] += mAbilityXPerFrame;
+            if (mAbilityX[0] >= 0x120) {
+                mAbilityX[0] = 0x120;
+                mAbility0SlideState = 0;
             }
             break;
     }
-    switch (mUnk_11b) {
+    switch (mAbility1SlideState) {
         case 1:
-            mUnk_11c[1] -= mUnk_120;
-            if (mUnk_11c[1] <= 0x80) {
-                mUnk_11c[1] = 0x80;
-                mUnk_11b = 0;
+            mAbilityX[1] -= mAbilityXPerFrame;
+            if (mAbilityX[1] <= 0x80) {
+                mAbilityX[1] = 0x80;
+                mAbility1SlideState = 0;
             }
             break;
         case 2:
-            mUnk_11c[1] += mUnk_120;
-            if (mUnk_11c[1] >= 0x120) {
-                mUnk_11c[1] = 0x120;
-                mUnk_11b = 0;
+            mAbilityX[1] += mAbilityXPerFrame;
+            if (mAbilityX[1] >= 0x120) {
+                mAbilityX[1] = 0x120;
+                mAbility1SlideState = 0;
             }
             break;
         case 3:
-            mUnk_11c[1] -= mUnk_120;
-            if (mUnk_11c[1] <= -32) {
-                mUnk_11c[1] = -32;
-                mUnk_11b = 0;
+            mAbilityX[1] -= mAbilityXPerFrame;
+            if (mAbilityX[1] <= -32) {
+                mAbilityX[1] = -32;
+                mAbility1SlideState = 0;
             }
             break;
     }
-    if (mUnk_128 | mUnk_129) {
-        mUnk_124 -= 2;
-        if (mUnk_124 < 3) {
-            mUnk_124 = 3;
+    if (mLargeCardOpen | mLargeCardClosing) {
+        mLargeCardYPerFrame -= 2;
+        if (mLargeCardYPerFrame < 3) {
+            mLargeCardYPerFrame = 3;
         }
     }
     y = 0x62;
-    if (mUnk_129) {
-        mUnk_126 += mUnk_124;
-        if (mUnk_126 > 0xb4) {
-            mUnk_126 = 0xb4;
-            mUnk_129 = 0;
-            mUnk_128 = 0;
+    if (mLargeCardClosing) {
+        mLargeCardY += mLargeCardYPerFrame;
+        if (mLargeCardY > 0xb4) {
+            mLargeCardY = 0xb4;
+            mLargeCardClosing = 0;
+            mLargeCardOpen = 0;
         }
-    } else if (mUnk_128) {
-        mUnk_126 -= mUnk_124;
-        if (mUnk_126 < 0x5f) {
-            mUnk_126 = 0x5f;
-            if (mUnk_116) {
-                if (mUnk_114 != 0) { y += 3; } else { y -= 3; }
-                mUnk_115++;
-                if (mUnk_115 >= 1) {
-                    mUnk_115 = 0;
-                    mUnk_114 ^= 1;
-                    mUnk_116--;
+    } else if (mLargeCardOpen) {
+        mLargeCardY -= mLargeCardYPerFrame;
+        if (mLargeCardY < 0x5f) {
+            mLargeCardY = 0x5f;
+            if (mShakeCount) {
+                if (mShakeSign != 0) { y += 3; } else { y -= 3; }
+                mShakeFrames++;
+                if (mShakeFrames >= 1) {
+                    mShakeFrames = 0;
+                    mShakeSign ^= 1;
+                    mShakeCount--;
                 }
             }
         }
@@ -1298,25 +1298,25 @@ void BattleHud::func_ov007_022286e0() {
     if (mAnims[15]->mAnimIndex == 5) {
         s8 s = 1;
         do {
-            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
-                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
+            if (mAbilityX[s] > -32 && mAbilityX[s] < 0x120) {
+                mAnims[14 + s]->Draw(1, mAbilityX[s], 0x78, 0);
             }
             s--;
         } while (s >= 0);
     } else {
         u8 s = 0;
         do {
-            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
-                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
+            if (mAbilityX[s] > -32 && mAbilityX[s] < 0x120) {
+                mAnims[14 + s]->Draw(1, mAbilityX[s], 0x78, 0);
             }
             s++;
         } while (s < 2);
     }
-    if (mUnk_128 | mUnk_129) {
-        if (mUnk_117_0 && !mUnk_129) {
+    if (mLargeCardOpen | mLargeCardClosing) {
+        if (mUnk_117_0 && !mLargeCardClosing) {
             mAnims[20]->Update();
             mAnims[20]->Draw(1, 0x82, 0x5a, 0);
         }
-        mAnims[19]->DrawTransformed(1, y, mUnk_126, 0, 0xb33, 0xb33, 0);
+        mAnims[19]->DrawTransformed(1, y, mLargeCardY, 0, 0xb33, 0xb33, 0);
     }
 }

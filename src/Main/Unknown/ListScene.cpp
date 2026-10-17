@@ -746,12 +746,12 @@ void ListScene::Release(u32 releaseCommands) {
             mContext->mUnk_12 = 1;
         }
         if (mCommandList != NULL && mUnk_400 == 0) {
-            func_0205821c(mCommandList);
+            CloseCommandList(mCommandList);
             mCommandList           = NULL;
             mContext->mUnk_12 = 0;
         }
         if (mCommandPage != NULL && mUnk_401 == 0) {
-            func_02055624(mCommandPage, 1);
+            CloseCommandPage(mCommandPage, 1);
             mCommandPage           = NULL;
             mContext->mUnk_12 = 0;
         }
@@ -1136,7 +1136,7 @@ void ListScene::Update() {
             SpriteManager::Get();
             if (SpriteManager::sFade[1] <= 1) {
                 if (mCommandList != NULL) {
-                    mCommandList->func_02058530(0);
+                    mCommandList->SetWindowVisible(0);
                 }
                 Release(0);
                 mUnk_1e0 = new UnkStruct_02076058(1);
@@ -1156,7 +1156,7 @@ void ListScene::Update() {
                 return;
             }
             if (mCommandList != NULL) {
-                func_0205821c(mCommandList);
+                CloseCommandList(mCommandList);
             }
             mState++;
             return;
@@ -1956,14 +1956,14 @@ void ListScene::func_0207dea4() {
         case 1:
             mUnk_4c->mEnabled = 0;
             if (mCommandList != NULL) {
-                func_0205821c(mCommandList);
+                CloseCommandList(mCommandList);
                 mContext->mUnk_12 = 0;
                 mUnk_400          = 1;
                 mUnk_1a0          = 3;
             } else if (mCommandPage == NULL) {
                 mUnk_1a0 = 2;
             } else {
-                func_02055624(mCommandPage, 1);
+                CloseCommandPage(mCommandPage, 1);
                 mContext->mUnk_12 = 0;
                 mUnk_401          = 1;
                 mUnk_1a0          = 3;
@@ -2654,7 +2654,7 @@ void ListScene::func_0208038c() {
                 return;
             }
             mCommandList = new BattleCommandList(0, 0, -1, 0);
-            func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            CreateCommandListWindow(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_400 = 0;
             func_02081128();
             break;
@@ -2663,7 +2663,7 @@ void ListScene::func_0208038c() {
                 return;
             }
             mCommandPage = new BattleCommandPage(0, -1);
-            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            CreateCommandPageWindow(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             break;
@@ -2686,7 +2686,7 @@ void ListScene::func_0208038c() {
                     return;
                 }
                 mCommandList = new BattleCommandList(0, 0, -1, 0);
-                func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+                CreateCommandListWindow(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
                 mUnk_400 = 0;
                 func_02081128();
                 return;
@@ -2695,7 +2695,7 @@ void ListScene::func_0208038c() {
                 return;
             }
             mCommandPage = new BattleCommandPage(0, -1);
-            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            CreateCommandPageWindow(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             return;
@@ -2710,7 +2710,7 @@ void ListScene::func_0208038c() {
                     return;
                 }
                 mCommandList = new BattleCommandList(0, 0, -1, 0);
-                func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+                CreateCommandListWindow(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
                 mUnk_400 = 0;
                 func_02081128();
                 return;
@@ -2719,7 +2719,7 @@ void ListScene::func_0208038c() {
                 return;
             }
             mCommandPage = new BattleCommandPage(0, -1);
-            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            CreateCommandPageWindow(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             break;
@@ -2975,7 +2975,7 @@ void ListScene::func_02081128() {
             }
             func_02058228(mCommandList, 0);
             func_02086580(this, (u8) mItemIds[mCursorItem], mUnk_104, &cell);
-            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
             func_0205afb4(mCommandList, mUnk_104, func_02086548((u8) mItemIds[mCursorItem], mUnk_104), &cell);
             return;
         }
@@ -2990,7 +2990,7 @@ void ListScene::func_02081128() {
             }
             func_02058228(mCommandList, 0);
             pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
-            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
             func_0205afb4(mCommandList, mUnk_104, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104), pair);
             return;
         }
@@ -3030,7 +3030,7 @@ void ListScene::func_02081128() {
                 value = func_020231f4(gSaveData, 0, id, kind);
             }
             func_02058228(mCommandList, 0);
-            func_02058260(mCommandList, id, kind, -1);
+            SetCommandListBakugan(mCommandList, id, kind, -1);
             func_0205afb4(mCommandList, kind, value, pair);
             return;
         }
@@ -3051,7 +3051,7 @@ void ListScene::func_02081128() {
             }
             func_02058228(mCommandList, 0);
             BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
-            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
             u32 value = func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104);
             func_0205afb4(mCommandList, mUnk_104, value, pair);
             break;
@@ -3069,17 +3069,17 @@ void ListScene::func_02081594() {
     switch (mMode) {
         case 2:
             if (mUnk_f0 != 0) {
-                func_02055668(mCommandPage, (u16) (mUnk_e6 + 0xd7), -1);
+                SetCommandPageCard(mCommandPage, (u16) (mUnk_e6 + 0xd7), -1);
                 return;
             }
             if (mItemCount == 0) {
                 if (mUnk_e6 < 3) {
-                    func_02055668(mCommandPage, 0, -1);
+                    SetCommandPageCard(mCommandPage, 0, -1);
                 } else {
-                    func_02055668(mCommandPage, 0xd6, -1);
+                    SetCommandPageCard(mCommandPage, 0xd6, -1);
                 }
             } else {
-                func_02055668(mCommandPage, mItemIds[mCursorItem], -1);
+                SetCommandPageCard(mCommandPage, mItemIds[mCursorItem], -1);
             }
             break;
         case 3:
@@ -3094,7 +3094,7 @@ void ListScene::func_02081594() {
                 } else {
                     v = mItemIds[mCursorItem];
                 }
-                func_02055668(mCommandPage, (u8) v, -1);
+                SetCommandPageCard(mCommandPage, (u8) v, -1);
             }
             break;
         case 4:
@@ -3102,9 +3102,9 @@ void ListScene::func_02081594() {
                 return;
             }
             if (mUnk_f0 != 0) {
-                func_02055668(mCommandPage, (u16) (mUnk_e6 + 0xd0), -1);
+                SetCommandPageCard(mCommandPage, (u16) (mUnk_e6 + 0xd0), -1);
             } else {
-                func_02055668(mCommandPage, mItemIds[mCursorItem], -1);
+                SetCommandPageCard(mCommandPage, mItemIds[mCursorItem], -1);
             }
             break;
     }
@@ -3599,10 +3599,10 @@ void func_020834ec(ListScene *self, u32 mode) {
     switch (mode) {
         case 0:
             if (self->mCommandList != NULL) {
-                self->mCommandList->func_02058530(1);
+                self->mCommandList->SetWindowVisible(1);
             }
             if (self->mCommandPage != NULL) {
-                self->mCommandPage->func_02055890(1);
+                self->mCommandPage->SetWindowVisible(1);
             }
             self->mPendingPlanes                   = 0x1d;
             self->mUnk_4c->mEnabled = 1;
@@ -3644,7 +3644,7 @@ void func_020834ec(ListScene *self, u32 mode) {
             break;
         case 3: {
             BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
-            func_02058260(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104, -1);
+            SetCommandListBakugan(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104, -1);
             u32 value = func_020231f4(gSaveData, state, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
             func_0205afb4(self->mCommandList, self->mUnk_104, value, pair);
             self->mCommandList->func_02058240(1);
@@ -3666,10 +3666,10 @@ void func_020834ec(ListScene *self, u32 mode) {
             break;
     }
     if (self->mCommandList != NULL) {
-        self->mCommandList->func_02058530(0);
+        self->mCommandList->SetWindowVisible(0);
     }
     if (self->mCommandPage != NULL) {
-        self->mCommandPage->func_02055890(0);
+        self->mCommandPage->SetWindowVisible(0);
     }
     GXS_SetVisiblePlane(0x1f);
     self->mUnk_4c->mEnabled = 0;
@@ -3837,10 +3837,10 @@ void func_0208415c(ListScene *self) {
 }
 
 BOOL ListScene::func_020842a0() {
-    if (mCommandList != NULL && mCommandList->func_020583f0()) {
+    if (mCommandList != NULL && mCommandList->IsSettingUp()) {
         return TRUE;
     }
-    if (mCommandPage != NULL && mCommandPage->func_02055724()) {
+    if (mCommandPage != NULL && mCommandPage->IsSettingUp()) {
         return TRUE;
     }
     return FALSE;

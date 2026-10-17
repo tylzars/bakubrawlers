@@ -634,7 +634,7 @@ void BattleTarget::Update() {
                     break;
                 }
                 mContext->mUnk_12 = 0;
-                func_ov007_0224587c(mUnk_178);
+                CloseCommandMapNow(mUnk_178);
                 FreeBakuganModelInstance(mUnk_1a4);
                 mUnk_1e7_0 = 0;
                 mUnk_1e2++;
@@ -654,7 +654,7 @@ void BattleTarget::Update() {
                 switch (context->mUnk_12) {
                     case 1:
                         context->mUnk_12 = 0;
-                        func_ov007_0224587c(mUnk_178);
+                        CloseCommandMapNow(mUnk_178);
                         mUnk_1e7_0 = 0;
                         mUnk_1e2   = 0x10;
                         break;
@@ -676,7 +676,7 @@ void BattleTarget::Update() {
                     break;
                 }
                 mContext->mUnk_12 = 0;
-                func_ov007_0224587c(mUnk_178);
+                CloseCommandMapNow(mUnk_178);
                 mUnk_1e7_0 = 0;
                 mUnk_1e2++;
                 break;
@@ -751,7 +751,7 @@ void BattleTarget::func_ov007_02253fbc() {
     }
     mUnk_1e2 = 0x11;
     mContext->mUnk_12 = 0;
-    func_ov007_0224587c(mUnk_178);
+    CloseCommandMapNow(mUnk_178);
     mUnk_1a4->mVisible = 0;
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14) {
@@ -765,7 +765,7 @@ void BattleTarget::func_ov007_02254020() {
     LoadEffectGroup(data_020d433c.mEffects, 1, "shoot");
     mUnk_178 = new BattleCommandMap(data_020d433c.mFieldId);
     mUnk_178->mUnk_151 = 0;
-    mUnk_178->vfunc_0c();
+    mUnk_178->Init();
     func_ov007_02248620(mUnk_178, 1);
     func_ov007_022547e4();
     func_ov007_02254898();
@@ -830,7 +830,7 @@ void BattleTarget::func_ov007_02254020() {
 
 void BattleTarget::func_ov007_02254790() {
     VecFx32 pos;
-    func_ov007_02248748(mUnk_178, &pos);
+    GetCornerPosition(mUnk_178, &pos);
     VecFx32 *dst = &mUnk_1a4->mPosition;
     dst->x = pos.x;
     dst->y = pos.y;
@@ -2253,7 +2253,7 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_140               = 0;
             mUnk_1cf               = 1;
             mUnk_1c6               = 1;
-            func_ov007_02248998(&mUnk_168, &a, &b);
+            FindMarkerCellAt(&mUnk_168, &a, &b);
             mUnk_1e8 = func_ov007_02262768(list, &mUnk_1a4->mPosition, mUnk_1a4->mRotY, mUnk_1d4, mUnk_1d3,
                                            list->mMarkerHandles[a][b] - 1, 1);
             func_ov007_02262a64(list, mUnk_1de - 1, *(u8 *) &list->mUnitHandles[a][b] - 1);
@@ -2374,7 +2374,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     BakuganModel *pose = mUnk_1a4;
     u16 rotY                 = pose->mRotY;
     u16 rotZ                 = pose->mRotZ;
-    func_ov007_02248998(b, &y, &x);
+    FindMarkerCellAt(b, &y, &x);
     BakuganModel *other = list->mUnk_29c->func_ov007_0226fc4c(d - 1);
     if (other) {
         VecFx32 tmp = {0, 0, 0};
@@ -2687,7 +2687,7 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
 void BattleTarget::func_ov007_022599fc() {
     u8 a = 0;
     u8 b = 0;
-    if (func_ov007_02248998(&mUnk_1a4->mPosition, &a, &b)) {
+    if (FindMarkerCellAt(&mUnk_1a4->mPosition, &a, &b)) {
         mUnk_1da = 1;
     } else {
         mUnk_1da = 0;
@@ -2701,7 +2701,7 @@ void BattleTarget::func_ov007_02259a40(u8 a, u8 b, VecFx32 *out, VecFx32 *ref) {
     if (VEC_Mag(&diff) >= 0xc99a) {
         return;
     }
-    func_ov007_02248944(&pos, a, b);
+    GetCellPosition(&pos, a, b);
     out->z = pos.z < ref->z ? ref->z - 0xc99a : ref->z + 0xc99a;
     if (pos.x < ref->x) {
         out->x = ref->x - 0x64cd;
@@ -2736,7 +2736,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
     if (mUnk_38 == 0 && mUnk_4c != 0) {
         mUnk_1e0 = 0;
         mUnk_1d6 = 0;
-        if (mUnk_148 != 0x899a || !func_ov007_02248998(&mUnk_1a4->mPosition, &a, &b)) {
+        if (mUnk_148 != 0x899a || !FindMarkerCellAt(&mUnk_1a4->mPosition, &a, &b)) {
             if (mUnk_1dd == 2) {
                 mUnk_1db = 2;
             }
@@ -3223,7 +3223,7 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
         if (speed < data_ov007_0227a5e0.mUnk_f0[k]) {
             u16 lim = data_ov007_0227a5e0.mUnk_16[k];
             if (!(*angle > lim && *angle < (u16) -lim)) {
-                if (func_ov007_02248998(pos, &a, &b)) {
+                if (FindMarkerCellAt(pos, &a, &b)) {
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
                     BattlePlayer *p0 = list->mPlayers[mUnk_1d4];
                     BattlePlayer *p1 = list->mPlayers[mUnk_1d5];
@@ -3258,8 +3258,8 @@ void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
     func_ov007_022479f4(mUnk_178, 1);
     func_ov007_02247a3c(mUnk_178);
     BattleCommandMap *map = mUnk_178;
-    map->mUnk_148         = a;
-    map->mUnk_149         = b;
+    map->mCursorX         = a;
+    map->mCursorY         = b;
 }
 
 void BattleTarget::func_ov007_0225b6d0() {
@@ -3734,7 +3734,7 @@ void BattleTarget::func_ov007_0225ce08() {
     ChangeDir("/");
     mUnk_178 = new BattleCommandMap(data_020d433c.mFieldId);
     mUnk_178->mUnk_151 = 0;
-    mUnk_178->vfunc_0c();
+    mUnk_178->Init();
     data_020d433c.mGimmicks->mState = 0;
     mUnk_1a4->SetupMode(3);
     if (mUnk_1e8 != 0) {

@@ -165,105 +165,105 @@ BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 
 BattleCharaAct::BattleCharaAct(Camera *camera, u8 player, u32 kind, u8 unk4, u8 unk5)
     : SceneBase(0x3e8, 0) {
-    mUnk_0c = camera;
-    mUnk_10 = 0;
-    mUnk_14 = 0;
-    mUnk_18 = 0;
-    mUnk_28 = 0;
-    mUnk_35 = 0;
+    mCamera = camera;
+    mSecondCamera = 0;
+    mCamFile = 0;
+    mMapObj = 0;
+    mFieldopModel = 0;
+    mState = 0;
     u8 k    = kind;
-    mUnk_36 = k;
-    mUnk_37 = k;
-    mUnk_39 = player;
-    mUnk_3a = 0;
-    mUnk_3b = unk4;
-    mUnk_3c = unk5;
-    func_ov007_02267a8c();
+    mKind = k;
+    mUnclampedKind = k;
+    mPlayer = player;
+    mActDrawFrames = 0;
+    mTexVariant = unk4;
+    mSecondTexVariant = unk5;
+    Init();
 }
 
-void BattleCharaAct::func_ov007_02267a8c() {
-    mUnk_32 = 0;
-    mUnk_3d = 0;
-    mUnk_38 = data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->mCharacterId;
-    if (mUnk_36 >= 0x10) {
-        mUnk_36 = 10;
+void BattleCharaAct::Init() {
+    mActFrames = 0;
+    mFadeBrightness = 0;
+    mCharacterId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
+    if (mKind >= 0x10) {
+        mKind = 10;
     }
-    switch (mUnk_36) {
+    switch (mKind) {
     case 0:
         SpriteManager::Get().SetupMode(1, 7);
-        mUnk_10 = new Camera();
-        mUnk_10->SetFov(0x1555);
-        mUnk_10->SetClip(0x1000, 0x1388000);
-        mUnk_10->SetPosition(0, 0, 0x22c000 - 0x1000);
-        mUnk_10->SetTarget(0, 0, 0);
-        CameraManager::Get().SetCamerasAndRequestMode(3, mUnk_0c, (u32) mUnk_10);
+        mSecondCamera = new Camera();
+        mSecondCamera->SetFov(0x1555);
+        mSecondCamera->SetClip(0x1000, 0x1388000);
+        mSecondCamera->SetPosition(0, 0, 0x22c000 - 0x1000);
+        mSecondCamera->SetTarget(0, 0, 0);
+        CameraManager::Get().SetCamerasAndRequestMode(3, mCamera, (u32) mSecondCamera);
         break;
     case 5:
     case 6:
         SpriteManager::Get().func_0202740c();
         CameraManager::Get().mActive = 0;
-        CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_0c, 0);
+        CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
         break;
     default:
         SpriteManager::Get().SetupMode(1, 7);
-        CameraManager::Get().SetCamerasAndRequestMode(2, mUnk_0c, 0);
+        CameraManager::Get().SetCamerasAndRequestMode(2, mCamera, 0);
         break;
     }
-    mUnk_24 = 0;
-    func_ov007_02268190();
-    func_ov007_022684f0();
-    mUnk_2c = func_ov007_02268110();
-    u8 n    = mUnk_36 + 1;
+    mActModel = 0;
+    LoadActModels();
+    StartCardEffect();
+    mEdited = CreateCharacter();
+    u8 n    = mKind + 1;
     char buffer[0x20];
-    if (mUnk_2c == 1) {
+    if (mEdited == 1) {
         ChangeDir("/Game/Character/EditedCharacter/Cam/");
         sprintf(buffer, "edit_M_M%02d.cam", n);
     } else {
         ChangeDir("/Game/Character/Character/");
-        sprintf(buffer, "chara%02d_M_%02d.cam", mUnk_38, n);
+        sprintf(buffer, "chara%02d_M_%02d.cam", mCharacterId, n);
     }
-    mUnk_14 = LoadFile(buffer, 0, 0, 0, 0, 0);
-    mUnk_0c->SetPath(mUnk_14, 0);
+    mCamFile = LoadFile(buffer, 0, 0, 0, 0, 0);
+    mCamera->SetPath(mCamFile, 0);
     ChangeDir("/");
-    mUnk_20 = new ModelLightGroup(LightSetups()[data_020d433c.mFieldId]);
+    mLights = new ModelLightGroup(LightSetups()[data_020d433c.mFieldId]);
 }
 
 BattleCharaAct::~BattleCharaAct() {
-    ModelLightGroup *lights = mUnk_20;
+    ModelLightGroup *lights = mLights;
     if (lights) {
         delete lights;
     }
-    delete mUnk_10;
+    delete mSecondCamera;
     CameraManager::Get().SetCamerasAndRequestMode(0, 0, 0);
-    UnkStruct_0205401c *character = mUnk_1c;
+    UnkStruct_0205401c *character = mCharacter;
     if (character) {
         character->Release();
         delete character;
     }
-    func_ov007_022695f4();
-    ModelInstance *model = mUnk_24;
+    DeleteFieldopModel();
+    ModelInstance *model = mActModel;
     if (model) {
         model->mOwnFlags = 0xf;
         delete model;
-        mUnk_24 = 0;
+        mActModel = 0;
     }
-    if (mUnk_14) {
-        OS_Free(mUnk_14);
+    if (mCamFile) {
+        OS_Free(mCamFile);
     }
-    BattleMapObj *field = mUnk_18;
+    BattleMapObj *field = mMapObj;
     if (field) {
         delete field;
     }
 }
 
-u8 BattleCharaAct::func_ov007_02268110() {
-    mUnk_1c = new UnkStruct_0205401c();
-    mUnk_1c->Create(mUnk_38, 1, data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->NameInfo(), (u8) (mUnk_36 + 1));
-    mUnk_1c->func_0205461c(mUnk_36, 0);
-    return mUnk_1c->mUseCharacter;
+u8 BattleCharaAct::CreateCharacter() {
+    mCharacter = new UnkStruct_0205401c();
+    mCharacter->Create(mCharacterId, 1, data_020d433c.mBattlePlayers->mPlayers[mPlayer]->NameInfo(), (u8) (mKind + 1));
+    mCharacter->func_0205461c(mKind, 0);
+    return mCharacter->mUseCharacter;
 }
 
-void BattleCharaAct::func_ov007_02268190() {
+void BattleCharaAct::LoadActModels() {
     char modelName[0x20];
     char textureName[0x20];
     char animName[0x20];
@@ -273,27 +273,27 @@ void BattleCharaAct::func_ov007_02268190() {
     u32 paletteAKind = 0;
     u32 paletteBKind = 0;
     ChangeDir("/Game/Character/Act/");
-    switch (mUnk_36) {
+    switch (mKind) {
         case 0:
-            if (mUnk_36 == 0) {
-                func_ov007_02269518();
+            if (mKind == 0) {
+                LoadFieldopModel();
             }
         case 3:
         case 15:
-            if (mUnk_3b != 0) {
+            if (mTexVariant != 0) {
                 paletteAKind = 1;
-                sprintf(paletteA, "T_sphe_%02d", mUnk_3b);
+                sprintf(paletteA, "T_sphe_%02d", mTexVariant);
             }
         case 1:
         case 6:
-            sprintf(modelName, "%s%02d.nsbmd", data_ov007_0228a394[mUnk_38], mUnk_36 + 1);
-            sprintf(textureName, "%s%02d.nsbtx", data_ov007_0228a394[mUnk_38], mUnk_36 + 1);
-            sprintf(animName, "%sM_%02d_data.bin", data_ov007_0228a394[mUnk_38], mUnk_36 + 1);
+            sprintf(modelName, "%s%02d.nsbmd", data_ov007_0228a394[mCharacterId], mKind + 1);
+            sprintf(textureName, "%s%02d.nsbtx", data_ov007_0228a394[mCharacterId], mKind + 1);
+            sprintf(animName, "%sM_%02d_data.bin", data_ov007_0228a394[mCharacterId], mKind + 1);
             loaded = 1;
-            if ((mUnk_36 == 1) | (mUnk_36 == 6)) {
-                if ((mUnk_3b != 0) & (mUnk_3b <= 2)) {
+            if ((mKind == 1) | (mKind == 6)) {
+                if ((mTexVariant != 0) & (mTexVariant <= 2)) {
                     paletteAKind = 2;
-                    sprintf(paletteA, "ab_%02d", mUnk_3b);
+                    sprintf(paletteA, "ab_%02d", mTexVariant);
                 }
             }
             break;
@@ -301,17 +301,17 @@ void BattleCharaAct::func_ov007_02268190() {
         case 8:
         case 9:
         case 10:
-            if (mUnk_3b != 0) {
+            if (mTexVariant != 0) {
                 paletteAKind = 1;
-                sprintf(paletteA, "T_sphe_%02d", mUnk_3b);
+                sprintf(paletteA, "T_sphe_%02d", mTexVariant);
             }
-            if (mUnk_36 == 8 && mUnk_3c != 1) {
+            if (mKind == 8 && mSecondTexVariant != 1) {
                 paletteBKind = 1;
-                sprintf(paletteB, "T_sphe_%02d", mUnk_3c);
+                sprintf(paletteB, "T_sphe_%02d", mSecondTexVariant);
             }
-            sprintf(modelName, "all_%02d.nsbmd", mUnk_36 + 1);
-            sprintf(textureName, "all_%02d.nsbtx", mUnk_36 + 1);
-            sprintf(animName, "all_M_%02d_data.bin", mUnk_36 + 1);
+            sprintf(modelName, "all_%02d.nsbmd", mKind + 1);
+            sprintf(textureName, "all_%02d.nsbtx", mKind + 1);
+            sprintf(animName, "all_M_%02d_data.bin", mKind + 1);
             loaded = 1;
             break;
     }
@@ -330,17 +330,17 @@ void BattleCharaAct::func_ov007_02268190() {
         texture->FreeFile();
         ModelAnimData *data = new ModelAnimData(animName);
         ModelAnim *anim     = new ModelAnim(data, (NitroModel *) model);
-        mUnk_24             = model->CreateInstance(anim);
-        mUnk_24->StartAnimWithIncrement(0, 0, 0x1000);
-        mUnk_24->mUseBoxTest = 0;
+        mActModel             = model->CreateInstance(anim);
+        mActModel->StartAnimWithIncrement(0, 0, 0x1000);
+        mActModel->mUseBoxTest = 0;
     }
     ChangeDir("/");
 }
 
-void BattleCharaAct::func_ov007_022684f0() {
-    switch (mUnk_36) {
+void BattleCharaAct::StartCardEffect() {
+    switch (mKind) {
         case 10:
-            switch (mUnk_37 - 0x10) {
+            switch (mUnclampedKind - 0x10) {
                 case 0:
                     new BattleCardEffect(0, 0, 6, 0);
                     break;
@@ -377,80 +377,80 @@ void BattleCharaAct::func_ov007_022684f0() {
 
 void BattleCharaAct::Update() {
     u32 run = 1;
-    switch (mUnk_35) {
+    switch (mState) {
         case 0:
             run = 0;
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x1a)) {
-                mUnk_35++;
+                mState++;
             }
             break;
         case 1:
-            mUnk_3e = run;
+            mNextScene = run;
             run     = 0;
             func_ov007_02269380();
-            mUnk_35++;
+            mState++;
             break;
         case 2:
             mUnk_30 = 0x1ee;
-            if (data_ov007_0228a2e4[mUnk_38] != NULL) {
-                mUnk_30 = data_ov007_0228a2e4[mUnk_38][mUnk_36];
+            if (data_ov007_0228a2e4[mCharacterId] != NULL) {
+                mUnk_30 = data_ov007_0228a2e4[mCharacterId][mKind];
                 if (mUnk_30 != 0x1ee) {
                     if (mUnk_30 == 0x1dc && gSaveData[0].mUnk_42 == 0) {
                         mUnk_30 = 0x1ee - 0x11;
                     }
-const u8 *t = data_ov007_0228a33c[mUnk_38];
- if (t) { mUnk_34 = t[mUnk_36]; } else { mUnk_34 = 0; }
+const u8 *t = data_ov007_0228a33c[mCharacterId];
+ if (t) { mUnk_34 = t[mKind]; } else { mUnk_34 = 0; }
                     FrameTask::Get().StartChannel(1, mUnk_30);
                     FrameTask::Get().func_0203dd4c(1);
                 }
             }
-            mUnk_35++;
+            mState++;
             break;
         case 4:
             SpriteManager::Get().StartFade(2);
         case 3:
-            mUnk_35++;
+            mState++;
             break;
         case 5:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_35++;
+                mState++;
             }
             break;
         case 6:
-            if (mUnk_36 == 0 && mUnk_3d >= 0x10) {
-                mUnk_35 = 8;
+            if (mKind == 0 && mFadeBrightness >= 0x10) {
+                mState = 8;
                 break;
             }
-            if (mUnk_1c->IsAnimEndReached()) {
-                mUnk_35 = 8;
+            if (mCharacter->IsAnimEndReached()) {
+                mState = 8;
                 break;
             }
             if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 0)) {
-                mUnk_3e = 2;
-                mUnk_35 = 8;
+                mNextScene = 2;
+                mState = 8;
                 break;
             }
             if (InputManager::Get().IsDown(8)) {
-                mUnk_35++;
+                mState++;
             }
             break;
         case 7:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 1)) {
-                    mUnk_3e = 2;
-                    mUnk_35++;
+                    mNextScene = 2;
+                    mState++;
                 }
             } else {
-                mUnk_3e = 2;
-                mUnk_35++;
+                mNextScene = 2;
+                mState++;
             }
             break;
         case 8:
-            if (mUnk_36 == 0) {
+            if (mKind == 0) {
                 if (CameraManager::Get().mMode != 1) {
                     SpriteManager::Get().StartFade(4);
-                    mUnk_32 = 0xffff;
+                    mActFrames = 0xffff;
                 }
             } else {
                 if (CameraManager::Get().mMode != 1) {
@@ -460,13 +460,13 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
                     SpriteManager::sFade[0] = 3;
                 }
             }
-            mUnk_35++;
+            mState++;
             break;
         case 9:
             if (!SpriteManager::Get().IsFading()) {
                 CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
                 data_020d433c.mUnk_14 |= 4;
-                mUnk_35++;
+                mState++;
             }
             break;
         case 10:
@@ -474,12 +474,12 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
             if (mUnk_30 != 0x1ee) {
                 FrameTask::Get().func_0203dd60(1);
             }
-            mUnk_35++;
+            mState++;
             break;
         case 11:
             run = 0;
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
-                RequestScene(mUnk_3e);
+                RequestScene(mNextScene);
                 mFinished = 1;
             }
             break;
@@ -508,57 +508,57 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
-    if (mUnk_36 == 0) {
+    if (mKind == 0) {
         if (CameraManager::Get().mActive == 0) {
             u8 saved                     = CameraManager::Get().mModelsVisible;
             CameraManager::Get().mModelsVisible = 0;
-            func_ov007_022693f4();
+            Draw();
             CameraManager::Get().mModelsVisible = saved;
-            func_ov007_022693f4();
+            Draw();
         } else {
-            func_ov007_0226961c();
+            DrawFieldopModel();
         }
         if (SpriteManager::Get().IsFading()) {
             return;
         }
-        if (mUnk_32 == 0xffff) {
+        if (mActFrames == 0xffff) {
             return;
         }
-        mUnk_32++;
-        int frames = mUnk_32;
+        mActFrames++;
+        int frames = mActFrames;
         if (frames > 0x5a && frames % 7 == 0) {
-            if (mUnk_3d < 0x10) {
-                mUnk_3d++;
-                SpriteManager::Get().SetFade(1, (u8) mUnk_3d);
+            if (mFadeBrightness < 0x10) {
+                mFadeBrightness++;
+                SpriteManager::Get().SetFade(1, (u8) mFadeBrightness);
             }
         }
     } else {
-        func_ov007_022693f4();
+        Draw();
     }
 }
 
 void BattleCharaAct::func_ov007_02269380() {
     u8 type = 0xa;
-    if (mUnk_36 != 0) {
-        if (mUnk_36 == 0xf) {
+    if (mKind != 0) {
+        if (mKind == 0xf) {
             type = 0xb;
         }
     } else {
         type = 9;
     }
-    mUnk_18 = new BattleMapObj(type);
-    mUnk_18->func_ov007_022493fc();
-    if (mUnk_36 != 5 && mUnk_36 != 6 && data_020d433c.mUnk_10) {
+    mMapObj = new BattleMapObj(type);
+    mMapObj->Load();
+    if (mKind != 5 && mKind != 6 && data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->SetupLayout(0xd);
     }
 }
 
-void BattleCharaAct::func_ov007_022693f4() {
-    mUnk_0c->AdvanceFrame(0);
-    mUnk_0c->ApplyPath();
-    mUnk_18->func_ov007_0224954c();
-    mUnk_1c->Draw();
-    if (!mUnk_24) {
+void BattleCharaAct::Draw() {
+    mCamera->AdvanceFrame(0);
+    mCamera->ApplyPath();
+    mMapObj->Draw();
+    mCharacter->Draw();
+    if (!mActModel) {
         return;
     }
     BOOL draw    = 1;
@@ -566,48 +566,48 @@ void BattleCharaAct::func_ov007_022693f4() {
     VecFx32 pos  = data_ov007_0227ac20;
     VecFx32 zero = {0, 0, 0};
     func_01ffcf64(&mtx, &zero);
-    if ((mUnk_36 == 10) | ((mUnk_36 == 7) | ((mUnk_36 == 8) | (mUnk_36 == 9)))) {
-        mUnk_3a++;
-        if (mUnk_3a >= 0x16) {
+    if ((mKind == 10) | ((mKind == 7) | ((mKind == 8) | (mKind == 9)))) {
+        mActDrawFrames++;
+        if (mActDrawFrames >= 0x16) {
             draw = 0;
         }
     }
     if (!draw) {
         return;
     }
-    mUnk_24->AdvanceAnim();
-    mUnk_24->Draw(&mtx, &pos);
+    mActModel->AdvanceAnim();
+    mActModel->Draw(&mtx, &pos);
 }
 
-void BattleCharaAct::func_ov007_02269518() {
+void BattleCharaAct::LoadFieldopModel() {
     TextureFile *texture = new NitroTexture("fieldop_00.nsbtx");
     ModelFile *model   = new BattleCharaActModel("fieldop_00.nsbmd", texture);
     texture->FreeFile();
     ModelAnimData *data = new ModelAnimData("fieldop_00_data.bin");
     ModelAnim *anim     = new ModelAnim(data, (NitroModel *) model);
-    mUnk_28             = model->CreateInstance(anim);
-    mUnk_28->StartAnim(0, 1);
-    mUnk_28->mUseBoxTest = 0;
-    mUnk_28->StartAnimWithIncrement(0, 1, 0x2000);
+    mFieldopModel             = model->CreateInstance(anim);
+    mFieldopModel->StartAnim(0, 1);
+    mFieldopModel->mUseBoxTest = 0;
+    mFieldopModel->StartAnimWithIncrement(0, 1, 0x2000);
 }
 
-void BattleCharaAct::func_ov007_022695f4() {
-    ModelInstance *model = mUnk_28;
+void BattleCharaAct::DeleteFieldopModel() {
+    ModelInstance *model = mFieldopModel;
     if (model) {
         model->mOwnFlags = 0xf;
         delete model;
     }
 }
 
-void BattleCharaAct::func_ov007_0226961c() {
-    if (!mUnk_28) {
+void BattleCharaAct::DrawFieldopModel() {
+    if (!mFieldopModel) {
         return;
     }
     MtxFx43 mtx = gIdentityMtx43;
     VecFx32 pos = data_ov007_0227ac2c;
     func_01ffd088(&mtx, 0x4000);
-    mUnk_28->AdvanceAnim();
-    mUnk_28->Draw(&mtx, &pos);
+    mFieldopModel->AdvanceAnim();
+    mFieldopModel->Draw(&mtx, &pos);
 }
 
 u32 func_ov007_022696a0(u32 a, u32 b) {

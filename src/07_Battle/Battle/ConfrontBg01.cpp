@@ -23,13 +23,13 @@ ConfrontBg01::~ConfrontBg01() {
     delete mBlend;
 }
 
-void ConfrontBg01::func_ov007_02219888(BattleData *data, u32 mode) {
+void ConfrontBg01::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
-    vfunc_28();
+    InitSubScreen();
+    LoadGraphics();
 }
 
-void ConfrontBg01::func_ov007_0221a624() {
+void ConfrontBg01::InitSubScreen() {
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -40,10 +40,10 @@ void ConfrontBg01::func_ov007_0221a624() {
     G2S_SetBG2Priority(3);
     G2S_SetBG3Priority(1);
     G2S_SetBlendAlpha(8, 2, 1, 0);
-    mBlend->func_ov007_02223ee4();
+    mBlend->WriteBlendAlpha();
 }
 
-void ConfrontBg01::vfunc_28() {
+void ConfrontBg01::LoadGraphics() {
     u8 spectator = IsSpectator();
     if (spectator) {
         return;
@@ -76,15 +76,15 @@ BOOL ConfrontBg01::func_ov007_0221bfa4() {
         mUnk_68 = 0;
         func_02024764(&SoundManager::Get(), 0x27, 1);
     }
-    mBlend->func_ov007_02223ea0();
+    mBlend->LowerLevel();
     return FALSE;
 }
 
 void ConfrontBg01::vfunc_3c() {
-    mBlend->func_ov007_02223dc4();
+    mBlend->UpdateWobble();
 }
 
-u8 ConfrontBg01::vfunc_40(int a) {
+u8 ConfrontBg01::UpdateTouch(int a) {
     u8 hit = func_ov007_02229ee4(0x50, 0x58, 0x60, 0x60, 5, &mUnk_69);
     if (hit) {
         u32 limit = 0x28;
@@ -104,7 +104,7 @@ u8 ConfrontBg01::vfunc_40(int a) {
                 mUnk_6a += 2;
                 func_020247fc(&SoundManager::Get(), mUnk_6a);
             }
-            mBlend->func_ov007_02223d7c();
+            mBlend->RaiseLevel();
             hit = mBlend->mLevel * 100 / 40;
         }
     } else {
@@ -115,7 +115,7 @@ u8 ConfrontBg01::vfunc_40(int a) {
                 mUnk_6a = 0;
             }
         }
-        if (mBlend->func_ov007_02223ea0()) {
+        if (mBlend->LowerLevel()) {
             mUnk_6c = 0;
         }
     }

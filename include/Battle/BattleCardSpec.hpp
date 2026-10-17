@@ -15,14 +15,14 @@ class ModelInstance;
 
 class BattleCardSpec : public SceneBase {
 public:
-    /* 0c */ BattleCardModel *mUnk_0c;
-    /* 10 */ ModelInstance *mUnk_10;
-    /* 14 */ ModelInstance *mUnk_14;
+    /* 0c */ BattleCardModel *mCardModel;
+    /* 10 */ ModelInstance *mRealbaseModel;
+    /* 14 */ ModelInstance *mRealnormalModel;
     /* 18 */ u8 mState;
     /* 19 */ u8 mUnk_19;
-    /* 1a */ u8 mUnk_1a;
-    /* 1b */ u8 mUnk_1b;
-    /* 1c */ u8 mUnk_1c;
+    /* 1a */ u8 mCardModelType;
+    /* 1b */ u8 mBakuganId;
+    /* 1c */ u8 mVariant;
     /* 1d */ u8 mUnk_1d;
     /* 1e */ u8 mUnk_1e;
     /* 1f */ PAD(0x1f, 0x20);
@@ -31,5 +31,5 @@ public:
     BattleCardSpec(u32 a, u32 b, u32 c, u8 d);
     virtual ~BattleCardSpec();
     virtual void Update();
-    void func_ov007_0225fbdc();
+    void LoadModels();
 };

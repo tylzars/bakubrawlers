@@ -6,11 +6,11 @@
 
 // Alpha blend level on the sub screen, built up over time and wobbled around its value.
 BattleBlend::BattleBlend(u16 period, u8 min, u8 max) {
-    mUnk_04 = 0;
+    mRaiseCount = 0;
     mLevel = min;
     mUnk_06 = 0;
     mWobble = 0;
-    mUnk_0a = 0;
+    mWobbleFrames = 0;
     mFalling = 0;
     mPeriod = period;
     mMin = min;
@@ -21,20 +21,20 @@ BattleBlend::~BattleBlend() {
     G2S_BlendNone();
 }
 
-void BattleBlend::func_ov007_02223d7c() {
+void BattleBlend::RaiseLevel() {
     mUnk_06 = 0;
-    mUnk_04++;
-    if (mUnk_04 < mPeriod) {
+    mRaiseCount++;
+    if (mRaiseCount < mPeriod) {
         return;
     }
-    mUnk_04 = 0;
+    mRaiseCount = 0;
     mLevel++;
     if (mLevel > mMax) {
         mLevel = mMax;
     }
 }
 
-void BattleBlend::func_ov007_02223dc4() {
+void BattleBlend::UpdateWobble() {
     u8 period;
     u8 peak;
     if (mLevel >= mMax - 3) {
@@ -44,9 +44,9 @@ void BattleBlend::func_ov007_02223dc4() {
         period = 20;
         peak = 2;
     }
-    mUnk_0a++;
-    if (mUnk_0a >= period) {
-        mUnk_0a = 0;
+    mWobbleFrames++;
+    if (mWobbleFrames >= period) {
+        mWobbleFrames = 0;
         if (mFalling == 0) {
             mWobble++;
             if (mWobble >= peak) {
@@ -71,12 +71,12 @@ void BattleBlend::func_ov007_02223dc4() {
     }
 }
 
-BOOL BattleBlend::func_ov007_02223ea0() {
+BOOL BattleBlend::LowerLevel() {
     BOOL done = 0;
     mUnk_06++;
     if ((int) mUnk_06 >= 1) {
         mUnk_06 = 0;
-        mUnk_04 = 0;
+        mRaiseCount = 0;
         if (mLevel > mMin) {
             mLevel--;
         }
@@ -85,7 +85,7 @@ BOOL BattleBlend::func_ov007_02223ea0() {
     return done;
 }
 
-void BattleBlend::func_ov007_02223ee4() {
+void BattleBlend::WriteBlendAlpha() {
     s16 level = mLevel + mWobble;
     if (level < 0x1f) {
         reg_G2S_DB_BLDALPHA = level;

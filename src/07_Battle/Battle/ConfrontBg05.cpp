@@ -93,10 +93,10 @@ ConfrontBg05::~ConfrontBg05() {
     delete mBlend;
 }
 
-void ConfrontBg05::func_ov007_02219888(BattleData *data, u32 mode) {
+void ConfrontBg05::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
-    vfunc_28();
+    InitSubScreen();
+    LoadGraphics();
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
@@ -111,7 +111,7 @@ void ConfrontBg05::func_ov007_02219888(BattleData *data, u32 mode) {
     mEmblem = new ConfrontEmblem05(n);
 }
 
-void ConfrontBg05::func_ov007_0221a624() {
+void ConfrontBg05::InitSubScreen() {
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -122,10 +122,10 @@ void ConfrontBg05::func_ov007_0221a624() {
     G2S_SetBG2Priority(3);
     G2S_SetBG3Priority(2);
     G2S_SetBlendAlpha(2, 8, 1, 0);
-    mBlend->func_ov007_02223ee4();
+    mBlend->WriteBlendAlpha();
 }
 
-void ConfrontBg05::vfunc_28() {
+void ConfrontBg05::LoadGraphics() {
     u8 spectator = IsSpectator();
     BattleEntry *entries = mData->mEntries;
     if (spectator) {
@@ -180,7 +180,7 @@ BOOL ConfrontBg05::func_ov007_0221bfa4() {
     }
     mEmblem->func_ov007_02220a00();
     mEmblem->func_ov007_02220cb0();
-    mBlend->func_ov007_02223ea0();
+    mBlend->LowerLevel();
     return FALSE;
 }
 
@@ -189,15 +189,15 @@ void ConfrontBg05::vfunc_3c() {
     if (spectator) {
         return;
     }
-    mBlend->func_ov007_02223dc4();
+    mBlend->UpdateWobble();
     mEmblem->func_ov007_02220b48();
 }
 
-u8 ConfrontBg05::vfunc_40(int a) {
+u8 ConfrontBg05::UpdateTouch(int a) {
     s32 hit = -1;
     s16 y = (s32) mEmblem->mY;
     s16 x = (s32) mEmblem->mX;
-    func_ov007_0221bb28(x, y);
+    SetPenPosition(x, y);
     if (TouchManager::Get().mDown) {
         hit = mEmblem->func_ov007_02220b9c(a);
         if (hit != -1) {
@@ -215,7 +215,7 @@ u8 ConfrontBg05::vfunc_40(int a) {
                 func_02024764(&SoundManager::Get(), 0x2b, 1);
             }
         }
-        mBlend->func_ov007_02223ea0();
+        mBlend->LowerLevel();
         mEmblem->func_ov007_02220cb0();
         mUnk_6a = 0;
         return 0;
@@ -224,7 +224,7 @@ u8 ConfrontBg05::vfunc_40(int a) {
         mUnk_6a += 2;
         func_020247fc(&SoundManager::Get(), mUnk_6a);
     }
-    mBlend->func_ov007_02223d7c();
+    mBlend->RaiseLevel();
     return hit;
 }
 

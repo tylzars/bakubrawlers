@@ -50,7 +50,7 @@ int func_ov007_02222764(int side, BattleEntry *entry) {
     return result;
 }
 
-u32 func_ov007_0221d348(u32 max);
+u32 BattleRand32(u32 max);
 
 extern u8 data_ov007_02278c34[];
 
@@ -71,11 +71,11 @@ extern const u8 data_ov007_02278d7e[];
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
     mCharacter = unk4;
-    mUnk_06 = 0;
+    mStartTimer = 0;
     mUnk_07 = unk8;
-    mUnk_08 = 0;
-    mUnk_0a = 0;
-    mUnk_0c = 0;
+    mIntervalFrames = 0;
+    mIntervalFrameCount = 0;
+    mValue = 0;
     mUnk_0e = 0;
     mUnk_10 = 0;
     mUnk_12 = 0;
@@ -85,13 +85,13 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mUnk_15 = 0;
     mUnk_16 = 0;
     mIndex = index;
-    mUnk_1c = 0;
-    mUnk_1e = 0;
+    mCardDelayTimer = 0;
+    mSoundTimer = 0;
     mParam = param;
     mHelper = 0;
     mData = data;
     BattleEntry *entries = mData->mEntries;
-    mUnk_24 = data_ov007_02286570[mode];
+    mModeRow = data_ov007_02286570[mode];
     int row = unk4 * 12;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
     u8 base = player->mUnk_f7;
@@ -111,14 +111,14 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     } else if (base == 2) {
         a = (u8) (a + 2);
     }
-    u8 *p = mUnk_24;
+    u8 *p = mModeRow;
     if (a >= 10) {
         a = 9;
     }
     if (b >= 8) {
         b = 7;
     }
-    mUnk_24 = p + a * 4;
+    mModeRow = p + a * 4;
     mUnk_28 = data_ov007_02278c34 + b * 2;
     if (mMode == 0 || mMode == 3) {
         u8 c;
@@ -155,22 +155,22 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         mRole = 4;
     }
     if (mRole != 2 && mRole != 3) {
-        mUnk_0a = mUnk_28[0];
-        mUnk_0a += func_ov007_0221d348(mUnk_28[1]);
+        mIntervalFrameCount = mUnk_28[0];
+        mIntervalFrameCount += BattleRand32(mUnk_28[1]);
         return;
     }
     switch (mMode) {
         case 1:
             if (mMode == 1) {
-                mUnk_06 = 50;
+                mStartTimer = 50;
             }
         case 2:
-            mUnk_0a = mUnk_24[0];
-            mUnk_0a += func_ov007_0221d348(mUnk_24[1]);
+            mIntervalFrameCount = mModeRow[0];
+            mIntervalFrameCount += BattleRand32(mModeRow[1]);
             break;
         case 5:
-            mUnk_12 = mUnk_24[1];
-            mUnk_12 += func_ov007_0221d348(mUnk_24[2]);
+            mUnk_12 = mModeRow[1];
+            mUnk_12 += BattleRand32(mModeRow[2]);
             break;
     }
     u8 side = mRole - 2;
@@ -183,18 +183,18 @@ BattleSlot::~BattleSlot() {
     }
 }
 
-BOOL BattleSlot::func_ov007_02222bac() {
+BOOL BattleSlot::UpdateInterval() {
     BOOL ret = 0;
     switch (mMode) {
         case 1:
         case 2:
-            mUnk_08++;
-            if (mUnk_08 < mUnk_0a) {
+            mIntervalFrames++;
+            if (mIntervalFrames < mIntervalFrameCount) {
                 return ret;
             }
-            mUnk_08 = 0;
-            mUnk_0a = mUnk_24[0];
-            mUnk_0a += func_ov007_0221d348(mUnk_24[1]);
+            mIntervalFrames = 0;
+            mIntervalFrameCount = mModeRow[0];
+            mIntervalFrameCount += BattleRand32(mModeRow[1]);
             ret = 1;
             break;
         case 0:
@@ -207,7 +207,7 @@ BOOL BattleSlot::func_ov007_02222bac() {
     return ret;
 }
 
-int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
+int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
     u32 ret = 0;
     if (mRole == 2 || mRole == 3) {
         mUnk_0e++;
@@ -216,36 +216,36 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
             switch (mMode) {
                 case 0:
                 case 3: {
-                    u8 *p = mUnk_24;
-                    if (p[2] >= func_ov007_0221d348(100)) {
-                        mUnk_0c = mUnk_0c - p[3];
-                        if (mUnk_0c < 0) {
-                            mUnk_0c = 0;
+                    u8 *p = mModeRow;
+                    if (p[2] >= BattleRand32(100)) {
+                        mValue = mValue - p[3];
+                        if (mValue < 0) {
+                            mValue = 0;
                         }
                     } else {
-                        mUnk_0c = mUnk_0c + p[1];
-                        if (mUnk_0c >= mUnk_24[0]) {
-                            mUnk_0c = mUnk_24[0];
+                        mValue = mValue + p[1];
+                        if (mValue >= mModeRow[0]) {
+                            mValue = mModeRow[0];
                         }
                     }
                     break;
                 }
                 case 4: {
-                    if (mUnk_1e != 0) {
-                        mUnk_1e--;
+                    if (mSoundTimer != 0) {
+                        mSoundTimer--;
                     }
-                    u8 *p = mUnk_24;
-                    if (p[2] >= func_ov007_0221d348(100)) {
-                        mUnk_0c = mUnk_0c - p[3];
-                        if (mUnk_0c < 0) {
-                            mUnk_0c = 0;
+                    u8 *p = mModeRow;
+                    if (p[2] >= BattleRand32(100)) {
+                        mValue = mValue - p[3];
+                        if (mValue < 0) {
+                            mValue = 0;
                         }
                     } else {
-                        mUnk_0c = mUnk_0c + p[1];
-                        if (mUnk_0c >= mUnk_24[0]) {
-                            mUnk_0c = mUnk_24[0];
+                        mValue = mValue + p[1];
+                        if (mValue >= mModeRow[0]) {
+                            mValue = mModeRow[0];
                         }
-                        if (mUnk_1e == 0) {
+                        if (mSoundTimer == 0) {
                             u8 i = 0;
                             s16 sum = 0;
                             if (mRole == 3) {
@@ -259,10 +259,10 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
                                     i++;
                                 } while (i < data_020d433c.mPlayerCount);
                             }
-                            if (mUnk_0c - sum > 80) {
+                            if (mValue - sum > 80) {
                                 SoundManager::Get().StartSeqArc(0x6c);
                                 func_020247fc(&SoundManager::Get(), 0x312);
-                                mUnk_1e = 60;
+                                mSoundTimer = 60;
                             }
                         }
                     }
@@ -270,41 +270,41 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
                 }
                 case 1:
                 case 2:
-                    mUnk_0c = mUnk_24[2];
-                    mUnk_0c += func_ov007_0221d348(mUnk_24[3]);
-                    if (mUnk_0c >= 50) {
+                    mValue = mModeRow[2];
+                    mValue += BattleRand32(mModeRow[3]);
+                    if (mValue >= 50) {
                         SoundManager::Get().StartSeqArc(0x6c);
                         func_020247fc(&SoundManager::Get(), 0x312);
-                        mUnk_1e = 60;
+                        mSoundTimer = 60;
                     }
                     break;
                 case 5:
-                    mUnk_0c = 0;
+                    mValue = 0;
                     mUnk_10++;
                     if (mUnk_10 >= mUnk_12) {
                         mUnk_10 = 0;
-                        mUnk_12 = mUnk_24[1];
-                        mUnk_12 += func_ov007_0221d348(mUnk_24[2]);
-                        if (mUnk_24[0] >= func_ov007_0221d348(100)) {
-                            mUnk_0c = 100;
+                        mUnk_12 = mModeRow[1];
+                        mUnk_12 += BattleRand32(mModeRow[2]);
+                        if (mModeRow[0] >= BattleRand32(100)) {
+                            mValue = 100;
                             SoundManager::Get().StartSeqArc(0x6c);
                             func_020247fc(&SoundManager::Get(), 0x312);
                         } else {
-                            mUnk_0c = 10;
+                            mValue = 10;
                         }
-                    } else if (mUnk_24[3] >= func_ov007_0221d348(100)) {
-                        mUnk_0c = 10;
+                    } else if (mModeRow[3] >= BattleRand32(100)) {
+                        mValue = 10;
                     }
                     break;
             }
-            ret = mUnk_0c;
+            ret = mValue;
         }
     } else {
-        mUnk_08++;
-        if (mUnk_08 >= mUnk_0a) {
-            mUnk_08 = 0;
-            mUnk_0a = mUnk_28[0];
-            mUnk_0a += func_ov007_0221d348(mUnk_28[1]);
+        mIntervalFrames++;
+        if (mIntervalFrames >= mIntervalFrameCount) {
+            mIntervalFrames = 0;
+            mIntervalFrameCount = mUnk_28[0];
+            mIntervalFrameCount += BattleRand32(mUnk_28[1]);
             ret = mUnk_07;
         }
     }
@@ -327,7 +327,7 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
                 mUnk_15++;
                 if (mUnk_15 >= mUnk_2c[0]) {
                     mUnk_15 = 0;
-                    if (mUnk_2c[1] >= func_ov007_0221d348(100)) {
+                    if (mUnk_2c[1] >= BattleRand32(100)) {
                         mUnk_14_1 = 1;
                         mUnk_16 = mUnk_2c[2];
                         if (!mUnk_14_2) {
@@ -341,19 +341,19 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
             }
         } else {
             value = value + mUnk_2c[3];
-            value = func_ov007_0221d348(mUnk_2c[4]) + value;
+            value = BattleRand32(mUnk_2c[4]) + value;
             if (mUnk_16 != 0) {
                 mUnk_16--;
             } else {
                 mUnk_14_1 = 0;
-                mUnk_0c = mUnk_24[0];
+                mValue = mModeRow[0];
             }
         }
     }
     return value;
 }
 
-int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
+int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
     int role = mRole;
     if (role == 4) {
         return -1;
@@ -361,9 +361,9 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 
     BattleData *data = mData;
     int ret = -1;
     if (role == 2 || role == 3) {
-        if (mUnk_1c) {
-            mUnk_1c--;
-            if (mUnk_1c == 0) {
+        if (mCardDelayTimer) {
+            mCardDelayTimer--;
+            if (mCardDelayTimer == 0) {
                 u8 other = (u8) (mRole - 2) ^ 1;
                 WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -372,17 +372,17 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 
                     *d = other + 1;
                 }
             }
-        } else if (mUnk_06) {
-            mUnk_06--;
+        } else if (mStartTimer) {
+            mStartTimer--;
         } else {
             u8 side = role - 2;
-            if (mHelper->func_ov007_02223638(side, n)) {
+            if (mHelper->RollForCard(side, n)) {
                 c[side] = 1;
                 ret = 1;
             }
             if (c[side] == 0) {
-                if (func_ov007_02222bac()) {
-                    u16 v = func_ov007_02222c34(n, a, b);
+                if (UpdateInterval()) {
+                    u16 v = ComputeValue(n, a, b);
                     u32 w = func_ov007_022230b4(v, n);
                     if (mIndex == data->mEntries[0].mUnk_0d_4) {
                         a[mIndex] = w;
@@ -393,7 +393,7 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 
             }
         }
     } else {
-        u16 v = func_ov007_02222c34(n, a, b);
+        u16 v = ComputeValue(n, a, b);
         if (mRole == 0) {
             a[mIndex] = v;
         } else {
@@ -410,10 +410,10 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 
     return ret;
 }
 
-void BattleSlot::func_ov007_02223484(int sel) {
+void BattleSlot::StartCardDelay(int sel) {
     if ((sel == 0 && mRole == 3) || (sel == 1 && mRole == 2)) {
-        mUnk_1c = data_ov007_02278d7d[mCharacter * 12];
-        mUnk_1c += func_ov007_0221d348(data_ov007_02278d7e[mCharacter * 12]);
+        mCardDelayTimer = data_ov007_02278d7d[mCharacter * 12];
+        mCardDelayTimer += BattleRand32(data_ov007_02278d7e[mCharacter * 12]);
     }
 }
 

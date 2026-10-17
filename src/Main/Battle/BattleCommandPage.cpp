@@ -1,6 +1,6 @@
 #include "UI/SelectWindow.hpp"
 
-// item table of the page window (positions are patched by func_02055764)
+// item table of the page window (positions are patched by CreateCommandPageWindow)
 inline WindowItemRecord *PageItems() {
     static WindowItemRecord sItems[4] = {
         { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
@@ -35,7 +35,7 @@ inline WindowCellRecord *PageCells() {
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 
-// paths loaded by func_02055c28 and func_020561c4
+// paths loaded by LoadGraphics and LoadLargeCard
 inline const char **PagePaths() {
     static const char *sPaths[12] = {
         "/Game/Card/Graphic/cardspec_u_obj_00_ncl.bin",
@@ -68,63 +68,63 @@ extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
 
 BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     SceneBase(0x3e8, 0) {
-    mUnk_50 = NULL;
-    mUnk_54 = NULL;
-    mUnk_58 = NULL;
-    mUnk_5c = NULL;
-    mUnk_f1 = 0;
+    mWindow = NULL;
+    mCardMes = NULL;
+    mCardTextMes = NULL;
+    mCardNameMes = NULL;
+    mState = 0;
     mUnk_f2 = 0;
-    mUnk_fa = b;
-    mUnk_fb = 0;
-    mUnk_fc = 0;
-    mUnk_fd = 0;
-    mUnk_fe = 0;
-    mUnk_100 = 0;
-    mUnk_102 = 0;
-    mUnk_104 = 0;
-    mUnk_105 = 0;
+    mPlayer = b;
+    mTextPage = 0;
+    mLastTextPage = 0;
+    mWindowVisible = 0;
+    mFourItems = 0;
+    mNameWidth = 0;
+    mNameX = 0;
+    mVisible = 0;
+    mCloseFade = 0;
     mUnk_106 = 0;
     mUnk_107 = 0;
     mUnk_108 = 0;
-    MI_CpuClear32(mUnk_60, 0xc);
-    MI_CpuClear32(mUnk_6c, 0xc);
-    MI_CpuClear32(mUnk_78, 0xc);
-    MI_CpuClear32(mUnk_84, 0xc);
-    MI_CpuClear32(mUnk_90, 0x30);
-    MI_CpuClear32(mUnk_c0, 0x30);
-    MI_CpuClear32(mUnk_0c, 0xc);
-    MI_CpuClear32(mUnk_18, 0xc);
+    MI_CpuClear32(mTextBuffers, 0xc);
+    MI_CpuClear32(mGlyphBuffers, 0xc);
+    MI_CpuClear32(mTextBufferSizes, 0xc);
+    MI_CpuClear32(mGlyphCounts, 0xc);
+    MI_CpuClear32(mFiles, 0x30);
+    MI_CpuClear32(mFileSizes, 0x30);
+    MI_CpuClear32(mNceData, 0xc);
+    MI_CpuClear32(mCellFiles, 0xc);
     MI_CpuClear32(mCells, 0x2c);
-    mUnk_f4 = func_02055644(a);
-    mUnk_f6 = mUnk_f4;
-    mUnk_f8 = mUnk_f4;
+    mCardId = func_02055644(a);
+    mNextCardId = mCardId;
+    mDrawnCardId = mCardId;
 }
 
 BattleCommandPage::~BattleCommandPage() {
     StopAsyncLoad();
-    if (mUnk_54 != NULL) {
-        OS_Free(mUnk_54);
+    if (mCardMes != NULL) {
+        OS_Free(mCardMes);
     }
-    if (mUnk_58 != NULL) {
-        OS_Free(mUnk_58);
+    if (mCardTextMes != NULL) {
+        OS_Free(mCardTextMes);
     }
-    if (mUnk_5c != NULL) {
-        OS_Free(mUnk_5c);
-    }
-    for (u8 i = 0; i < 3; i++) {
-        if (mUnk_60[i] != NULL) {
-            OS_Free(mUnk_60[i]);
-        }
-        if (mUnk_6c[i] != NULL) {
-            OS_Free(mUnk_6c[i]);
-        }
+    if (mCardNameMes != NULL) {
+        OS_Free(mCardNameMes);
     }
     for (u8 i = 0; i < 3; i++) {
-        if (mUnk_0c[i] != NULL) {
-            OS_Free(mUnk_0c[i]);
+        if (mTextBuffers[i] != NULL) {
+            OS_Free(mTextBuffers[i]);
         }
-        if (mUnk_18[i] != NULL) {
-            OS_Free(mUnk_18[i]);
+        if (mGlyphBuffers[i] != NULL) {
+            OS_Free(mGlyphBuffers[i]);
+        }
+    }
+    for (u8 i = 0; i < 3; i++) {
+        if (mNceData[i] != NULL) {
+            OS_Free(mNceData[i]);
+        }
+        if (mCellFiles[i] != NULL) {
+            OS_Free(mCellFiles[i]);
         }
     }
     for (u8 i = 0; i < 11; i++) {
@@ -133,63 +133,63 @@ BattleCommandPage::~BattleCommandPage() {
             delete cell;
         }
     }
-    if (mUnk_50 != NULL) {
-        delete mUnk_50;
+    if (mWindow != NULL) {
+        delete mWindow;
     }
 }
 
 void BattleCommandPage::Update() {
-    switch (mUnk_f1) {
+    switch (mState) {
         case 0:
-            func_02055af4();
-            func_02056414();
-            func_02055c1c();
-            mUnk_f1++;
+            InitDisplay();
+            LoadText();
+            ResetLoadStep();
+            mState++;
             break;
         case 1:
-            if (func_02055c28()) {
-                mUnk_104 = 1;
-                mUnk_f1++;
+            if (LoadGraphics()) {
+                mVisible = 1;
+                mState++;
             }
             break;
         case 2:
-            func_02055c1c();
-            mUnk_f1++;
+            ResetLoadStep();
+            mState++;
             break;
         case 3:
-            if (func_020561c4()) {
-                func_02056814(0);
-                if ((s32) mUnk_100 > 0xf0) {
-                    mUnk_102 = 0x100;
+            if (LoadLargeCard()) {
+                PrintCardText(0);
+                if ((s32) mNameWidth > 0xf0) {
+                    mNameX = 0x100;
                 }
-                func_02055940();
+                UpdatePageItems();
                 if (mUnk_107 == 0) {
                     mUnk_106 = 0;
                 }
-                mUnk_f8  = mUnk_f4;
+                mDrawnCardId  = mCardId;
                 mUnk_109 = mUnk_10a;
-                if (mUnk_105 == 0) {
+                if (mCloseFade == 0) {
                     SpriteManager::Get().sFade[0] = 2;
                 }
-                mUnk_f1++;
+                mState++;
             }
             break;
         case 4:
             if (mUnk_107 != 0) {
                 mUnk_106 = 1;
             }
-            if (mUnk_f6 != mUnk_f4) {
-                mUnk_f4  = mUnk_f6;
+            if (mNextCardId != mCardId) {
+                mCardId  = mNextCardId;
                 mUnk_107 = 0;
-                mUnk_fb  = 0;
-                mUnk_f1  = 2;
+                mTextPage  = 0;
+                mState  = 2;
             }
-            if (mUnk_105 != 0) {
-                mUnk_f1 = 5;
+            if (mCloseFade != 0) {
+                mState = 5;
             }
             break;
         case 5:
-            switch (mUnk_105) {
+            switch (mCloseFade) {
                 case 1:
                     SpriteManager::Get().sFade[0] = 3;
                     break;
@@ -204,12 +204,12 @@ void BattleCommandPage::Update() {
                     SpriteManager::sFade[1]  = 3;
                     break;
             }
-            mUnk_f1++;
+            mState++;
             break;
         case 6:
             if (SpriteManager::Get().sFade[0] <= 1) {
-                mUnk_104 = 0;
-                mUnk_f1++;
+                mVisible = 0;
+                mState++;
             }
             break;
         case 7:
@@ -217,35 +217,35 @@ void BattleCommandPage::Update() {
             mFinished = 1;
             break;
     }
-    if (mUnk_104 == 0) {
+    if (mVisible == 0) {
         return;
     }
-    func_020571a8();
-    func_02056d38();
+    DrawCard();
+    DrawText();
     func_02056f70();
-    if (mUnk_fd == 0) {
+    if (mWindowVisible == 0) {
         return;
     }
     if (SpriteManager::Get().sBrightness[1] != 0) {
         return;
     }
-    if (mUnk_fc == 0) {
+    if (mLastTextPage == 0) {
         return;
     }
-    if (mUnk_f1 == 4) {
-        func_020558b8();
+    if (mState == 4) {
+        UpdateWindow();
     }
-    mUnk_50->Draw();
+    mWindow->Draw();
 }
 
-void func_02055624(BattleCommandPage *page, u32 a) {
-    page->mUnk_105 = a;
+void CloseCommandPage(BattleCommandPage *page, u32 a) {
+    page->mCloseFade = a;
 }
 
 void func_0205562c(BattleCommandPage *page, u32 a) {
     u8 value         = a;
     page->mUnk_107 = value;
-    if (page->mUnk_f1 < 2) {
+    if (page->mState < 2) {
         page->mUnk_106 = value;
     }
 }
@@ -259,18 +259,18 @@ u16 BattleCommandPage::func_02055644(u16 id) {
     return id;
 }
 
-void func_02055668(BattleCommandPage *page, u16 a, s32 b) {
-    page->mUnk_fa = b;
-    if (page->mUnk_f1 == 0) {
+void SetCommandPageCard(BattleCommandPage *page, u16 a, s32 b) {
+    page->mPlayer = b;
+    if (page->mState == 0) {
         u16 value      = page->func_02055644(a);
-        page->mUnk_f4  = value;
-        page->mUnk_f6  = value;
+        page->mCardId  = value;
+        page->mNextCardId  = value;
         page->mUnk_106 = 0;
         page->mUnk_107 = 0;
         return;
     }
-    page->mUnk_f6 = page->func_02055644(a);
-    if (page->mUnk_f6 == page->mUnk_f4) {
+    page->mNextCardId = page->func_02055644(a);
+    if (page->mNextCardId == page->mCardId) {
         if (page->mUnk_106 != 0) {
             page->mUnk_106 = 0;
         }
@@ -278,30 +278,30 @@ void func_02055668(BattleCommandPage *page, u16 a, s32 b) {
     page->mUnk_107 = 0;
 }
 
-void BattleCommandPage::func_020556d0(u32 flag) {
-    if (mUnk_fc == 0) {
+void BattleCommandPage::CycleTextPage(u32 flag) {
+    if (mLastTextPage == 0) {
         return;
     }
-    u8 count = mUnk_fc + 1;
+    u8 count = mLastTextPage + 1;
     if (flag == 0) {
-        mUnk_fb = (mUnk_fb + count - 1) % count;
+        mTextPage = (mTextPage + count - 1) % count;
     } else {
-        mUnk_fb = (mUnk_fb + 1) % count;
+        mTextPage = (mTextPage + 1) % count;
     }
-    func_02056814(mUnk_fb);
+    PrintCardText(mTextPage);
 }
 
-BOOL BattleCommandPage::func_02055724() {
-    return mUnk_f1 < 4;
+BOOL BattleCommandPage::IsSettingUp() {
+    return mState < 4;
 }
 
 void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c) {
-    func_02055764(page, a, b, 0xc0, 0, 0xe0, 0, c);
+    CreateCommandPageWindow(page, a, b, 0xc0, 0, 0xe0, 0, c);
 }
 
-void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
-    if (page->mUnk_50 != NULL) {
-        delete page->mUnk_50;
+void CreateCommandPageWindow(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
+    if (page->mWindow != NULL) {
+        delete page->mWindow;
     }
     PageItems()[0].mUnk_04 = 0x208;
     PageItems()[0].mUnk_18 = 1;
@@ -328,98 +328,98 @@ void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s
     PageCells()[3].mCharOffset = a;
     PageCells()[3].mPaletteBase = b;
     u32 count;
-    page->mUnk_fe = g;
-    if (page->mUnk_fe != 0) {
+    page->mFourItems = g;
+    if (page->mFourItems != 0) {
         count = 4;
     } else {
         count = 2;
     }
-    page->mUnk_50 = new SelectWindow(count, PageItems(), -1);
-    page->mUnk_50->SetCells(count, PageCells());
-    page->mUnk_50->mCursor->mSelection = -1;
-    page->mUnk_fd                      = 1;
-    page->func_02055940();
+    page->mWindow = new SelectWindow(count, PageItems(), -1);
+    page->mWindow->SetCells(count, PageCells());
+    page->mWindow->mCursor->mSelection = -1;
+    page->mWindowVisible                      = 1;
+    page->UpdatePageItems();
 }
 
-void BattleCommandPage::func_02055890(u32 enable) {
+void BattleCommandPage::SetWindowVisible(u32 enable) {
     if (enable != 0) {
-        if (mUnk_50 != NULL) {
-            mUnk_fd = 1;
+        if (mWindow != NULL) {
+            mWindowVisible = 1;
         }
     } else {
-        mUnk_fd = 0;
+        mWindowVisible = 0;
     }
 }
 
-void BattleCommandPage::func_020558b8() {
-    if (mUnk_50->Update(FALSE)) {
+void BattleCommandPage::UpdateWindow() {
+    if (mWindow->Update(FALSE)) {
         SoundManager::Get().StartSeqArc(0);
-        func_020556d0(*(u8 *) &mUnk_50->mCursor->mSelection);
+        CycleTextPage(*(u8 *) &mWindow->mCursor->mSelection);
     }
-    func_02055940();
+    UpdatePageItems();
 }
 
-void BattleCommandPage::func_02055940() {
-    if (mUnk_50 == NULL) {
+void BattleCommandPage::UpdatePageItems() {
+    if (mWindow == NULL) {
         return;
     }
-    u8 selected = mUnk_fb;
-    u8 count    = mUnk_fc;
-    WindowItem *items = mUnk_50->mCursor->mItems;
+    u8 selected = mTextPage;
+    u8 count    = mLastTextPage;
+    WindowItem *items = mWindow->mCursor->mItems;
     if (selected < count) {
-        if (func_02055ab4(1) == 0) {
-            mUnk_50->mCells[1]->SetAnimation(3);
+        if (IsPageItemEnabled(1) == 0) {
+            mWindow->mCells[1]->SetAnimation(3);
             items[1].mFlags = 0x408;
-            if (mUnk_fe != 0) {
-                mUnk_50->mCells[3]->SetAnimation(7);
+            if (mFourItems != 0) {
+                mWindow->mCells[3]->SetAnimation(7);
             }
         }
     } else {
-        if (func_02055ab4(1) != 0) {
-            mUnk_50->mCells[1]->SetAnimation(5);
+        if (IsPageItemEnabled(1) != 0) {
+            mWindow->mCells[1]->SetAnimation(5);
             items[1].mFlags = 0x8000;
-            if (mUnk_fe != 0) {
-                mUnk_50->mCells[3]->SetAnimation(5);
+            if (mFourItems != 0) {
+                mWindow->mCells[3]->SetAnimation(5);
             }
         }
     }
-    if (mUnk_fb != 0) {
-        if (func_02055ab4(0) != 0) {
+    if (mTextPage != 0) {
+        if (IsPageItemEnabled(0) != 0) {
             return;
         }
-        mUnk_50->mCells[0]->SetAnimation(0);
+        mWindow->mCells[0]->SetAnimation(0);
         items[0].mFlags = 0x208;
-        if (mUnk_fe == 0) {
+        if (mFourItems == 0) {
             return;
         }
-        mUnk_50->mCells[2]->SetAnimation(6);
+        mWindow->mCells[2]->SetAnimation(6);
     } else {
-        if (func_02055ab4(0) == 0) {
+        if (IsPageItemEnabled(0) == 0) {
             return;
         }
-        mUnk_50->mCells[0]->SetAnimation(2);
+        mWindow->mCells[0]->SetAnimation(2);
         items[0].mFlags = 0x8000;
-        if (mUnk_fe == 0) {
+        if (mFourItems == 0) {
             return;
         }
-        mUnk_50->mCells[2]->SetAnimation(2);
+        mWindow->mCells[2]->SetAnimation(2);
     }
 }
 
-BOOL BattleCommandPage::func_02055ab4(u32 right) {
+BOOL BattleCommandPage::IsPageItemEnabled(u32 right) {
     if (right == 0) {
-        if (mUnk_50->mCells[0]->mAnimIndex == 2) {
+        if (mWindow->mCells[0]->mAnimIndex == 2) {
             return FALSE;
         }
     } else {
-        if (mUnk_50->mCells[1]->mAnimIndex == 5) {
+        if (mWindow->mCells[1]->mAnimIndex == 5) {
             return FALSE;
         }
     }
     return TRUE;
 }
 
-void BattleCommandPage::func_02055af4() {
+void BattleCommandPage::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -435,47 +435,47 @@ void BattleCommandPage::func_02055af4() {
     MI_CpuClearFast((void *) 0x6400000, 0x40000);
 }
 
-void BattleCommandPage::func_02055c1c() {
-    mUnk_f0 = 0;
+void BattleCommandPage::ResetLoadStep() {
+    mLoadStep = 0;
 }
 
-BOOL BattleCommandPage::func_02055c28() {
-    if (mUnk_f0 != 0) {
+BOOL BattleCommandPage::LoadGraphics() {
+    if (mLoadStep != 0) {
         if (IsAsyncLoadActive() != 0) {
             return FALSE;
         }
-        mUnk_90[mUnk_f0 - 1] = GetAsyncLoadBuffer();
+        mFiles[mLoadStep - 1] = GetAsyncLoadBuffer();
     }
-    if (mUnk_f0 < 12) {
-        LoadFileAsync(PagePaths()[mUnk_f0], 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
-        mUnk_f0++;
+    if (mLoadStep < 12) {
+        LoadFileAsync(PagePaths()[mLoadStep], 0, 0, 0, &mFileSizes[mLoadStep], 0);
+        mLoadStep++;
         return FALSE;
     }
-    QueueUpload(0, 1, 0, mUnk_90[9], mUnk_c0[9], 1);
-    QueueUpload(0, 0xb, 0, mUnk_90[10], mUnk_c0[10], 1);
-    QueueUpload(0, 7, 0, mUnk_90[11], mUnk_c0[11], 1);
+    QueueUpload(0, 1, 0, mFiles[9], mFileSizes[9], 1);
+    QueueUpload(0, 0xb, 0, mFiles[10], mFileSizes[10], 1);
+    QueueUpload(0, 7, 0, mFiles[11], mFileSizes[11], 1);
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
     screen.SetObjVramMode(3);
-    QueueUpload(screen.mBgIndex, 5, 0, mUnk_90[0], mUnk_c0[0], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x8000, mUnk_90[1], mUnk_c0[1], 1);
-    if (mUnk_0c[0] != NULL) {
-        OS_Free(mUnk_0c[0]);
+    QueueUpload(screen.mBgIndex, 5, 0, mFiles[0], mFileSizes[0], 1);
+    QueueUpload(screen.mBgIndex, 4, 0x8000, mFiles[1], mFileSizes[1], 1);
+    if (mNceData[0] != NULL) {
+        OS_Free(mNceData[0]);
     }
-    mUnk_0c[0] = mUnk_90[2];
-    if (mUnk_0c[0] != NULL) {
-        CellAnimFile *file = mUnk_18[0];
+    mNceData[0] = mFiles[2];
+    if (mNceData[0] != NULL) {
+        CellAnimFile *file = mCellFiles[0];
         if (file != NULL) {
             delete file;
         }
-        mUnk_18[0] = NULL;
-        mUnk_18[0] = new CellAnimFileData(mUnk_0c[0]);
-        if (mUnk_18[0] != NULL) {
+        mCellFiles[0] = NULL;
+        mCellFiles[0] = new CellAnimFileData(mNceData[0]);
+        if (mCellFiles[0] != NULL) {
             for (u8 i = 0; i < 6; i++) {
                 CellAnimation *cell = mCells[i];
                 if (cell != NULL) {
                     delete cell;
                 }
-                mCells[i]            = new CellAnimation(mUnk_18[0], 0);
+                mCells[i]            = new CellAnimation(mCellFiles[0], 0);
                 mCells[i]->mCharBase = screen.GetCharBase(0x8000);
                 mCells[i]->mPaletteBase   = 0;
             }
@@ -487,49 +487,49 @@ BOOL BattleCommandPage::func_02055c28() {
             mCells[5]->SetAnimation(9);
         }
     }
-    QueueUpload(screen.mBgIndex, 5, 0x140, mUnk_90[3], mUnk_c0[3], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x14000, mUnk_90[4], mUnk_c0[4], 1);
-    if (mUnk_0c[1] != NULL) {
-        OS_Free(mUnk_0c[1]);
+    QueueUpload(screen.mBgIndex, 5, 0x140, mFiles[3], mFileSizes[3], 1);
+    QueueUpload(screen.mBgIndex, 4, 0x14000, mFiles[4], mFileSizes[4], 1);
+    if (mNceData[1] != NULL) {
+        OS_Free(mNceData[1]);
     }
-    mUnk_0c[1] = mUnk_90[5];
-    if (mUnk_0c[1] != NULL) {
-        CellAnimFile *file = mUnk_18[1];
+    mNceData[1] = mFiles[5];
+    if (mNceData[1] != NULL) {
+        CellAnimFile *file = mCellFiles[1];
         if (file != NULL) {
             delete file;
         }
-        mUnk_18[1] = NULL;
-        mUnk_18[1] = new CellAnimFileData(mUnk_0c[1]);
-        if (mUnk_18[1] != NULL) {
+        mCellFiles[1] = NULL;
+        mCellFiles[1] = new CellAnimFileData(mNceData[1]);
+        if (mCellFiles[1] != NULL) {
             CellAnimation *cell = mCells[6];
             if (cell != NULL) {
                 delete cell;
             }
-            mCells[6]            = new CellAnimation(mUnk_18[1], 0);
+            mCells[6]            = new CellAnimation(mCellFiles[1], 0);
             mCells[6]->mCharBase = screen.GetCharBase(0x14000);
             mCells[6]->mPaletteBase   = 10;
         }
     }
-    QueueUpload(screen.mBgIndex, 5, 0x100, mUnk_90[6], mUnk_c0[6], 1);
-    QueueUpload(screen.mBgIndex, 4, 0x12000, mUnk_90[7], mUnk_c0[7], 1);
-    if (mUnk_0c[2] != NULL) {
-        OS_Free(mUnk_0c[2]);
+    QueueUpload(screen.mBgIndex, 5, 0x100, mFiles[6], mFileSizes[6], 1);
+    QueueUpload(screen.mBgIndex, 4, 0x12000, mFiles[7], mFileSizes[7], 1);
+    if (mNceData[2] != NULL) {
+        OS_Free(mNceData[2]);
     }
-    mUnk_0c[2] = mUnk_90[8];
-    if (mUnk_0c[2] != NULL) {
-        CellAnimFile *file = mUnk_18[2];
+    mNceData[2] = mFiles[8];
+    if (mNceData[2] != NULL) {
+        CellAnimFile *file = mCellFiles[2];
         if (file != NULL) {
             delete file;
         }
-        mUnk_18[2] = NULL;
-        mUnk_18[2] = new CellAnimFileData(mUnk_0c[2]);
-        if (mUnk_18[2] != NULL) {
+        mCellFiles[2] = NULL;
+        mCellFiles[2] = new CellAnimFileData(mNceData[2]);
+        if (mCellFiles[2] != NULL) {
             for (u8 i = 7; i < 11; i++) {
                 CellAnimation *cell = mCells[i];
                 if (cell != NULL) {
                     delete cell;
                 }
-                mCells[i]            = new CellAnimation(mUnk_18[2], 0);
+                mCells[i]            = new CellAnimation(mCellFiles[2], 0);
                 mCells[i]->mCharBase = screen.GetCharBase(0x12000);
                 mCells[i]->mPaletteBase   = 8;
             }
@@ -542,21 +542,21 @@ BOOL BattleCommandPage::func_02055c28() {
     return TRUE;
 }
 
-BOOL BattleCommandPage::func_020561c4() {
+BOOL BattleCommandPage::LoadLargeCard() {
     char file[0x7f];
     char path[0x7f];
     char name[0x10];
-    if (mUnk_f0 != 0) {
+    if (mLoadStep != 0) {
         if (IsAsyncLoadActive() != 0) {
             return FALSE;
         }
-        mUnk_90[mUnk_f0 - 1] = GetAsyncLoadBuffer();
+        mFiles[mLoadStep - 1] = GetAsyncLoadBuffer();
     }
-    if (mUnk_f0 < 2) {
-        if (mUnk_f4 < 0xd5) {
-            sprintf(file, "/Game/Card/Graphic/Large/card_l_%03d", func_02065c20(mUnk_f4));
+    if (mLoadStep < 2) {
+        if (mCardId < 0xd5) {
+            sprintf(file, "/Game/Card/Graphic/Large/card_l_%03d", func_02065c20(mCardId));
         } else {
-            switch (mUnk_f4 - 0xd7) {
+            switch (mCardId - 0xd7) {
                 case 0:
                     sprintf(name, "gold");
                     break;
@@ -578,51 +578,51 @@ BOOL BattleCommandPage::func_020561c4() {
             }
             sprintf(file, "/Game/Card/Graphic/Large/card_l_%s", name);
         }
-        if (mUnk_f0 == 0) {
+        if (mLoadStep == 0) {
             sprintf(path, "%s_ncl.bin", file);
-        } else if (mUnk_f0 == 1) {
+        } else if (mLoadStep == 1) {
             sprintf(path, "%s.nce_ncg1D.bin", file);
         }
-        LoadFileAsync(path, 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
-        mUnk_f0++;
+        LoadFileAsync(path, 0, 0, 0, &mFileSizes[mLoadStep], 0);
+        mLoadStep++;
         return FALSE;
     }
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
-    QueueUpload(screen.mBgIndex, 0, 0, mUnk_90[0], mUnk_c0[0], 1);
-    QueueUpload(0, 4, 0x5000, mUnk_90[1], mUnk_c0[1], 1);
+    QueueUpload(screen.mBgIndex, 0, 0, mFiles[0], mFileSizes[0], 1);
+    QueueUpload(0, 4, 0x5000, mFiles[1], mFileSizes[1], 1);
     return TRUE;
 }
 
-void BattleCommandPage::func_02056414() {
+void BattleCommandPage::LoadText() {
     SpriteManager::Get().mScreens[0].SetObjVramMode(3);
-    mUnk_58 = LoadFile("/font/mes_CardText.mes", 0, 0, 0, 0, 0);
-    mUnk_54 = LoadFile("/font/mes_Card.mes", 0, 0, 0, 0, 0);
-    mUnk_84[0] = TextManager::Get().GlyphCount(0x18);
-    mUnk_6c[0] = OS_Alloc((s16) mUnk_84[0] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_6c[0], 0, 0, 0x10, 0xc, 0x21);
-    mUnk_78[1] = TextManager::Get().BufferSize(0x10, 0x10);
-    mUnk_60[1] = OS_Alloc(mUnk_78[1]);
-    MI_CpuClear16(mUnk_60[1], mUnk_78[1]);
-    mUnk_84[1] = TextManager::Get().GlyphCount(0x20);
-    mUnk_6c[1] = OS_Alloc((s16) mUnk_84[1] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_6c[1], 0, 0, 0x10, 0x10, 0x21);
-    mUnk_5c = LoadFile("/font/mes_CardName.mes", 0, 0, 0, 0, 0);
-    mUnk_78[2] = TextManager::Get().BufferSize(0x10, 8);
-    mUnk_60[2] = OS_Alloc(mUnk_78[2]);
-    MI_CpuClear16(mUnk_60[2], mUnk_78[2]);
-    mUnk_84[2] = TextManager::Get().GlyphCount(0x10);
-    mUnk_6c[2] = OS_Alloc((s16) mUnk_84[2] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_6c[2], 0, 0, 0x40, 2, 0x21);
+    mCardTextMes = LoadFile("/font/mes_CardText.mes", 0, 0, 0, 0, 0);
+    mCardMes = LoadFile("/font/mes_Card.mes", 0, 0, 0, 0, 0);
+    mGlyphCounts[0] = TextManager::Get().GlyphCount(0x18);
+    mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[0], 0, 0, 0x10, 0xc, 0x21);
+    mTextBufferSizes[1] = TextManager::Get().BufferSize(0x10, 0x10);
+    mTextBuffers[1] = OS_Alloc(mTextBufferSizes[1]);
+    MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
+    mGlyphCounts[1] = TextManager::Get().GlyphCount(0x20);
+    mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x10, 0x10, 0x21);
+    mCardNameMes = LoadFile("/font/mes_CardName.mes", 0, 0, 0, 0, 0);
+    mTextBufferSizes[2] = TextManager::Get().BufferSize(0x10, 8);
+    mTextBuffers[2] = OS_Alloc(mTextBufferSizes[2]);
+    MI_CpuClear16(mTextBuffers[2], mTextBufferSizes[2]);
+    mGlyphCounts[2] = TextManager::Get().GlyphCount(0x10);
+    mGlyphBuffers[2] = OS_Alloc((s16) mGlyphCounts[2] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[2], 0, 0, 0x40, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
     MI_CpuClearFast((void *) 0x6400000, 0x5000);
-    func_02056f38();
+    ClearText();
 }
 
-void BattleCommandPage::func_02056814(u32 index) {
-    mUnk_fb = index;
-    func_02056f38();
+void BattleCommandPage::PrintCardText(u32 index) {
+    mTextPage = index;
+    ClearText();
     MessageFile **textFile;
-    u16 id = mUnk_f4;
+    u16 id = mCardId;
     if (id == 0) {
         return;
     }
@@ -632,8 +632,8 @@ void BattleCommandPage::func_02056814(u32 index) {
     int total;
     if (id < 0xd5) {
         id2      = id;
-        textFile = (MessageFile **) &mUnk_58;
-        nameFile = (MessageFile **) &mUnk_5c;
+        textFile = (MessageFile **) &mCardTextMes;
+        nameFile = (MessageFile **) &mCardNameMes;
         if (GetCardInfo(id, 0) == 0) {
             mUnk_108 = 0;
             total    = 0x58;
@@ -644,7 +644,7 @@ void BattleCommandPage::func_02056814(u32 index) {
             height   = 0x10;
         }
     } else {
-        textFile = (MessageFile **) &mUnk_54;
+        textFile = (MessageFile **) &mCardMes;
         s32 t    = id - 0xd7;
         nameFile = textFile;
         u32 clamped;
@@ -663,13 +663,13 @@ void BattleCommandPage::func_02056814(u32 index) {
     }
     u8 rem  = total % 14;
     u8 base = (total / 14) * 14;
-    if (mUnk_fb == 0) {
+    if (mTextPage == 0) {
         u16 w1;
         u16 h1;
         TextManager &text = TextManager::Get();
-        h1 = rem - base * mUnk_fb;
+        h1 = rem - base * mTextPage;
         w1 = 0x10;
-        void *buffer = mUnk_60[1];
+        void *buffer = mTextBuffers[1];
         MessageFile *file = *textFile;
         MI_CpuClear16(data_020c1a4c, 0x20);
         text.mLineStartCount = 1;
@@ -681,16 +681,16 @@ void BattleCommandPage::func_02056814(u32 index) {
                 text.mUnk_36[i + 1] = text.mUnk_36[i];
             }
         }
-        mUnk_fc = (hh - 0xe) / base;
+        mLastTextPage = (hh - 0xe) / base;
     }
     {
         u16 w2;
         u16 h2;
         TextManager &text = TextManager::Get();
-        h2 = rem - base * mUnk_fb;
+        h2 = rem - base * mTextPage;
         w2 = 0x10;
         MessageFile *file = *textFile;
-        text.Print(file->GetText(id), file->GetLength(id), mUnk_60[1], 0x10, height, (s16 *) &w2, (s16 *) &h2, NULL, 0, 2, 0x21, 0xe, 0, 0,
+        text.Print(file->GetText(id), file->GetLength(id), mTextBuffers[1], 0x10, height, (s16 *) &w2, (s16 *) &h2, NULL, 0, 2, 0x21, 0xe, 0, 0,
                    0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 1;
@@ -701,43 +701,43 @@ void BattleCommandPage::func_02056814(u32 index) {
         h3 = 0;
         w3 = 0;
         MessageFile *file = *nameFile;
-        text.Print(file->GetText(id2), file->GetLength(id2), mUnk_60[2], 0x40, 2, (s16 *) &w3, (s16 *) &h3, &mUnk_100, 0, 2,
+        text.Print(file->GetText(id2), file->GetLength(id2), mTextBuffers[2], 0x40, 2, (s16 *) &w3, (s16 *) &h3, &mNameWidth, 0, 2,
                                  0x21, 0xe, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mUnk_60[1], mUnk_78[1], 0);
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x4000, mUnk_60[2], mUnk_78[2], 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffers[1], mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x4000, mTextBuffers[2], mTextBufferSizes[2], 0);
 }
 
-void BattleCommandPage::func_02056d38() {
-    if (mUnk_f4 == 0) {
+void BattleCommandPage::DrawText() {
+    if (mCardId == 0) {
         return;
     }
     if (mUnk_106 != 0) {
         return;
     }
-    SpriteManager::Get().mScreens[0].AddOam(mUnk_6c[mUnk_108], mUnk_84[mUnk_108], 0x73, 0x20, 3, 0, 0xf, 0);
-    if ((s32) mUnk_100 > 0xf0) {
-        mUnk_102--;
-        if (mUnk_102 < -(s32) mUnk_100) {
-            mUnk_102 = 0x100;
+    SpriteManager::Get().mScreens[0].AddOam(mGlyphBuffers[mUnk_108], mGlyphCounts[mUnk_108], 0x73, 0x20, 3, 0, 0xf, 0);
+    if ((s32) mNameWidth > 0xf0) {
+        mNameX--;
+        if (mNameX < -(s32) mNameWidth) {
+            mNameX = 0x100;
         }
     } else {
-        mUnk_102 = 0x80 - ((u32) mUnk_100 >> 1);
+        mNameX = 0x80 - ((u32) mNameWidth >> 1);
     }
     u8 i = 0;
     do {
-        s16 x = mUnk_102 + (i << 5);
+        s16 x = mNameX + (i << 5);
         if ((x < 0x120) & (x > -0x20)) {
             SpriteManager::Get().mScreens[0].AddOam((void *) data_0209e558[2], 1, x, 8, 1, (u16) (0x80 + i * 2), 0xf, 0);
         }
         i++;
-    } while (i < (s32) ((u32) mUnk_100 >> 5) + 1);
+    } while (i < (s32) ((u32) mNameWidth >> 5) + 1);
 }
 
-void BattleCommandPage::func_02056f38() {
+void BattleCommandPage::ClearText() {
     for (u8 i = 0; i < 3; i++) {
-        MI_CpuClear16(mUnk_60[i], mUnk_78[i]);
+        MI_CpuClear16(mTextBuffers[i], mTextBufferSizes[i]);
     }
 }
 
@@ -754,13 +754,13 @@ void BattleCommandPage::func_02056f70() {
 u8 func_02065bf4(u32 id, u32 index);
 extern u8 data_020d43d7[];
 
-void BattleCommandPage::func_020571a8() {
+void BattleCommandPage::DrawCard() {
     u8 big;
     if (mUnk_109 != 0) {
         big = 1;
-    } else if (mUnk_f8 < 0xd5) {
-        big = GetCardInfo(mUnk_f8, 0);
-    } else if (mUnk_f8 < 0xda) {
+    } else if (mDrawnCardId < 0xd5) {
+        big = GetCardInfo(mDrawnCardId, 0);
+    } else if (mDrawnCardId < 0xda) {
         big = 0;
     } else {
         big = 1;
@@ -769,29 +769,29 @@ void BattleCommandPage::func_020571a8() {
     if (mUnk_106 != 0) {
         return;
     }
-    if (mUnk_f8 >= 0xd5) {
+    if (mDrawnCardId >= 0xd5) {
         return;
     }
-    if (mUnk_fa > -1) {
+    if (mPlayer > -1) {
         u8 cur   = data_020d433c.mBattlePlayers->mUnk_2a9;
         BOOL has;
-        if (mUnk_fa == cur) {
-            mCells[8]->DrawFrame(0, mUnk_fa, 0x24, 0x18, 0);
+        if (mPlayer == cur) {
+            mCells[8]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
         } else {
             has = 0;
-            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mUnk_fa]->mCpu != NULL) {
+            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mPlayer]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
-                mCells[9]->DrawFrame(0, mUnk_fa, 0x15, 0x12, 0);
+                mCells[9]->DrawFrame(0, mPlayer, 0x15, 0x12, 0);
             }
-            if ((data_020d433c.mHasPartners == 1) & (mUnk_fa == data_020d43d7[cur])) {
-                mCells[10]->DrawFrame(0, mUnk_fa, 0x24, 0x18, 0);
+            if ((data_020d433c.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
+                mCells[10]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
             }
         }
-        mCells[7]->DrawFrame(0, mUnk_fa, 0, 0x16, 0);
+        mCells[7]->DrawFrame(0, mPlayer, 0, 0x16, 0);
     }
-    if (mUnk_f4 == 0) {
+    if (mCardId == 0) {
         return;
     }
     s16 a;
@@ -813,7 +813,7 @@ void BattleCommandPage::func_020571a8() {
     }
     for (k = 0; k < 6; k++) {
         s16 y = k * 0x28 + 0x14;
-        n = func_02065bf4(mUnk_f8, k);
+        n = func_02065bf4(mDrawnCardId, k);
         if (n != 0) {
             u8 cnt;
             s32 half;
@@ -858,8 +858,8 @@ void BattleCommandPage::func_020571a8() {
     if (big) {
         return;
     }
-    if (mUnk_f8 == 0) {
+    if (mDrawnCardId == 0) {
         return;
     }
-    mCells[6]->DrawFrame(0, GetCardInfo(mUnk_f8, 2), 0x80, 0x84, 0);
+    mCells[6]->DrawFrame(0, GetCardInfo(mDrawnCardId, 2), 0x80, 0x84, 0);
 }

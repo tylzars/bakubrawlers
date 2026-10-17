@@ -44,87 +44,87 @@ extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle)
 BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 charOffset, u8 player)
     : SceneBase(0x3e8, 0) {
     mUnk_3c = 0;
-    mUnk_50 = 0x100;
-    mUnk_88 = 0;
-    mUnk_8a = 0;
+    mSlideX = 0x100;
+    mSlideOutDelayFrames = 0;
+    mState = 0;
     mUnk_8d = 0xff;
-    mUnk_8e = 0;
-    mUnk_8f = 0;
-    mUnk_90 = 0;
+    mStep = 0;
+    mCursorPos = 0;
+    mScroll = 0;
     mUnk_91 = 0;
-    MI_CpuClear32(mUnk_0c, 0xc);
-    MI_CpuClear32(mUnk_20, 0xc);
-    MI_CpuClear32(mUnk_40, 0xc);
-    mUnk_94[0] = flags;
+    MI_CpuClear32(mBakuganSubCellAnims, 0xc);
+    MI_CpuClear32(mStateCellAnims, 0xc);
+    MI_CpuClear32(mCharacterIconCellAnims, 0xc);
+    mDisabledBits[0] = flags;
     u8 i = 0;
     do {
-        if (!(mUnk_94[(u32) i >> 3] & (1 << ((int) i % 8)))) {
-            mUnk_8f = i;
+        if (!(mDisabledBits[(u32) i >> 3] & (1 << ((int) i % 8)))) {
+            mCursorPos = i;
             break;
         }
         i++;
     } while (i < 3);
-    mUnk_18 = 0;
-    mUnk_1c = 0;
-    mUnk_2c = 0;
-    mUnk_4c = charOffset;
-    mUnk_8b = mode;
-    mUnk_8c = player;
-    if (mUnk_8b >= 5) {
+    mCursorAnim = 0;
+    mDigitAnim = 0;
+    mMessageWindow = 0;
+    mCharOffset = charOffset;
+    mMode = mode;
+    mPlayer = player;
+    if (mMode >= 5) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        if (mUnk_8c == list->mUnk_2a9) {
-            mUnk_93 = 1;
-        } else if (mUnk_8c == list->mPlayers[list->mUnk_2a9]->mPartner) {
-            mUnk_93 = 1;
+        if (mPlayer == list->mUnk_2a9) {
+            mCollectMode = 1;
+        } else if (mPlayer == list->mPlayers[list->mUnk_2a9]->mPartner) {
+            mCollectMode = 1;
         } else {
-            mUnk_93 = 2;
+            mCollectMode = 2;
         }
     } else {
-        mUnk_93 = 0;
+        mCollectMode = 0;
     }
-    switch (mUnk_8b) {
+    switch (mMode) {
         case 0:
         case 1:
-            mUnk_30 = (BattleCommandPage *) target;
-            mUnk_8c = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mCommandPage = (BattleCommandPage *) target;
+            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
             mUnk_8d = 0xff;
-            func_ov007_0225f0c4((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->Slot54(0));
+            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 3:
-            mUnk_30 = (BattleCommandPage *) target;
-            mUnk_8c = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mCommandPage = (BattleCommandPage *) target;
+            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
             mUnk_8d = 0xff;
-            func_ov007_0225f0c4((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->Slot6c(0));
+            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
         case 2:
-            mUnk_34 = (BattleCommandList *) target;
-            mUnk_8c = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mCommandList = (BattleCommandList *) target;
+            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
             mUnk_8d = 0xff;
-            func_ov007_0225f200();
+            CollectRecords();
             break;
         case 6:
-            mUnk_34 = (BattleCommandList *) target;
-            mUnk_8c = player;
+            mCommandList = (BattleCommandList *) target;
+            mPlayer = player;
             mUnk_8d = player;
-            func_ov007_0225f200();
+            CollectRecords();
             break;
         case 5:
-            mUnk_30 = (BattleCommandPage *) target;
-            mUnk_8c = player;
+            mCommandPage = (BattleCommandPage *) target;
+            mPlayer = player;
             mUnk_8d = player;
-            func_ov007_0225f0c4((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->Slot54(0));
+            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 7:
-            mUnk_30 = (BattleCommandPage *) target;
-            mUnk_8c = player;
+            mCommandPage = (BattleCommandPage *) target;
+            mPlayer = player;
             mUnk_8d = player;
-            func_ov007_0225f0c4((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->Slot6c(0));
+            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
     }
-    mUnk_38 = new SelectWindow(2, data_ov007_0227a7b4, -1);
+    mWindow = new SelectWindow(2, data_ov007_0227a7b4, -1);
     MtxFx22 mtx;
     func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
-    G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mUnk_50, 0);
+    G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mSlideX, 0);
 }
 
 BattleCommandPrompt::~BattleCommandPrompt() {
@@ -136,7 +136,7 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     u8 k;
     i = 0;
     do {
-        a = mUnk_0c[i];
+        a = mBakuganSubCellAnims[i];
         if (a) {
             delete a;
         }
@@ -144,30 +144,30 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     } while (i < 3);
     j = 0;
     do {
-        c = mUnk_20[j];
+        c = mStateCellAnims[j];
         if (c) {
             delete c;
         }
         j++;
     } while (j < 3);
-    if (mUnk_18) {
-        delete mUnk_18;
+    if (mCursorAnim) {
+        delete mCursorAnim;
     }
-    if (mUnk_1c) {
-        delete mUnk_1c;
+    if (mDigitAnim) {
+        delete mDigitAnim;
     }
-    if (mUnk_38) {
-        delete mUnk_38;
+    if (mWindow) {
+        delete mWindow;
     }
-    if (mUnk_2c) {
-        delete mUnk_2c;
+    if (mMessageWindow) {
+        delete mMessageWindow;
     }
     if (mUnk_3c) {
         delete mUnk_3c;
     }
     k = 0;
     do {
-        d = mUnk_40[k];
+        d = mCharacterIconCellAnims[k];
         if (d) {
             delete d;
         }
@@ -185,170 +185,170 @@ void func_ov007_0225f080(s16 *x);
 void func_ov007_0225e698(BattleCommandPrompt *prompt);
 
 void BattleCommandPrompt::Update() {
-    switch (mUnk_8a) {
+    switch (mState) {
         case 0: {
             func_ov007_0225e698(this);
-            func_ov007_0225e6d4();
-            SelectWindow *win = mUnk_38;
+            Load();
+            SelectWindow *win = mWindow;
             WindowItem *items = win->mCursor->mItems;
-            if (mUnk_8b == 0 || data_020d433c.mUnk_83 == 4) {
+            if (mMode == 0 || data_020d433c.mUnk_83 == 4) {
                 win->mButtons[1].mEnabled = 0;
                 items[1].mFlags           = 0x8000;
             } else {
                 win->mButtons[1].mEnabled = 1;
                 items[1].mFlags           = 2;
             }
-            if (mUnk_8b >= 5) {
-                mUnk_38->mButtons[0].mEnabled = 0;
+            if (mMode >= 5) {
+                mWindow->mButtons[0].mEnabled = 0;
             } else {
-                mUnk_38->mButtons[0].mEnabled = 1;
+                mWindow->mButtons[0].mEnabled = 1;
             }
             G2S_SetBG0Priority(3);
             G2S_SetBG3Priority(1);
-            mUnk_88 = 0;
-            mUnk_8a++;
+            mSlideOutDelayFrames = 0;
+            mState++;
             return;
         }
         case 1:
-            switch (mUnk_8b) {
+            switch (mMode) {
                 case 0:
                 case 1:
                 case 3:
-                    mUnk_2c->StartMessage(0x11, 0, 1);
+                    mMessageWindow->StartMessage(0x11, 0, 1);
                     break;
                 case 2:
-                    mUnk_2c->StartMessage(0x12, 0, 1);
+                    mMessageWindow->StartMessage(0x12, 0, 1);
                     break;
                 case 5:
-                    if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->StartMessage(0x27, 0, 1);
+                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                        mMessageWindow->StartMessage(0x27, 0, 1);
                     } else {
-                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x28), 0, 1);
+                        mMessageWindow->StartMessage((s16) (mPlayer + 0x28), 0, 1);
                     }
                     break;
                 case 7:
-                    if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->StartMessage(0x2c, 0, 1);
+                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                        mMessageWindow->StartMessage(0x2c, 0, 1);
                     } else {
-                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x2d), 0, 1);
+                        mMessageWindow->StartMessage((s16) (mPlayer + 0x2d), 0, 1);
                     }
                     break;
                 case 6:
-                    if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->StartMessage(0x22, 0, 1);
+                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                        mMessageWindow->StartMessage(0x22, 0, 1);
                     } else {
-                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x23), 0, 1);
+                        mMessageWindow->StartMessage((s16) (mPlayer + 0x23), 0, 1);
                     }
                     break;
             }
             GXS_SetVisiblePlane(0x19);
-            mUnk_8a++;
+            mState++;
             return;
         case 2:
-            switch (mUnk_8e) {
+            switch (mStep) {
                 case 0:
-                    mUnk_50 -= 0x18;
-                    if (mUnk_50 <= 0) {
-                        mUnk_50 = 0;
-                        mUnk_8e = 1;
-                        mUnk_38->mEnabled = 1;
+                    mSlideX -= 0x18;
+                    if (mSlideX <= 0) {
+                        mSlideX = 0;
+                        mStep = 1;
+                        mWindow->mEnabled = 1;
                     }
-                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mUnk_50);
+                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mSlideX);
                     break;
                 case 1: {
-                    int idx            = mUnk_8f + mUnk_90;
-                    SelectWindow *win  = mUnk_38;
+                    int idx            = mCursorPos + mScroll;
+                    SelectWindow *win  = mWindow;
                     WindowItem *items  = win->mCursor->mItems;
-                    u8 bits = mUnk_94[idx / 8];
-                    if ((bits & (1 << (idx % 8))) || mUnk_8b >= 5) {
+                    u8 bits = mDisabledBits[idx / 8];
+                    if ((bits & (1 << (idx % 8))) || mMode >= 5) {
                         win->mButtons[0].mEnabled = 0;
                         items[0].mFlags           = 0x8000;
                     } else {
                         win->mButtons[0].mEnabled = 1;
                         items[0].mFlags           = 5;
                     }
-                    switch ((u8) mUnk_38->Update(1)) {
+                    switch ((u8) mWindow->Update(1)) {
                         case 1:
-                            mUnk_8e = 3;
-                            mUnk_88 = 0;
+                            mStep = 3;
+                            mSlideOutDelayFrames = 0;
                             break;
                         case 2:
-                            if (mUnk_8b != 0) {
+                            if (mMode != 0) {
                                 mUnk_91 = 1;
-                                mUnk_8e = 3;
-                                mUnk_88 = 0;
+                                mStep = 3;
+                                mSlideOutDelayFrames = 0;
                             }
                             break;
                     }
-                    if (mUnk_38->mState == 1) {
+                    if (mWindow->mState == 1) {
                         if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
-                            u8 cur = mUnk_8f + mUnk_90;
-                            if (cur < mUnk_92 - 1) {
-                                mUnk_8f++;
-                                if (mUnk_8f >= 3) {
-                                    mUnk_8f = 2;
-                                    mUnk_90++;
-                                    if (mUnk_90 > 3) {
-                                        mUnk_90 = 3;
+                            u8 cur = mCursorPos + mScroll;
+                            if (cur < mCount - 1) {
+                                mCursorPos++;
+                                if (mCursorPos >= 3) {
+                                    mCursorPos = 2;
+                                    mScroll++;
+                                    if (mScroll > 3) {
+                                        mScroll = 3;
                                     }
                                 }
-                                u8 sel = mUnk_8f + mUnk_90;
-                                switch (mUnk_8b) {
+                                u8 sel = mCursorPos + mScroll;
+                                switch (mMode) {
                                     case 0:
                                     case 1:
                                     case 3:
                                     case 5:
                                     case 7:
-                                        func_02055668(mUnk_30, mUnk_52[sel], (s8) mUnk_8d);
+                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mUnk_8d);
                                         break;
                                     case 2:
                                     case 6: {
-                                        BattleRecord *rec = mUnk_70[sel];
-                                        func_02058260(mUnk_34, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
-                                        rec = mUnk_70[sel];
-                                        func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        BattleRecord *rec = mRecords[sel];
+                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
+                                        rec = mRecords[sel];
+                                        func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
                             }
-                            if (cur != mUnk_8f) {
+                            if (cur != mCursorPos) {
                                 SoundManager::Get().StartSeqArc(5);
                             }
                         }
                         if (InputManager::Get().IsTrigger(KEY_LEFT)) {
-                            u8 cur = mUnk_8f + mUnk_90;
+                            u8 cur = mCursorPos + mScroll;
                             if (cur != 0) {
-                                if (mUnk_8f != 0) {
-                                    mUnk_8f--;
-                                    if (mUnk_8f >= 3) {
-                                        mUnk_8f = 0;
+                                if (mCursorPos != 0) {
+                                    mCursorPos--;
+                                    if (mCursorPos >= 3) {
+                                        mCursorPos = 0;
                                     }
                                 } else {
-                                    mUnk_90--;
-                                    if (mUnk_90 > 3) {
-                                        mUnk_90 = 0;
+                                    mScroll--;
+                                    if (mScroll > 3) {
+                                        mScroll = 0;
                                     }
                                 }
-                                u8 sel = mUnk_8f + mUnk_90;
-                                switch (mUnk_8b) {
+                                u8 sel = mCursorPos + mScroll;
+                                switch (mMode) {
                                     case 0:
                                     case 1:
                                     case 3:
                                     case 5:
                                     case 7:
-                                        func_02055668(mUnk_30, mUnk_52[sel], (s8) mUnk_8d);
+                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mUnk_8d);
                                         break;
                                     case 2:
                                     case 6: {
-                                        BattleRecord *rec = mUnk_70[sel];
-                                        func_02058260(mUnk_34, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
-                                        rec = mUnk_70[sel];
-                                        func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        BattleRecord *rec = mRecords[sel];
+                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
+                                        rec = mRecords[sel];
+                                        func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
                             }
-                            if (cur != mUnk_8f) {
+                            if (cur != mCursorPos) {
                                 SoundManager::Get().StartSeqArc(5);
                             }
                         }
@@ -358,28 +358,28 @@ void BattleCommandPrompt::Update() {
                             u32 ty = TouchManager::Get().mY;
                             if (data_ov007_0227a764[i].x < tx && tx < data_ov007_0227a764[i].x + data_ov007_0227a764[i].w && data_ov007_0227a764[i].y < ty && ty < data_ov007_0227a764[i].y + data_ov007_0227a764[i].h) {
                                 if (TouchManager::Get().mTouching) {
-                                    if (i <= mUnk_92 - 1) {
-                                        if (mUnk_8f != i) {
+                                    if (i <= mCount - 1) {
+                                        if (mCursorPos != i) {
                                             SoundManager::Get().StartSeqArc(5);
-                                            mUnk_8f = i;
-                                        } else if (mUnk_38->mButtons[0].mEnabled != 0) {
+                                            mCursorPos = i;
+                                        } else if (mWindow->mButtons[0].mEnabled != 0) {
                                             SoundManager::Get().StartSeqArc(0);
-                                            mUnk_8e = 3;
-                                            mUnk_88 = 0;
+                                            mStep = 3;
+                                            mSlideOutDelayFrames = 0;
                                         }
-                                        switch (mUnk_8b) {
+                                        switch (mMode) {
                                             case 0:
                                             case 1:
                                             case 3:
                                             case 5:
                                             case 7:
-                                                func_02055668(mUnk_30, mUnk_52[mUnk_8f + mUnk_90], (s8) mUnk_8d);
+                                                SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mUnk_8d);
                                                 break;
                                             case 2:
                                             case 6: {
-                                                func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mBakuganId, mUnk_70[mUnk_8f + mUnk_90]->mAttribute, (s8) mUnk_8d);
-                                                BattleRecord *rec = mUnk_70[mUnk_8f + mUnk_90];
-                                                func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                                SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mUnk_8d);
+                                                BattleRecord *rec = mRecords[mCursorPos + mScroll];
+                                                func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                                 break;
                                             }
                                         }
@@ -392,30 +392,30 @@ void BattleCommandPrompt::Update() {
                     break;
                 }
                 case 2:
-                    mUnk_50 -= 0x18;
-                    if (mUnk_50 <= -0x100) {
-                        mUnk_8a = 6;
+                    mSlideX -= 0x18;
+                    if (mSlideX <= -0x100) {
+                        mState = 6;
                     }
-                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mUnk_50);
+                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mSlideX);
                     break;
                 case 3:
-                    mUnk_88++;
-                    if ((s32) mUnk_88 > 0x14) {
-                        mUnk_88 = 0;
-                        mUnk_8e = 2;
+                    mSlideOutDelayFrames++;
+                    if ((s32) mSlideOutDelayFrames > 0x14) {
+                        mSlideOutDelayFrames = 0;
+                        mStep = 2;
                     }
                     break;
             }
-            switch (mUnk_8b) {
+            switch (mMode) {
                 case 3: {
-                    u8 n = mUnk_92;
+                    u8 n = mCount;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        if (mUnk_94[(u32) i >> 3] & (1 << ((int) i % 8))) {
-                            mUnk_20[2]->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                        if (mDisabledBits[(u32) i >> 3] & (1 << ((int) i % 8))) {
+                            mStateCellAnims[2]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
                         }
                         i++;
                     } while (i < n);
@@ -423,62 +423,62 @@ void BattleCommandPrompt::Update() {
                 }
                 case 5:
                 case 7: {
-                    u8 n = mUnk_92;
+                    u8 n = mCount;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        if ((mUnk_6a + mUnk_90)[i] != 0) {
-                            mUnk_20[0]->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                        if ((mKinds + mScroll)[i] != 0) {
+                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
                         }
                         i++;
                     } while (i < n);
                     break;
                 }
                 case 6: {
-                    u8 n = mUnk_92;
+                    u8 n = mCount;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        u8 v = (mUnk_6a + mUnk_90)[i];
+                        u8 v = (mKinds + mScroll)[i];
                         if (v == 2) {
-                            mUnk_20[0]->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
                         } else if (v == 1) {
-                            mUnk_20[1]->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[1]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
                         }
                         i++;
                     } while (i < n);
                     break;
                 }
             }
-            mUnk_18->Update();
-            mUnk_18->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[mUnk_8f].x), data_ov007_0227a764[mUnk_8f].y, 0);
-            mUnk_2c->func_02065bd4((s16) (mUnk_50 + 0x20), 0x28, 0);
-            mUnk_2c->Update();
+            mCursorAnim->Update();
+            mCursorAnim->Draw(1, (s16) (mSlideX + data_ov007_0227a764[mCursorPos].x), data_ov007_0227a764[mCursorPos].y, 0);
+            mMessageWindow->func_02065bd4((s16) (mSlideX + 0x20), 0x28, 0);
+            mMessageWindow->Update();
             {
                 u8 i = 0;
                 do {
-                    SelectWindow *w = mUnk_38;
-                    w->mCellPos[i].x = mUnk_50 + data_ov007_0227a75c[i].x;
+                    SelectWindow *w = mWindow;
+                    w->mCellPos[i].x = mSlideX + data_ov007_0227a75c[i].x;
                     w->mCellPos[i].y = data_ov007_0227a75c[i].y;
                     i++;
                 } while (i < 2);
             }
-            mUnk_38->Draw();
-            mUnk_20[0]->Update();
-            mUnk_20[1]->Update();
+            mWindow->Draw();
+            mStateCellAnims[0]->Update();
+            mStateCellAnims[1]->Update();
             if (mUnk_3c) {
-                mUnk_40[1]->Draw(1, 0x86, 1, 0);
-                if (data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->IsActive()) {
-                    mUnk_40[2]->Draw(1, 0x86, 1, 0);
+                mCharacterIconCellAnims[1]->Draw(1, 0x86, 1, 0);
+                if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
+                    mCharacterIconCellAnims[2]->Draw(1, 0x86, 1, 0);
                 }
                 mUnk_3c->DrawIcons();
-                mUnk_40[0]->Draw(1, 0x86, 3, 0);
+                mCharacterIconCellAnims[0]->Draw(1, 0x86, 3, 0);
             }
-            switch (mUnk_8b) {
+            switch (mMode) {
                 case 0:
                 case 1:
                 case 3:
@@ -486,27 +486,27 @@ void BattleCommandPrompt::Update() {
                 case 7: {
                     SpriteScreen &screen = SpriteManager::Get().Screen(1);
                     screen.SetObjVramMode(3);
-                    u8 n = mUnk_92;
+                    u8 n = mCount;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        screen.AddOam((void *)data_ov007_0227a770, 1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
-                                             ((mUnk_4c + (i + mUnk_90) * 0x1800) << 9) >> 16, (s8) (mUnk_90 + (i + 10)), 0);
+                        screen.AddOam((void *)data_ov007_0227a770, 1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
+                                             ((mCharOffset + (i + mScroll) * 0x1800) << 9) >> 16, (s8) (mScroll + (i + 10)), 0);
                         i++;
                     } while (i < n);
                     return;
                 }
                 case 2:
                 case 6: {
-                    u8 n = mUnk_92;
+                    u8 n = mCount;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        BattleRecord *rec = mUnk_70[i + mUnk_90];
+                        BattleRecord *rec = mRecords[i + mScroll];
                         u8 q              = (u8) ((rec->mUnk_04 + rec->mUnk_06) / 10);
                         u8 digits[3];
                         digits[0] = q / 10;
@@ -514,12 +514,12 @@ void BattleCommandPrompt::Update() {
                         digits[2] = 0;
                         u8 j      = 0;
                         do {
-                            mUnk_1c->DrawFrame(1, digits[j], (s16) (mUnk_50 + data_ov007_0227a764[i].x + 4 + j * 13),
+                            mDigitAnim->DrawFrame(1, digits[j], (s16) (mSlideX + data_ov007_0227a764[i].x + 4 + j * 13),
                                                    (s16) (data_ov007_0227a764[i].y + 0x36), 0);
                             j++;
                         } while (j < 3);
-                        mUnk_0c[i + mUnk_90]->Update();
-                        mUnk_0c[i + mUnk_90]->DrawFrame(1, mUnk_70[i + mUnk_90]->mAttribute, (s16) (mUnk_50 + data_ov007_0227a764[i].x),
+                        mBakuganSubCellAnims[i + mScroll]->Update();
+                        mBakuganSubCellAnims[i + mScroll]->DrawFrame(1, mRecords[i + mScroll]->mAttribute, (s16) (mSlideX + data_ov007_0227a764[i].x),
                                                             data_ov007_0227a764[i].y, 0);
                         i++;
                     } while (i < n);
@@ -532,7 +532,7 @@ void BattleCommandPrompt::Update() {
                 RequestScene(10);
                 mFinished = 1;
             } else {
-                RequestScene(mUnk_5e[mUnk_8f + mUnk_90]);
+                RequestScene(mNextScenes[mCursorPos + mScroll]);
                 mFinished = 1;
             }
             break;
@@ -542,8 +542,8 @@ void BattleCommandPrompt::Update() {
     }
 }
 
-void func_ov007_0225e68c(BattleCommandPrompt *prompt, u32 flag) {
-    prompt->mUnk_8a = 7;
+void CloseCommandPrompt(BattleCommandPrompt *prompt, u32 flag) {
+    prompt->mState = 7;
 }
 
 void func_ov007_0225e698(BattleCommandPrompt *prompt) {
@@ -552,16 +552,16 @@ void func_ov007_0225e698(BattleCommandPrompt *prompt) {
     GXS_SetVisiblePlane(0x11);
 }
 
-void BattleCommandPrompt::func_ov007_0225e6d4() {
-    mUnk_2c = new MessageWindow("mes_Command", 1, 0x1f000);
-    mUnk_2c->func_02065bd4(0x20, 0x28, 0);
-    mUnk_2c->SetVram(0x1f000);
+void BattleCommandPrompt::Load() {
+    mMessageWindow = new MessageWindow("mes_Command", 1, 0x1f000);
+    mMessageWindow->func_02065bd4(0x20, 0x28, 0);
+    mMessageWindow->SetVram(0x1f000);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/2D/union_b");
     LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
-    mUnk_38->SetCells(2, data_ov007_0227a77c);
+    mWindow->SetCells(2, data_ov007_0227a77c);
     LoadAndQueueUpload(1, 4, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 5, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 4, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
@@ -569,16 +569,16 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
     ChangeDir("/Game/Battle/Obj");
     LoadAndQueueUpload(1, 4, 0x19000, "battle_b_obj_state.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 5, 0x100, "battle_b_obj_state_ncl.bin", 0, 0, 0);
-    mUnk_20[0] = new CellAnimation("battle_b_obj_state_nce.bin", 0, 1, 1);
-    mUnk_20[0]->mCharBase = screen.GetCharBase(0x19000);
-    mUnk_20[0]->mPaletteBase   = 8;
-    mUnk_20[1] = new CellAnimation("battle_b_obj_state_nce.bin", 1, 1, 1);
-    mUnk_20[1]->mCharBase = screen.GetCharBase(0x19000);
-    mUnk_20[1]->mPaletteBase   = 8;
-    mUnk_20[2] = new CellAnimation("battle_b_obj_state_nce.bin", 2, 1, 1);
-    mUnk_20[2]->mCharBase = screen.GetCharBase(0x19000);
-    mUnk_20[2]->mPaletteBase   = 8;
-    switch (mUnk_8b) {
+    mStateCellAnims[0] = new CellAnimation("battle_b_obj_state_nce.bin", 0, 1, 1);
+    mStateCellAnims[0]->mCharBase = screen.GetCharBase(0x19000);
+    mStateCellAnims[0]->mPaletteBase   = 8;
+    mStateCellAnims[1] = new CellAnimation("battle_b_obj_state_nce.bin", 1, 1, 1);
+    mStateCellAnims[1]->mCharBase = screen.GetCharBase(0x19000);
+    mStateCellAnims[1]->mPaletteBase   = 8;
+    mStateCellAnims[2] = new CellAnimation("battle_b_obj_state_nce.bin", 2, 1, 1);
+    mStateCellAnims[2]->mCharBase = screen.GetCharBase(0x19000);
+    mStateCellAnims[2]->mPaletteBase   = 8;
+    switch (mMode) {
         case 0:
         case 1:
         case 3:
@@ -593,18 +593,18 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
             do {
                 char name[0x100];
                 u32 size;
-                sprintf(name, "card_l_%03d.nce_ncg1D.bin", func_02065c20(mUnk_52[i]));
+                sprintf(name, "card_l_%03d.nce_ncg1D.bin", func_02065c20(mCardIds[i]));
                 void *data = LoadFile(name, 0, 0, 0, &size, 0);
-                QueueUpload(1, 4, mUnk_4c + i * 0x1800, screen.func_02028054((u8 *) data), 0x1000, 1);
-                sprintf(name, "card_l_%03d_ncl.bin", func_02065c20(mUnk_52[i]));
+                QueueUpload(1, 4, mCharOffset + i * 0x1800, screen.func_02028054((u8 *) data), 0x1000, 1);
+                sprintf(name, "card_l_%03d_ncl.bin", func_02065c20(mCardIds[i]));
                 LoadAndQueueUpload(1, 0, 0x1400 + i * 0x200, name, 0, 0, 0);
                 i++;
-            } while (i < mUnk_92);
+            } while (i < mCount);
             ChangeDir("/Game/2D/union_b");
-            mUnk_18 = new CellAnimation("union_b_obj_cursor_nce.bin", 0, 1, 1);
-            mUnk_18->mCharBase = screen.GetCharBase(0x1b800);
-            mUnk_18->mPaletteBase   = 0xd;
-            if (mUnk_94[0]) {
+            mCursorAnim = new CellAnimation("union_b_obj_cursor_nce.bin", 0, 1, 1);
+            mCursorAnim->mCharBase = screen.GetCharBase(0x1b800);
+            mCursorAnim->mPaletteBase   = 0xd;
+            if (mDisabledBits[0]) {
                 GXS_SetVisibleWnd(4);
                 G2S_SetWndOBJInsidePlane(0x10, TRUE);
                 G2S_SetWndOutsidePlane(0x1b, FALSE);
@@ -623,22 +623,22 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
             LoadAndQueueUpload(1, 0, 0x200, "bakugan_sub_ncl.bin", 0, 0, 0);
             u8 i = 0;
             do {
-                mUnk_0c[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
-                mUnk_0c[i]->mCharBase = screen.GetCharBase(0);
-                mUnk_0c[i]->mPaletteBase   = 1;
+                mBakuganSubCellAnims[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
+                mBakuganSubCellAnims[i]->mCharBase = screen.GetCharBase(0);
+                mBakuganSubCellAnims[i]->mPaletteBase   = 1;
                 i++;
-            } while (i < mUnk_92);
+            } while (i < mCount);
             ChangeDir("/Game/2D/union_b");
-            mUnk_18 = new CellAnimation("union_b_obj_cursor_nce.bin", 1, 1, 1);
-            mUnk_18->mCharBase = screen.GetCharBase(0x1b800);
-            mUnk_18->mPaletteBase   = 0xd;
-            mUnk_1c = new CellAnimation("union_b_obj_gp_nce.bin", 2, 1, 1);
-            mUnk_1c->mCharBase = screen.GetCharBase(0x1a000);
-            mUnk_1c->mPaletteBase   = 0xc;
+            mCursorAnim = new CellAnimation("union_b_obj_cursor_nce.bin", 1, 1, 1);
+            mCursorAnim->mCharBase = screen.GetCharBase(0x1b800);
+            mCursorAnim->mPaletteBase   = 0xd;
+            mDigitAnim = new CellAnimation("union_b_obj_gp_nce.bin", 2, 1, 1);
+            mDigitAnim->mCharBase = screen.GetCharBase(0x1a000);
+            mDigitAnim->mPaletteBase   = 0xc;
             break;
         }
     }
-    switch (mUnk_8b) {
+    switch (mMode) {
       case 5:
       case 6:
       case 7: {
@@ -647,18 +647,18 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
         LoadAndQueueUpload(1, 5, 0x120, "icon_ch_base_ncl.bin", 0, 0, 0);
         u8 j = 0;
         do {
-            mUnk_40[j] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-            mUnk_40[j]->mCharBase = screen.GetCharBase(0x14000);
-            mUnk_40[j]->mPaletteBase   = 9;
+            mCharacterIconCellAnims[j] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
+            mCharacterIconCellAnims[j]->mCharBase = screen.GetCharBase(0x14000);
+            mCharacterIconCellAnims[j]->mPaletteBase   = 9;
             j++;
         } while (j < 3);
-        mUnk_40[0]->SetAnimation(0);
-        mUnk_40[1]->SetAnimation(mUnk_8c + 7);
-        mUnk_40[2]->SetAnimation(0xb);
-        mUnk_40[2]->mFrameIndex = mUnk_8c;
+        mCharacterIconCellAnims[0]->SetAnimation(0);
+        mCharacterIconCellAnims[1]->SetAnimation(mPlayer + 7);
+        mCharacterIconCellAnims[2]->SetAnimation(0xb);
+        mCharacterIconCellAnims[2]->mFrameIndex = mPlayer;
         ChangeDir("/");
         mUnk_3c = new CharacterIcons(0x16000, 0xb, 1);
-        BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_8c];
+        BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
         mUnk_3c->SetCharacter(0, (s8) player->mCharacterId, player->NameInfo(), 0);
         mUnk_3c->SetDrawArgs(0, 0x88, 5, 0);
     }
@@ -674,70 +674,70 @@ extern "C" u8 func_ov007_0225f0bc(u32 v) {
     return (u8) v;
 }
 
-void BattleCommandPrompt::func_ov007_0225f0c4(const BattlePromptSlot *slot) {
+void BattleCommandPrompt::CollectCards(const BattlePromptSlot *slot) {
     BOOL add;
     u8 i = 0;
-    mUnk_92 = 0;
+    mCount = 0;
     do {
         add = 0;
-        switch (mUnk_93) {
+        switch (mCollectMode) {
             case 0:
                 if (slot->mKind == 0) {
-                    mUnk_52[mUnk_92] = slot->mId;
+                    mCardIds[mCount] = slot->mId;
                     add              = 1;
                 }
                 break;
             case 2:
                 if (slot->mKind != 2) {
-                    mUnk_52[mUnk_92] = mUnk_8b == 7 ? 0xd6 : 0;
+                    mCardIds[mCount] = mMode == 7 ? 0xd6 : 0;
                 } else {
-                    mUnk_52[mUnk_92] = slot->mId;
+                    mCardIds[mCount] = slot->mId;
                 }
                 add = 1;
                 break;
             case 1:
-                mUnk_52[mUnk_92] = slot->mId;
+                mCardIds[mCount] = slot->mId;
                 add              = 1;
                 break;
         }
         if (add) {
-            mUnk_5e[mUnk_92] = i | 0x100 | (mUnk_8c << 10);
-            mUnk_6a[mUnk_92] = slot->mKind;
-            mUnk_92++;
+            mNextScenes[mCount] = i | 0x100 | (mPlayer << 10);
+            mKinds[mCount] = slot->mKind;
+            mCount++;
         }
         i++;
         slot++;
     } while (i < data_020d433c.mUnk_99);
-    func_02055668(mUnk_30, mUnk_52[mUnk_8f + mUnk_90], (s8) mUnk_8d);
+    SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mUnk_8d);
 }
 
-void BattleCommandPrompt::func_ov007_0225f200() {
+void BattleCommandPrompt::CollectRecords() {
     u8 i = 0;
     BOOL ok;
     BattleRecord *rec;
-    mUnk_92 = 0;
+    mCount = 0;
     do {
-        rec = &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->mRecords[i];
+        rec = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[i];
         ok  = 1;
-        if (mUnk_93 == 0) {
+        if (mCollectMode == 0) {
             if (rec->mStatus != 0) {
                 ok = 0;
             }
         }
         if (ok) {
-            mUnk_70[mUnk_92] = rec;
-            mUnk_6a[mUnk_92] = rec->mStatus;
-            mUnk_5e[mUnk_92] = i | 0x200 | (mUnk_8c << 10);
-            mUnk_92++;
+            mRecords[mCount] = rec;
+            mKinds[mCount] = rec->mStatus;
+            mNextScenes[mCount] = i | 0x200 | (mPlayer << 10);
+            mCount++;
         }
         if ((u8) (rec->mBakuganId + 0xfb) <= 1) {
             if (rec->mStatus == 1) {
-                mUnk_34->mUnk_161 = 1;
+                mCommandList->mUnk_161 = 1;
             }
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
-    func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mBakuganId, mUnk_70[mUnk_8f + mUnk_90]->mAttribute, (s8) mUnk_8d);
-    BattleRecord *r = mUnk_70[mUnk_8f + mUnk_90];
-    func_0205afb4(mUnk_34, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
+    SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mUnk_8d);
+    BattleRecord *r = mRecords[mCursorPos + mScroll];
+    func_0205afb4(mCommandList, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
 }

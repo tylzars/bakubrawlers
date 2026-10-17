@@ -120,7 +120,7 @@ void BattleCardCamera::func_ov007_02244bb4() {
     model->mRotY = 0x4000;
     model->mRotZ = 0;
     mUnk_0c = new BattleMapObj(0xc);
-    mUnk_0c->func_ov007_022493fc();
+    mUnk_0c->Load();
     Camera *camera = BattleCamera();
     camera->SetUp(0, 0x1000, 0);
     camera->SetClip(0x1000, 0x1388000);
@@ -166,5 +166,5 @@ void BattleCardCamera::func_ov007_02244e98() {
     if (mUnk_27) {
         mUnk_18->func_020526bc();
     }
-    mUnk_0c->func_ov007_0224954c();
+    mUnk_0c->Draw();
 }

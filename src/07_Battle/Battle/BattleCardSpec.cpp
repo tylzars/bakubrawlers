@@ -35,16 +35,16 @@ static inline void SnapshotCamera() {
 
 BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
     : SceneBase(0x3e8, 0) {
-    mUnk_0c = 0;
-    mUnk_10 = 0;
-    mUnk_14 = 0;
+    mCardModel = 0;
+    mRealbaseModel = 0;
+    mRealnormalModel = 0;
     mState  = 0;
     mUnk_19 = 0;
     mUnk_1e = 0;
     mUnk_1d = d;
-    mUnk_1a = a;
-    mUnk_1b = b;
-    mUnk_1c = c;
+    mCardModelType = a;
+    mBakuganId = b;
+    mVariant = c;
     SpriteManager::Get().func_0202740c();
     switch (a) {
         case 0:
@@ -58,12 +58,12 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
 }
 
 BattleCardSpec::~BattleCardSpec() {
-    ModelInstance *a = mUnk_10;
+    ModelInstance *a = mRealbaseModel;
     if (a) {
         a->mOwnFlags = 0xf;
         delete a;
     }
-    ModelInstance *b = mUnk_14;
+    ModelInstance *b = mRealnormalModel;
     if (b) {
         b->mOwnFlags = 0xf;
         delete b;
@@ -78,8 +78,8 @@ void BattleCardSpec::Update() {
             CameraManager::Get().SetCamerasAndRequestMode(1, data_020d433c.mBattlePlayers->mCamera, 0);
             GX_SetVisiblePlane(0x11);
             G2_SetBG0Priority(0);
-            func_ov007_0225fbdc();
-            mUnk_0c = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mUnk_1a, mUnk_1b, mUnk_1c, mUnk_1d);
+            LoadModels();
+            mCardModel = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUnk_1d);
             mContext->mUnk_12 = 0;
             mState++;
             break;
@@ -109,7 +109,7 @@ void BattleCardSpec::Update() {
             }
             break;
         case 4:
-            func_ov007_02273e3c(mUnk_0c);
+            CloseCardModel(mCardModel);
             mState++;
             break;
         case 5:
@@ -135,26 +135,26 @@ void BattleCardSpec::Update() {
         SnapshotCamera();
         MtxFx43 mtx   = gIdentityMtx43;
         VecFx32 pos   = data_ov007_0227aa1c;
-        mUnk_10->Draw(&mtx, &pos);
-        mUnk_14->AdvanceAnim();
-        mUnk_14->Draw(&mtx, &pos);
+        mRealbaseModel->Draw(&mtx, &pos);
+        mRealnormalModel->AdvanceAnim();
+        mRealnormalModel->Draw(&mtx, &pos);
     }
 }
 
-void BattleCardSpec::func_ov007_0225fbdc() {
+void BattleCardSpec::LoadModels() {
     ChangeDir("/Game/Battle/3d/Map/");
     TextureFile *texture = new NitroTexture("realbase_00.nsbtx");
     NitroModel *model           = new NitroModel("realbase_00.nsbmd", texture);
-    mUnk_10                     = model->CreateInstance(NULL);
-    mUnk_10->mUseBoxTest            = 0;
+    mRealbaseModel                     = model->CreateInstance(NULL);
+    mRealbaseModel->mUseBoxTest            = 0;
     texture->FreeFile();
     TextureFile *texture2 = new NitroTexture("realnormal_99.nsbtx");
     NitroModel *model2           = new NitroModel("realnormal_99.nsbmd", texture2);
     texture2->FreeFile();
     ModelAnimData *data = new ModelAnimData("realnormal_99_data.bin");
     ModelAnim *anim     = new ModelAnim(data, model2);
-    mUnk_14             = model2->CreateInstance(anim);
-    mUnk_14->StartAnim(0, 1);
-    mUnk_14->mUseBoxTest = 0;
+    mRealnormalModel             = model2->CreateInstance(anim);
+    mRealnormalModel->StartAnim(0, 1);
+    mRealnormalModel->mUseBoxTest = 0;
     ChangeDir("/");
 }

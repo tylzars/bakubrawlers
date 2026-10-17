@@ -144,8 +144,8 @@ void ConfrontEmblem06::func_ov007_02221ad0() {
 }
 
 void ConfrontEmblem06::func_ov007_02221c68() {
-    u8 quadrant = func_ov007_0221d348(4);
-    u16 r       = func_ov007_0221d348(0x1555);
+    u8 quadrant = BattleRand32(4);
+    u16 r       = BattleRand32(0x1555);
     u16 angle   = ((quadrant & 3) << 14) + 0x1555 + r;
     int i       = (angle >> 4) * 2;
     float p[2];
@@ -276,9 +276,9 @@ ConfrontBg06::~ConfrontBg06() {
     delete mEmblem;
 }
 
-void ConfrontBg06::func_ov007_02219888(BattleData *data, u32 mode) {
+void ConfrontBg06::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
+    InitSubScreen();
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if (!(u8) spectator) {
@@ -290,12 +290,12 @@ void ConfrontBg06::func_ov007_02219888(BattleData *data, u32 mode) {
         }
         mEmblem = new ConfrontEmblem06(n);
     } else {
-        func_ov007_0221d348(0xffff);
-        func_ov007_0221d348(0xffff);
+        BattleRand32(0xffff);
+        BattleRand32(0xffff);
     }
 }
 
-void ConfrontBg06::func_ov007_0221a624() {
+void ConfrontBg06::InitSubScreen() {
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -343,12 +343,12 @@ void ConfrontBg06::vfunc_3c() {
     mEmblem->func_ov007_02221ad0();
 }
 
-u8 ConfrontBg06::vfunc_40(int a) {
+u8 ConfrontBg06::UpdateTouch(int a) {
     ConfrontEmblem06 *emblem = mEmblem;
     s32 hit                  = -1;
     s16 y                    = (s32) emblem->mUnk_14;
     s16 x                    = (s32) emblem->mUnk_10;
-    func_ov007_0221bb28(x, y);
+    SetPenPosition(x, y);
     if (mEmblem->func_ov007_022222b0()) {
         if (mEmblem->func_ov007_022222c8()) {
             hit = 100;
@@ -387,10 +387,10 @@ void ConfrontBg06::vfunc_44(int index, u16 count) {
     if (current == entries[index].mUnk_0d_4) {
         mEmblem->func_ov007_02221c68();
     } else {
-        func_ov007_0221d348(0xffff);
-        func_ov007_0221d348(0xffff);
+        BattleRand32(0xffff);
+        BattleRand32(0xffff);
     }
 }
 
-void ConfrontBg06::vfunc_28() {
+void ConfrontBg06::LoadGraphics() {
 }

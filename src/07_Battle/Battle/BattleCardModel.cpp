@@ -228,7 +228,7 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
     mTextBuffer  = 0;
     mTextBuffer2 = 0;
     mTextSize    = 0;
-    mUnk_74      = 0;
+    mGlyphCount      = 0;
     mTextWidth   = 0;
     if (a == 4) {
         switch (b) {
@@ -244,24 +244,24 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
                 break;
         }
     }
-    func_ov007_022725f0(a, b, *(u8 *) &c); // narrow read of a stack argument (placeholder, see docs/decompiling.md)
+    Init(a, b, *(u8 *) &c); // narrow read of a stack argument (placeholder, see docs/decompiling.md)
 }
 
-void BattleCardModel::func_ov007_022725f0(u32 type, u32 id, u32 c) {
+void BattleCardModel::Init(u32 type, u32 id, u32 c) {
     mUnk_93   = 0;
-    mUnk_8c = id;
+    mBakuganId = id;
     u8 charId = data_020a1074[id];
-    mUnk_8d   = c;
+    mVariant   = c;
     mType     = type;
     mId       = charId;
     BattleCardModelEntry *entry = data_ov007_0228acc0[mType] + charId;
     mEntry                      = entry;
-    mUnk_24                     = entry->mUnk_0c;
+    mCurrentCamKey                     = entry->mCamKeys;
     mParts                      = mEntry->mParts;
     mCount                      = mEntry->mCount;
     mBaku                       = 0;
-    mUnk_18                     = 0;
-    mUnk_28                     = 0;
+    mCamFile                     = 0;
+    mLights                     = 0;
     mState                      = 0;
     MI_CpuClear8(mHandles, 5);
     mUnk_96    = 0;
@@ -269,7 +269,7 @@ void BattleCardModel::func_ov007_022725f0(u32 type, u32 id, u32 c) {
 }
 
 BattleCardModel::~BattleCardModel() {
-    ModelLightGroup *palette = mUnk_28;
+    ModelLightGroup *palette = mLights;
     if (palette) {
         delete palette;
     }
@@ -282,8 +282,8 @@ BattleCardModel::~BattleCardModel() {
     if (mTextBuffer2) {
         OS_Free(mTextBuffer2);
     }
-    if (mUnk_18) {
-        OS_Free(mUnk_18);
+    if (mCamFile) {
+        OS_Free(mCamFile);
     }
     FreeEffectGroup(mEffects, 0);
     FreeEffectGroup(mEffects, 1);
@@ -297,7 +297,7 @@ void BattleCardModel::Update() {
     u8 i = 0;
     do {
         state = mState;
-        if (func_ov007_0227292c()) {
+        if (UpdateState()) {
             RequestScene(1);
             mFinished = 1;
             return;
@@ -313,21 +313,21 @@ void BattleCardModel::Update() {
             MtxFx43 mtx = gIdentityMtx43;
             VecFx32 pos = data_ov007_0227c0c4;
             mBaku->mModel->Draw(&mtx, &pos);
-            func_ov007_02274238();
-            func_ov007_022737e0();
+            DrawName();
+            UpdateEffects();
             break;
         }
     }
 }
 
-BOOL BattleCardModel::func_ov007_0227292c() {
+BOOL BattleCardModel::UpdateState() {
     switch (mState) {
         case 0:
             SpriteManager::Get();
             SpriteManager::sFade[0]       = 1;
             SpriteManager::sBrightness[0] = -16;
-            func_ov007_02273ec0();
-            func_ov007_022734d8();
+            LoadNameText();
+            LoadGraphics();
             mState++;
             break;
         case 1:
@@ -369,17 +369,17 @@ BOOL BattleCardModel::func_ov007_0227292c() {
             }
             mCamera->ApplyPath();
             SnapshotCamera();
-            if (mUnk_24 != 0) {
-                if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mUnk_0a)) {
-                    mUnk_24 = 0;
-                } else if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mUnk_08)) {
+            if (mCurrentCamKey != 0) {
+                if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mCamKeyEndFrame)) {
+                    mCurrentCamKey = 0;
+                } else if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mCamKeyStartFrame)) {
                     VecFx32 offset;
                     VecFx32 delta;
                     Camera *camA = mCamera;
                     delta.x      = camA->mPosition.x;
                     delta.y      = camA->mPosition.y;
                     delta.z      = camA->mPosition.z;
-                    BattleCardModelKey *key = (BattleCardModelKey *) mUnk_24;
+                    BattleCardModelKey *key = (BattleCardModelKey *) mCurrentCamKey;
                     s32 kx = key->mX;
                     s32 ky = key->mY;
                     offset.x = kx;
@@ -397,14 +397,14 @@ BOOL BattleCardModel::func_ov007_0227292c() {
                     camC->mTarget.y = delta.y;
                     camC->mTarget.z = delta.z;
                     SnapshotCamera();
-                    mUnk_24 += 8;
-                    key = (BattleCardModelKey *) mUnk_24;
+                    mCurrentCamKey += 8;
+                    key = (BattleCardModelKey *) mCurrentCamKey;
                     if ((key->mX == -1) & (key->mY == -1)) {
-                        mUnk_24 = mEntry->mUnk_0c;
+                        mCurrentCamKey = mEntry->mCamKeys;
                     }
                 }
             }
-            func_ov007_02273718();
+            StartEffectsAtFrame();
             break;
         case 3:
             SpriteManager::Get();
@@ -412,7 +412,7 @@ BOOL BattleCardModel::func_ov007_0227292c() {
                 mCamera->AdvanceFrame(1);
                 mCamera->ApplyPath();
                 SnapshotCamera();
-                func_ov007_02273718();
+                StartEffectsAtFrame();
             } else {
                 mEffects->FreeAllEffects();
                 MI_CpuFill8(mHandles, 0, 5);
@@ -425,12 +425,12 @@ BOOL BattleCardModel::func_ov007_0227292c() {
 }
 
 // Part `index` of a parts table passed by reference; reading the table through it reloads mParts, as the
-// original does for each part read of func_ov007_022734d8.
+// original does for each part read of LoadGraphics.
 static inline BattleCardModelPart *PartAt(BattleCardModelPart *&parts, int index) {
     return &parts[index];
 }
 
-void BattleCardModel::func_ov007_022734d8() {
+void BattleCardModel::LoadGraphics() {
     char name[0x80];
     char bone[0x11];
     sprintf(name, "realb%02d", mId);
@@ -438,10 +438,10 @@ void BattleCardModel::func_ov007_022734d8() {
     LoadEffectGroup(mEffects, 1, "union");
     ChangeDir("/Game/Realbaku/Mdl");
     sprintf(name, "realb%02d_M_%02d.cam", mId, data_ov007_0227c438[mType]);
-    mUnk_18 = LoadFile(name, 0, 0, 0, 0, 0);
-    mCamera->SetPath(mUnk_18, 0);
+    mCamFile = LoadFile(name, 0, 0, 0, 0, 0);
+    mCamera->SetPath(mCamFile, 0);
     ChangeDir("/");
-    mBaku      = new BattleRealBaku(mUnk_8c, data_ov007_0227c418[mType], mUnk_8d, 0, 0, 1, mUnk_94);
+    mBaku      = new BattleRealBaku(mBakuganId, data_ov007_0227c418[mType], mVariant, 0, 0, 1, mUnk_94);
     mLastFrame = mBaku->mAnim->GetFrameCountForSet(0) - 0x10000;
     mCamera->ApplyPath();
     if (mCount) {
@@ -460,10 +460,10 @@ void BattleCardModel::func_ov007_022734d8() {
             i++;
         } while (i < mCount);
     }
-    mUnk_28 = new ModelLightGroup(data_ov007_0227c3f0);
+    mLights = new ModelLightGroup(data_ov007_0227c3f0);
 }
 
-void BattleCardModel::func_ov007_02273718() {
+void BattleCardModel::StartEffectsAtFrame() {
     if (mCount) {
         u8 i = 0;
         do {
@@ -488,7 +488,7 @@ void BattleCardModel::func_ov007_02273718() {
     }
 }
 
-void BattleCardModel::func_ov007_022737e0() {
+void BattleCardModel::UpdateEffects() {
     MtxFx43 rot;
     VecFx32 dir;
     u16 angles[3];
@@ -505,7 +505,7 @@ void BattleCardModel::func_ov007_022737e0() {
                         SetEffectPosition(mEffects, mHandles[i], &mPos[i]);
                         break;
                     case 1:
-                        func_ov007_02273a4c(i);
+                        MoveEffectToBone(i);
                         break;
                     case 2:
                         rot = gIdentityMtx43;
@@ -517,7 +517,7 @@ void BattleCardModel::func_ov007_022737e0() {
                         SetEffectMatrix(mEffects, mHandles[i], &rot);
                         break;
                     case 3:
-                        func_ov007_02273a4c(i);
+                        MoveEffectToBone(i);
                         MTX_MultVec43(&mParts[i].mTarget, &CameraManager::Get().mMtxC[0], &dir);
                         VEC_Subtract(&mPos[i], &dir, &dir);
                         VEC_Normalize(&dir, &dir);
@@ -533,7 +533,7 @@ void BattleCardModel::func_ov007_022737e0() {
     }
 }
 
-void BattleCardModel::func_ov007_02273a4c(u32 index) {
+void BattleCardModel::MoveEffectToBone(u32 index) {
     MtxFx43 world;
     MtxFx43 rot;
     MtxFx43 *bone = mBaku->mModel->GetCallbackMtx(mBones[index]);
@@ -588,7 +588,7 @@ void BattleCardModel::func_ov007_02273be8() {
     }
 }
 
-void func_ov007_02273e3c(BattleCardModel *model) {
+void CloseCardModel(BattleCardModel *model) {
     if (model->mState >= 3) {
         return;
     }
@@ -597,19 +597,19 @@ void func_ov007_02273e3c(BattleCardModel *model) {
     SpriteManager::sFade[0] = 3;
 }
 
-void BattleCardModel::func_ov007_02273ec0() {
+void BattleCardModel::LoadNameText() {
     if (mType != 0) {
         return;
     }
     MessageFile *file = (MessageFile *) LoadFile("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
     mTextSize         = TextManager::Get().BufferSize(0x20, 2);
-    mUnk_74           = TextManager::Get().GlyphCount(8);
+    mGlyphCount           = TextManager::Get().GlyphCount(8);
     mTextBuffer       = OS_Alloc(mTextSize);
-    mTextBuffer2      = OS_Alloc(mUnk_74 * 0xc);
+    mTextBuffer2      = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mTextBuffer2, 0, 0, 0x20, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
     MI_CpuClear16(mTextBuffer, mTextSize);
-    u16 index = mUnk_8c;
+    u16 index = mBakuganId;
     if ((index == 5) | (index == 6)) {
         index += 0x24;
     }
@@ -626,7 +626,7 @@ void BattleCardModel::func_ov007_02273ec0() {
     OS_Free(file);
 }
 
-void BattleCardModel::func_ov007_02274238() {
+void BattleCardModel::DrawName() {
     if (mUnk_96) {
         return;
     }

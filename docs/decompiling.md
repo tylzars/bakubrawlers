@@ -123,7 +123,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   r12, then r14; else a new callee-saved register (traced on BattleSlot's constructor in four states).
 - A value assigned inside a loop is loop-variant to the IR, so `s16 sdelta; ... sdelta = delta; shift = sdelta *
   sdelta / 8;` inside the loop keeps the product there for the backend's own invariant pass, where a pre-loop form
-  is hoisted by the IR into the preheader and scheduled differently (BattleData::func_ov007_0223dfcc).
+  is hoisted by the IR into the preheader and scheduled differently (BattleData::DrawEntryNumber).
 - Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
@@ -169,7 +169,7 @@ that matches should replace it.
   addresses, so a wrong literal can look like a match).
 
 - **Two CameraManager mode tests, loads scheduled first (solved).** AntennaIndicator::Update, SetupLayout and
-  BattleCardEffect::func_ov007_02271888 (the last thing keeping BattleCardEffect from linking) test
+  BattleCardEffect::UpdateAnimation (the last thing keeping BattleCardEffect from linking) test
   `(mode == 2) | (mode == 3)` on two `CameraManager::Get()` results. The original loads both modes before the first
   compare: the `== 2` operand comes from the address kept in r4, the `== 3` one from a fresh pool load issued first.
   `CameraManager &b = Get(); CameraManager &a = Get(); if ((a.mMode == 2) | (b.mMode == 3))` is 4 words off (wrong
@@ -285,7 +285,7 @@ that matches should replace it.
   pin a later load, check the declared size of the stored-to object.
 
 - **Both CameraManager mode loads before the compares.** `(Get().mMode == 2) | (Get().mMode == 3)`
-  (BattleCardEffect::func_ov007_02271888, AntennaIndicator::Update and SetupLayout): the original loads the
+  (BattleCardEffect::UpdateAnimation, AntennaIndicator::Update and SetupLayout): the original loads the
   instance address, then both modes, then compares (first mode and its 0/1 result share r1); we compare the first
   mode before loading the second. Every form tried compiles to the same code: operand order, `||`, negations,
   temporaries before or after the second `Get()`, references, pointers, inline wrappers around `Get()` or the
@@ -463,7 +463,7 @@ Other findings from linking:
   mOptionBytes[5][2]` (a union view of the flat `mUnk_25c[10]`): a declared 2-D member builds the address as
   `j + row` (`add r2, r9, r3`); `((u8 (*)[2]) mUnk_25c)[i][j]` fixes the registers but emits `row + j`.
 
-- **Locals shared by two blocks colour as named locals.** In BattleSub48::func_ov007_02224c90 per-block `u16 x` was a
+- **Locals shared by two blocks colour as named locals.** In BattleSub48::DrawCircleAndSides per-block `u16 x` was a
   call-result temporary (higher register); declaring `x`, `y`, `step` once at function scope and assigning them in
   both blocks matched.
 - **A static's place in `.bss` shows in relocations too.** GimmickFieldDestroy::Load/Unload were byte-identical but
@@ -542,7 +542,7 @@ Other findings from linking:
   in the original's order (`z = p->z; y = p->y; x = p->x;`) fixes the load order before a call.
 - **An enum-typed copy of a field read is a real load.** `CameraMode mode = (CameraMode) cam.mMode;` loads where it
   is declared and is not substituted into the compare, so two such copies keep both loads ahead of the tests: this
-  matched AntennaIndicator::Update/SetupLayout and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
+  matched AntennaIndicator::Update/SetupLayout and BattleCardEffect::UpdateAnimation after ~60 int-typed
   forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
   declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
 - **An identical first instruction in both arms is hoisted after register allocation.** When both arms of an
@@ -583,7 +583,7 @@ Other findings from linking:
   several `(s16)`/`(s32)` casts at other call sites go.
 - **A narrow parameter type changes the caller's spill scheduling.** A word-sized access to a u8/u16/s16 parameter's
   home slot shares the worst-case alias set with pointer accesses, so such stores and loads chain in the
-  post-allocation scheduler (ties go to input order). BattleData::func_ov007_0223de88 matched once its `value` was
+  post-allocation scheduler (ties go to input order). BattleData::DrawBakuganAndNumber matched once its `value` was
   u16 and `flag` u8, which needed CellAnimation::Draw and DrawFrame's last parameter to be u8 as well; callers
   then pass u8 variables (a u32 variable gains an `and #0xff`).
 - **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
@@ -591,7 +591,7 @@ Other findings from linking:
   func_0223f398 needed the explicit `if`.
 - **`stm` where the original has two `str`s for stack arguments.** Declare the flag without an initialiser and assign
   it only in the arm that needs it (`BOOL has; if (...) {...} else { has = 0; ...}`), passing literals in the other
-  arm (BattleCommandList::func_0205a804).
+  arm (BattleCommandList::UpdatePage).
 - **A byte array that is really an array of small structs.** `u8 mUnk_0c[10]` used as `{cur, target}` pairs: struct
   indexing (`mUnk_0c[i].mCur`) stops mwcc sharing the address across a call, which frees a register for hoisting.
 - **From the FieldSelectScene pass.**
@@ -788,9 +788,9 @@ Other findings from linking:
 - **Early returns:** `if (x != 0) { x = 0; return TRUE; } return FALSE;` and `if (id < N) { return table[id]; }
   return 0;` give the original's conditional early return (`bxeq`/`bxcs`); the inverted forms predicate instead.
 - **Stopping predication:** explicit nested ifs setting a `BOOL` keep a branch that a ternary or a selected `u8`
-  would predicate (`BattleCommandList::func_020585e0`).
+  would predicate (`BattleCommandList::UpdateListItems`).
 - **A field set from an argument and then tested:** store first and test the field (`f = g; if (f != 0)`), not
-  `if (g & 0xff)` (`func_02058404`, `func_02055764`).
+  `if (g & 0xff)` (`CreateCommandListWindow`, `CreateCommandPageWindow`).
 - **Load order through locals:** a pointer copied to a local before a store fixes the order of pool loads
   (`func_02084a10`); fields loaded into named locals before arithmetic fix the order of field loads, then try
   both operand orders (`BattleTarget::func_ov007_0225aa80`).
@@ -864,7 +864,7 @@ Other findings from linking:
 - **Single-assignment locals are substituted.** `T x = expr;` is copied into every use and then hoisted out of every
   enclosing loop where it's invariant; passed straight as a call argument it's recomputed instead. A local assigned
   twice (`s32 left = c; left += b;`) is not substituted and is computed where written, e.g. in an inner loop's
-  preheader (BattleCommandPage::func_020571a8). Function-scope stack locals get slots in descending declaration order.
+  preheader (BattleCommandPage::DrawCard). Function-scope stack locals get slots in descending declaration order.
 - **More register rules (game code).**
   - A value returned from an inline helper (or a block-local copied into the variable) is coloured differently from
     assigning the variable directly; a variable left unset on some path is live from entry and gets low registers.

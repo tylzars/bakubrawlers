@@ -23,16 +23,16 @@ ConfrontBg04::~ConfrontBg04() {
     delete mBlend;
 }
 
-void ConfrontBg04::func_ov007_02219888(BattleData *data, u32 mode) {
+void ConfrontBg04::Init(BattleData *data, u32 mode) {
     mData = data;
-    func_ov007_0221a624();
-    vfunc_28();
+    InitSubScreen();
+    LoadGraphics();
     MtxFx22 mtx;
     func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, 0, 0);
 }
 
-void ConfrontBg04::func_ov007_0221a624() {
+void ConfrontBg04::InitSubScreen() {
     GXS_SetGraphicsMode(3);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -43,10 +43,10 @@ void ConfrontBg04::func_ov007_0221a624() {
     G2S_SetBG2Priority(3);
     G2S_SetBG3Priority(1);
     G2S_SetBlendAlpha(8, 2, 1, 0);
-    mBlend->func_ov007_02223ee4();
+    mBlend->WriteBlendAlpha();
 }
 
-void ConfrontBg04::vfunc_28() {
+void ConfrontBg04::LoadGraphics() {
     char path[0x80];
     const char *dir = "/Game/Confrontation/Bg/";
     BattleEntry *entries = mData->mEntries;
@@ -76,18 +76,18 @@ BOOL ConfrontBg04::func_ov007_0221bfa4() {
         return FALSE;
     }
     func_ov007_02220718();
-    mBlend->func_ov007_02223ea0();
+    mBlend->LowerLevel();
     return FALSE;
 }
 
 void ConfrontBg04::vfunc_3c() {
-    mBlend->func_ov007_02223dc4();
+    mBlend->UpdateWobble();
     if (mSpeed != 0) {
         QueueFrameCallback((FrameCallback) func_ov007_02220688, this);
     }
 }
 
-u8 ConfrontBg04::vfunc_40(int a) {
+u8 ConfrontBg04::UpdateTouch(int a) {
     u8 touching = 1;
     s32 value;
     u16 result = 0;
@@ -109,7 +109,7 @@ u8 ConfrontBg04::vfunc_40(int a) {
     }
     if (!touching) {
         func_ov007_02220718();
-        mBlend->func_ov007_02223ea0();
+        mBlend->LowerLevel();
         return 0;
     }
     if (value > 0) {
@@ -139,7 +139,7 @@ u8 ConfrontBg04::vfunc_40(int a) {
         result = (u32) (speed * 100) / 10000;
     }
     if (result != 0) {
-        mBlend->func_ov007_02223d7c();
+        mBlend->RaiseLevel();
         func_ov007_0221bb3c();
     }
     return result;

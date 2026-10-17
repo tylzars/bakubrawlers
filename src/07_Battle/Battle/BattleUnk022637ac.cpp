@@ -168,7 +168,7 @@ void BattleUnk022637ac::Update() {
                     mUnk_0f                         = 1;
                     break;
             }
-            func_02055624(mUnk_24, 1);
+            CloseCommandPage(mUnk_24, 1);
             if ((u16) (mUnk_18 + 0xff35) <= 1 && result == 1) {
                 mState++;
                 break;
@@ -219,9 +219,9 @@ void BattleUnk022637ac::Update() {
                 mState = 5;
             }
             if (mUnk_18 == 0xcb) {
-                func_02055624(mUnk_24, 1);
+                CloseCommandPage(mUnk_24, 1);
             } else {
-                func_0205821c(mUnk_34);
+                CloseCommandList(mUnk_34);
             }
             mContext->mUnk_12 = 0;
             break;
@@ -254,7 +254,7 @@ void BattleUnk022637ac::Update() {
             }
             mContext->mUnk_12 = 0;
             mUnk_20->func_ov007_02234418(0xff);
-            func_02055624(mUnk_24, 3);
+            CloseCommandPage(mUnk_24, 3);
             mUnk_17 = 2;
             mState  = 0x10;
             WirelessManager::Get();
@@ -271,14 +271,14 @@ void BattleUnk022637ac::Update() {
             mContext->mUnk_12 = 0;
             mUnk_20->func_ov007_02234418(0xff);
             if (mUnk_14 == 1) {
-                func_02055624(mUnk_24, 3);
+                CloseCommandPage(mUnk_24, 3);
                 mUnk_17 = 2;
                 mState  = 0x10;
                 break;
             }
             mUnk_0f = player->mMsg.mTouchDown;
             mUnk_2b = player->mMsg.mTouchX;
-            func_02055624(mUnk_24, 1);
+            CloseCommandPage(mUnk_24, 1);
             mState = 10;
             if (mUnk_0f == 1 || mUnk_18 == 0xcd) {
                 SpriteManager::Get().sFade[1] = 3;
@@ -292,7 +292,7 @@ void BattleUnk022637ac::Update() {
                 mUnk_0f = mUnk_14 == 1 ? 2 : 3;
                 mContext->mUnk_12 = 0;
                 mUnk_20->func_ov007_02234418(0xff);
-                func_02055624(mUnk_24, 1);
+                CloseCommandPage(mUnk_24, 1);
                 mState = 10;
                 if (mUnk_18 == 0xcd) {
                     SpriteManager::Get().sFade[1] = 3;
@@ -684,7 +684,7 @@ u8 BattleUnk022637ac::func_ov007_022652c8() {
 
 extern const s16 data_0208bd24[2];
 void func_ov007_02262714(BattlePlayerList *list, u8 a, u8 b, u8 c);
-void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
+void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 extern "C" void func_ov007_02248910(BattleCommandMap *map);
 
 // The target and eye are built as whole vectors and stored by struct copy (the `mov r2, ip` copy of pos.x), with the
@@ -707,7 +707,7 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
             BattleMarker *entries  = list->Entries();
             list->mMarkers[marker].mStatus = 3;
             VecFx32 pos;
-            func_ov007_02248944(&pos, entries[marker].mCellX, entries[marker].mCellY);
+            GetCellPosition(&pos, entries[marker].mCellX, entries[marker].mCellY);
             Camera *cam = mUnk_30;
             u16 angle   = 0x2000;
             int idx     = angle >> 4;
@@ -850,7 +850,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 units     = list->mUnits;
                 unit      = UnitAt(units, mUnk_29, sz);
                 marker    = &list->Entries()[unit->mMarker];
-                func_ov007_02248944(&mUnk_54, marker->mCellX, marker->mCellY);
+                GetCellPosition(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
                 VecFx32 b = *(VecFx32 *) unit;
@@ -933,7 +933,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1            = 1;
                 BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[mUnk_2a];
-                func_ov007_02248944(&mUnk_54, marker->mCellX, marker->mCellY);
+                GetCellPosition(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 u8 idx = mUnk_29;
                 if (idx == 0xff) {

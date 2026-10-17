@@ -36,9 +36,9 @@ struct BattleCardModelEntry {
     /* 01 */ u8 mCount; // number of parts
     /* 02 */ PAD(0x02, 0x04);
     /* 04 */ BattleCardModelPart *mParts;
-    /* 08 */ u16 mUnk_08;
-    /* 0a */ u16 mUnk_0a;
-    /* 0c */ u32 mUnk_0c;
+    /* 08 */ u16 mCamKeyStartFrame;
+    /* 0a */ u16 mCamKeyEndFrame;
+    /* 0c */ u32 mCamKeys;
     /* 10 */
 };
 
@@ -48,16 +48,16 @@ public:
     /* 0c */ EffectManager *mEffects;
     /* 10 */ Camera *mCamera;
     /* 14 */ BattleRealBaku *mBaku;
-    /* 18 */ void *mUnk_18; // camera animation file
+    /* 18 */ void *mCamFile; // camera animation file
     /* 1c */ BattleCardModelEntry *mEntry;
     /* 20 */ BattleCardModelPart *mParts;
-    /* 24 */ u32 mUnk_24;
-    /* 28 */ ModelLightGroup *mUnk_28;
+    /* 24 */ u32 mCurrentCamKey;
+    /* 28 */ ModelLightGroup *mLights;
     /* 2c */ VecFx32 mPos[5];
     /* 68 */ void *mTextBuffer;
     /* 6c */ void *mTextBuffer2;
     /* 70 */ u32 mTextSize;
-    /* 74 */ u32 mUnk_74;
+    /* 74 */ u32 mGlyphCount;
     /* 78 */ s32 mLastFrame;
     /* 7c */ u16 mHandles[5];
     /* 86 */ u16 mTextWidth;
@@ -65,8 +65,8 @@ public:
     /* 89 */ u8 mState;
     /* 8a */ u8 mType;
     /* 8b */ u8 mCount;
-    /* 8c */ u8 mUnk_8c;
-    /* 8d */ u8 mUnk_8d;
+    /* 8c */ u8 mBakuganId;
+    /* 8d */ u8 mVariant;
     /* 8e */ u8 mBones[5];
     /* 93 */ u8 mUnk_93;
     /* 94 */ u8 mUnk_94;
@@ -78,15 +78,15 @@ public:
     BattleCardModel(EffectManager *effects, Camera *camera, u32 a, u32 b, u32 c, u32 d);
     virtual ~BattleCardModel();
     virtual void Update();
-    void func_ov007_022725f0(u32 type, u32 id, u32 c);
-    BOOL func_ov007_0227292c();
-    void func_ov007_022734d8();
-    void func_ov007_02273718();
-    void func_ov007_022737e0();
-    void func_ov007_02273a4c(u32 index);
+    void Init(u32 type, u32 id, u32 c);
+    BOOL UpdateState();
+    void LoadGraphics();
+    void StartEffectsAtFrame();
+    void UpdateEffects();
+    void MoveEffectToBone(u32 index);
     void func_ov007_02273be8();
-    void func_ov007_02273ec0();
-    void func_ov007_02274238();
+    void LoadNameText();
+    void DrawName();
 
     // Part `index` of the card's table.
     BattleCardModelPart *Part(u8 index) {
@@ -96,4 +96,4 @@ public:
     }
 };
 
-void func_ov007_02273e3c(BattleCardModel *model); // releases the model
+void CloseCardModel(BattleCardModel *model); // releases the model

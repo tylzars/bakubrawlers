@@ -16,7 +16,7 @@ extern BattleRealBakuTexEntry data_ov007_022858b8[];
 
 BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int unk6, int unk7) {
     mId       = id;
-    mUnk_05   = unk2;
+    mAnimDataIndex   = unk2;
     mUnk_06_0 = unk3;
     mUnk_06_3 = unk4;
     mUnk_06_4 = unk5;
@@ -24,7 +24,7 @@ BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int
     mUnk_06_6 = unk7;
     mModel    = 0;
     mAnim     = 0;
-    func_ov007_02274454();
+    LoadModel();
 }
 
 BattleRealBaku::~BattleRealBaku() {
@@ -36,7 +36,7 @@ BattleRealBaku::~BattleRealBaku() {
     }
 }
 
-void BattleRealBaku::func_ov007_02274454() {
+void BattleRealBaku::LoadModel() {
     char buf[0x80];
     char name1[0x40];
     char name2[0x40];
@@ -70,7 +70,7 @@ void BattleRealBaku::func_ov007_02274454() {
         }
         model = new NitroModel(buf, tex);
     }
-    sprintf(buf, "realb%02d_%02d_data.bin", charId, mUnk_05);
+    sprintf(buf, "realb%02d_%02d_data.bin", charId, mAnimDataIndex);
     ModelAnimData *data = new ModelAnimData(buf);
     mAnim               = new ModelAnim(data, model);
     mModel              = model->CreateInstance(mAnim);

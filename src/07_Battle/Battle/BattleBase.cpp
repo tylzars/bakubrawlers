@@ -128,7 +128,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     mParam = &gBattleParams[mode];
     mMode = mode;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 sel = list->mUnk_2a9;
+    u8 sel = list->mLocalPlayer;
     BattleEntry *entries = data->mEntries;
     u8 first = entries[0].mPlayer;
     if (sel == first) {
@@ -1030,7 +1030,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
 int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     int result             = -1;
-    u8 side                = list->mUnk_2a9;
+    u8 side                = list->mLocalPlayer;
     BattleEntry *entries   = mBattleData->mEntries;
     if (mLocalSide <= 1) {
         if (mLargeCardPressesRemaining != 0) {
@@ -1191,7 +1191,7 @@ void BattleBase::func_ov007_0221c938() {
     s32 sums[2] = {0, 0};
     u16 c[2] = {0, 0};
     u8 flag = 0;
-    u32 sel = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u32 sel = data_020d433c.mBattlePlayers->mLocalPlayer;
     mUnk_1d = -1;
     mUnk_1c = mUnk_1d;
     mUnk_1f = -1;
@@ -1370,7 +1370,7 @@ void BattleBase::func_ov007_0221cfac(u16 *a, u16 *b) {
 
 void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 sel = list->mUnk_2a9;
+    u8 sel = list->mLocalPlayer;
     u16 hi[4] = {0, 0, 0, 0};
     u8 i = 0;
     do {

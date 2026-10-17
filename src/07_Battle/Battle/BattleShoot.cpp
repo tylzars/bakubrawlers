@@ -166,7 +166,7 @@ public:
     /* 619f */ u8 mTextWidth;
     /* 61a0 */ u8 mPenAndIconsVisible;
     /* 61a1 */ u8 mPlotEnabled; // gates PlotLine and UploadBitmap
-    /* 61a2 */ u8 mUnk_61a2;
+    /* 61a2 */ u8 mSavedTutorialNumber;
     /* 61a3 */ u8 mSubPlanes;
     /* 61a4 */ u8 mMicVisible;
     /* 61a5 */ u8 mUnk_61a5;
@@ -185,7 +185,7 @@ public:
     void InitDisplay();
     void Setup(); // once per object, from Update state 0 or 7
     void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mUnk_6182 = 0xdc when set)
-    void ClearBitmap(); // only for the local turn player (mTurnPlayer == mUnk_2a9); the upload needs mPlotEnabled
+    void ClearBitmap(); // only for the local turn player (mTurnPlayer == mLocalPlayer); the upload needs mPlotEnabled
     // also folds the mMicEvent flags into the turn player's mUnk_dc / mUnk_e4 and steps the other CPUs' offset entries
     void UpdatePushMessages();
     void UpdateTurnPlayerCpu();
@@ -228,7 +228,7 @@ BattleShoot::BattleShoot(Camera *unk1, u8 unk2)
     mShotRotY = 0x6000;
     mShotRotZ = 0x38e;
     mCpuPushInterval = 0;
-    mUnk_61a2 = unk2;
+    mSavedTutorialNumber = unk2;
     mState = 0;
 }
 
@@ -242,7 +242,7 @@ BattleShoot::BattleShoot(Camera *unk1, const u16 *pos, u16 unk3, u16 unk4, u8 un
     mRotYAdjust = unk3;
     mRotZAdjust = unk4;
     mSpKind = unk6;
-    mUnk_61a2 = unk7;
+    mSavedTutorialNumber = unk7;
     mState = 7;
 }
 
@@ -298,8 +298,8 @@ void BattleShoot::Init(Camera *unk1) {
     mPenStrokesRemaining = 0;
     mShootTextVisible = 0;
     mTextWidth = 0;
-    mUnk_61a2 = 0;
-    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    mSavedTutorialNumber = 0;
+    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
         mUnk_6197 = 1;
     }
     MI_CpuClear32(mCells, 0x54);
@@ -368,8 +368,8 @@ void BattleShoot::Update() {
                 SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 u8 mode = data_020d433c.mTutorialId;
                 if (mode >= 3 && mode <= 12) {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
-                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                     G2S_SetBlendBrightness(0x1f, -10);
                     mState = 2;
                 } else {
@@ -381,7 +381,7 @@ void BattleShoot::Update() {
             mCells[0].mX = (mCells[0].mX + 0x80) / 2;
             mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
             u8 limit;
             if (data_020d433c.mTutorialNumber == 3) {
@@ -391,12 +391,12 @@ void BattleShoot::Update() {
             } else {
                 limit = 4;
             }
-            if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+            if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 data_020d433c.mBattlePlayers->mUnk_2af++;
                 if (data_020d433c.mBattlePlayers->mUnk_2af > limit) {
                     mState = 3;
                 } else {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 }
             }
             break;
@@ -441,7 +441,7 @@ void BattleShoot::Update() {
                     mMicVisible = 1;
                     mPenStrokesRemaining = 3;
                     mShootTextVisible = 0;
-                    if (data_020d433c.mTutorialNumber != 0 || mUnk_61a2 != 0) {
+                    if (data_020d433c.mTutorialNumber != 0 || mSavedTutorialNumber != 0) {
                         mShootTextVisible = 1;
                     }
                     mState = 11;
@@ -508,14 +508,14 @@ void BattleShoot::Update() {
                 }
             }
             u8 idx = data_020d433c.mBattlePlayers->mTurnPlayer;
-            data_020d433c.mBattlePlayers->mPlayers[idx]->mUnk_ec = mShotSpeed;
+            data_020d433c.mBattlePlayers->mPlayers[idx]->mShotSpeed = mShotSpeed;
             BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[idx];
-            p->mUnk_d4 = 0;
-            p->mUnk_d8 = 0;
+            p->mPushSumX = 0;
+            p->mPushSumZ = 0;
             p = data_020d433c.mBattlePlayers->mPlayers[idx];
-            p->mUnk_cc[0]              = mShotRotX;
-            p->mUnk_cc[1]              = mShotRotY;
-            p->mUnk_cc[2]              = mShotRotZ;
+            p->mShotRot[0]              = mShotRotX;
+            p->mShotRot[1]              = mShotRotY;
+            p->mShotRot[2]              = mShotRotZ;
             mBattleTarget->mSpKind        = mSpKind;
             mBattleTarget->StartShot();
             if (mSpKind == 0) {
@@ -531,7 +531,7 @@ void BattleShoot::Update() {
             mShootTextVisible = 0;
             if (data_020d433c.mTutorialNumber != 0) {
                 mPenStrokesRemaining = 0;
-            } else if (mUnk_61a2 != 0) {
+            } else if (mSavedTutorialNumber != 0) {
                 mShootTextVisible = 1;
             }
             if (mSpKind == 5) {
@@ -1271,14 +1271,14 @@ void BattleShoot::StartTouchShot() {
         return;
     }
     u8 index = data_020d433c.mBattlePlayers->mTurnPlayer;
-    data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_ec = mShotSpeed;
+    data_020d433c.mBattlePlayers->mPlayers[index]->mShotSpeed = mShotSpeed;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
-    player->mUnk_d4 = 0;
-    player->mUnk_d8 = 0;
+    player->mPushSumX = 0;
+    player->mPushSumZ = 0;
     player = data_020d433c.mBattlePlayers->mPlayers[index];
-    player->mUnk_cc[0] = mShotRotX;
-    player->mUnk_cc[1] = mShotRotY;
-    player->mUnk_cc[2] = mShotRotZ;
+    player->mShotRot[0] = mShotRotX;
+    player->mShotRot[1] = mShotRotY;
+    player->mShotRot[2] = mShotRotZ;
     mBattleTarget->StartShot();
     if (mSpKind == 0) {
         mUnk_6182 = 0x122;
@@ -1495,7 +1495,7 @@ void BattleShoot::UpdatePushMessages() {
     i = 0;
     do {
         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
-        if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
+        if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
             WirelessManager::Get();
             if (!IsWirelessMode(mode)) {
                 mMsgs[i].mType = ((u8 *) &data_0220f540)[0];
@@ -1621,8 +1621,8 @@ void BattleShoot::UpdatePushMessages() {
     data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4 = spread;
     if (sent == 1) {
         BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[self];
-        pl->mUnk_d4 = sumX;
-        pl->mUnk_d8 = sumZ;
+        pl->mPushSumX = sumX;
+        pl->mPushSumZ = sumZ;
         mBattleTarget->AddPlayerPush();
     }
     if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
@@ -1732,7 +1732,7 @@ void BattleShoot::DrawMic() {
 }
 
 void BattleShoot::ClearBitmap() {
-    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
         MI_CpuClearFast(mBitmap, 0x6000);
         UploadBitmap();
     }
@@ -1753,7 +1753,7 @@ void BattleShoot::PlotLine(u8 x0, u8 y0, u8 x1, u8 y1) {
     if (mPlotEnabled == 0) {
         return;
     }
-    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mLocalPlayer) {
         return;
     }
     steps = ABS(x0 - x1) >= ABS(y0 - y1) ? ABS(x0 - x1) : ABS(y0 - y1);

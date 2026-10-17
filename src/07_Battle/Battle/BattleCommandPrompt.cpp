@@ -73,9 +73,9 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
     mPlayer = player;
     if (mMode >= 5) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        if (mPlayer == list->mUnk_2a9) {
+        if (mPlayer == list->mLocalPlayer) {
             mCollectMode = 1;
-        } else if (mPlayer == list->mPlayers[list->mUnk_2a9]->mPartner) {
+        } else if (mPlayer == list->mPlayers[list->mLocalPlayer]->mPartner) {
             mCollectMode = 1;
         } else {
             mCollectMode = 2;
@@ -87,19 +87,19 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
         case 0:
         case 1:
             mCommandPage = (BattleCommandPage *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 3:
             mCommandPage = (BattleCommandPage *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
         case 2:
             mCommandList = (BattleCommandList *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
+            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
             CollectRecords();
             break;
@@ -221,21 +221,21 @@ void BattleCommandPrompt::Update() {
                     mMessageWindow->StartMessage(0x12, 0, 1);
                     break;
                 case 5:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x27, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x28), 0, 1);
                     }
                     break;
                 case 7:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x2c, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x2d), 0, 1);
                     }
                     break;
                 case 6:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x22, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x23), 0, 1);

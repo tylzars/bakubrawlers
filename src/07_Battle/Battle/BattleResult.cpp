@@ -266,7 +266,7 @@ void BattleResult::Update() {
                     data_020d433c.mUnk_8c_4 = 2;
                 }
             }
-            u8 me = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u8 me = data_020d433c.mBattlePlayers->mLocalPlayer;
             u8 partner = data_020d433c.mBattlePlayers->mPlayers[me]->mPartner;
             if (best == me || best == partner) {
                 new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, me, 12, 0, 0);
@@ -316,7 +316,7 @@ void BattleResult::Update() {
         case 4: {
             u8 k;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u8 me = list->mUnk_2a9;
+            u8 me = list->mLocalPlayer;
             u8 numPlayers = data_020d433c.mPlayerCount;
             BattlePlayer *player = list->mPlayers[me];
             u8 own = player->mUnk_ee;
@@ -672,7 +672,7 @@ void BattleResult::LoadResultGraphics() {
     } while (i < 2);
     i = 0;
     do {
-        u8 *rec = (u8 *) data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9] + 0x84;
+        u8 *rec = (u8 *) data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer] + 0x84;
         if (*(u16 *) (rec + i * 6) != 0) {
             mCellAnims[i + 2] = new CellAnimation("bakugan_sub_s_nce.bin", 0, 1, 1);
             mCellAnims[i + 2]->mCharBase = screen.GetCharBase(0x2000);
@@ -756,7 +756,7 @@ void BattleResult::SetupRetryScreen() {
     mCellAnimsB[2]->mCharBase = screen0.GetCharBase(0);
     mCellAnimsB[2]->mPaletteBase   = 0;
     MessageFile *file = (MessageFile *) LoadFile("/font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(0, 0, 0, 0);
+    TextManager::Get().UploadBgPalette(0, 0, 0, 0);
     void *map = OS_Alloc(TextManager::Get().GlyphCount(0x600));
     MI_CpuClearFast(map, 0x600);
     TextManager::Get().FillScrChars(0, (u16 *) map, 0, 0, 0x20, 0x18, 0x20);
@@ -850,7 +850,7 @@ void BattleResult::DrawRetryScreen() {
             x = 0x20;
             mCellAnimsB[1]->SetAnimation(11);
             mCellAnimsB[1]->mFrameIndex = i;
-        } else if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
+        } else if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
             y = base + 0x3a;
             x = 0x20;
             mCellAnimsB[1]->SetAnimation(i + 2);
@@ -963,7 +963,7 @@ void BattleResult::ComputeAmounts() {
             const u8 (*tbl)[3] = sRankTable;
             u32 count = data_020d433c.mPlayerCount;
             u8 i = 1;
-            u32 me = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u32 me = data_020d433c.mBattlePlayers->mLocalPlayer;
             do {
                 u32 idx = (u8) (me + i);
                 u8 rem = idx % count;
@@ -981,7 +981,7 @@ void BattleResult::ComputeAmounts() {
         }
     }
     u8 j = 0;
-    u8 me2 = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 me2 = data_020d433c.mBattlePlayers->mLocalPlayer;
     do {
         mHistoryValues[j] = *(u16 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[me2] + 0x84 + j * 6);
         j++;
@@ -1015,7 +1015,7 @@ void BattleResult::ComputeAmounts() {
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
     u32 count2 = data_020d433c.mPlayerCount;
     u8 m = 1;
-    u32 me3 = list2->mUnk_2a9;
+    u32 me3 = list2->mLocalPlayer;
     u8 flag98 = data_020d433c.mHasPartners;
     do {
         u32 idx2 = (u8) (me3 + m);

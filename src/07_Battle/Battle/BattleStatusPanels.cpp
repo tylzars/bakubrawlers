@@ -161,7 +161,7 @@ void BattleStatusPanels::SetupPanel(u32 index, s32 character, u32 team, u8 side)
     u8 level = GetLevel(index);
     if (level >= 0x13) {
         u8 cur  = data_020d433c.mBattlePlayers->mTurnPlayer;
-        u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
+        u8 cur2 = data_020d433c.mBattlePlayers->mLocalPlayer;
         if ((index == cur) & (cur == cur2)) {
             mPanels[index].mCellAnims[2]->SetAnimation(mPanels[index].mMirrored + 0x16);
         } else {
@@ -205,10 +205,10 @@ void BattleStatusPanels::DrawPanels() {
             s8 dir    = 1 - mPanels[i].mMirrored * 2;
             y += mPanels[i].mOffset[1];
             s16 q     = x + 0xe;
-            if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
+            if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
                 mPanels[i].mCellAnims[4]->Draw(0, (s16) (dir * (mPanels[i].mMirrored * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
             } else if (data_020d433c.mHasPartners &&
-                       i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mPartner) {
+                       i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mPartner) {
                 mPanels[i].mCellAnims[6]->Draw(0, (s16) (dir * (mPanels[i].mMirrored * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
             }
             if (data_020d433c.mHasPartners && mMode == 0) {
@@ -323,7 +323,7 @@ void BattleStatusPanels::DrawPanels() {
                     mPanels[i].mCellAnims[2]->DrawFrame(0, level - 1, x - 2, y - 2, mUnk_f2);
                     if (level >= 0x13) {
                         u8 cur  = data_020d433c.mBattlePlayers->mTurnPlayer;
-                        u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
+                        u8 cur2 = data_020d433c.mBattlePlayers->mLocalPlayer;
                         if ((i == cur) & (cur == cur2)) {
                             mPanels[i].mCellAnims[2]->SetAnimation(mPanels[i].mMirrored + 0x18);
                         } else {

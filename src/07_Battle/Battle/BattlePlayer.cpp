@@ -144,8 +144,8 @@ s32 GetSlotBakuganId(SaveData *base, u32 unk1, u32 unk2);
 BattlePlayer::BattlePlayer(u32 index)
     : SceneBase(2, 0) {
     (void) DataLayoutSlot();
-    mUnk_d4 = 0;
-    mUnk_d8 = 0;
+    mPushSumX = 0;
+    mPushSumZ = 0;
     mUnk_dc = 0;
     mUnk_ee = 0;
     mState = 0;
@@ -200,7 +200,7 @@ BattlePlayer::BattlePlayer(u32 index)
             u32 extra = 0;
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4258)) {
-                int n = data_020d433c.mUnk_af[index];
+                int n = data_020d433c.mRecvBlockIndices[index];
                 if (data_020d43e3[(u32) n >> 3] & (1 << (n % 8))) {
                     extra = 0x64;
                 }
@@ -301,8 +301,8 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     BOOL hasZero;
     u8 n;
     u8 ones;
-    player->mUnk_d4 = 0;
-    player->mUnk_d8 = 0;
+    player->mPushSumX = 0;
+    player->mPushSumZ = 0;
     n       = data_020d433c.mUnk_99;
     hasZero = 0;
     ones    = 0;

@@ -120,11 +120,11 @@ static const u8 sFrameTaskIds[8] = {6, 0, 8, 9, 4, 2, 10, 1};
 BattlePlayerList::BattlePlayerList()
     : SceneBase(0x3e8, 0) {
     mCamera = 0;
-    mUnk_2a4 = 0;
+    mStorytalkWindow = 0;
     mState = 0;
     mUnk_2ac = 0;
     mRepeatTurn = 0;
-    mUnk_2ae = 0;
+    mSavedTutorialNumber = 0;
     mUnk_2af = 0;
     mUnk_2b0 = 0;
     if (data_020d433c.mTutorialPart) {
@@ -137,8 +137,8 @@ BattlePlayerList::BattlePlayerList()
     data_020d433c.mEffects  = 0;
     data_020d433c.mGimmickCollision   = 0;
     data_020d433c.mAntenna   = 0;
-    mUnk_2aa                = 0;
-    mUnk_2ab                = 0;
+    mTexVariant                = 0;
+    mSecondTexVariant                = 0;
     MI_CpuClearFast(&mPlayers[0], 0x28c);
     mTurnOrder[0] = 0;
     mTurnOrder[1] = 1;
@@ -155,13 +155,13 @@ BattlePlayerList::BattlePlayerList()
     switch (data_020d433c.mTutorialNumber) {
         case 5:
         case 6:
-            mUnk_2ae              = data_020d433c.mTutorialNumber;
+            mSavedTutorialNumber              = data_020d433c.mTutorialNumber;
             data_020d433c.mTutorialNumber = 0;
             data_020d433c.mTutorialId = 0;
     }
     StartFrameTaskChannel0(this);
     mBattleTarget = 0;
-    mUnk_29c = 0;
+    mUnitModels = 0;
     MicManager::Get().StartSampling();
 }
 
@@ -178,7 +178,7 @@ BattlePlayerList::~BattlePlayerList() {
     if (data_020d433c.mAntenna) {
         ((SceneBase *) data_020d433c.mAntenna)->mFinished = 1;
     }
-    BattleUnitModels *p = mUnk_29c;
+    BattleUnitModels *p = mUnitModels;
     if (p) {
         delete p;
     }
@@ -232,7 +232,7 @@ void BattlePlayerList::Update() {
             SetupTutorial(this);
             break;
         case 4:
-            new ListScene(LIST_MODE_BATTLE_EDIT, mUnk_2a9);
+            new ListScene(LIST_MODE_BATTLE_EDIT, mLocalPlayer);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -358,7 +358,7 @@ void BattlePlayerList::Update() {
                     break;
                 case COMMAND_RESULT_SHOOT_FROM_MSG: {
                     u8 *msg = (u8 *) mPlayers[mTurnPlayer] + 0x100;
-                    new BattleShoot(mCamera, (u16 *) (msg + 4), *(u16 *) (msg + 0xa), *(u16 *) (msg + 0xc), *(msg + 0xf), *(msg + 0x10), mUnk_2ae);
+                    new BattleShoot(mCamera, (u16 *) (msg + 4), *(u16 *) (msg + 0xa), *(u16 *) (msg + 0xc), *(msg + 0xf), *(msg + 0x10), mSavedTutorialNumber);
                     mContext->mRequest = 0;
                     mState = 0x11;
                     break;
@@ -370,7 +370,7 @@ void BattlePlayerList::Update() {
                     u8 outC          = 0;
                     mPlayers[mTurnPlayer]->mCpu->PickShot(&rot, &outA, &outB, &outC);
                     u8 extra = *((u8 *) mPlayers[mTurnPlayer]->mCpu + 0x7e);
-                    new BattleShoot(mCamera, &rot.mX, outA, outB, outC, extra, mUnk_2ae);
+                    new BattleShoot(mCamera, &rot.mX, outA, outB, outC, extra, mSavedTutorialNumber);
                     mContext->mRequest = 0;
                     mState = 0x11;
                     break;
@@ -387,7 +387,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 14:
-            new BattleShoot(mCamera, mUnk_2ae);
+            new BattleShoot(mCamera, mSavedTutorialNumber);
             mContext->mRequest = 0;
             mState = 0x11;
             break;
@@ -425,7 +425,7 @@ void BattlePlayerList::Update() {
                         SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         data_020d433c.mUnk_86++;
                         return;
-                    } else if (mUnk_2a9 == mTurnPlayer) {
+                    } else if (mLocalPlayer == mTurnPlayer) {
                         data_020d433c.mUnk_86 = 0;
                         data_020d433c.mTutorialPart++;
                     }
@@ -439,7 +439,7 @@ void BattlePlayerList::Update() {
                     mUnk_2ac = 0;
                     break;
                 case 2:
-                    if (mUnk_2a9 == mTurnPlayer) {
+                    if (mLocalPlayer == mTurnPlayer) {
                         mState = 0xe;
                     } else {
                         mState = 0xc;
@@ -470,7 +470,7 @@ void BattlePlayerList::Update() {
                     p->mUnk_ee++;
                     RemoveMarker(this, mUnits[mUnitA].mMarker);
                     BattleRecord *used = &mPlayers[owner]->mRecords[slot];
-                    mUnk_2aa           = GetTexVariant(used->mBakuganId, used->mAttribute);
+                    mTexVariant           = GetTexVariant(used->mBakuganId, used->mAttribute);
                     RemoveUnit(this, mUnitA, 2);
                     if (result == 3) {
                         RemoveUnit(this, mUnitB, 2);
@@ -479,10 +479,10 @@ void BattlePlayerList::Update() {
                     if (data_020d433c.mUnk_7a == 0) {
                         return;
                     }
-                    if (mUnk_2a9 != mTurnPlayer) {
+                    if (mLocalPlayer != mTurnPlayer) {
                         return;
                     }
-                    id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
+                    id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                     if (gSaveData[0].mUnk_4e < 0xffff) {
                         gSaveData[0].mUnk_4e++;
                     }
@@ -497,8 +497,8 @@ void BattlePlayerList::Update() {
             }
             switch (result) {
                 case 1:
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
-                        id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mLocalPlayer == mTurnPlayer) {
+                        id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
                         }
@@ -521,10 +521,10 @@ void BattlePlayerList::Update() {
                     if (data_020d433c.mUnk_7a == 0) {
                         return;
                     }
-                    if (mUnk_2a9 != mTurnPlayer) {
+                    if (mLocalPlayer != mTurnPlayer) {
                         return;
                     }
-                    id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
+                    id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                     if (gSaveData[0].mUnk_4e < 0xffff) {
                         gSaveData[0].mUnk_4e++;
                     }
@@ -538,8 +538,8 @@ void BattlePlayerList::Update() {
                 case 3: {
                     u8 ownerA = mUnits[mUnitA].mPlayer;
                     u8 ownerB = mUnits[mUnitB].mPlayer;
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
-                        id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mLocalPlayer == mTurnPlayer) {
+                        id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
                         }
@@ -555,10 +555,10 @@ void BattlePlayerList::Update() {
                         // Each record index goes through the reused `slot`: a reassigned local keeps its own late register.
                         slot = mUnits[mUnitA].mRecord;
                         BattleRecord *recs = mPlayers[ownerA]->mRecords;
-                        mUnk_2aa           = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
+                        mTexVariant           = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
                         recs    = mPlayers[ownerA]->mRecords;
                         slot = mUnits[mUnitB].mRecord;
-                        mUnk_2ab = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
+                        mSecondTexVariant = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
                         RemoveMarker(this, mUnits[mUnitA].mMarker);
                         RemoveUnit(this, mUnitA, 2);
                         RemoveUnit(this, mUnitB, 2);
@@ -568,7 +568,7 @@ void BattlePlayerList::Update() {
                         if (data_020d433c.mUnk_7a == 0) {
                             return;
                         }
-                        if (mUnk_2a9 != mTurnPlayer) {
+                        if (mLocalPlayer != mTurnPlayer) {
                             return;
                         }
                         if (gSaveData[0].mUnk_52 < 0x270f) {
@@ -585,7 +585,7 @@ void BattlePlayerList::Update() {
                         if (data_020d433c.mUnk_7a == 0) {
                             return;
                         }
-                        if (mUnk_2a9 != mTurnPlayer) {
+                        if (mLocalPlayer != mTurnPlayer) {
                             return;
                         }
                         if (gSaveData[0].mUnk_50 < 0xffff) {
@@ -608,7 +608,7 @@ void BattlePlayerList::Update() {
                     BattlePlayer *holder = *(BattlePlayer *volatile *) &mPlayers[tp];
                     slot                 = *(volatile u8 *) &mUnits[mUnitB].mRecord;
                     BattleRecord *target = &holder->mRecords[slot];
-                    mUnk_2aa             = GetTexVariant(target->mBakuganId, target->mAttribute);
+                    mTexVariant             = GetTexVariant(target->mBakuganId, target->mAttribute);
                     RemoveUnit(this, mUnitA, 2);
                     RemoveUnit(this, mUnitB, 2);
                     if (data_020d433c.mTutorialNumber != 0) {
@@ -617,10 +617,10 @@ void BattlePlayerList::Update() {
                     if (data_020d433c.mUnk_7a == 0) {
                         return;
                     }
-                    if (mUnk_2a9 != mTurnPlayer) {
+                    if (mLocalPlayer != mTurnPlayer) {
                         return;
                     }
-                    id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
+                    id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                     if (gSaveData[0].mUnk_4e < 0xffff) {
                         gSaveData[0].mUnk_4e++;
                     }
@@ -655,7 +655,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 20:
-            new BattleCharaAct(mCamera, mTurnPlayer, 8, mUnk_2aa, mUnk_2ab);
+            new BattleCharaAct(mCamera, mTurnPlayer, 8, mTexVariant, mSecondTexVariant);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -667,7 +667,7 @@ void BattlePlayerList::Update() {
             mContext->mRequest = 1;
             break;
         case 22:
-            new BattleCharaAct(mCamera, mTurnPlayer, 9, mUnk_2aa, 0);
+            new BattleCharaAct(mCamera, mTurnPlayer, 9, mTexVariant, 0);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -772,7 +772,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 29:
-            if (mUnk_2ae != 0) {
+            if (mSavedTutorialNumber != 0) {
                 SoundManager::Get().StopSeq(1);
             }
             new BattleResult();
@@ -787,7 +787,7 @@ void BattlePlayerList::Update() {
                 return;
             }
             mState = 0x1f;
-            if (mUnk_2ae == 0) {
+            if (mSavedTutorialNumber == 0) {
                 return;
             }
             SoundManager::Get().RestoreHeapState();
@@ -798,8 +798,8 @@ void BattlePlayerList::Update() {
             data_020d433c.mUnk_87   = 1;
             data_020d433c.mUnk_88_4 = 0;
             data_020d433c.mUnk_88_0 = 0;
-            if (mUnk_2ae != 0) {
-                data_020d433c.mTutorialNumber = mUnk_2ae;
+            if (mSavedTutorialNumber != 0) {
+                data_020d433c.mTutorialNumber = mSavedTutorialNumber;
                 RequestScene(SCENE_TUTORIAL);
                 mFinished = 1;
                 return;
@@ -864,7 +864,7 @@ void BattlePlayerList::Update() {
             mFinished = 1;
             break;
         case 34:
-            mUnk_2a4->Close();
+            mStorytalkWindow->Close();
             mState++;
             break;
         case 35:
@@ -912,7 +912,7 @@ void InitPlayerListDisplay() {
     G2S_SetBG1Priority(1);
 }
 
-// Also sets mUnk_2a9: data_020d433c.mUnk_ae in wireless mode, else 0.
+// Also sets mLocalPlayer: data_020d433c.mUnk_ae in wireless mode, else 0.
 void CreateObjects(BattlePlayerList *list) {
     list->mCamera = new Camera();
     list->mCamera->SetUp(0, 0x1000, 0);
@@ -923,7 +923,7 @@ void CreateObjects(BattlePlayerList *list) {
     data_020d433c.mEffects = new EffectManager();
     data_020d433c.mGimmickCollision  = new GimmickCollision();
     data_020d433c.mGimmicks = new GimmickManager();
-    list->mUnk_29c = new BattleUnitModels();
+    list->mUnitModels = new BattleUnitModels();
     if (data_020d433c.mWireless) {
         data_020d433c.mAntenna = new AntennaIndicator(0);
     }
@@ -933,7 +933,7 @@ void CreateObjects(BattlePlayerList *list) {
         i++;
     } while (i < data_020d433c.mPlayerCount);
     WirelessManager::Get();
-    list->mUnk_2a9 = IsWirelessMode(&data_020c4030.mUnk_228) ? data_020d433c.mUnk_ae : 0;
+    list->mLocalPlayer = IsWirelessMode(&data_020c4030.mUnk_228) ? data_020d433c.mLocalSlot : 0;
 }
 // The address of the marker's value in its player's mSlots54.
 u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index) {
@@ -1106,14 +1106,14 @@ void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
 // Called from Update case 2 each frame. Only mTutorialId 1-4, 7, 8, 10, 12 and 14 change mState; any other id runs
 // it again (with a new StorytalkWindow) the next frame.
 void SetupTutorial(BattlePlayerList *list) {
-    list->mUnk_2a4 = new StorytalkWindow();
+    list->mStorytalkWindow = new StorytalkWindow();
     MIi_CpuCopyFast(gCharacterLook, (u8 *) list->mPlayers[0] + 0xa8, 8);
     switch (data_020d433c.mTutorialId) {
         case 1:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             SetSlot54Flag(list->mPlayers[0], 1, 2);
@@ -1131,9 +1131,9 @@ void SetupTutorial(BattlePlayerList *list) {
         case 3:
         case 4:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 2;
             list->mTurnCount = 3;
@@ -1151,9 +1151,9 @@ void SetupTutorial(BattlePlayerList *list) {
         case 7: {
             list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mTurnCount = 10;
@@ -1177,9 +1177,9 @@ void SetupTutorial(BattlePlayerList *list) {
         case 8: {
             list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mTurnCount = 11;
@@ -1205,9 +1205,9 @@ void SetupTutorial(BattlePlayerList *list) {
         case 10: {
             list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 3;
             list->mTurnCount = 11;
@@ -1235,9 +1235,9 @@ void SetupTutorial(BattlePlayerList *list) {
         }
         case 12:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T003_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T003_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T003_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T003_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mState = 14;
@@ -1247,9 +1247,9 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         case 14: {
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T004_ba.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T004_ba.mes");
             } else {
-                list->mUnk_2a4->LoadMessageFile("font/mes_T004_ba_Ali.mes");
+                list->mStorytalkWindow->LoadMessageFile("font/mes_T004_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mState = 24;

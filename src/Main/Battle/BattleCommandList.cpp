@@ -1059,7 +1059,7 @@ void BattleCommandList::UpdatePage() {
         }
     }
     if (mPlayer > -1) {
-        u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
+        u8 cur = data_020d433c.mBattlePlayers->mLocalPlayer;
         BOOL has;
         if (mPlayer == cur) {
             mCells58[4]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);

@@ -391,7 +391,7 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
     mUnk_10 = value;
 }
 
-// Placeholder (case 29): `idx = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9` reads the same byte
+// Placeholder (case 29): `idx = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer` reads the same byte
 // on both arms and compiles to nothing extra. As a two-arm value the player index is not forward-substituted into
 // `slots`, and the arms are merged only after the last expression propagation, so idx stays its own statement; with
 // `off = j << 2` that numbers list < idx < j*4 < slots, giving the original's registers (`ldr r1,[r5]; lsl r2,r8,#2;
@@ -415,7 +415,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 mUnk_68 = 1;
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    if (data_020d433c.mBattlePlayers->mUnk_2a9 == 0) {
+                    if (data_020d433c.mBattlePlayers->mLocalPlayer == 0) {
                         mUnk_23 = 1;
                     }
                 }
@@ -620,7 +620,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             SpriteManager::Get().SetupMode(0, 7);
             GX_SetGraphicsMode(1, 0, 1);
             mMarkerCardKind = func_ov007_022428d4(mData->mMarkerCardId);
-            u8 side = data_020d433c.mBattlePlayers->Unk2a9() == e[1].mPlayer ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
             u32 kind = 6;
             switch (mMarkerCardKind) {
                 case 1:
@@ -692,7 +692,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 break;
             }
             u8 side;
-            if (data_020d433c.mBattlePlayers->Unk2a9() == e[1].mPlayer) {
+            if (data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
                 side = 1;
                 if (mUnk_5d == 0) {
                     side = 0;
@@ -751,7 +751,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             func_ov007_0223f90c(0x40);
             mStep = 0x19;
-            if (data_020d433c.mBattlePlayers->Unk2a9() == e[1].mPlayer) {
+            if (data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
                 if (mUnk_5d == 0) {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
@@ -774,7 +774,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            u8 side = data_020d433c.mBattlePlayers->Unk2a9() == e[1].mPlayer ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
             mCardSpec = new BattleCardSpec(3, e[side].mBakuganId, e[side].mAttribute, e[side].mCharacterId == 0x15 ? 1 : 0);
             func_ov007_0223f90c(0x40);
             mStep++;
@@ -800,19 +800,19 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 data_020d433c.mAntenna->mSecondVisible = 0;
             }
             GXS_SetVisibleWnd(0);
-            data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
+            data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
             {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mUnk_2a4->SetMessage(list->mUnk_2af, 0x64, 0, 0);
+                list->mStorytalkWindow->SetMessage(list->mUnk_2af, 0x64, 0, 0);
             }
             G2S_SetBlendBrightness(0x1f, -10);
             mStep++;
             break;
         case 27:
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
-            if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+            if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 break;
             }
             data_020d433c.mBattlePlayers->mUnk_2af++;
@@ -830,7 +830,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 mStep = 0x20;
                 break;
             }
-            u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
             if (owner == e[0].mPlayer) {
                 mStep = 0x1d;
                 mLocalSide = 0;
@@ -851,7 +851,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             mDisabledBits  = 0;
             do {
                 BattlePlayerList *list  = data_020d433c.mBattlePlayers;
-                u8 idx                  = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9; // placeholder, see above
+                u8 idx                  = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer; // placeholder, see above
                 u32 off                 = j << 2;
                 BattlePlayerSlot *slots = list->mPlayers[idx]->mSlots6c;
                 u8 flag                 = *((u8 *) slots + off + 2);
@@ -917,7 +917,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
         case 33: {
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4258)) {
-                u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+                u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
                 if (e[0].mPlayer == owner || e[1].mPlayer == owner) {
                     data_0220f540.mUnk_00 = 7;
                     data_0220f540.mUnk_04 = mCardId;
@@ -1279,7 +1279,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 u8 found = 0;
                 u8 idx   = 0;
                 u8 i     = 0;
-                u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+                u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
                 do {
                     if (owner == e[i].mPlayer) {
                         idx   = i;

@@ -185,7 +185,7 @@ that matches should replace it.
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
   BattleConfrontCard::UpdateConfrontation (case 29's loop head) is the same family: the original numbers the list
   pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index
-  (see Placeholders): `idx = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9` keeps the index a
+  (see Placeholders): `idx = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer` keeps the index a
   statement of its own until after the last expression propagation, and the merged arms leave no code.
 - **Game.cpp (linked).** What it took:
   - `main` (0x02000c04) is Game's but placed right after the start-up code: a stub unit GameMain.cpp holds its slot and

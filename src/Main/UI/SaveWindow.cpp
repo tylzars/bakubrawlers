@@ -185,7 +185,7 @@ void SaveWindow::Load() {
     QueueUpload(mScreen, gBgScrUploadKinds[mWindowBg], 0, tiles, size * 2, 1);
     ChangeDir("/");
     mMessages = (MessageFile *) LoadFile("/font/mes_system.mes", 0, 0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(mScreen, 0, (mTextPaletteOffset >> 5) & 0xff, 0);
+    TextManager::Get().UploadBgPalette(mScreen, 0, (mTextPaletteOffset >> 5) & 0xff, 0);
     TextManager::Get();
     u16 *buffer = (u16 *) OS_Alloc(0x600);
     MIi_CpuClear16((u16) ((mTextCharOffset >> 5) | ((mTextPaletteOffset >> 5) << 12)), buffer, 0x600);

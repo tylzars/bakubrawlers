@@ -67,7 +67,7 @@ void BattleUnitModels::CreateFontObjs() {
         }
         i = (u8) (i + 1);
     } while (i <= 6);
-    u8 type = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 type = data_020d433c.mBattlePlayers->mLocalPlayer;
     if (mFontObjs[7] == 0) {
         mFontObjs[7] = new BattleFontObj((u8) (type + 7));
     }
@@ -294,7 +294,7 @@ void BattleUnitModels::DrawNearPyPt() {
             VecFx32 sc  = sMarkerScale;
             u8 idx = mNearUnitHandles[i] - 1;
             u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mPlayer;
-            u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u8 cur = data_020d433c.mBattlePlayers->mLocalPlayer;
             VecFx32 off = sMarkerOffset;
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
             mtx._[9]    = 0;

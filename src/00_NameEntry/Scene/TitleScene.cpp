@@ -678,7 +678,7 @@ void TitleScene::Update() {
                     scene = SCENE_TUTORIAL;
                     break;
                 case TITLE_MENU_MYROOM:
-                    data_020d433c.mUnk_7f = SCENE_TITLE;
+                    data_020d433c.mMyroomNextScene = SCENE_TITLE;
                     scene = SCENE_MYROOM;
                     break;
                 case TITLE_MENU_OPTION:

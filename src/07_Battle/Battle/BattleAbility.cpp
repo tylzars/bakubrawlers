@@ -70,7 +70,7 @@ BattleAbility::BattleAbility()
     mOtherUnitCount = 0;
     mPlayer = data_020d433c.mBattlePlayers->mTurnPlayer;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 own = list->mUnk_2a9;
+    u8 own = list->mLocalPlayer;
     mRecord = list->mPlayers[mPlayer]->mRecord;
     if (mPlayer != own) {
         mNotLocal = 1;
@@ -125,8 +125,8 @@ static inline void SnapshotCamera() {
 
 typedef u8 (BattleAbility::*BattleAbilityHandler)();
 static BattleAbilityHandler sAbilityHandlers[12] = {
-    &BattleAbility::func_ov007_02265118,
-    &BattleAbility::func_ov007_022652c8,
+    &BattleAbility::UpdateRepeatTurn,
+    &BattleAbility::UpdateShootAgain,
     &BattleAbility::UpdateReassignMarker,
     &BattleAbility::UpdateReplaceRecord,
     0,
@@ -625,7 +625,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
 
 void OrbitCamera(BattleAbility *self);
 
-u8 BattleAbility::func_ov007_02265118() {
+u8 BattleAbility::UpdateRepeatTurn() {
     u8 done = 0;
     switch (mStep) {
         case 0: {
@@ -654,7 +654,7 @@ u8 BattleAbility::func_ov007_02265118() {
     return done;
 }
 
-u8 BattleAbility::func_ov007_022652c8() {
+u8 BattleAbility::UpdateShootAgain() {
     u8 done = 0;
     switch (mStep) {
         case 0: {
@@ -1008,7 +1008,7 @@ u8 BattleAbility::UpdateDefenseUp() {
             OrbitCamera(this);
             if (!mStIconSet && mUnk_1a > 0x32) {
                 mStIconSet = 1;
-                data_020d433c.mBattlePlayers->mUnk_29c->SetStIconUnit(mUnit, 0);
+                data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnit, 0);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {

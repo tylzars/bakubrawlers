@@ -21,7 +21,7 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
     if (mKind >= 0x11) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         u8 x = list->mTurnPlayer;
-        if (x == list->mUnk_2a9) {
+        if (x == list->mLocalPlayer) {
             mAnimPairIndex = 0;
         } else {
             mAnimPairIndex = (x & 0xff) + 1;

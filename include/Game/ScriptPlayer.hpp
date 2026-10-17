@@ -27,8 +27,8 @@ class TextureFile;
 #define SCRIPT_RESULT_MAP        6 // func_02066814 at the end of a table
 #define SCRIPT_RESULT_TUTORIAL   7 // command 229
 
-// Kinds: the ctor's first argument (mUnk_14e2), each named after the one scene class that passes it; func_02066814
-// runs the story table entry only while it equals data_020b4324[gSaveData mUnk_42]->mUnk_78, which func_020667ec
+// Kinds: the ctor's first argument (mKind), each named after the one scene class that passes it; func_02066814
+// runs the story table entry only while it equals data_020b4324[gSaveData mUnk_42]->mScriptKind, which func_020667ec
 // returns (MapScene::SetupMap marks the PARK tab for SCRIPT_KIND_PARK, and for SCRIPT_KIND_TOURNAMENT the TOURNAMENT
 // tab when gSaveData[0].mUnk_24 bit 0 is set, otherwise the STORE tab with mUnk_7c = 1). SetupBattle sets
 // data_020d433c.mNextScene to SCENE_PARK for PARK, SCENE_ARENA_WINDOW for TOURNAMENT and SCENE_MAP for the others.
@@ -275,7 +275,7 @@ public:
     /* 14de */ u16 mFrameCount; // set by command 14; copied into mBrightnessFrameCount and mLerpFrameCount
     /* 14e0 */ u8 mFinishRequested;
     /* 14e1 */ u8 mResult;
-    /* 14e2 */ u8 mUnk_14e2; // SCRIPT_KIND_*, the ctor argument; func_02066814 sets 7 at the end of a table
+    /* 14e2 */ u8 mKind; // SCRIPT_KIND_*, the ctor argument; func_02066814 sets 7 at the end of a table
     /* 14e3 */ PAD(0x14e3, 0x14e4);
     /* 14e4 */ u8 mUnk_14e4;
     /* 14e5 */ u8 mUnk_14e5;
@@ -359,12 +359,12 @@ public:
     void SetBg0Wave(u32 flag);
     BOOL ReadMessages();
     BOOL func_02067f30(u32 index, s32 value);
-    // 0 for mUnk_14e2 == SCRIPT_KIND_TUTORIAL; with a script number from func_02066814(0) starts "cmd_ST_mev_..." and
+    // 0 for mKind == SCRIPT_KIND_TUTORIAL; with a script number from func_02066814(0) starts "cmd_ST_mev_..." and
     // returns 1; otherwise func_02066814(1) (and StopWithResult(SCRIPT_RESULT_BATTLE) when mBattlePending is set)
     // and 0.
     u32 func_02066f60();
     // Also writes display registers; makes the cutscene cells when mUnk_14e4 == 0 and (mUnk_14f1 or
-    // func_02066c7c()), and then with mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS clears mUnk_14f1 and sets
+    // func_02066c7c()), and then with mKind == SCRIPT_KIND_MYROOM_TIPS clears mUnk_14f1 and sets
     // mSkipDisabled.
     void LoadGraphics();
     BOOL ReadScript(); // also starts the read of the script's .mes file

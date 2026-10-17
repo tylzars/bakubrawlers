@@ -169,8 +169,8 @@ BattleCpu::BattleCpu(u32 player) {
     mUnk_58 = 0;
     mUnk_5c = 3000;
     mTimer = 0;
-    mUnk_4c = 0;
-    mUnk_50 = 0;
+    mPushOffsetX = 0;
+    mPushOffsetZ = 0;
     mPushOffsetInterval = 20;
 }
 
@@ -919,8 +919,8 @@ void BattleCpu::SetPushOffset() {
     s32 offsets[9][2] = {
         {0, 0}, {0, 0x59a}, {0x333, 0x2cd}, {0x666, 0}, {0x333, -0x2cd}, {0, -0x59a}, {-0x333, -0x2cd}, {-0x666, 0}, {-0x333, 0x2cd},
     };
-    mUnk_4c = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][0];
-    mUnk_50 = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][1];
+    mPushOffsetX = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][0];
+    mPushOffsetZ = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][1];
 }
 
 bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
@@ -958,8 +958,8 @@ bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
 
 void BattleCpu::GetPushOffset(s32 *x, s32 *z) {
     if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7 != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
-        *x = mUnk_4c;
-        *z = mUnk_50;
+        *x = mPushOffsetX;
+        *z = mPushOffsetZ;
         return;
     }
     *x = 0;

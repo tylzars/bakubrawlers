@@ -60,7 +60,7 @@ public:
     /* 39 */ u8 mSlot;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ PAD(0x3b, 0x3c);
-    // mCorner of player BattlePlayerList::mUnk_2a9 > 1; here it only picks the BG variant (LoadCommandGraphics)
+    // mCorner of player BattlePlayerList::mLocalPlayer > 1; here it only picks the BG variant (LoadCommandGraphics)
     /* 3c */ u8 mFlipped;
     /* 3d */ PAD(0x3d, 0x3e);
     /* 3e */ u8 mUnk_3e;
@@ -101,7 +101,7 @@ BattleObj00::BattleObj00(u8 flag)
     } else {
         mState = 11;
     }
-    u32 v = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mCorner;
+    u32 v = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mCorner;
     if (v <= 1) {
         mFlipped = 0;
     } else {
@@ -111,8 +111,8 @@ BattleObj00::BattleObj00(u8 flag)
     u8 b    = data_ov007_0227a33d[v * 2];
     mCornerCellY = b;
     BattlePlayerList *l = data_020d433c.mBattlePlayers;
-    l->mUnk_28b = mCornerCellX;
-    l->mUnk_28c = b;
+    l->mCursorX = mCornerCellX;
+    l->mCursorY = b;
 }
 
 BattleObj00::~BattleObj00() {
@@ -140,7 +140,7 @@ void BattleObj00::Update() {
             if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x10)) {
                 return;
             }
-            u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u8 player = data_020d433c.mBattlePlayers->mLocalPlayer;
             new BattleCharaAct(mCamera, player, 0, 0, 0);
             mContext->mRequest = 0;
             mState           = 1;
@@ -215,7 +215,7 @@ void BattleObj00::Update() {
             }
             return;
         case 9: {
-            u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
+            u8 player = data_020d433c.mBattlePlayers->mLocalPlayer;
             new BattleCharaAct(mCamera, player, 0xe, 0, 0);
             mContext->mRequest = 0;
             mState++;
@@ -234,7 +234,7 @@ void BattleObj00::Update() {
                 mContext->mRequest = 1;
                 mState           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
+                if (list->mPlayers[list->mLocalPlayer]->mSlots54Remaining == 0) {
                     mUnk_3e = 1;
                 }
                 return;
@@ -250,7 +250,7 @@ void BattleObj00::Update() {
                 mContext->mRequest = 1;
                 mState           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
+                if (list->mPlayers[list->mLocalPlayer]->mSlots54Remaining == 0) {
                     mUnk_3e = 1;
                 }
                 return;
@@ -278,7 +278,7 @@ void BattleObj00::Update() {
                 return;
             } else {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
+                if (list->mPlayers[list->mLocalPlayer]->mSlots54Remaining == 0) {
                     mPage = new BattleCommandPage(0, -1);
                     SetCommandPageCardHidden(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
@@ -351,7 +351,7 @@ void BattleObj00::Update() {
                 new BattleCharaAct(mCamera, idx, 1, 0, 0);
                 mContext->mRequest = 0;
             } else {
-                u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
+                u8 player = data_020d433c.mBattlePlayers->mLocalPlayer;
                 new BattleCharaAct(mCamera, player, 1, 0, 0);
                 mContext->mRequest = 0;
             }
@@ -436,9 +436,9 @@ void BattleObj00::Update() {
             }
             if (data_020d433c.mTutorialId != 0) {
                 mState = 0x14;
-                data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
+                data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mUnk_2a4->SetMessage(list->mUnk_2af, 0x64, 0, 0);
+                list->mStorytalkWindow->SetMessage(list->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
                 SetCursorAndMarkerModelsVisible(mMap, 0);
                 return;
@@ -450,9 +450,9 @@ void BattleObj00::Update() {
         }
         case 20:
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
-            if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+            if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 return;
             }
             data_020d433c.mBattlePlayers->mUnk_2af++;
@@ -461,7 +461,7 @@ void BattleObj00::Update() {
                 G2S_SetBlendBrightness(0x1f, 0);
                 return;
             }
-            data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+            data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
             return;
         case 21:
             CloseCommandMap(mMap);

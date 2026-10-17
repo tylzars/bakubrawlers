@@ -35,8 +35,8 @@ extern u8 data_020d43eb[];
 extern u8 data_020d441a[];
 extern "C" void MIi_CpuCopy16(const void *src, void *dest, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
-void func_020233f8(UnkStruct_020d433c *data);
-void func_0202330c(UnkStruct_020d433c *data);
+void RefreshLocalSlot(UnkStruct_020d433c *data);
+void RefreshRecvBlockIndicesAndLocalSlot(UnkStruct_020d433c *data);
 
 #define MINU(a, b) ((u32) (b) > (u32) (a) ? (u32) (a) : (u32) (b))
 extern UnkStruct_020c4230 data_020c4230;
@@ -532,7 +532,7 @@ void ArenaScene::Update() {
             mPlayerCount = count;
             PrintNames();
             if (flag != 0) {
-                func_020233f8(&data_020d433c);
+                RefreshLocalSlot(&data_020d433c);
                 mState = 0xb;
             }
             break;
@@ -552,8 +552,8 @@ void ArenaScene::Update() {
                     }
                 }
                 if (mode == 6) {
-                    func_0202330c(&data_020d433c);
-                    func_020233f8(&data_020d433c);
+                    RefreshRecvBlockIndicesAndLocalSlot(&data_020d433c);
+                    RefreshLocalSlot(&data_020d433c);
                 }
                 mState++;
             }

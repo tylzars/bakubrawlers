@@ -377,7 +377,7 @@ void MyroomScene::Update() {
             FrameTask::Get().StartChannel(0, 0x13);
             break;
         case 15:
-            if ((data_020d433c.mFlags & 2) && data_020d433c.mUnk_7f == SCENE_TITLE) {
+            if ((data_020d433c.mFlags & 2) && data_020d433c.mMyroomNextScene == SCENE_TITLE) {
                 new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
                 mContext->mRequest = 0;
                 ctx->mInfo.mState++;
@@ -414,7 +414,7 @@ void MyroomScene::Update() {
             }
             break;
         case 20:
-            RequestScene(data_020d433c.mUnk_7f);
+            RequestScene(data_020d433c.mMyroomNextScene);
             mFinished = 1;
             break;
     }

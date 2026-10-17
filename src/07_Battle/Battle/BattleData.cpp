@@ -173,7 +173,7 @@ void BattleData::Load() {
     mCellAnims[8]->SetAnimation(mEntries[1].mPlayer + 7);
     mCellAnims[9]->SetAnimation(0);
     mCellAnims[10]->SetAnimation(1);
-    u8 current = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 current = data_020d433c.mBattlePlayers->mLocalPlayer;
     u8 n       = 0;
     do {
         if (current == mEntries[n].mPlayer) {
@@ -212,7 +212,7 @@ void BattleData::DrawCharacterIcons(u8 side, s16 x, s16 y) {
     mCharacterIcons->SetDrawArgs(side, px, y, 2);
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 owner               = mEntries[side].mPlayer;
-    u8 current             = list->mUnk_2a9;
+    u8 current             = list->mLocalPlayer;
     if (current == owner) {
         int shift = side == 0 ? 0x20 : 0;
         mCellAnims[11]->Draw(1, (s16) (x + shift), y, 3);

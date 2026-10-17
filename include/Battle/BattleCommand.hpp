@@ -102,7 +102,7 @@ public:
     // polled after CloseMode: TRUE once the close has ended and OpenNextMode has run; the page and the list are then
     // filled from the cursor cell
     BOOL SwitchMode();
-    // StartMessage(1, or 0x20 when list mUnk_292 is 1) for the local turn player (mTurnPlayer == mUnk_2a9), else 0x33.
+    // StartMessage(1, or 0x20 when list mUnk_292 is 1) for the local turn player (mTurnPlayer == mLocalPlayer), else 0x33.
     // Other messages are started inline.
     void SetCommandMessage();
     void DrawTurnCount();
@@ -146,7 +146,7 @@ public:
     /* 68 */ BattleMapPiece *mLandingPiece;
     /* 6c */ BattleMapPiece *mShadowPiece;
     /* 70 */ BattleStatusPanels *mStatusPanels;
-    /* 74 */ BattleUnitModels *mUnk_74;
+    /* 74 */ BattleUnitModels *mUnitModels;
     /* 78 */ u8 mPredictPositions[0x60];
     /* d8 */ u32 mLandingPosition[3];
     /* e4 */ u32 mCameraEndTarget[3];
@@ -165,7 +165,7 @@ public:
     /* 142 */ u16 mF00gatTimer;
     /* 144 */ u16 mCameraMoveTimer;
     /* 146 */ u16 mCameraYawDegrees;
-    /* 148 */ u8 mCursorX; // with mCursorY: written by SetCursorCellAndMoveCamera and BattleTarget::func_ov007_0225b69c
+    /* 148 */ u8 mCursorX; // with mCursorY: written by SetCursorCellAndMoveCamera and BattleTarget::CreateCursorModelAtCell
     /* 149 */ u8 mCursorY;
     /* 14a */ u8 mState;
     /* 14b */ u8 mKind;

@@ -215,8 +215,8 @@ void CreditsScene::LoadText() {
     MI_CpuClear16(map, 0x800);
     TextManager::Get().FillScrChars(0, map, 0, 0, 0x20, 0x20, 0x20);
     QueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, map, 0x800, 1);
-    TextManager::Get().func_0202ce44(0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(1, 0, 0, 0);
+    TextManager::Get().UploadBgPalette(0, 0, 0, 0);
+    TextManager::Get().UploadBgPalette(1, 0, 0, 0);
     void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
     MI_CpuClear16(chars, 0x8000);
     DC_FlushRange(chars, 0x8000);

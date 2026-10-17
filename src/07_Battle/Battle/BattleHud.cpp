@@ -24,7 +24,7 @@
 
 // Externals of other battle files.
 u32 BattleRand32(u32 max);
-// BattlePlayerList::mUnk_2a4 is a StorytalkWindow; BattleHud::Update and BattleObj00 drive it with SetMessage / NextPage.
+// BattlePlayerList::mStorytalkWindow is a StorytalkWindow; BattleHud::Update and BattleObj00 drive it with SetMessage / NextPage.
 extern const u8 gSmallCardX[];
 extern const u32 gSmallCardCharBases[];
 extern const s32 gPushPercentScales[];
@@ -342,7 +342,7 @@ void BattleHud::LoadSmallCard(u8 side, int card) {
     u8 index;
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     BattleEntry *entries = mData->mEntries;
-    u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 selected = data_020d433c.mBattlePlayers->mLocalPlayer;
     u8 i;
     screen.SetObjVramMode(3);
     index = side + 0x11;
@@ -392,8 +392,8 @@ void BattleHud::Update() {
         case 1:
             if (data_020d433c.mTutorialId == 0xe || (data_020d433c.mTutorialId >= 7 && data_020d433c.mTutorialId <= 10)) {
                 mState = 2;
-                data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
-                data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
+                data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
                 SetupCountdown();
@@ -402,10 +402,10 @@ void BattleHud::Update() {
             break;
         case 2: {
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
             u32 limit = data_020d433c.mTutorialNumber == 4 ? 0 : 5;
-            if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+            if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 data_020d433c.mBattlePlayers->mUnk_2af++;
                 u8 n = data_020d433c.mBattlePlayers->mUnk_2af;
                 if (n > limit) {
@@ -413,7 +413,7 @@ void BattleHud::Update() {
                     mState = 3;
                     G2S_SetBlendBrightness(0x1f, 0);
                 } else {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(n, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(n, 0x64, 0, 0);
                 }
             }
             break;
@@ -823,7 +823,7 @@ BOOL BattleHud::StartObject(u8 side, s16 x, s16 y, u8 flag) {
 }
 
 void BattleHud::Draw() {
-    u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 selected = data_020d433c.mBattlePlayers->mLocalPlayer;
     u8 i;
     mData->DrawCharacterIcons(0, 8, 0x1e);
     mData->DrawCharacterIcons(1, 0xb8, 0x1e);

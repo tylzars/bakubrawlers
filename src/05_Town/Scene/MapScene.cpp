@@ -583,7 +583,7 @@ BOOL MapScene::SetNextSceneFromEvent() {
         switch (result) {
             case SCRIPT_RESULT_MYROOM:
                 mNextScene            = SCENE_MYROOM;
-                data_020d433c.mUnk_7f = SCENE_MAP;
+                data_020d433c.mMyroomNextScene = SCENE_MAP;
                 break;
             case SCRIPT_RESULT_STORE:
                 mNextScene = SCENE_STORE;
@@ -724,7 +724,7 @@ BOOL MapScene::SetNextSceneFromTab() {
     switch (mTab) {
         case MAP_TAB_MYROOM:
             mNextScene            = SCENE_MYROOM;
-            data_020d433c.mUnk_7f = SCENE_MAP;
+            data_020d433c.mMyroomNextScene = SCENE_MAP;
             break;
         case MAP_TAB_STORE:
             mNextScene = SCENE_STORE;

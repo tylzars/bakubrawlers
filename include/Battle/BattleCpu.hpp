@@ -13,8 +13,8 @@ public:
     /* 04 */ VecFx32 mPos;
     /* 10 */ VecFx32 mSavedPos;
     /* 1c */ VecFx32 mTargets[4];
-    /* 4c */ s32 mUnk_4c;
-    /* 50 */ s32 mUnk_50;
+    /* 4c */ s32 mPushOffsetX;
+    /* 50 */ s32 mPushOffsetZ;
     /* 54 */ s32 mUnk_54;
     /* 58 */ s32 mUnk_58;
     /* 5c */ s32 mUnk_5c;

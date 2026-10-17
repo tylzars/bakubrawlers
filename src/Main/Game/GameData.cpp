@@ -183,30 +183,30 @@ BOOL func_0202326c(SaveData *d) {
     return found;
 }
 
-void func_0202330c(UnkStruct_020d433c *d) {
-    MI_CpuFill8(d->mUnk_af, 0, 4);
+void RefreshRecvBlockIndicesAndLocalSlot(UnkStruct_020d433c *d) {
+    MI_CpuFill8(d->mRecvBlockIndices, 0, 4);
     u8 i;
     u8 n = 0;
     i = 0;
     do {
         WirelessManager::Get();
         if (i == data_020c4250) {
-            d->mUnk_ae = n;
+            d->mLocalSlot = n;
         }
         if (WirelessManager::Get().GetRecvBlock(i)) {
-            d->mUnk_af[n++] = i;
+            d->mRecvBlockIndices[n++] = i;
         }
         i++;
     } while (i < 4);
 }
 
-void func_020233f8(UnkStruct_020d433c *d) {
+void RefreshLocalSlot(UnkStruct_020d433c *d) {
     u8 n = 0;
     u8 i = 0;
     do {
         WirelessManager::Get();
         if (i == data_020c4250) {
-            d->mUnk_ae = n;
+            d->mLocalSlot = n;
         }
         if (WirelessManager::Get().GetRecvBlock(i)) {
             n++;

@@ -232,6 +232,9 @@ public:
     BOOL StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d); // run on every unit hit; FALSE without the bakugan
     void UpdateIkazuchi();
     void UpdateOnMarkerCell();
+    // Shot sp kind 3 only (else FALSE, no writes). A wall hit or the first grounded step ends the kind and returns
+    // FALSE (with writes); on a marker cell it places the bakugan on the cell, sets mResult from the unit there and
+    // knocks the units on the four side cells off, then returns TRUE.
     BOOL func_ov007_02259af0();
     BOOL TryRestOnCell(); // on TRUE the ball is stopped on the cell (velocity 0, y 0x899a) and the shot ends
     void UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d);
@@ -244,7 +247,7 @@ public:
     BOOL GetHitBoxNormal(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag);
     BOOL TestPointInHitBoxXZ(BattleHitBox *box, VecFx32 *point);
     BOOL func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx32 *t, VecFx32 *out);
-    void func_ov007_0225b69c(u8 a, u8 b);
+    void CreateCursorModelAtCell(u8 a, u8 b);
     void AddPlayerPush();
     // nothing for another player in a tutorial; mAirFrames > 3: fixed scale (0x14000 in mUnk_1dd 2, else 0x5000);
     // else scaled by mPushScale while it is >= 0x800 (else mPushScale = 0)

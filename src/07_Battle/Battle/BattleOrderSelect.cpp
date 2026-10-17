@@ -366,7 +366,7 @@ void BattleOrderSelect::LoadGraphics() {
     mB[0].mCellAnim->mCharBase = screen0.GetCharBase(0x10000);
     mB[0].mCellAnim->mPaletteBase   = 10;
     mB[0].mUnk_09          = 0;
-    mB[0].mCellAnim->mFrameIndex   = data_020d433c.mBattlePlayers->mUnk_2a9;
+    mB[0].mCellAnim->mFrameIndex   = data_020d433c.mBattlePlayers->mLocalPlayer;
     mB[1].mCellAnim            = new CellAnimation("union_b_obj_you_nce.bin", 2, 1, 1);
     mB[1].mCellAnim->mCharBase = screen0.GetCharBase(0x10000);
     mB[1].mCellAnim->mPaletteBase   = 10;
@@ -436,7 +436,7 @@ BOOL BattleOrderSelect::UpdateTouchSelection() {
                             mItemTaken[j] = 1;
                             mPlayerItemIndex[i] = j;
                             mC[(u8) (j + 4)].mCellAnim->SetAnimation(mItemOrder[mPlayerItemIndex[i]] + 8);
-                            if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                            if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
                                 hit = 1;
                             }
                             SoundManager::Get().StartSeqArc(0);
@@ -497,7 +497,7 @@ void BattleOrderSelect::Draw() {
                 }
                 s16 v  = mUnk_c4[slot];
                 s8 off = v * v / 8 - 0x2c;
-                u8 p   = data_020d433c.mBattlePlayers->mUnk_2a9;
+                u8 p   = data_020d433c.mBattlePlayers->mLocalPlayer;
                 if (i == p) {
                     mB[0].mCellAnim->Draw(0, (s16) (mC[slot].mX + 0xc), (s16) (mC[slot].mY - 0xe - off), 2);
                 } else {

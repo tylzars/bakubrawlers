@@ -102,15 +102,15 @@ struct BattlePlayer : public SceneBase {
     };
     /* c0 */ PAD(0xc0, 0xc8);
     /* c8 */ BattleCpu *mCpu;
-    /* cc */ u16 mUnk_cc[3];
+    /* cc */ u16 mShotRot[3];
     /* d2 */ PAD(0xd2, 0xd4);
-    /* d4 */ s32 mUnk_d4;
-    /* d8 */ s32 mUnk_d8;
+    /* d4 */ s32 mPushSumX;
+    /* d8 */ s32 mPushSumZ;
     /* dc */ u32 mUnk_dc;
     /* e0 */ u32 mUnk_e0;
     /* e4 */ u32 mUnk_e4;
     /* e8 */ u32 mUnk_e8;
-    /* ec */ u8 mUnk_ec;
+    /* ec */ u8 mShotSpeed;
     /* ed */ u8 mNameLength; // length in bytes of the name at +b0 (NameText)
     /* ee */ u8 mUnk_ee; // raised by BattlePlayerList, BattleCommand and BattleConfrontCard; func_ov007_02263150 tests
                          // it (plus the partner's) >= 3, BattleResult against data_020d433c.mUnk_99
@@ -225,8 +225,8 @@ struct BattlePlayerList : public SceneBase {
     /* 284 */ u8 mTurnOrder[4]; // read at (mTurnCount - 1) % mPlayerCount, positions 1 and 2 swapped while mHasPartners is set
     /* 288 */ u16 mTurnCount; // +1 per new turn player (not for an extra turn, mRepeatTurn); BattleCommand draws (mTurnCount - 1) / mPlayerCount + 1
     /* 28a */ u8 mTurnPlayer;
-    /* 28b */ u8 mUnk_28b;
-    /* 28c */ u8 mUnk_28c;
+    /* 28b */ u8 mCursorX;
+    /* 28c */ u8 mCursorY;
     /* 28d */ u8 mUnitA; // SetUnitAB's first unit, read as BattleData's entry 0 (set by BattleTarget, BattleAbility)
     /* 28e */ u8 mUnitB; // SetUnitAB's second unit, read as BattleData's entry 1; sometimes the same unit as mUnitA
     /* 28f */ u8 mAddMarkerEnabled;
@@ -238,16 +238,16 @@ struct BattlePlayerList : public SceneBase {
     /* 295 */ u8 mUnitCount;
     /* 296 */ PAD(0x296, 0x298);
     /* 298 */ BattleTarget *mBattleTarget;
-    /* 29c */ BattleUnitModels *mUnk_29c;
+    /* 29c */ BattleUnitModels *mUnitModels;
     /* 2a0 */ Camera *mCamera;
-    /* 2a4 */ StorytalkWindow *mUnk_2a4;
+    /* 2a4 */ StorytalkWindow *mStorytalkWindow;
     /* 2a8 */ u8 mState;
-    /* 2a9 */ u8 mUnk_2a9; // player index: data_020d433c.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
-    /* 2aa */ u8 mUnk_2aa;
-    /* 2ab */ u8 mUnk_2ab;
+    /* 2a9 */ u8 mLocalPlayer; // player index: data_020d433c.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
+    /* 2aa */ u8 mTexVariant;
+    /* 2ab */ u8 mSecondTexVariant;
     /* 2ac */ u8 mUnk_2ac;
     /* 2ad */ u8 mRepeatTurn;
-    /* 2ae */ u8 mUnk_2ae;
+    /* 2ae */ u8 mSavedTutorialNumber;
     /* 2af */ u8 mUnk_2af;
     /* 2b0 */ u8 mUnk_2b0;
     /* 2b1 */ u8 mUnk_2b1;
@@ -261,8 +261,8 @@ struct BattlePlayerList : public SceneBase {
         return mPlayers[mTurnPlayer];
     }
 
-    u8 Unk2a9() {
-        return mUnk_2a9;
+    u8 LocalPlayer() {
+        return mLocalPlayer;
     }
 
     u8 MarkerCount() {
@@ -281,8 +281,8 @@ struct BattlePlayerList : public SceneBase {
     }
 
     void SetCursor(u8 x, u8 y) {
-        mUnk_28b = x;
-        mUnk_28c = y;
+        mCursorX = x;
+        mCursorY = y;
     }
 };
 
@@ -353,7 +353,7 @@ struct UnkStruct_020d433c {
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mMapTab : 4;
     /* 7e */ u8 mTitleMenuSelection : 4;
-    /* 7f */ u8 mUnk_7f; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
+    /* 7f */ u8 mMyroomNextScene; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
                          // SCENE_MAP); with SCENE_TITLE and mFlags & 2 (mSaveDirty) it opens a SaveWindow first
     /* 80 */ u8 mUnk_80;
     /* 81 */ u8 mUnk_81;
@@ -404,8 +404,8 @@ struct UnkStruct_020d433c {
     // TitleScene state 0 then runs the credits, sets gSaveData[0].mUnk_5bf_0, GiftUnlockScene and a SaveWindow, and
     // clears it before SCENE_LOGO
     /* ad */ u8 mCreditsRequested;
-    /* ae */ u8 mUnk_ae;
-    /* af */ u8 mUnk_af[4];
+    /* ae */ u8 mLocalSlot;
+    /* af */ u8 mRecvBlockIndices[4];
     /* af */
 };
 

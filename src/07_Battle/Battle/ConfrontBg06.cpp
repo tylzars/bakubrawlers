@@ -379,7 +379,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
 void ConfrontBg06::vfunc_44(int index, u16 count) {
     BattleData *data       = mData;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 current             = list->mUnk_2a9;
+    u8 current             = list->mLocalPlayer;
     BattleEntry *entries   = data->mEntries;
     if ((s32) count < 100) {
         return;

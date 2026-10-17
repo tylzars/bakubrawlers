@@ -236,7 +236,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mLocalIsFirstSlot = 1;
     WirelessManager::Get();
     if (IsWirelessMode(mode)) {
-        mLocalSlot = data_020d433c.mUnk_ae;
+        mLocalSlot = data_020d433c.mLocalSlot;
         if (mLocalSlot != 0) {
             mLocalIsFirstSlot = 0;
         }
@@ -1081,7 +1081,7 @@ BOOL FieldSelectScene::SetMessageTypeAndCheckAll(u32 unk1) {
     u8 matches = 0;
     u8 i       = 0;
     do {
-        u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
+        u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
         if (p != NULL && *p == unk1) {
             matches++;
         }
@@ -1100,7 +1100,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
             if (p != NULL) {
                 u8 j;
                 u8 k;
@@ -1174,7 +1174,7 @@ BOOL FieldSelectScene::ExchangeCharacterLooks() {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
             if (p != NULL) {
                 MIi_CpuCopyFast(p + 4, mCharacterLooks + i * 8, 8);
             }
@@ -1221,7 +1221,7 @@ void FieldSelectScene::func_ov001_02222040() {
     if (IsWirelessMode(mode)) {
         i = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
             if (p != NULL) {
                 if (p[0] == 0xd) {
                     mInput[i].mReleased = p[6];

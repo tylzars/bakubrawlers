@@ -26,7 +26,7 @@ void StopAsyncLoad();
 // kinds 0-3 are also bracketed by the gBeginLoadFuncs / gEndLoadFuncs entry. Kinds 5 and 6 also agree with their uses:
 // every use queues 5 with OBJ kinds (beside kind 4 in SpriteScreen, the counterpart of kind 0 in
 // TextManager::SetColor) and 6 with BG kinds (with kinds 11 and 7 in LogoScene, with kind 9 for the same file stem in
-// BattleShoot, the counterpart of kind 1 in func_0202ce44).
+// BattleShoot, the counterpart of kind 1 in UploadBgPalette).
 #define UPLOAD_KIND_OBJ_EXT_PLTT 0  // GX_LoadOBJExtPltt / GX_LoadSubOBJExtPltt
 #define UPLOAD_KIND_BG_EXT_PLTT  1  // GX_LoadBGExtPltt / GX_LoadSubBGExtPltt
 #define UPLOAD_KIND_TEX          2  // GX_LoadTex on both

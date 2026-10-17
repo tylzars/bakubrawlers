@@ -125,7 +125,7 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mFrameCount = 1;
     mFinishRequested = 0;
     mResult = 0;
-    mUnk_14e2 = unk1;
+    mKind = unk1;
     mUnk_14e4 = 0;
     mUnk_14e5 = 0;
     mGraphicsLoaded = 0;
@@ -246,7 +246,7 @@ void ScriptPlayer::SetupSpriteSlots() {
 struct UnkStruct_020b4324_entry {
     UnkStruct_Pair mPairs[3];
     u8 mUnk_06;
-    u8 mUnk_07;
+    u8 mFieldId;
     u8 mUnk_08;
     u8 mUnk_09;
     u8 mUnk_0a;
@@ -255,7 +255,7 @@ struct UnkStruct_020b4324_entry {
 
 struct UnkStruct_020b4324 {
     UnkStruct_020b4324_entry mEntries[10];
-    u8 mUnk_78;
+    u8 mScriptKind;
     u8 mUnk_79;
 };
 
@@ -267,7 +267,7 @@ u32 ScriptPlayer::func_020667ec() {
     if (type >= 11) {
         return 7;
     }
-    return data_020b4324[type]->mUnk_78;
+    return data_020b4324[type]->mScriptKind;
 }
 
 // `result` as s16 gives the original's reload at the early return (`ldrcs r0, [sp]`); as a spilled s32 the -1 still
@@ -279,7 +279,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
     if (type >= 10) {
         return result;
     }
-    if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
+    if (mKind == data_020b4324[type]->mScriptKind) {
         u8 saved = data_020d433c.mUnk_7d;
         s32 done = 0, advance = 0;
         pending = 0;
@@ -336,7 +336,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                         }
                     } else {
                         SetupBattle(type, index);
-                        if (mUnk_14e2 == SCRIPT_KIND_MAP || mBattlePending == 1) {
+                        if (mKind == SCRIPT_KIND_MAP || mBattlePending == 1) {
                             StopWithResult(SCRIPT_RESULT_BATTLE);
                         }
                     }
@@ -396,7 +396,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     mSaveRequested = 1;
                 } else {
                     u32 next = 0;
-                    if (data_020b4324[type]->mUnk_78 != SCRIPT_KIND_MAP) {
+                    if (data_020b4324[type]->mScriptKind != SCRIPT_KIND_MAP) {
                         next = SCRIPT_RESULT_MAP;
                     }
                     if (next != 0) {
@@ -408,7 +408,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                 }
                 gSaveData[0].mUnk_43 = 0;
                 data_020d433c.mUnk_7d = 0;
-                mUnk_14e2 = 7;
+                mKind = 7;
             }
             if (advance | done) {
                 FillParkSlots();
@@ -434,7 +434,7 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
         data_020d433c.mUnk_a3[i] = 0;
         data_020d433c.mPartners[i] = i;
     }
-    switch (mUnk_14e2) {
+    switch (mKind) {
         case SCRIPT_KIND_TOURNAMENT:
             data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
             break;
@@ -452,7 +452,7 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
         data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
     }
     UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
-    data_020d433c.mFieldId = entry->mUnk_07;
+    data_020d433c.mFieldId = entry->mFieldId;
     data_020d433c.mUnk_96 = entry->mUnk_08;
     if (gSaveData[0].mUnk_5bf_0 && (gSaveData[0].mUnk_580 & 0x80)) {
         for (u8 k = 0; k < 3; k++) {
@@ -495,7 +495,7 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
 
 u32 ScriptPlayer::func_02066f60() {
     char path[0x80];
-    if (mUnk_14e2 == SCRIPT_KIND_TUTORIAL) {
+    if (mKind == SCRIPT_KIND_TUTORIAL) {
         return 0;
     }
     s32 command = func_02066814(0);
@@ -876,7 +876,7 @@ void ScriptPlayer::LoadGraphics() {
         mCutsceneCellAnim = new CellAnimation("cutscene_b_obj_nce.bin", mCutsceneAnimIndex, 1, 1);
         mCutsceneCellAnim->mCharBase = 0x1a0;
         mCutsceneCellAnim->mPaletteBase   = 0;
-        if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
+        if (mKind == SCRIPT_KIND_MYROOM_TIPS) {
             mUnk_14f1 = 0;
             mSkipDisabled = 1;
         }
@@ -1768,7 +1768,7 @@ void ScriptPlayer::UpdateMessages() {
                 return;
             }
             u32 flag = 0;
-            if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
+            if (mKind == SCRIPT_KIND_MYROOM_TIPS) {
                 flag = 1;
             }
             mStorytalkWindow->SetMessage(mMessageIndices[mMessagePos], mMessageCharacterIds[mMessagePos], flag, mTextOnly);
@@ -2119,13 +2119,13 @@ void ScriptPlayer::DrawModels() {
 
 struct UnkStruct_020a2198 {
     /* 00 */ s16 mCameraPositionX;
-    /* 02 */ s16 mCameraPositionY; // with mUnk_14e2 == SCRIPT_KIND_MAP also command 0xb2's value
+    /* 02 */ s16 mCameraPositionY; // with mKind == SCRIPT_KIND_MAP also command 0xb2's value
     /* 04 */ s16 mCameraPositionZ;
     /* 06 */ s16 mCameraTargetX;
     /* 08 */ s16 mCameraTargetY;
     /* 0a */ s16 mCameraTargetZ;
     /* 0c */ s16 mCharacterX; // character 0 only
-    /* 0e */ s16 mCharacterY; // with mUnk_14e2 == SCRIPT_KIND_MAP also command 0xaf's value
+    /* 0e */ s16 mCharacterY; // with mKind == SCRIPT_KIND_MAP also command 0xaf's value
     /* 10 */ s16 mCharacterZ;
     /* 12 */ s16 mCharacterRotY;
     /* 14 */ u8 mCharacterStorytalkCell2X;
@@ -3459,7 +3459,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     BOOL isNine = mState == 9;
     BOOL done = mCommandIndex == mCommandCount;
     if (isTwo | (isNine & done)) {
-    u8 mode = mUnk_14e2;
+    u8 mode = mKind;
     if (mode >= 6) {
         mode = 0;
     }
@@ -3558,7 +3558,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     mCommands[n].mValue = unk2;
     n++;
     mModelCommandIndex = n;
-    if (mUnk_14e2 == SCRIPT_KIND_MAP) {
+    if (mKind == SCRIPT_KIND_MAP) {
         mCommands[n].mCommand = 0xa9;
         mCommands[n].mValue = data_020d433c.mMapTab + 0x20;
         n++;
@@ -3618,7 +3618,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     if (!(((mMessageState == 6) | ((mMessageState == 5) | (mMessageState == 7))) & (unk1 != mStorytalkWindow->mMessageIndex))) {
         return;
     }
-    if (mUnk_14e2 == SCRIPT_KIND_MYROOM_TIPS) {
+    if (mKind == SCRIPT_KIND_MYROOM_TIPS) {
         mMessageState = 0;
         SetNoStorytalkMessage(mStorytalkWindow);
         mMessageIndices[0] = unk1;
@@ -3629,7 +3629,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     }
     mStorytalkWindow->SetMessage((s16) unk1, mMessageCharacterIds[0], 0, 0);
     mMessageState = 2;
-    if (mUnk_14e2 != SCRIPT_KIND_MAP) {
+    if (mKind != SCRIPT_KIND_MAP) {
         return;
     }
     if (unk3 < 0) {

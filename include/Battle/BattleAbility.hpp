@@ -35,14 +35,14 @@ struct BattleUnk022637acUnit {
 #define ABILITY_ID_REPEAT_TURN     0xc9
 // 0xca: plays "shuto_return" and sets mUnk_2ac = 2: the list removes mUnitA (or mUnitB and puts mUnitA back on its
 // cell) and goes straight back to BattleShoot for the same turn player (BattleCommand, mAddMarkerEnabled cleared, when that
-// player is not BattlePlayerList::mUnk_2a9).
+// player is not BattlePlayerList::mLocalPlayer).
 #define ABILITY_ID_SHOOT_AGAIN     0xca
 // 0xcb: picks one of the caster's mSlots54 entries (in a BattleCommandPage prompt when the caster is
-// BattlePlayerList::mUnk_2a9; at random for a CPU caster, func_ov007_02264a5c; from its mMsg for any other caster),
+// BattlePlayerList::mLocalPlayer; at random for a CPU caster, func_ov007_02264a5c; from its mMsg for any other caster),
 // then SetMarkerPlayerSlot gives the marker of mUnit to the caster with that slot (the old owner's slot flag is
 // cleared).
 #define ABILITY_ID_REASSIGN_MARKER 0xcb
-// 0xcc: picks one of the caster's records (in a BattleCommandList prompt when the caster is mUnk_2a9; at random
+// 0xcc: picks one of the caster's records (in a BattleCommandList prompt when the caster is mLocalPlayer; at random
 // among the records with mStatus 0 for a CPU caster; from its mMsg for any other caster), plays "bkn_exchange";
 // ReplaceUnitRecord puts the record in the unit mUnit and the unit's model is set up with its mBakuganId.
 #define ABILITY_ID_REPLACE_RECORD  0xcc
@@ -114,8 +114,8 @@ public:
     void LoadGraphics();
     void OpenUnionAbility();
     BOOL func_ov007_02264a5c();
-    u8 func_ov007_02265118();
-    u8 func_ov007_022652c8();
+    u8 UpdateRepeatTurn();
+    u8 UpdateShootAgain();
     u8 UpdateReassignMarker();
     u8 UpdateReplaceRecord();
     u8 UpdateMoveToUnit();

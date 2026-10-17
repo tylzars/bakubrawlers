@@ -421,8 +421,8 @@ void OptionScene::Init() {
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_cockpit_ncl.bin", 0x120, 0);
     screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", 0xd000, 0);
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", 0x140, 0);
-    TextManager::Get().func_0202ce44(0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(1, 0, 0, 0);
+    TextManager::Get().UploadBgPalette(0, 0, 0, 0);
+    TextManager::Get().UploadBgPalette(1, 0, 0, 0);
     mFile = (MessageFile *) LoadFile("/font/mes_option.mes", 0, 0, 0, 0, 0);
     mBufSize = TextManager::Get().BufferSize(0x18, 0x20);
     mBuf0c = OS_Alloc(mBufSize);

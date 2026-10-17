@@ -29,7 +29,7 @@ public:
 #define BATTLE_MODE_CONFRONT_BG04 3 // ConfrontBg04
 #define BATTLE_MODE_CONFRONT_BG05 4 // ConfrontBg05
 #define BATTLE_MODE_CONFRONT_BG06 5 // ConfrontBg06
-// Not a screen: BattleBase::Init stores it in mMode (after choosing mParam) when BattlePlayerList::mUnk_2a9 is
+// Not a screen: BattleBase::Init stores it in mMode (after choosing mParam) when BattlePlayerList::mLocalPlayer is
 // neither entry's player (mEntries[0/1].mPlayer), the case where IsSpectator() holds; only BattleHud::StartObject
 // reads it.
 #define BATTLE_MODE_SPECTATOR     7
@@ -453,7 +453,7 @@ public:
     virtual ~BattleHud();
     virtual void Update();
     void Init();
-    void LoadSmallCard(u8 side, int card); // card_s_000 instead unless the side's player is the list's mUnk_2a9
+    void LoadSmallCard(u8 side, int card); // card_s_000 instead unless the side's player is the list's mLocalPlayer
     void LoadCountdown();
     // Computes mStartPushPercent from the two entries' mUnk_00, the per-frame rates over mCountdownFrameCount (the
     // countdown cell's length) and mUnk_20 = mCutinDelayFrameCount; StartCountdown, not this, restarts the cell.
@@ -565,7 +565,7 @@ public:
     /* 34 */ virtual void UpdateEmblems() = 0; // state 7 only; empty for ConfrontBg01 / ConfrontBg04 (no emblems)
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
     /* 3c */ virtual void Draw() = 0; // skipped while mUnk_54_3; ConfrontBg01 / ConfrontBg04 draw no cells
-    // The side's amount (0 = none); called for the local player's side (mLocalSide, from BattlePlayerList::mUnk_2a9) while
+    // The side's amount (0 = none); called for the local player's side (mLocalSide, from BattlePlayerList::mLocalPlayer) while
     // its c[] is 0; low: that side's push percent is below 0x32.
     /* 40 */ virtual u8 UpdateTouch(int low) = 0;
     /* 44 */ virtual void vfunc_44(int index, u16 count) = 0;

@@ -35,7 +35,7 @@ static const WindowCellRecord sResultCockpitCells[1] = {
 #include <stdio.h>
 
 // Level and gauge screen for up to three bakugan save entries: BattleResult creates it with mode 0 (slots from the
-// records of player mUnk_2a9), ListScene with mode 1 (one slot set by SetBakugan).
+// records of player mLocalPlayer), ListScene with mode 1 (one slot set by SetBakugan).
 class UnkStruct_02076058 : public SceneBase {
 public:
     /* 0c */ MessageFile *mBakuganNameMessages;
@@ -115,7 +115,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     u8 slot = 0;
     do {
         if (mMode == 0 && data_020d433c.mBattlePlayers != NULL) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mRecords[slot];
+            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mRecords[slot];
             mBakuganIds[slot] = record->mBakuganId;
             if (mBakuganIds[slot] == 6) {
                 mBakuganIds[slot] = 5;

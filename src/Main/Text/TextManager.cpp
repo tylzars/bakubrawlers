@@ -394,7 +394,7 @@ void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {
     }
 }
 
-void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
+void TextManager::UploadBgPalette(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 == 0) {
         QueueUpload(unk1, UPLOAD_KIND_BG_PLTT, unk3 << 5, mPalette, 0x20, 0);
     } else {

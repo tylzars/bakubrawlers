@@ -186,9 +186,9 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     if (data_020d433c.mGimmicks) {
         data_020d433c.mGimmicks->LoadAll();
     }
-    mUnk_74 = data_020d433c.mBattlePlayers->mUnk_29c;
-    if (mUnk_74) {
-        mUnk_74->CreateFontObjs();
+    mUnitModels = data_020d433c.mBattlePlayers->mUnitModels;
+    if (mUnitModels) {
+        mUnitModels->CreateFontObjs();
     }
     mLights = new ModelLightGroup(sCommandMapLights);
     GetCornerPosition(this, (VecFx32 *) mCornerPosition);
@@ -197,7 +197,7 @@ BattleCommandMap::BattleCommandMap(u8 unk)
 BattleCommandMap::~BattleCommandMap() {
     u8 i = 0;
     do {
-        mUnk_74->ReleaseBakugan(i);
+        mUnitModels->ReleaseBakugan(i);
         i++;
     } while (i < 12);
     if (mUnk_14) {
@@ -229,8 +229,8 @@ BattleCommandMap::~BattleCommandMap() {
     if (data_020d433c.mGimmicks) {
         data_020d433c.mGimmicks->UnloadAll();
     }
-    if (mUnk_74) {
-        mUnk_74->Release();
+    if (mUnitModels) {
+        mUnitModels->Release();
     }
     if (mLights) {
         delete mLights;
@@ -329,7 +329,7 @@ void BattleCommandMap::func_ov007_022458cc() {
     CreateStatusPanels(this);
     UpdateMarkerAndF00gatModels(this);
     CreateMapObj(this);
-    mUnk_74->Update();
+    mUnitModels->Update();
 }
 
 void BattleCommandMap::func_ov007_022458f4() {
@@ -407,8 +407,8 @@ void BattleCommandMap::func_ov007_02245f08() {
     s32 dx;
     float fx;
     player = data_020d433c.mBattlePlayers->Current();
-    dy     = -player->mUnk_d8;
-    dx     = player->mUnk_d4;
+    dy     = -player->mPushSumZ;
+    dx     = player->mPushSumX;
     s32 ay = dy;
     if (ay < 0) {
         ay = -ay;
@@ -545,7 +545,7 @@ extern "C" void DrawStatusPanels(BattleCommandMap *map) {
 
 extern "C" void DrawCursorUnitFontObjs(BattleCommandMap *map) {
     s8 index               = data_020d433c.mBattlePlayers->mUnitHandles[map->mCursorX][map->mCursorY];
-    u8 current             = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 current             = data_020d433c.mBattlePlayers->mLocalPlayer;
     if (index <= 0) {
         return;
     }
@@ -557,7 +557,7 @@ extern "C" void DrawCursorUnitFontObjs(BattleCommandMap *map) {
     pos.x = unit->mPos.x;
     pos.y = unit->mPos.y + 0x2299a;
     pos.z = unit->mPos.z;
-    map->mUnk_74->DrawFontObj(unit->mPlayer, &pos);
+    map->mUnitModels->DrawFontObj(unit->mPlayer, &pos);
     pos.y += 0xa000;
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
@@ -568,9 +568,9 @@ extern "C" void DrawCursorUnitFontObjs(BattleCommandMap *map) {
     MTX_MultVec43(&v, &mtx, &v);
     VEC_Add(&pos, &v, &pos);
     if (unit->mPlayer == current) {
-        map->mUnk_74->DrawPyFontObj(&pos);
+        map->mUnitModels->DrawPyFontObj(&pos);
     } else if (unit->mPlayer == data_020d433c.mBattlePlayers->mPlayers[current]->mPartner) {
-        map->mUnk_74->DrawPtFontObj(&pos);
+        map->mUnitModels->DrawPtFontObj(&pos);
     }
 }
 
@@ -582,7 +582,7 @@ extern "C" void DrawBakuganModel(BattleCommandMap *map) {
 
 extern "C" void DrawUnitBakugans(BattleCommandMap *map) {
     if (map->mUseUnitBakugans != 0 && map->mUnitBakugansVisible != 0) {
-        map->mUnk_74->Draw();
+        map->mUnitModels->Draw();
     }
 }
 
@@ -630,7 +630,7 @@ extern "C" void UpdateAndDrawMapModels(BattleCommandMap *map) {
                 GetCellPosition(&b, marker->mCellX, marker->mCellY);
                 map->mMarkerModel->mPosition = b;
                 s32 frame = map->mMarkerModel->mModel->GetAnimFrame();
-                if (marker->mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                if (marker->mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
                     map->mMarkerModel->DrawPulsing();
                 } else {
                     map->mMarkerModel->mModel->GetAnimFrame();
@@ -743,14 +743,14 @@ extern "C" void SetCornerCameraOverCursorCell(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
         camera->SetFov(sCommandCamAngles[1]);
-        VecFx32 v = sCornerCameraPositions[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mCorner];
+        VecFx32 v = sCornerCameraPositions[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mCorner];
         v.y       = sCameraHeights[map->mKind];
         camera->mPosition = v;
         camera->mTarget.x = 0;
         camera->mTarget.y = 0;
         camera->mTarget.z = 0;
     }
-    SetCursorCellAndMoveCamera(map, data_020d433c.mBattlePlayers->mUnk_28b, data_020d433c.mBattlePlayers->mUnk_28c, 0);
+    SetCursorCellAndMoveCamera(map, data_020d433c.mBattlePlayers->mCursorX, data_020d433c.mBattlePlayers->mCursorY, 0);
 }
 
 extern "C" u32 GetCornerRotYDegrees() {
@@ -972,7 +972,7 @@ extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
             Rot16 rot = {0, 0, 0};
             rot.y = unit->mUnk_0c;
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
-            map->mUnk_74->CreateBakugan(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
+            map->mUnitModels->CreateBakugan(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
         }
         i++;
     } while (i < 12);
@@ -1067,7 +1067,7 @@ extern "C" void SetupTimedF00gatModelAndCamera(BattleCommandMap *map) {
     model->mAnimEnabled        = 0;
     map->mF00gatModels[0]->StartAnim(0, 0);
     VecFx32 a;
-    GetCellPosition(&a, data_020d433c.mBattlePlayers->mUnk_28b, data_020d433c.mBattlePlayers->mUnk_28c);
+    GetCellPosition(&a, data_020d433c.mBattlePlayers->mCursorX, data_020d433c.mBattlePlayers->mCursorY);
     map->mF00gatModels[0]->mPosition = a;
     map->mF00gatTimer              = 0x97;
     Camera *camera             = data_020d433c.mBattlePlayers->mCamera;

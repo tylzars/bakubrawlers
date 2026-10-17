@@ -353,9 +353,9 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_1a0 = 0;
     mUnitHandle = 0;
     mBakugan = 0;
-    if (data_020d433c.mBattlePlayers->mUnk_29c) {
-        data_020d433c.mBattlePlayers->mUnk_29c->mDrawMode = 1;
-        data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 1;
+    if (data_020d433c.mBattlePlayers->mUnitModels) {
+        data_020d433c.mBattlePlayers->mUnitModels->mDrawMode = 1;
+        data_020d433c.mBattlePlayers->mUnitModels->mUnk_9e = 1;
     }
     if (data_020d433c.mFieldId == 7) {
         mUnk_1e9 = 1;
@@ -435,14 +435,14 @@ void BattleTarget::Update() {
                     UpdateMove();
                 } else {
                     mUnk_50                                         = 0;
-                    data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 0;
+                    data_020d433c.mBattlePlayers->mUnitModels->mUnk_9e = 0;
                     mState++;
                     mPopupEnabled = 0;
                     if (mResult >= 2) {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
                         u8 unit                = list->Units()[(u8) (mUnitHandle - 1)].mMarker;
                         BattleMarker *marker   = &list->Markers()[unit];
-                        func_ov007_0225b69c(marker->mCellX, marker->mCellY);
+                        CreateCursorModelAtCell(marker->mCellX, marker->mCellY);
                     }
                 }
                 {
@@ -486,10 +486,10 @@ void BattleTarget::Update() {
                 if (mResult == 2 && mUnitHandle != 0 && mUnk_1c6 == 0x32) {
                     switch (mSpKind) {
                         case 6:
-                            data_020d433c.mBattlePlayers->mUnk_29c->SetStIconUnit(mUnitHandle - 1, 0);
+                            data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 0);
                             break;
                         case 5:
-                            data_020d433c.mBattlePlayers->mUnk_29c->SetStIconUnit(mUnitHandle - 1, 1);
+                            data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 1);
                             break;
                     }
                 }
@@ -521,7 +521,7 @@ void BattleTarget::Update() {
                 }
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
                         if (TouchManager::Get().mPressed) {
                             mState++;
                         }
@@ -529,7 +529,7 @@ void BattleTarget::Update() {
                         mState++;
                     }
                 } else {
-                    if ((mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9 && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
+                    if ((mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
                         mState++;
                     }
                 }
@@ -923,9 +923,9 @@ void BattleTarget::LaunchHitUnit(GimmickSetData *set) {
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     ReleaseSlot(list, set->mTag - 1);
-    BakuganModel *other = list->mUnk_29c->GetBakugan(set->mTag - 1);
+    BakuganModel *other = list->mUnitModels->GetBakugan(set->mTag - 1);
     GetVelocityTowardXZ(&mBakugan->mPosition, &other->mPosition, &mVelocity, &state.mVelocity);
-    list->mUnk_29c->StartMove(set->mTag - 1, &state);
+    list->mUnitModels->StartMove(set->mTag - 1, &state);
     RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
     mUnitCollisions[set->mTag - 1] = 0;
 }
@@ -2376,7 +2376,7 @@ BOOL BattleTarget::StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
     u16 rotY                 = pose->mRotY;
     u16 rotZ                 = pose->mRotZ;
     FindMarkerCellAt(b, &y, &x);
-    BakuganModel *other = list->mUnk_29c->GetBakugan(d - 1);
+    BakuganModel *other = list->mUnitModels->GetBakugan(d - 1);
     if (other) {
         VecFx32 tmp = {0, 0, 0};
         GetVelocityTowardXZ(a, b, c, &tmp);
@@ -2404,7 +2404,7 @@ BOOL BattleTarget::StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
         other->mRotX      = r0 + 0x4000;
         other->mRotY      = r1;
         other->mRotZ      = r2;
-        list->mUnk_29c->StartMove(d - 1, &state);
+        list->mUnitModels->StartMove(d - 1, &state);
         UpdateCameraTarget(&mBakugan->mPosition);
         UpdateCameraPosition(&mBakugan->mPosition);
         if (mShotEffectHandle != 0) {
@@ -2494,7 +2494,7 @@ void BattleTarget::UpdateUnitHoming() {
             state.mVelocity.x = v30.x;
             state.mVelocity.y = v30.y;
             state.mVelocity.z = v30.z;
-            data_020d433c.mBattlePlayers->mUnk_29c->StartMove(mUnk_140, &state);
+            data_020d433c.mBattlePlayers->mUnitModels->StartMove(mUnk_140, &state);
             mUnk_1db = i;
             u8 handle = StartEffect(data_020d433c.mEffects, 1, 10, 0, i);
             u16 yaw   = FX_Atan2Idx(mVelocity.x, mVelocity.z);
@@ -2768,7 +2768,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                     StartResult(this, 2);
                 } else if (unit->mPlayer == mPartner) {
                     mResult = 1;
-                    func_ov007_0225b69c(a, b);
+                    CreateCursorModelAtCell(a, b);
                     StartResult(this, 0x10);
                 } else {
                     mResult = 3;
@@ -2778,25 +2778,25 @@ BOOL BattleTarget::func_ov007_02259af0() {
                 mResult = 2;
                 RemoveUnit(data_020d433c.mBattlePlayers, idx, 2);
                 StartResult(this, 0xa);
-                VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
+                VEC_Subtract(&list->mUnitModels->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
                 } else {
                     state.mVelocity = d;
                 }
-                list->mUnk_29c->StartMove(idx, &state);
+                list->mUnitModels->StartMove(idx, &state);
             } else {
                 mResult = 4;
                 StartResult(this, 1);
-                VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
+                VEC_Subtract(&list->mUnitModels->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
                 } else {
                     state.mVelocity = d;
                 }
-                list->mUnk_29c->StartMove(idx, &state);
+                list->mUnitModels->StartMove(idx, &state);
             }
             if (mResult != 1) {
                 pose     = mBakugan;
@@ -2824,11 +2824,11 @@ BOOL BattleTarget::func_ov007_02259af0() {
                         u8 kind = list->mUnits[(u8) (other - 1)].mStatus;
                         if (kind != 2 && kind != 3) {
                             RemoveUnit(data_020d433c.mBattlePlayers, other - 1, 2);
-                            VEC_Subtract(&list->mUnk_29c->GetBakugan(other - 1)->mPosition, &mBakugan->mPosition, &d);
+                            VEC_Subtract(&list->mUnitModels->GetBakugan(other - 1)->mPosition, &mBakugan->mPosition, &d);
                             state.mVelocity.x = d.x;
                             state.mVelocity.y = d.y;
                             state.mVelocity.z = d.z;
-                            list->mUnk_29c->StartMove(other - 1, &state);
+                            list->mUnitModels->StartMove(other - 1, &state);
                         }
                     }
                 }
@@ -2903,7 +2903,7 @@ BOOL BattleTarget::TryRestOnCell() {
                             StartResult(this, 2);
                         } else if (unit->mPlayer == mPartner) {
                             StartResult(this, 0x10);
-                            func_ov007_0225b69c(a, b);
+                            CreateCursorModelAtCell(a, b);
                             mResult = 1;
                             return 1;
                         } else {
@@ -3255,7 +3255,7 @@ BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *out
     return 0;
 }
 
-void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
+void BattleTarget::CreateCursorModelAtCell(u8 a, u8 b) {
     SetUseMapModels(mCommandMap, 1);
     CreateCursorModel(mCommandMap);
     BattleCommandMap *map = mCommandMap;
@@ -3282,11 +3282,11 @@ void BattleTarget::StartShot() {
     dir.x                = 0x1000;
     dir.y                = 0;
     dir.z                = 0;
-    *(Rot3 *) rot = *(Rot3 *) player->mUnk_cc;
+    *(Rot3 *) rot = *(Rot3 *) player->mShotRot;
     rot[1]               = rot[1] + sTables.mBaseRotY[player->mCorner];
-    power             = (u8) (sShotSpeedAdjusts[record->mUnk_02_0] + player->mUnk_ec);
+    power             = (u8) (sShotSpeedAdjusts[record->mUnk_02_0] + player->mShotSpeed);
     mUnk_50 = mUnk_54 = sTables.mUnk_dc[record->mUnk_02_6];
-    if (player->mUnk_ec == 0) {
+    if (player->mShotSpeed == 0) {
         power = 10;
     }
     rot[1]               = rot[1] - mRotYAdjust;
@@ -3358,8 +3358,8 @@ void BattleTarget::StartShot() {
     mPushVelocity.x = 0;
     mPushVelocity.y = 0;
     mPushVelocity.z = 0;
-    mUnk_118  = player->mUnk_d8;
-    mUnk_114  = -player->mUnk_d4;
+    mUnk_118  = player->mPushSumZ;
+    mUnk_114  = -player->mPushSumX;
     GetPushVector((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
     mPushVelocity.x = mUnk_94.x;
     mPushVelocity.y = mUnk_94.y;
@@ -3400,8 +3400,8 @@ void BattleTarget::StartShot() {
 
 void BattleTarget::AddPlayerPush() {
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-    mUnk_118             = player->mUnk_d8;
-    mUnk_114             = player->mUnk_d4;
+    mUnk_118             = player->mPushSumZ;
+    mUnk_114             = player->mPushSumX;
     AddPushXZ(&mUnk_114);
 }
 
@@ -3429,7 +3429,7 @@ void BattleTarget::AddPushXZ(s32 *pair) {
     VecFx32 cam;
     mUnk_118 = pair[1];
     mUnk_114 = -pair[0];
-    if (mPlayer != data_020d433c.mBattlePlayers->mUnk_2a9 && data_020d433c.mTutorialId != 0) {
+    if (mPlayer != data_020d433c.mBattlePlayers->mLocalPlayer && data_020d433c.mTutorialId != 0) {
         return;
     }
     if (mAirFrames > 3) {
@@ -3708,7 +3708,7 @@ void BattleTarget::DrawBar() {
 void BattleTarget::DrawRoulette() {
     mCellAnims[4]->Update();
     mCellAnims[4]->Draw(1, 0x80, 0x62, 0);
-    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
         mCellAnims[5]->Update();
         mCellAnims[5]->Draw(1, 0x80, 0x62, 0);
     }
@@ -3739,7 +3739,7 @@ void BattleTarget::func_ov007_0225ce08() {
     data_020d433c.mGimmicks->mState = 0;
     mBakugan->SetupMode(BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
     if (mUnitHandle != 0) {
-        BakuganModel *pose = data_020d433c.mBattlePlayers->mUnk_29c->GetBakugan(mUnitHandle - 1);
+        BakuganModel *pose = data_020d433c.mBattlePlayers->mUnitModels->GetBakugan(mUnitHandle - 1);
         pose->mVisible            = 0;
     }
     UpdateCameraPosition(0);

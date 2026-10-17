@@ -68,7 +68,7 @@ struct SaveData {
     /* 043 */ u8 mUnk_43; // entry position inside data_020b4324[mUnk_42], reset with each mUnk_42 step
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
     // Counters BattleResult raises (capped): its mUnk_b3 is set when BattlePlayer::mUnk_ee of player
-    // BattlePlayerList::mUnk_2a9 (plus the partner's) reaches data_020d433c.mUnk_99.
+    // BattlePlayerList::mLocalPlayer (plus the partner's) reaches data_020d433c.mUnk_99.
     /* 048 */ u16 mUnk_48; // +1 when mUnk_b3 is set
     /* 04a */ u16 mUnk_4a; // +1 when mUnk_b3 is clear
     /* 04c */ PAD(0x04c, 0x04e);

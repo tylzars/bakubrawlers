@@ -166,6 +166,10 @@ void func_0204bfb0(MpX *x) {
 // out[0..15] and, negated, out[32] down to out[17]; out[16] is set to 0; pass 2 (rows 33-47) fills
 // out[33..47] and out[63] down to out[49] with the same value; out[48] gets the negated plain sum
 // of the 32 halfwords at r0.
+// Not compiled: multiplies the top halfwords of two registers with `smlatt`, which no compiled function in this build
+// contains and no C form tried produces: `(short)a * (short)b` gives smulbb/smlabb, `(short)(a >> 16)` and `a >> 16`
+// shift first and then use smlabb or mla, halfword arrays load with ldrsh, and names such as `__smlatt` compile as
+// calls to external functions.
 asm void func_0204c088(const short *coef, const short *samples, short *out) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}
     sub sp, sp, #12

@@ -11,7 +11,7 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Model.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 
 #include <nitro/gx.h>
@@ -183,10 +183,10 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
         FrameTask::Get().StopChannel(0);
     }
     FrameTask::Get().StopChannel(1);
-    data_020d433c.mRules = 0x11;
-    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
-    data_020d433c.mScriptMode = 1;
-    if (data_020d433c.mTutorialPart != 0) {
+    gGameData.mRules = 0x11;
+    gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
+    gGameData.mScriptMode = 1;
+    if (gGameData.mTutorialPart != 0) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().RestoreHeapState();
@@ -224,7 +224,7 @@ ScriptPlayer::~ScriptPlayer() {
     }
     FrameTask::Get().StopChannel(1);
     SoundManager::Get().StopSeqArcPlayerSounds(1);
-    if (data_020d433c.mTutorialPart == 0) {
+    if (gGameData.mTutorialPart == 0) {
         SoundManager::Get().StopSeq(1);
     }
 }
@@ -280,11 +280,11 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
         return result;
     }
     if (mKind == data_020b4324[type]->mScriptKind) {
-        u8 saved = data_020d433c.mUnk_7d;
+        u8 saved = gGameData.mUnk_7d;
         s32 done = 0, advance = 0;
         pending = 0;
         if (unk1 != 0) {
-            data_020d433c.mUnk_7d = 1;
+            gGameData.mUnk_7d = 1;
         }
         u8 position = gSaveData[0].mUnk_43;
         u8 index    = position % 10;
@@ -367,7 +367,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                 } else if (data_020b4324[type]->mEntries[now].mUnk_06 == 0) {
                     done = 1;
                 }
-                data_020d433c.mUnk_7d = 0;
+                gGameData.mUnk_7d = 0;
             }
             if (done != 0) {
                 if (gSaveData[0].mCreditsDone) {
@@ -407,7 +407,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     }
                 }
                 gSaveData[0].mUnk_43 = 0;
-                data_020d433c.mUnk_7d = 0;
+                gGameData.mUnk_7d = 0;
                 mKind = 7;
             }
             if (advance | done) {
@@ -426,70 +426,70 @@ BOOL ScriptPlayer::func_02066c7c() {
 }
 
 void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
-    data_020d433c.mSlotsPerPlayer = 3;
-    data_020d433c.mPlayerCount = 2;
-    data_020d433c.mHasPartners = 0;
+    gGameData.mSlotsPerPlayer = 3;
+    gGameData.mPlayerCount = 2;
+    gGameData.mHasPartners = 0;
     for (u8 i = 0; i < 4; i++) {
-        data_020d433c.mCharacterIds[i] = i;
-        data_020d433c.mCharacterLevels[i] = 0;
-        data_020d433c.mPartners[i] = i;
+        gGameData.mCharacterIds[i] = i;
+        gGameData.mCharacterLevels[i] = 0;
+        gGameData.mPartners[i] = i;
     }
     switch (mKind) {
         case SCRIPT_KIND_TOURNAMENT:
-            data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
+            gGameData.mNextScene = SCENE_ARENA_WINDOW;
             break;
         case SCRIPT_KIND_PARK:
-            data_020d433c.mNextScene = SCENE_PARK;
+            gGameData.mNextScene = SCENE_PARK;
             break;
         default:
-            data_020d433c.mNextScene = SCENE_MAP;
+            gGameData.mNextScene = SCENE_MAP;
             break;
     }
-    data_020d433c.mRules   = 0x11;
-    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
+    gGameData.mRules   = 0x11;
+    gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
     for (u8 j = 0; j < 3; j++) {
-        data_020d433c.mCharacterIds[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
-        data_020d433c.mCharacterLevels[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
+        gGameData.mCharacterIds[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
+        gGameData.mCharacterLevels[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
     }
     UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
-    data_020d433c.mFieldId = entry->mFieldId;
-    data_020d433c.mFieldVariant = entry->mUnk_08;
+    gGameData.mFieldId = entry->mFieldId;
+    gGameData.mFieldVariant = entry->mUnk_08;
     if (gSaveData[0].mCreditsDone && (gSaveData[0].mUnlockedCharacterLevel2Bits & 0x80)) {
         for (u8 k = 0; k < 3; k++) {
-            if (data_020d433c.mCharacterIds[k + 1] == 7) {
-                data_020d433c.mCharacterLevels[k + 1] = 2;
+            if (gGameData.mCharacterIds[k + 1] == 7) {
+                gGameData.mCharacterLevels[k + 1] = 2;
             }
         }
     }
     switch (data_020b4324[unk1]->mEntries[unk2].mUnk_06) {
         case 3:
-            data_020d433c.mHasPartners = 1;
-            data_020d433c.mPlayerCount = 4;
-            data_020d433c.mPartners[0] = 1;
-            data_020d433c.mPartners[1] = 0;
-            data_020d433c.mPartners[2] = 3;
-            data_020d433c.mPartners[3] = 2;
+            gGameData.mHasPartners = 1;
+            gGameData.mPlayerCount = 4;
+            gGameData.mPartners[0] = 1;
+            gGameData.mPartners[1] = 0;
+            gGameData.mPartners[2] = 3;
+            gGameData.mPartners[3] = 2;
             break;
         case 4:
-            data_020d433c.mSlotsPerPlayer = 6;
+            gGameData.mSlotsPerPlayer = 6;
             break;
         case 5:
-            data_020d433c.mPlayerCount = 4;
+            gGameData.mPlayerCount = 4;
             break;
     }
-    data_020d433c.mCharacterIds[0] = 0x15;
+    gGameData.mCharacterIds[0] = 0x15;
     u8 type = gSaveData[0].mUnk_42;
     if ((type == 9) & (gSaveData[0].mUnk_43 == 8)) {
-        data_020d433c.mLastBattle = 1;
+        gGameData.mLastBattle = 1;
     } else {
-        data_020d433c.mLastBattle = 0;
+        gGameData.mLastBattle = 0;
     }
     BOOL reached = unk2 >= func_02067240(unk1);
     BOOL known   = func_020670b4(type) != 0;
     if (reached & known) {
-        data_020d433c.mUnk_8a_4 = 1;
+        gGameData.mUnk_8a_4 = 1;
     } else {
-        data_020d433c.mUnk_8a_4 = 0;
+        gGameData.mUnk_8a_4 = 0;
     }
 }
 
@@ -2931,7 +2931,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             SoundManager::Get().StopSeqArcPlayerSounds(1);
             break;
         case 219:
-            data_020d433c.mPlayerCount = 2;
+            gGameData.mPlayerCount = 2;
             break;
         case 220:
             {
@@ -2941,7 +2941,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 } else if (v < 2) {
                     v = 2;
                 }
-                data_020d433c.mPlayerCount = v;
+                gGameData.mPlayerCount = v;
                 break;
             }
         case 221:
@@ -2950,26 +2950,26 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 if (v < 0) {
                     v = -v;
                 }
-                data_020d433c.mFieldId = v % 8;
-                data_020d433c.mFieldVariant = 0;
+                gGameData.mFieldId = v % 8;
+                gGameData.mFieldVariant = 0;
                 break;
             }
         case 222:
             {
                 s32 v = mCurrentValue;
-                data_020d433c.mCharacterIds[1] = v % 22;
+                gGameData.mCharacterIds[1] = v % 22;
                 break;
             }
         case 223:
             {
                 s32 v = mCurrentValue;
-                data_020d433c.mCharacterIds[2] = v % 22;
+                gGameData.mCharacterIds[2] = v % 22;
                 break;
             }
         case 224:
             {
                 s32 v = mCurrentValue;
-                data_020d433c.mCharacterIds[3] = v % 22;
+                gGameData.mCharacterIds[3] = v % 22;
                 break;
             }
         case 225:
@@ -2999,7 +2999,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 } else if (v < 2) {
                     v = 2;
                 }
-                data_020d433c.mPlayerCount = v;
+                gGameData.mPlayerCount = v;
             }
             break;
         case 232:
@@ -3560,7 +3560,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     mModelCommandIndex = n;
     if (mKind == SCRIPT_KIND_MAP) {
         mCommands[n].mCommand = 0xa9;
-        mCommands[n].mValue = data_020d433c.mMapTab + 0x20;
+        mCommands[n].mValue = gGameData.mMapTab + 0x20;
         n++;
         mCommands[n].mCommand = 0xae;
         mCommands[n].mValue = -0x13b;

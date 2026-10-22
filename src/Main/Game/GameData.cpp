@@ -1,7 +1,7 @@
 #include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "Game/SaveData.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "System/FrameTask.hpp"
 #include "System/SoundManager.hpp"
@@ -21,9 +21,9 @@ extern const u16 data_02090754[3][6] = {
     {0x0000, 0x0017, 0x0005, 0x00d2, 0x0028, 0x008c},
     {0x0000, 0x0013, 0x0001, 0x00c8, 0x0048, 0x00ab},
 };
-// npdata keeps the code addressing these through their own symbols (data_020d433c + 0x7a, not .bss + 0x9e).
+// npdata keeps the code addressing these through their own symbols (gGameData + 0x7a, not .bss + 0x9e).
 #pragma section npdata begin
-UnkStruct_020d433c data_020d433c;
+GameData gGameData;
 SaveData gSaveData[1];
 #pragma section npdata end
 extern u16 data_020c4250;
@@ -33,10 +33,10 @@ void ResetOptions(SaveData *d);
 void ApplyVolumeOptions(SaveData *d);
 
 void func_02022b0c() {
-    MI_CpuFill8(&data_020d433c, 0, 0xb4);
+    MI_CpuFill8(&gGameData, 0, 0xb4);
 }
 
-// Also copies gSaveData[0].mRules into data_020d433c.mRules.
+// Also copies gSaveData[0].mRules into gGameData.mRules.
 void ResetSaveData() {
     MI_CpuFill8(gSaveData, 0, 0xff4);
     ResetOptions(gSaveData);
@@ -62,7 +62,7 @@ void ResetSaveData() {
     gSaveData[0].mUnk_18_11 = 1;
     gSaveData[0].mRuleFieldVariant = 0;
     gSaveData[0].mRules |= 0x1c;
-    data_020d433c.mRules = gSaveData[0].mRules;
+    gGameData.mRules = gSaveData[0].mRules;
     do {
         SetSlotEntryIndex(gSaveData, 0, i, 0xffff);
         i++;
@@ -173,7 +173,7 @@ BOOL func_0202326c(SaveData *d) {
     BOOL found = FALSE;
     u8 pairs[6][2] = {{1, 2}, {3, 3}, {6, 2}, {7, 4}, {8, 3}, {9, 6}};
     u8 i = 0;
-    u8 flag = data_020d433c.mScriptMode;
+    u8 flag = gGameData.mScriptMode;
     do {
         if (flag && d->mUnk_42 == pairs[i][0] && d->mUnk_43 == pairs[i][1]) {
             found = TRUE;
@@ -183,7 +183,7 @@ BOOL func_0202326c(SaveData *d) {
     return found;
 }
 
-void RefreshRecvBlockIndicesAndLocalSlot(UnkStruct_020d433c *d) {
+void RefreshRecvBlockIndicesAndLocalSlot(GameData *d) {
     MI_CpuFill8(d->mRecvBlockIndices, 0, 4);
     u8 i;
     u8 n = 0;
@@ -200,7 +200,7 @@ void RefreshRecvBlockIndicesAndLocalSlot(UnkStruct_020d433c *d) {
     } while (i < 4);
 }
 
-void RefreshLocalSlot(UnkStruct_020d433c *d) {
+void RefreshLocalSlot(GameData *d) {
     u8 n = 0;
     u8 i = 0;
     do {

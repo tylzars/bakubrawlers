@@ -1,5 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "System/FileSystem.hpp"
 
 static ModelResource *sResource;
@@ -18,7 +18,7 @@ void GimmickBlock::Load() {
     if (!sResource) {
         char nsbmd[0x40];
         char nsbtx[0x40];
-        u8 n = data_020d433c.mFieldId;
+        u8 n = gGameData.mFieldId;
         sprintf(nsbmd, "block_%02d.nsbmd", n);
         sprintf(nsbtx, "block_%02d.nsbtx", n);
         sResource = new ModelResource(nsbmd, 0, nsbtx, 1);
@@ -63,7 +63,7 @@ void GimmickBlock::Update() {
         if (!mModel) {
             return;
         }
-        if ((int)data_020d433c.mGimmicks->mState < 2) {
+        if ((int)gGameData.mGimmicks->mState < 2) {
             return;
         }
         DrawInstance();

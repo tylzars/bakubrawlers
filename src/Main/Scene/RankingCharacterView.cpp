@@ -1,6 +1,6 @@
 #include "Scene/RankingCharacterView.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Model.hpp"

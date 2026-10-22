@@ -1,7 +1,7 @@
 #include "Scene/CharacterEditScene.hpp"
 #include "Graphics/CharacterModel.hpp"
 #include "System/FrameTask.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Display.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
@@ -1808,7 +1808,7 @@ void CharacterEditScene::UpdateStoreLookPrompt() {
         if (mWindows[0]->GetSelectedId() == 0) {
             StoreLook(NULL);
             mModel->StartAnim(0x17, 0);
-            data_020d433c.mSaveDirty = 1;
+            gGameData.mSaveDirty = 1;
             mStep = 0x59;
             mStepFrames = 0;
             return;

@@ -33,7 +33,7 @@ struct WmCallbackArg {
 #define WM_CALL_PENDING          4 // a call was issued and its callback has not run yet
 #define WM_CALL_STOPPED          5 // StopCallback succeeded (mState 0); Update in mState 9 sets it every frame
 #define WM_CALL_FAILED           6 // a call or its callback failed, or the mExchangeTimer countdown ran out. BattleShoot and
-                                   // BattleCommand write it on purpose (mRequest 2 while data_020d433c.mWireless is
+                                   // BattleCommand write it on purpose (mRequest 2 while gGameData.mWireless is
                                    // set) to send Update down this path; nothing has failed there
 
 // Scan result of one beacon (the wireless library's WMBssDesc followed by its game info), as far as it is read.

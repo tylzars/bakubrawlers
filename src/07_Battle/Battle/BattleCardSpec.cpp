@@ -1,6 +1,6 @@
 #include "System/InputManager.hpp"
 #include "Battle/BattleCardSpec.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -75,11 +75,11 @@ void BattleCardSpec::Update() {
     switch (mState) {
         case 0: {
             CameraManager::Get().mCameraIndex = 0;
-            CameraManager::Get().SetCamerasAndRequestMode(1, data_020d433c.mBattlePlayers->mCamera, 0);
+            CameraManager::Get().SetCamerasAndRequestMode(1, gGameData.mBattlePlayers->mCamera, 0);
             GX_SetVisiblePlane(0x11);
             G2_SetBG0Priority(0);
             LoadModels();
-            mCardModel = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUseRealb20);
+            mCardModel = new BattleCardModel(gGameData.mEffects, gGameData.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUseRealb20);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -91,7 +91,7 @@ void BattleCardSpec::Update() {
             if (mContext->mRequest != 0) {
                 mState = 5;
             } else if (mCloseEnabled) {
-                if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 0)) {
+                if (SetMessageType0x19AndCheckAny(gGameData.mBattlePlayers, 0)) {
                     mState = 4;
                 } else if (InputManager::Get().IsDown(8)) {
                     mState++;
@@ -101,7 +101,7 @@ void BattleCardSpec::Update() {
         case 3:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 1)) {
+                if (SetMessageType0x19AndCheckAny(gGameData.mBattlePlayers, 1)) {
                     mState++;
                 }
             } else {
@@ -120,7 +120,7 @@ void BattleCardSpec::Update() {
             break;
         case 6:
             if (mUnk_1e) {
-                if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x11)) {
+                if (!SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0x11)) {
                     return;
                 }
                 RequestScene(1);

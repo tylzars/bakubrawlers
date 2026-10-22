@@ -15,7 +15,7 @@
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Battle/BattleUnionAbility.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -166,12 +166,12 @@ BattleConfrontCard::~BattleConfrontCard() {
     ReleaseWindow();
     SoundManager::Get().StopSeq(1);
     SoundManager::Get().RestoreHeapState();
-    if (!func_ov007_02263150(data_020d433c.mBattlePlayers)) {
-        if (data_020d433c.mTutorialPart) {
+    if (!func_ov007_02263150(gGameData.mBattlePlayers)) {
+        if (gGameData.mTutorialPart) {
             SoundManager::Get().LoadAndStartSeq(1);
             RecordSndHeapState(SoundManager::Get().mHeap);
         } else {
-            StartFrameTaskChannel0(data_020d433c.mBattlePlayers);
+            StartFrameTaskChannel0(gGameData.mBattlePlayers);
         }
     }
     SoundManager::Get().LoadSoundGroup(6);
@@ -228,7 +228,7 @@ void BattleConfrontCard::Update() {
             }
             break;
         case 7:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mState++;
             }
             break;
@@ -300,8 +300,8 @@ void BattleConfrontCard::ResetDisplay() {
     G2_SetWndOBJInsidePlane(0x1f, FALSE);
     G2_SetWnd0Position(0, 0, 0, 0);
     G2_SetWnd1Position(0, 0, 0, 0);
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->mSecondVisible = 0;
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -360,8 +360,8 @@ void BattleConfrontCard::LoadGraphics() {
     } else {
         LoadCardGraphic(mData->mMarkerCardId);
     }
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->SetupLayout(10);
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->SetupLayout(10);
     }
 }
 
@@ -391,7 +391,7 @@ void BattleConfrontCard::StartStepTimer(u16 value) {
     mStepTimer = value;
 }
 
-// Placeholder (case 29): `idx = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer` reads the same byte
+// Placeholder (case 29): `idx = count ? list->mLocalPlayer : gGameData.mBattlePlayers->mLocalPlayer` reads the same byte
 // on both arms and compiles to nothing extra. As a two-arm value the player index is not forward-substituted into
 // `slots`, and the arms are merged only after the last expression propagation, so idx stays its own statement; with
 // `off = j << 2` that numbers list < idx < j*4 < slots, giving the original's registers (`ldr r1,[r5]; lsl r2,r8,#2;
@@ -402,20 +402,20 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
     BattleEntry *e = mData->mEntries;
     switch (mStep) {
         case 0:
-            if (data_020d433c.mAntenna) {
-                data_020d433c.mAntenna->mSecondVisible = 1;
+            if (gGameData.mAntenna) {
+                gGameData.mAntenna->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
             G2S_SetWnd0InsidePlane(0x3f, FALSE);
             G2S_SetWnd0Position(0, 0, 0xff, 0xbf);
             StartStepTimer(0x100);
-            if (data_020d433c.mBattlePlayers->mPlayers[e[0].mPlayer]->IsCpu() == 1
-                && data_020d433c.mBattlePlayers->mPlayers[e[1].mPlayer]->IsCpu() == 1) {
+            if (gGameData.mBattlePlayers->mPlayers[e[0].mPlayer]->IsCpu() == 1
+                && gGameData.mBattlePlayers->mPlayers[e[1].mPlayer]->IsCpu() == 1) {
                 mUnk_68 = 1;
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    if (data_020d433c.mBattlePlayers->mLocalPlayer == 0) {
+                    if (gGameData.mBattlePlayers->mLocalPlayer == 0) {
                         mUnk_23 = 1;
                     }
                 }
@@ -498,7 +498,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             WirelessManager::Get();
             if (IsWirelessMode(mode)) {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[0];
+                BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[0];
                 if (p->mMsg.mType == 0x16) {
                     CloseWindow();
                     ReleaseWindow();
@@ -521,7 +521,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 BattleCardCamera *cam = mCardCamera;
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = FADE_MODE_DOWN;
-                data_020d433c.mFlags |= 4;
+                gGameData.mFlags |= 4;
                 cam->mState = 3;
                 mStep++;
             }
@@ -564,7 +564,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             break;
         case 9:
-            new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[0].mPlayer, 5, 0, 0);
+            new BattleCharaAct(gGameData.mBattlePlayers->mCamera, e[0].mPlayer, 5, 0, 0);
             mContext->mRequest = 0;
             StartStepTimer(0x40);
             mStep++;
@@ -592,10 +592,10 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            if (data_020d433c.mAntenna) {
-                data_020d433c.mAntenna->SetupLayout(10);
+            if (gGameData.mAntenna) {
+                gGameData.mAntenna->SetupLayout(10);
             }
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mStep++;
             }
             break;
@@ -620,7 +620,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             SpriteManager::Get().SetupMode(0, 7);
             GX_SetGraphicsMode(1, 0, 1);
             mMarkerCardKind = ApplyMarkerCard(mData->mMarkerCardId);
-            u8 side = data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
+            u8 side = gGameData.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
             u32 kind = 6;
             switch (mMarkerCardKind) {
                 case 1:
@@ -692,7 +692,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 break;
             }
             u8 side;
-            if (data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
+            if (gGameData.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
                 side = 1;
                 if (mSide1MarkerCardApplied == 0) {
                     side = 0;
@@ -751,7 +751,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             StartStepTimer(0x40);
             mStep = 0x19;
-            if (data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
+            if (gGameData.mBattlePlayers->LocalPlayer() == e[1].mPlayer) {
                 if (mSide1MarkerCardApplied == 0) {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
@@ -774,7 +774,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            u8 side = data_020d433c.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
+            u8 side = gGameData.mBattlePlayers->LocalPlayer() == e[1].mPlayer ? 1 : 0;
             mCardSpec = new BattleCardSpec(3, e[side].mBakuganId, e[side].mAttribute, e[side].mCharacterId == 0x15 ? 1 : 0);
             StartStepTimer(0x40);
             mStep++;
@@ -789,20 +789,20 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 break;
             }
             mCardId = 0;
-            if (data_020d433c.mTutorialNumber == 2 || data_020d433c.mTutorialNumber == 4) {
+            if (gGameData.mTutorialNumber == 2 || gGameData.mTutorialNumber == 4) {
                 mStep = 0x1a;
             } else {
                 mStep = 0x1c;
             }
             break;
         case 26:
-            if (data_020d433c.mAntenna) {
-                data_020d433c.mAntenna->mSecondVisible = 0;
+            if (gGameData.mAntenna) {
+                gGameData.mAntenna->mSecondVisible = 0;
             }
             GXS_SetVisibleWnd(0);
-            data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
+            gGameData.mBattlePlayers->mStorytalkWindow->LoadGraphics();
             {
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 list->mStorytalkWindow->SetMessage(list->mStorytalkMessageIndex, 0x64, 0, 0);
             }
             G2S_SetBlendBrightness(0x1f, -10);
@@ -810,12 +810,12 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             break;
         case 27:
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
+                gGameData.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
-            if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
+            if (gGameData.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 break;
             }
-            data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
+            gGameData.mBattlePlayers->mStorytalkMessageIndex++;
             G2S_SetBlendBrightness(0x1f, 0);
             mStep = 0x1c;
             break;
@@ -826,11 +826,11 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             mUnk_65 = 0;
             mPromptCardPicked = 0;
             mUnionAbility = 0;
-            if (data_020d433c.mUnk_9a_2) {
+            if (gGameData.mUnk_9a_2) {
                 mStep = 0x20;
                 break;
             }
-            u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
+            u8 owner = gGameData.mBattlePlayers->mLocalPlayer;
             if (owner == e[0].mPlayer) {
                 mStep = 0x1d;
                 mLocalSide = 0;
@@ -850,8 +850,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             u8 count = 0;
             mDisabledBits  = 0;
             do {
-                BattlePlayerList *list  = data_020d433c.mBattlePlayers;
-                u8 idx                  = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer; // placeholder, see above
+                BattlePlayerList *list  = gGameData.mBattlePlayers;
+                u8 idx                  = count ? list->mLocalPlayer : gGameData.mBattlePlayers->mLocalPlayer; // placeholder, see above
                 u32 off                 = j << 2;
                 BattlePlayerSlot *slots = list->mPlayers[idx]->mSlots6c;
                 u8 flag                 = *((u8 *) slots + off + 2);
@@ -865,7 +865,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     bit++;
                 }
                 j++;
-            } while (j < data_020d433c.mSlotsPerPlayer);
+            } while (j < gGameData.mSlotsPerPlayer);
             if (count != 0) {
                 mUnk_66 = 0;
                 mStep = 0x1e;
@@ -888,7 +888,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             switch (UpdateCardPick()) {
                 case 1:
-                    if (!data_020d433c.mUnk_9a_2) {
+                    if (!gGameData.mUnk_9a_2) {
                         mPromptCardPicked = 1;
                     }
                     mCardPickStep = 0;
@@ -907,7 +907,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             mStep = 0x20;
             break;
         case 32:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mStep++;
                 if (mUnionAbility) {
                     ((BattleUnionAbility *) mUnionAbility)->Close(0);
@@ -917,7 +917,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
         case 33: {
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4258)) {
-                u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
+                u8 owner = gGameData.mBattlePlayers->mLocalPlayer;
                 if (e[0].mPlayer == owner || e[1].mPlayer == owner) {
                     data_0220f540.mUnk_00 = 7;
                     data_0220f540.mUnk_04 = mCardId;
@@ -928,15 +928,15 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             u8 done = 0;
             do {
                 if ((&mSide0CardDone)[i] == 0) {
-                    BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer];
+                    BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[e[i].mPlayer];
                     if (p->IsCpu()) {
                         (&mSide0CardDone)[i] = 1;
-                    } else if (data_020d433c.mUnk_9a_2) {
+                    } else if (gGameData.mUnk_9a_2) {
                         (&mSide0CardDone)[i] = 1;
                     } else {
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4258)) {
-                            p = data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer];
+                            p = gGameData.mBattlePlayers->mPlayers[e[i].mPlayer];
                             if (p->mMsg.mType == 7) {
                                 mData->mEntries[i].mCardId = *(u32 *) ((u8 *) p + 0x104);
                                 mData->mEntries[i].mSlot6cIndex = *((u8 *) p + 0x10a);
@@ -961,7 +961,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             break;
         }
         case 34:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mStep++;
             }
             break;
@@ -970,7 +970,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             do {
                 BattleEntry *ent = &e[i];
                 
-                if (data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer]->IsCpu()) {
+                if (gGameData.mBattlePlayers->mPlayers[ent->mPlayer]->IsCpu()) {
                     if (e[i].mSkipCardPick) {
                         mUnk_56 = 0;
                     } else {
@@ -978,25 +978,25 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                         k = 0;
                         u8 mask = 0;
                         do {
-                            if (!TestCardCondition(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
+                            if (!TestCardCondition(i, gGameData.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
                                 (&mask)[k / 8] |= 1 << (k % 8);
                             }
                             k++;
                             j++;
-                        } while (j < data_020d433c.mSlotsPerPlayer);
+                        } while (j < gGameData.mSlotsPerPlayer);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer], mask,
+                        u8 pick  = PickUnflaggedSlot6c(gGameData.mBattlePlayers->mPlayers[ent->mPlayer], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mUnk_56 = 0;
                         } else {
-                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer];
+                            BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[e[i].mPlayer];
                             mData->mEntries[i].mCardId = p->mSlots6c[pick].mValue;
                             mData->mEntries[i].mSlot6cIndex = pick;
-                            mData->mEntries[i].mUnk_0a = GetCardValue(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[pick].mValue);
+                            mData->mEntries[i].mUnk_0a = GetCardValue(i, gGameData.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[pick].mValue);
                         }
                     }
-                } else if (data_020d433c.mUnk_9a_2) {
+                } else if (gGameData.mUnk_9a_2) {
                     if (e[i].mSkipCardPick) {
                         mCardId = 0;
                     } else {
@@ -1004,20 +1004,20 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                         k = 0;
                         u8 mask = 0;
                         do {
-                            if (!TestCardCondition(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
+                            if (!TestCardCondition(i, gGameData.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
                                 (&mask)[k / 8] |= 1 << (k % 8);
                             }
                             k++;
                             j++;
-                        } while (j < data_020d433c.mSlotsPerPlayer);
+                        } while (j < gGameData.mSlotsPerPlayer);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer], mask,
+                        u8 pick  = PickUnflaggedSlot6c(gGameData.mBattlePlayers->mPlayers[ent->mPlayer], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mCardId = 0;
                         } else {
                             u8 idx = mSlot6cIndex = pick;
-                            BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c;
+                            BattlePlayerSlot *slots = gGameData.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c;
                             mCardId = slots[idx].mValue;
                             mData->mEntries[i].mCardId = slots[idx].mValue;
                             mData->mEntries[i].mSlot6cIndex = mSlot6cIndex;
@@ -1052,7 +1052,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             mStep++;
             break;
         case 38: {
-            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (!SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 break;
             }
             u8 i = 0;
@@ -1153,8 +1153,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             } else {
                 mUnk_21 = 1;
             }
-            if (data_020d433c.mAntenna) {
-                data_020d433c.mAntenna->mSecondVisible = 1;
+            if (gGameData.mAntenna) {
+                gGameData.mAntenna->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -1162,7 +1162,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             mStep++;
             break;
         case 43:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mStep++;
             }
             break;
@@ -1259,7 +1259,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             BattleCardCamera *cam = mCardCamera;
             SpriteManager::Get();
             SpriteManager::sFade[0] = FADE_MODE_DOWN;
-            data_020d433c.mFlags |= 4;
+            gGameData.mFlags |= 4;
             cam->mState = 3;
             mContext->mRequest = 0;
             mStep++;
@@ -1269,7 +1269,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 mUnk_21 = func_ov007_02244440();
                 mStep++;
             }
@@ -1279,7 +1279,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 u8 found = 0;
                 u8 idx   = 0;
                 u8 i     = 0;
-                u8 owner = data_020d433c.mBattlePlayers->mLocalPlayer;
+                u8 owner = gGameData.mBattlePlayers->mLocalPlayer;
                 do {
                     if (owner == e[i].mPlayer) {
                         idx   = i;
@@ -1290,8 +1290,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 if (found == 1) {
                     if (idx == mUnk_21) {
                         u32 v = GetTexVariant(e[mUnk_21].mBakuganId, e[mUnk_21].mAttribute);
-                        new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mPlayer, 10, v, 0);
-                        if (data_020d433c.mScriptMode) {
+                        new BattleCharaAct(gGameData.mBattlePlayers->mCamera, e[mUnk_21].mPlayer, 10, v, 0);
+                        if (gGameData.mScriptMode) {
                             s16 d = (s16) (e[(mUnk_21 + 1) % 2].mUnk_04 - e[mUnk_21].mUnk_04);
                             if (d < 0) {
                                 d = 0;
@@ -1300,13 +1300,13 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                             if (e[mUnk_21].mPushedToEnd) {
                                 add = (u16) (add << 1);
                             }
-                            if (data_020d433c.mTutorialNumber == 0) {
-                                u8 sel = data_020d433c.mBattlePlayers->mUnitA;
+                            if (gGameData.mTutorialNumber == 0) {
+                                u8 sel = gGameData.mBattlePlayers->mUnitA;
                                 if (mUnk_21 == 1) {
-                                    sel = data_020d433c.mBattlePlayers->mUnitB;
+                                    sel = gGameData.mBattlePlayers->mUnitB;
                                 }
-                                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer];
-                                BattleRecord *rec = &p->mRecords[data_020d433c.mBattlePlayers->mUnits[sel].mRecord];
+                                BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer];
+                                BattleRecord *rec = &p->mRecords[gGameData.mBattlePlayers->mUnits[sel].mRecord];
                                 if ((int) rec->mGauge < 0xfff - add) {
                                     rec->mGauge += add;
                                 }
@@ -1315,18 +1315,18 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                                 }
                             }
                         }
-                        if (data_020d433c.mTutorialNumber == 2) {
-                            data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
+                        if (gGameData.mTutorialNumber == 2) {
+                            gGameData.mBattlePlayers->mUnk_2b0 = 1;
                         }
                     } else {
-                        new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[idx].mPlayer, 0xb, 0, 0);
+                        new BattleCharaAct(gGameData.mBattlePlayers->mCamera, e[idx].mPlayer, 0xb, 0, 0);
                     }
-                    if (data_020d433c.mTutorialNumber == 4 && e[idx].mCardRemoved) {
-                        data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
+                    if (gGameData.mTutorialNumber == 4 && e[idx].mCardRemoved) {
+                        gGameData.mBattlePlayers->mUnk_2b0 = 1;
                     }
                 } else {
                     u32 v = GetTexVariant(e[mUnk_21].mBakuganId, e[mUnk_21].mAttribute);
-                    new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mPlayer, e[mUnk_21].mPlayer + 0x10, v, 0);
+                    new BattleCharaAct(gGameData.mBattlePlayers->mCamera, e[mUnk_21].mPlayer, e[mUnk_21].mPlayer + 0x10, v, 0);
                 }
                 mContext->mRequest = 0;
             } else {
@@ -1340,18 +1340,18 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 break;
             }
             if (mUnk_21 != -1) {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer];
+                BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer];
                 u8 other        = 0;
                 p->mUnk_fe      = 1;
                 p->mUnk_ee++;
                 if (mUnk_21 == 0) {
                     other = 1;
                 }
-                data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer]->PushHistory(e[other].mUnk_04, e[other].mAttribute);
+                gGameData.mBattlePlayers->mPlayers[e[mUnk_21].mPlayer]->PushHistory(e[other].mUnk_04, e[other].mAttribute);
             }
-            RemoveMarker(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnitA].mMarker);
-            RemoveUnit(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitA, 2);
-            RemoveUnit(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitB, 2);
+            RemoveMarker(gGameData.mBattlePlayers, gGameData.mBattlePlayers->mUnits[gGameData.mBattlePlayers->mUnitA].mMarker);
+            RemoveUnit(gGameData.mBattlePlayers, gGameData.mBattlePlayers->mUnitA, 2);
+            RemoveUnit(gGameData.mBattlePlayers, gGameData.mBattlePlayers->mUnitB, 2);
             mStep = 0x35;
             break;
         }
@@ -1366,7 +1366,7 @@ int BattleConfrontCard::UpdateCardPick() {
     BattleEntry *e  = mData->mEntries;
     switch (mCardPickStep) {
         case 0:
-            if (data_020d433c.mTutorialNumber == 4) {
+            if (gGameData.mTutorialNumber == 4) {
                 mContext->mRequest = 0;
                 mCardPickStep           = 2;
                 BattleCardSpec *spec = mCardSpec;
@@ -1418,7 +1418,7 @@ int BattleConfrontCard::UpdateCardPick() {
                 GXS_SetVisiblePlane(0x11);
                 mSlot6cIndex = GetLowByte(v);
                 result  = 1;
-                mCardId = data_020d433c.mBattlePlayers->mPlayers[e[mLocalSide].mPlayer]->Slot6c(mSlot6cIndex);
+                mCardId = gGameData.mBattlePlayers->mPlayers[e[mLocalSide].mPlayer]->Slot6c(mSlot6cIndex);
             } else {
                 CloseCommandPage(mCommandPage, 1);
                 mContext->mRequest = 0;
@@ -1485,10 +1485,10 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
         u8 oppLevel;
         BattleEntry *self = e;
         self += side;
-        u8 selfLevel = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mUnk_ee;
+        u8 selfLevel = gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mUnk_ee;
         opp          = e;
         opp += other;
-        oppLevel = data_020d433c.mBattlePlayers->mPlayers[opp->mPlayer]->mUnk_ee;
+        oppLevel = gGameData.mBattlePlayers->mPlayers[opp->mPlayer]->mUnk_ee;
         type              = GetCardInfo(card, 3);
         switch (type) {
         case 1: {
@@ -1555,9 +1555,9 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
             case 0x4d: {
                 j = 0;
                 do {
-                    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
+                    SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                     j++;
-                } while (j < data_020d433c.mSlotsPerPlayer);
+                } while (j < gGameData.mSlotsPerPlayer);
                 (&mSide0MarkerCardApplied)[i] = 1;
                 break;
             }
@@ -1565,9 +1565,9 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                 if (selfLevel < oppLevel) {
                     j = 0;
                     do {
-                        SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
+                        SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         j++;
-                    } while (j < data_020d433c.mSlotsPerPlayer);
+                    } while (j < gGameData.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1578,10 +1578,10 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                     j = 0;
                     do {
                         if (j == (u8) (card - 0x4f)) {
-                            SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
+                            SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         }
                         j++;
-                    } while (j < data_020d433c.mSlotsPerPlayer);
+                    } while (j < gGameData.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1592,10 +1592,10 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                     j = 0;
                     do {
                         if (j == (u8) (card - 0x52)) {
-                            SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
+                            SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         }
                         j++;
-                    } while (j < data_020d433c.mSlotsPerPlayer);
+                    } while (j < gGameData.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1647,11 +1647,11 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                 u8 j = 0;
                 u8 n            = 0;
                 do {
-                    if (data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots6c[j].mFlag == 2) {
+                    if (gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mSlots6c[j].mFlag == 2) {
                         n++;
                     }
                     j++;
-                } while (j < data_020d433c.mSlotsPerPlayer);
+                } while (j < gGameData.mSlotsPerPlayer);
                 mData->mEntries[side].mUnk_08 = n * 100;
                 (&mSide0MarkerCardApplied)[side]              = 1;
                 break;
@@ -1664,11 +1664,11 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                 u8 j = 0;
                 u8 n            = 0;
                 do {
-                    if (data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[j].mStatus == 1) {
+                    if (gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[j].mStatus == 1) {
                         n++;
                     }
                     j++;
-                } while (j < data_020d433c.mSlotsPerPlayer);
+                } while (j < gGameData.mSlotsPerPlayer);
                 mData->mEntries[side].mUnk_08 = n * 150;
                 (&mSide0MarkerCardApplied)[side]              = 1;
                 break;
@@ -1938,16 +1938,16 @@ BOOL BattleConfrontCard::TestCardCondition(u8 side, u16 id) {
             if (owner == self->mPlayer) {
                 break;
             }
-            if (data_020d433c.mHasPartners == 0) {
+            if (gGameData.mHasPartners == 0) {
                 goto abilityCard;
             }
-            if (owner == data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mPartner) {
+            if (owner == gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mPartner) {
                 break;
             }
             goto abilityCard;
         case 0xb9:
         case 0xba:
-            if (data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mUnk_ee == 0) {
+            if (gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mUnk_ee == 0) {
                 break;
             }
             goto abilityCard;
@@ -2025,8 +2025,8 @@ BOOL BattleConfrontCard::TestCardCondition(u8 side, u16 id) {
             pattern[0] = 2;
             pattern[1] = 1;
         scan2 : {
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer];
-            u8 playerCount       = data_020d433c.mSlotsPerPlayer;
+            BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[self->mPlayer];
+            u8 playerCount       = gGameData.mSlotsPerPlayer;
             do {
                 u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
@@ -2054,8 +2054,8 @@ BOOL BattleConfrontCard::TestCardCondition(u8 side, u16 id) {
             pattern[1] = 4;
             pattern[2] = 5;
         scan3 : {
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer];
-            u8 playerCount       = data_020d433c.mSlotsPerPlayer;
+            BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[self->mPlayer];
+            u8 playerCount       = gGameData.mSlotsPerPlayer;
             do {
                 u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
@@ -2120,7 +2120,7 @@ u16 BattleConfrontCard::GetCardValue(u8 side, u32 id) {
             break;
         case 0xb9:
         case 0xba:
-            value = data_020d433c.mBattlePlayers->mPlayers[e->mPlayer]->mUnk_ee * 50;
+            value = gGameData.mBattlePlayers->mPlayers[e->mPlayer]->mUnk_ee * 50;
             break;
         case 0xa8:
         case 0xa9:
@@ -2169,8 +2169,8 @@ void BattleConfrontCard::OpenWindow() {
         mWindow->mEnabled = 1;
     }
     mWindowOpen = 1;
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->mSecondVisible = 1;
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->mSecondVisible = 1;
     }
     G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
     GXS_SetVisibleWnd(5);
@@ -2186,8 +2186,8 @@ void BattleConfrontCard::CloseWindow() {
     }
     mWindowOpen = 0;
     G2S_SetBlendBrightness(0x11, 0);
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->mSecondVisible = 0;
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWnd0InsidePlane(0x1f, FALSE);
@@ -2292,19 +2292,19 @@ u8 BattleConfrontCard::func_ov007_02244440() {
             u8 k    = 0;
             u8 mask = 0;
             do {
-                if (!TestCardCondition(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
+                if (!TestCardCondition(i, gGameData.mBattlePlayers->mPlayers[e[i].mPlayer]->mSlots6c[j].mValue)) {
                     (&mask)[k / 8] |= 1 << (k % 8);
                 }
                 k++;
                 j++;
-            } while (j < data_020d433c.mSlotsPerPlayer);
+            } while (j < gGameData.mSlotsPerPlayer);
             u8 other = (i + 1) % 2;
-            mSlot6cIndex = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[cur->mPlayer], mask,
+            mSlot6cIndex = PickUnflaggedSlot6c(gGameData.mBattlePlayers->mPlayers[cur->mPlayer], mask,
                                           (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
             if (mSlot6cIndex == 0xff) {
                 mUnk_56 = 0;
             } else {
-                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[i].mPlayer], mSlot6cIndex, 2);
+                SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[e[i].mPlayer], mSlot6cIndex, 2);
             }
         }
         i++;
@@ -2319,7 +2319,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
         power[n] = power[n] * func_ov007_022234f0(e[n].mPlayer, mBattleMode, e[n].mCharacterId);
         n++;
     } while (n < 2);
-    u8 mode = data_020d433c.mFieldId;
+    u8 mode = gGameData.mFieldId;
     if (mode != 0 && mode != 7) {
         const s32 *row = sAttributeRates[(u8) (mode - 1)];
         u8 m           = 0;

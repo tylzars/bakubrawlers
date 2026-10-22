@@ -5,7 +5,7 @@
 #include "System/WirelessManager.hpp"
 #include "Text/TextManager.hpp"
 #include "Scene/ArenaScene.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -35,8 +35,8 @@ extern u8 data_020d43eb[];
 extern u8 data_020d441a[];
 extern "C" void MIi_CpuCopy16(const void *src, void *dest, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
-void RefreshLocalSlot(UnkStruct_020d433c *data);
-void RefreshRecvBlockIndicesAndLocalSlot(UnkStruct_020d433c *data);
+void RefreshLocalSlot(GameData *data);
+void RefreshRecvBlockIndicesAndLocalSlot(GameData *data);
 
 #define MINU(a, b) ((u32) (b) > (u32) (a) ? (u32) (a) : (u32) (b))
 extern UnkStruct_020c4230 data_020c4230;
@@ -104,15 +104,15 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mWirelessStopping = 0;
     mStoppingMessageVisible = 0;
     mRequest = 0;
-    data_020d433c.mAntenna = 0;
+    gGameData.mAntenna = 0;
     MI_CpuClear32(&mMain, sizeof(mMain));
     MI_CpuClear32(mSlots, sizeof(mSlots));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
     for (u8 i = 0; i < 4; i++) {
-        data_020d433c.mUnk_a9[i] = 0;
+        gGameData.mUnk_a9[i] = 0;
     }
     ResetNames();
-    data_020d433c.mPlayerCount = 2;
+    gGameData.mPlayerCount = 2;
 }
 
 ArenaScene::~ArenaScene() {
@@ -147,9 +147,9 @@ ArenaScene::~ArenaScene() {
     if (mSubMenuWindow != NULL) {
         delete mSubMenuWindow;
     }
-    if (data_020d433c.mAntenna != NULL) {
-        data_020d433c.mAntenna->mFinished = 1;
-        data_020d433c.mAntenna = NULL;
+    if (gGameData.mAntenna != NULL) {
+        gGameData.mAntenna->mFinished = 1;
+        gGameData.mAntenna = NULL;
     }
 }
 
@@ -158,16 +158,16 @@ void ArenaScene::StopWirelessAndReset() {
         return;
     }
     WirelessManager::Get().Stop();
-    data_020d433c.mWireless = 0;
+    gGameData.mWireless = 0;
     mWirelessStopping = 1;
     ResetNames();
     ClearNameText();
     mState = 2;
     mVariant = 0;
     SetupVariant();
-    if (data_020d433c.mAntenna != NULL) {
-        data_020d433c.mAntenna->mFinished = 1;
-        data_020d433c.mAntenna = NULL;
+    if (gGameData.mAntenna != NULL) {
+        gGameData.mAntenna->mFinished = 1;
+        gGameData.mAntenna = NULL;
     }
     if (mSubMenuMode != 0) {
         SetSubMenuMode(0);
@@ -323,7 +323,7 @@ void ArenaScene::Update() {
                         case 1:
                             if (mode == 0) {
                                 WirelessManager::Get().Start();
-                                data_020d433c.mWireless = 1;
+                                gGameData.mWireless = 1;
                             }
                             data_0220f540.mUnk_00 = 0xb;
                             if (mSelection == 0) {
@@ -333,7 +333,7 @@ void ArenaScene::Update() {
                                 mVariant = 3;
                                 mState    = 8;
                             }
-                            data_020d433c.mAntenna = new AntennaIndicator(1);
+                            gGameData.mAntenna = new AntennaIndicator(1);
                             MI_CpuClearFast((void *) 0x6600000, 0x2000);
                             ClearNameText();
                             mPlayerCount = 0;
@@ -376,9 +376,9 @@ void ArenaScene::Update() {
                 u8 *p = WirelessManager::Get().GetRecvBlock(i);
                 if (p != NULL) {
                     count = i + 1;
-                    MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
+                    MIi_CpuCopy16(p + 4, gGameData.mNames[i], 0x18);
                 } else if (i != 0) {
-                    MI_CpuClear16(data_020d433c.mNames[i], 0x18);
+                    MI_CpuClear16(gGameData.mNames[i], 0x18);
                 }
             }
             mPlayerCount = count;
@@ -440,7 +440,7 @@ void ArenaScene::Update() {
                     WirelessManager::Get();
                     ScanSnapshotEntry *e = &data_020c3938[i];
                     if (e != NULL && e->mUnk_68 == 0xfffc) {
-                        MIi_CpuCopy16(e->mName, data_020d433c.mNames[i], 0x18);
+                        MIi_CpuCopy16(e->mName, gGameData.mNames[i], 0x18);
                     }
                     i++;
                 } while (i < count);
@@ -521,18 +521,18 @@ void ArenaScene::Update() {
                 u8 *p = WirelessManager::Get().GetRecvBlock(i);
                 if (p != NULL) {
                     count = i + 1;
-                    MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
+                    MIi_CpuCopy16(p + 4, gGameData.mNames[i], 0x18);
                     if (i == 0) {
                         flag = p[0x1f];
                     }
                 } else if (i != 0) {
-                    MI_CpuClear16(data_020d433c.mNames[i], 0x18);
+                    MI_CpuClear16(gGameData.mNames[i], 0x18);
                 }
             }
             mPlayerCount = count;
             PrintNames();
             if (flag != 0) {
-                RefreshLocalSlot(&data_020d433c);
+                RefreshLocalSlot(&gGameData);
                 mState = 0xb;
             }
             break;
@@ -548,12 +548,12 @@ void ArenaScene::Update() {
                 for (u8 i = 0; i < 4; i++) {
                     u8 *p = WirelessManager::Get().GetRecvBlock(i);
                     if (p != NULL) {
-                        MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
+                        MIi_CpuCopy16(p + 4, gGameData.mNames[i], 0x18);
                     }
                 }
                 if (mode == 6) {
-                    RefreshRecvBlockIndicesAndLocalSlot(&data_020d433c);
-                    RefreshLocalSlot(&data_020d433c);
+                    RefreshRecvBlockIndicesAndLocalSlot(&gGameData);
+                    RefreshLocalSlot(&gGameData);
                 }
                 mState++;
             }
@@ -623,8 +623,8 @@ void ArenaScene::InitDisplay() {
 }
 
 void ArenaScene::LoadGraphics() {
-    if (data_020d433c.mAntenna != NULL) {
-        data_020d433c.mAntenna->SetupLayout(1);
+    if (gGameData.mAntenna != NULL) {
+        gGameData.mAntenna->SetupLayout(1);
     }
     ChangeDir("/Game/Battle/bg/");
     LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
@@ -910,7 +910,7 @@ void ArenaScene::PrintNames() {
             TextManager &text = TextManager::Get();
             text.mUse4bppFont = 1;
             height = 0x1c;
-            TextManager::Get().Print(&data_020d433c.mNames[i], 0x18, mBuffers[i], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0x10,
+            TextManager::Get().Print(&gGameData.mNames[i], 0x18, mBuffers[i], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0x10,
                                      0, 0, 0, 0, 1);
             TextManager::Get().mUse4bppFont = 0;
         }
@@ -934,7 +934,7 @@ void ArenaScene::DrawNames() {
 void ArenaScene::ResetNames() {
     for (u8 i = 0; i < 4; i++) {
         for (u8 j = 0; j < 12; j++) {
-            data_020d433c.mNames[i][j] = gSaveData[0].mName[j];
+            gGameData.mNames[i][j] = gSaveData[0].mName[j];
         }
     }
     mPlayerCount = 0;

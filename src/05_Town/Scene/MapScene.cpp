@@ -1,6 +1,6 @@
 #include "Scene/MapScene.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -91,9 +91,9 @@ MapScene::MapScene() :
     mSaveWindowPending      = 0;
     mPopupBits      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
-    mTab = data_020d433c.mMapTab;
-    data_020d433c.mLastBattle = 0;
-    data_020d433c.mUnk_8a_4 = 0;
+    mTab = gGameData.mMapTab;
+    gGameData.mLastBattle = 0;
+    gGameData.mUnk_8a_4 = 0;
 }
 
 MapScene::~MapScene() {
@@ -126,7 +126,7 @@ MapScene::~MapScene() {
     if (mPanelWindow != NULL) {
         delete mPanelWindow;
     }
-    data_020d433c.mMapTab = mTab;
+    gGameData.mMapTab = mTab;
     OS_Free(mGlyphBuffer);
 }
 
@@ -178,7 +178,7 @@ void MapScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -347,7 +347,7 @@ void MapScene::Update() {
             }
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             mState++;
             break;
         case 21:
@@ -583,7 +583,7 @@ BOOL MapScene::SetNextSceneFromEvent() {
         switch (result) {
             case SCRIPT_RESULT_MYROOM:
                 mNextScene            = SCENE_MYROOM;
-                data_020d433c.mMyroomNextScene = SCENE_MAP;
+                gGameData.mMyroomNextScene = SCENE_MAP;
                 break;
             case SCRIPT_RESULT_STORE:
                 mNextScene = SCENE_STORE;
@@ -595,17 +595,17 @@ BOOL MapScene::SetNextSceneFromEvent() {
                 mNextScene = SCENE_TOURNAMENT;
                 break;
             case SCRIPT_RESULT_BATTLE:
-                data_020d433c.mRules   = 0x11;
-                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
+                gGameData.mRules   = 0x11;
+                gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
                 mNextScene              = SCENE_BATTLE_PLAYER_LIST;
                 break;
             case SCRIPT_RESULT_MAP:
                 mNextScene = SCENE_MAP;
                 break;
             case SCRIPT_RESULT_TUTORIAL:
-                data_020d433c.mTutorialNumber = 1;
-                data_020d433c.mTutorialPart = 0;
-                data_020d433c.mUnk_82 = 1;
+                gGameData.mTutorialNumber = 1;
+                gGameData.mTutorialPart = 0;
+                gGameData.mUnk_82 = 1;
                 mNextScene            = SCENE_TUTORIAL;
                 break;
             default:
@@ -724,7 +724,7 @@ BOOL MapScene::SetNextSceneFromTab() {
     switch (mTab) {
         case MAP_TAB_MYROOM:
             mNextScene            = SCENE_MYROOM;
-            data_020d433c.mMyroomNextScene = SCENE_MAP;
+            gGameData.mMyroomNextScene = SCENE_MAP;
             break;
         case MAP_TAB_STORE:
             mNextScene = SCENE_STORE;

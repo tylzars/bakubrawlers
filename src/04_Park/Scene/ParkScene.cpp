@@ -11,7 +11,7 @@
 #include "UI/SaveWindow.hpp"
 #include "UI/UnlockPopup.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -101,7 +101,7 @@ ParkScene::ParkScene() :
     mUnk_2c = NULL;
     mUnk_1c = NULL;
     mGlyphBuffer = NULL;
-    mPlayerCount = data_020d433c.mPlayerCount;
+    mPlayerCount = gGameData.mPlayerCount;
     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
     G2_BlendNone();
 }
@@ -113,23 +113,23 @@ ParkScene::~ParkScene() {
 void ParkScene::Update() {
     switch (mState) {
         case 0: {
-            u8 saved                 = data_020d433c.mUnk_7d;
-            data_020d433c.mUnk_7d    = 0;
+            u8 saved                 = gGameData.mUnk_7d;
+            gGameData.mUnk_7d    = 0;
             Init();
             if (mEvent->func_02066c7c()) {
-                switch (data_020d433c.mUnk_7c) {
+                switch (gGameData.mUnk_7c) {
                     case 2:
                     case 3:
-                        data_020d433c.mUnk_7d = data_020d433c.mUnk_7c;
+                        gGameData.mUnk_7d = gGameData.mUnk_7c;
                         break;
                     default:
-                        data_020d433c.mUnk_7d = 0;
+                        gGameData.mUnk_7d = 0;
                         break;
                 }
                 mTimer = 8;
                 mState++;
             } else {
-                data_020d433c.mUnk_7d = saved;
+                gGameData.mUnk_7d = saved;
                 mState               = 10;
             }
             break;
@@ -138,7 +138,7 @@ void ParkScene::Update() {
             if (--mTimer != 0) {
                 break;
             }
-            data_020d433c.mUnk_7c = 1;
+            gGameData.mUnk_7c = 1;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -165,12 +165,12 @@ void ParkScene::Update() {
                 u8 v = gSaveData[0].mUnk_42;
                 if ((v == 2) | (v == 4)) {
                     if (v == 2) {
-                        data_020d433c.mTutorialNumber = 5;
+                        gGameData.mTutorialNumber = 5;
                     } else {
-                        data_020d433c.mTutorialNumber = 6;
+                        gGameData.mTutorialNumber = 6;
                     }
-                    data_020d433c.mTutorialPart = 0;
-                    data_020d433c.mUnk_82 = 1;
+                    gGameData.mTutorialPart = 0;
+                    gGameData.mUnk_82 = 1;
                     RequestScene(SCENE_TUTORIAL);
                     mFinished = TRUE;
                     return;
@@ -186,7 +186,7 @@ void ParkScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -230,7 +230,7 @@ void ParkScene::Update() {
             mState = 2;
             break;
         case 10:
-            switch (data_020d433c.mUnk_7c) {
+            switch (gGameData.mUnk_7c) {
                 case 2:
                 case 3:
                     mEvent->RequestFinish();
@@ -248,19 +248,19 @@ void ParkScene::Update() {
                 break;
             }
             ParkEntry entry;
-            GetParkEntry(data_020d433c.mParkEntryIndex, &entry);
+            GetParkEntry(gGameData.mParkEntryIndex, &entry);
             if (entry.mType == PARK_ENTRY_TYPE_TUTORIAL) {
                 SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState++;
                 break;
             }
-            if (data_020d433c.mHasPartners != 0) {
+            if (gGameData.mHasPartners != 0) {
                 BOOL rules = FALSE;
-                if (data_020d433c.mUnk_7c == 2) {
+                if (gGameData.mUnk_7c == 2) {
                     rules = reinterpret_cast<ParkRules *>(this)->func_ov004_0221bf5c();
                 }
-                func_02089a9c(data_020d433c.mParkEntryIndex);
-                data_020d433c.mUnk_7c = 1;
+                func_02089a9c(gGameData.mParkEntryIndex);
+                gGameData.mUnk_7c = 1;
                 if (rules == 0) {
                     Init();
                     FrameTask::Get().StartChannel(0, 0x14);
@@ -280,17 +280,17 @@ void ParkScene::Update() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            data_020d433c.mUnk_7c = 1;
-            func_02089a9c(data_020d433c.mParkEntryIndex);
+            gGameData.mUnk_7c = 1;
+            func_02089a9c(gGameData.mParkEntryIndex);
             mRequestParkScene = 1;
             mState = 4;
             break;
         case 13: {
             ParkEntry entry;
-            GetParkEntry(data_020d433c.mParkEntryIndex, &entry);
-            u32 idx = GetParkGroupId(data_020d433c.mParkEntryIndex);
+            GetParkEntry(gGameData.mParkEntryIndex, &entry);
+            u32 idx = GetParkGroupId(gGameData.mParkEntryIndex);
             u8 pick = MATH_Rand32(&gRandom, 3);
-            u8 nib  = data_020d433c.mUnk_8c_4;
+            u8 nib  = gGameData.mUnk_8c_4;
             if (nib == 0) {
                 pick += 3;
             }
@@ -311,7 +311,7 @@ void ParkScene::Update() {
         }
         case 14:
             if (!mEvent->IsRunning()) {
-                data_020d433c.mUnk_7c = 1;
+                gGameData.mUnk_7c = 1;
                 SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState = 0xf;
                 break;
@@ -334,10 +334,10 @@ void ParkScene::Update() {
                 break;
             }
             BOOL rules = FALSE;
-            if (data_020d433c.mUnk_8c_4 == 0) {
+            if (gGameData.mUnk_8c_4 == 0) {
                 rules = reinterpret_cast<ParkRules *>(this)->func_ov004_0221bf5c();
             }
-            func_02089a9c(data_020d433c.mParkEntryIndex);
+            func_02089a9c(gGameData.mParkEntryIndex);
             if (rules == 0) {
                 Init();
                 mState = 0x11;
@@ -355,7 +355,7 @@ void ParkScene::Update() {
             if (mEvent->IsRunning()) {
                 break;
             }
-            data_020d433c.mUnk_7c = 1;
+            gGameData.mUnk_7c = 1;
             mEvent->func_0206ef4c("mes_pm_button", 5, 0xa, 2, 0x15);
             mState++;
             break;
@@ -563,60 +563,60 @@ void ParkScene::Update() {
                 GetParkEntry(mEntryIndex, &entry);
                 switch (entry.mType) {
                     case PARK_ENTRY_TYPE_BATTLE:
-                        data_020d433c.mPlayerCount = 2;
-                        data_020d433c.mSlotsPerPlayer      = 3;
-                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mFieldVariant      = entry.mUnk_09;
-                        data_020d433c.mHasPartners      = 0;
-                        data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mCharacterLevels[0]      = 0;
-                        data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
+                        gGameData.mPlayerCount = 2;
+                        gGameData.mSlotsPerPlayer      = 3;
+                        gGameData.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
+                        gGameData.mFieldVariant      = entry.mUnk_09;
+                        gGameData.mHasPartners      = 0;
+                        gGameData.mCharacterIds[0]  = 0x15;
+                        gGameData.mCharacterLevels[0]      = 0;
+                        gGameData.mCharacterIds[1]      = idx;
+                        gGameData.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
                         break;
                     case PARK_ENTRY_TYPE_TEAMBATTLE:
-                        data_020d433c.mPlayerCount = 4;
-                        data_020d433c.mSlotsPerPlayer      = 3;
-                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mFieldVariant      = entry.mUnk_09;
-                        data_020d433c.mHasPartners      = 1;
-                        data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mCharacterLevels[0]      = 0;
-                        data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
-                        data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
-                        data_020d433c.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
-                        data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
-                        data_020d433c.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
-                        data_020d433c.mPartners[0]      = 1;
-                        data_020d433c.mPartners[1]      = 0;
-                        data_020d433c.mPartners[2]      = 3;
-                        data_020d433c.mPartners[3]      = 2;
+                        gGameData.mPlayerCount = 4;
+                        gGameData.mSlotsPerPlayer      = 3;
+                        gGameData.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
+                        gGameData.mFieldVariant      = entry.mUnk_09;
+                        gGameData.mHasPartners      = 1;
+                        gGameData.mCharacterIds[0]  = 0x15;
+                        gGameData.mCharacterLevels[0]      = 0;
+                        gGameData.mCharacterIds[1]      = idx;
+                        gGameData.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
+                        gGameData.mCharacterIds[2]      = entry.mUnk_0a;
+                        gGameData.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
+                        gGameData.mCharacterIds[3]      = entry.mUnk_0b;
+                        gGameData.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
+                        gGameData.mPartners[0]      = 1;
+                        gGameData.mPartners[1]      = 0;
+                        gGameData.mPartners[2]      = 3;
+                        gGameData.mPartners[3]      = 2;
                         break;
                     case PARK_ENTRY_TYPE_BATTLE_ROYALE:
-                        data_020d433c.mPlayerCount = 4;
-                        data_020d433c.mSlotsPerPlayer      = 3;
-                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mFieldVariant      = entry.mUnk_09;
-                        data_020d433c.mHasPartners      = 0;
-                        data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mCharacterLevels[0]      = 0;
-                        data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
-                        data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
-                        data_020d433c.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
-                        data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
-                        data_020d433c.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
+                        gGameData.mPlayerCount = 4;
+                        gGameData.mSlotsPerPlayer      = 3;
+                        gGameData.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
+                        gGameData.mFieldVariant      = entry.mUnk_09;
+                        gGameData.mHasPartners      = 0;
+                        gGameData.mCharacterIds[0]  = 0x15;
+                        gGameData.mCharacterLevels[0]      = 0;
+                        gGameData.mCharacterIds[1]      = idx;
+                        gGameData.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
+                        gGameData.mCharacterIds[2]      = entry.mUnk_0a;
+                        gGameData.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
+                        gGameData.mCharacterIds[3]      = entry.mUnk_0b;
+                        gGameData.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
                         break;
                 }
-                data_020d433c.mRules = 0x11;
-                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
+                gGameData.mRules = 0x11;
+                gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
                 if (gSaveData[0].mCreditsDone) {
                     if (entry.mProgressEntryIndex == 0x19 && idx == 7) {
-                        data_020d433c.mCharacterLevels[1] = 2;
+                        gGameData.mCharacterLevels[1] = 2;
                     }
                 }
-                data_020d433c.mParkEntryIndex = mEntryIndex;
-                data_020d433c.mUnk_8b_4 = gSaveData[0].mUnk_5b8;
+                gGameData.mParkEntryIndex = mEntryIndex;
+                gGameData.mUnk_8b_4 = gSaveData[0].mUnk_5b8;
                 mState++;
             } else {
                 mUnk_0f = 0;
@@ -665,16 +665,16 @@ void ParkScene::Update() {
                 GetParkEntry(mEntryIndex, &entry);
                 if (entry.mUnk_0a_h == 0) {
                     if (gSaveData[0].mTutorialBits & 8) {
-                        data_020d433c.mTutorialNumber = 4;
+                        gGameData.mTutorialNumber = 4;
                     } else {
-                        data_020d433c.mTutorialNumber = 3;
+                        gGameData.mTutorialNumber = 3;
                     }
                 } else {
-                    data_020d433c.mTutorialNumber = 4;
+                    gGameData.mTutorialNumber = 4;
                 }
-                data_020d433c.mTutorialPart   = 0;
-                data_020d433c.mUnk_82   = 1;
-                data_020d433c.mParkEntryIndex = mEntryIndex;
+                gGameData.mTutorialPart   = 0;
+                gGameData.mUnk_82   = 1;
+                gGameData.mParkEntryIndex = mEntryIndex;
                 mUnk_0f                 = 0xff;
                 mState++;
             } else {
@@ -705,8 +705,8 @@ void ParkScene::Update() {
             break;
         case 41:
             if (mUnk_0f != 0) {
-                data_020d433c.mNextScene = SCENE_PARK;
-                data_020d433c.mUnk_7c = 1;
+                gGameData.mNextScene = SCENE_PARK;
+                gGameData.mUnk_7c = 1;
                 if (mUnk_0f == 0xff) {
                     RequestScene(SCENE_TUTORIAL);
                     mFinished = TRUE;
@@ -926,8 +926,8 @@ struct ParkRulesBuf {
 };
 
 BOOL ParkRules::func_ov004_0221bf5c() {
-    u8 lo = data_020d433c.mParkEntryIndex;
-    u8 hi = data_020d433c.mUnk_8b_4;
+    u8 lo = gGameData.mParkEntryIndex;
+    u8 hi = gGameData.mUnk_8b_4;
     u8 saved = gSaveData[0].mUnk_5b8;
     ParkRulesBuf buf;
     gSaveData[0].mUnk_5b8 = hi;
@@ -952,7 +952,7 @@ BOOL ParkRules::func_ov004_0221bf5c() {
         case 21: if (CountSlotsWith(4) != 0) ok = 0; break;
         case 22: if (CountSlotsWith(5) != 0) ok = 0; break;
         case 24: if (CountSlotsWith(4) != 0) ok = 0; break;
-        case 25: if (data_020d433c.mUnk_8c_0 == 0) ok = 0; break;
+        case 25: if (gGameData.mUnk_8c_0 == 0) ok = 0; break;
     }
     if (ok) {
         UnlockProgressEntry(buf.mId);

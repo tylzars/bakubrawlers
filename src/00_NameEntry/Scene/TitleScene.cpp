@@ -1,6 +1,6 @@
 #include "System/SaveManager.hpp"
 #include "Scene/TitleScene.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "System/SoundManager.hpp"
 #include "UI/MessageWindow.hpp"
@@ -147,18 +147,18 @@ TitleScene::TitleScene() :
     mUnk_d6 = 0;
     mLogoVisible = 0;
     mLogoY = 0x60;
-    data_020d433c.mNextScene = SCENE_TITLE;
-    data_020d433c.mUnk_7d = 0;
-    data_020d433c.mUnk_87 = 0;
-    data_020d433c.mUnk_88_4 = 0;
-    data_020d433c.mUnk_88_0 = 0;
-    data_020d433c.mMapTab = 0;
-    data_020d433c.mLastBattle = 0;
+    gGameData.mNextScene = SCENE_TITLE;
+    gGameData.mUnk_7d = 0;
+    gGameData.mUnk_87 = 0;
+    gGameData.mUnk_88_4 = 0;
+    gGameData.mUnk_88_0 = 0;
+    gGameData.mMapTab = 0;
+    gGameData.mLastBattle = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
     MI_CpuClear32(mBufferSizes, sizeof(mBufferSizes));
     mCursor = new SelectWindowCursor(1, sTitleFullScreenItems, 0);
-    mMenuSelection = data_020d433c.mTitleMenuSelection;
+    mMenuSelection = gGameData.mTitleMenuSelection;
     mSubBgIndex = mMenuSelection;
     SoundManager::Get().RestoreHeapState();
     SoundManager::Get().LoadSoundGroup(4);
@@ -197,12 +197,12 @@ TitleScene::~TitleScene() {
 void TitleScene::Update() {
     switch (mState) {
         case 0:
-            if (data_020d433c.mCreditsRequested) {
+            if (gGameData.mCreditsRequested) {
                 mPlaneBlendEnabled = 0;
                 mState = 0x2a;
                 break;
             }
-            if (data_020d433c.mSkipTitleMovie) {
+            if (gGameData.mSkipTitleMovie) {
                 mState = 3;
                 break;
             }
@@ -210,7 +210,7 @@ void TitleScene::Update() {
             mState++;
             break;
         case 1:
-            new MovieScene((void *) "/movie/bknd_op.mods", data_020d433c.mLanguage);
+            new MovieScene((void *) "/movie/bknd_op.mods", gGameData.mLanguage);
             mState++;
             break;
         case 2:
@@ -224,7 +224,7 @@ void TitleScene::Update() {
             LoadGraphics();
             LoadSystemText();
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
-            if (data_020d433c.mUnk_76) {
+            if (gGameData.mUnk_76) {
                 FrameTask::Get().StartChannel(0, 0x10);
                 mLogoVisible = 1;
             } else {
@@ -242,7 +242,7 @@ void TitleScene::Update() {
         case 5:
             if (IsFadeDone(0)) {
                 mUnk_c8 = 0;
-                if (data_020d433c.mUnk_76) {
+                if (gGameData.mUnk_76) {
                     mState = 0x20;
                     break;
                 }
@@ -279,19 +279,19 @@ void TitleScene::Update() {
             return;
         case 9: {
             ResetSaveData();
-            u8 a = data_020d433c.mUnk_81;
-            u8 b = data_020d433c.mLanguage;
-            u8 c = data_020d433c.mSaveSlotContent;
+            u8 a = gGameData.mUnk_81;
+            u8 b = gGameData.mLanguage;
+            u8 c = gGameData.mSaveSlotContent;
             func_02022b0c();
-            data_020d433c.mUnk_81 = a;
-            data_020d433c.mLanguage = b;
-            data_020d433c.mSaveSlotContent = c;
+            gGameData.mUnk_81 = a;
+            gGameData.mLanguage = b;
+            gGameData.mSaveSlotContent = c;
             GXS_SetVisiblePlane(0x11);
             u32 idx = 1;
             u8 count = 2;
-            switch (data_020d433c.mSaveSlotContent) {
+            switch (gGameData.mSaveSlotContent) {
                 case 0:
-                    data_020d433c.mSaveSlotContent = idx;
+                    gGameData.mSaveSlotContent = idx;
                     if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
                         new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
@@ -322,7 +322,7 @@ void TitleScene::Update() {
             u8 sel = mWindow30->mCursor->mSelection;
             if (result == 1) {
                 if (sel == 0) {
-                    switch (data_020d433c.mSaveSlotContent) {
+                    switch (gGameData.mSaveSlotContent) {
                         case 0:
                         case 1:
                             mState = 0x13;
@@ -387,7 +387,7 @@ void TitleScene::Update() {
                     }
                     ApplyVolumeOptions(gSaveData);
                     FrameTask::Get().StartChannel(0, 0x10);
-                    data_020d433c.mUnk_76 = 1;
+                    gGameData.mUnk_76 = 1;
                     mLogoVisible = 1;
                     mLogoY = 0x48;
                     mState = 0x20;
@@ -430,7 +430,7 @@ void TitleScene::Update() {
         case 16:
             if ((u8) mWindow30->Update(1) == 1) {
                 if ((u8) mWindow30->mCursor->mSelection == 0) {
-                    data_020d433c.mSaveSlotContent = 1;
+                    gGameData.mSaveSlotContent = 1;
                     if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
                         new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
@@ -462,7 +462,7 @@ void TitleScene::Update() {
         case 19:
             if (IsFadeDone(1)) {
                 SetPlaneBlend(0);
-                data_020d433c.mUnk_76 = 1;
+                gGameData.mUnk_76 = 1;
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 FrameTask::Get().CloseHandles();
                 mState++;
@@ -472,7 +472,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            new MovieScene((void *) "/movie/bknd_op2.mods", data_020d433c.mLanguage);
+            new MovieScene((void *) "/movie/bknd_op2.mods", gGameData.mLanguage);
             mState++;
             break;
         case 21:
@@ -536,7 +536,7 @@ void TitleScene::Update() {
             InitSaveWindowDisplay();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -565,7 +565,7 @@ void TitleScene::Update() {
             }
             break;
         case 32:
-            data_020d433c.mSkipTitleMovie = 1;
+            gGameData.mSkipTitleMovie = 1;
             SelectWindowCursor *cursor = mCursor;
             cursor->mItems = (WindowItem *) sTitleMenuItems;
             cursor->mCount = 5;
@@ -658,7 +658,7 @@ void TitleScene::Update() {
             mState = 0x28;
             break;
         case 40: {
-            data_020d433c.mTitleMenuSelection = mMenuSelection;
+            gGameData.mTitleMenuSelection = mMenuSelection;
             u32 scene;
             switch (mMenuSelection) {
                 case TITLE_MENU_MAP:
@@ -668,17 +668,17 @@ void TitleScene::Update() {
                     }
                     break;
                 case TITLE_MENU_ARENA_WINDOW:
-                    data_020d433c.mUnk_89 = 0;
+                    gGameData.mUnk_89 = 0;
                     scene = SCENE_ARENA_WINDOW;
                     break;
                 case TITLE_MENU_TUTORIAL:
-                    data_020d433c.mTutorialNumber = 0;
-                    data_020d433c.mTutorialPart = 0;
-                    data_020d433c.mUnk_82 = 0;
+                    gGameData.mTutorialNumber = 0;
+                    gGameData.mTutorialPart = 0;
+                    gGameData.mUnk_82 = 0;
                     scene = SCENE_TUTORIAL;
                     break;
                 case TITLE_MENU_MYROOM:
-                    data_020d433c.mMyroomNextScene = SCENE_TITLE;
+                    gGameData.mMyroomNextScene = SCENE_TITLE;
                     scene = SCENE_MYROOM;
                     break;
                 case TITLE_MENU_OPTION:
@@ -734,7 +734,7 @@ void TitleScene::Update() {
             }
             break;
         case 47:
-            data_020d433c.mCreditsRequested = 0;
+            gGameData.mCreditsRequested = 0;
             RequestScene(SCENE_LOGO);
             mFinished = 1;
             return;

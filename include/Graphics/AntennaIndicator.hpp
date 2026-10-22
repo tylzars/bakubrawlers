@@ -6,7 +6,7 @@
 
 class CellAnimation;
 
-// Antenna indicator scene: draws two animations of antenna_nce.bin. Owned through data_020d433c.mUnk_10 and
+// Antenna indicator scene: draws two animations of antenna_nce.bin. Owned through gGameData.mUnk_10 and
 // ListScene::mAntenna.
 class AntennaIndicator : public SceneBase {
 public:

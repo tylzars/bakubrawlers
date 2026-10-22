@@ -52,7 +52,7 @@ struct GimmickSetData {
 // Object types of the SetData files (GimmickSetEntry::mType). GimmickManager::CreateFromFile creates one
 // subclass per type and each subclass constructor stores its type in Gimmick::mType, which LoadCollision and the
 // subclasses' own collision loaders pass on as the collision set's tag (BattleTarget switches on it). Type 1 creates a
-// GimmickExePoint when data_020d433c.mScriptMode is set, otherwise a GimmickFieldPowerS with variant 1, which stores
+// GimmickExePoint when gGameData.mScriptMode is set, otherwise a GimmickFieldPowerS with variant 1, which stores
 // GIMMICK_TYPE_FIELD_POWER_S. Types 0x1f, 0x28 and 0x3d (GimmickUnk_02274830, GimmickPull,
 // GimmickUnk_02230cec) stay literals.
 enum {

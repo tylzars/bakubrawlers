@@ -8,7 +8,7 @@
 #include "UI/MessageWindow.hpp"
 #include "Battle/BattleObj01.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
@@ -296,7 +296,7 @@ void BattleHud::Init() {
     ChangeDir("/");
     i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mPlayer]->mSlots6cRemaining == 0) {
+        if (gGameData.mBattlePlayers->mPlayers[entries[i].mPlayer]->mSlots6cRemaining == 0) {
             mUnk_118[i] = 0xff;
         }
         BattleEntry *e = entries;
@@ -342,7 +342,7 @@ void BattleHud::LoadSmallCard(u8 side, int card) {
     u8 index;
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     BattleEntry *entries = mData->mEntries;
-    u8 selected = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u8 selected = gGameData.mBattlePlayers->mLocalPlayer;
     u8 i;
     screen.SetObjVramMode(3);
     index = side + 0x11;
@@ -390,10 +390,10 @@ void BattleHud::Update() {
     }
     switch (mState) {
         case 1:
-            if (data_020d433c.mTutorialId == 0xe || (data_020d433c.mTutorialId >= 7 && data_020d433c.mTutorialId <= 10)) {
+            if (gGameData.mTutorialId == 0xe || (gGameData.mTutorialId >= 7 && gGameData.mTutorialId <= 10)) {
                 mState = 2;
-                data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
-                data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
+                gGameData.mBattlePlayers->mStorytalkWindow->LoadGraphics();
+                gGameData.mBattlePlayers->mStorytalkWindow->SetMessage(gGameData.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
                 SetupCountdown();
@@ -402,18 +402,18 @@ void BattleHud::Update() {
             break;
         case 2: {
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
+                gGameData.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
-            u32 limit = data_020d433c.mTutorialNumber == 4 ? 0 : 5;
-            if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
-                data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
-                u8 n = data_020d433c.mBattlePlayers->mStorytalkMessageIndex;
+            u32 limit = gGameData.mTutorialNumber == 4 ? 0 : 5;
+            if (!gGameData.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
+                gGameData.mBattlePlayers->mStorytalkMessageIndex++;
+                u8 n = gGameData.mBattlePlayers->mStorytalkMessageIndex;
                 if (n > limit) {
                     SetupCountdown();
                     mState = 3;
                     G2S_SetBlendBrightness(0x1f, 0);
                 } else {
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(n, 0x64, 0, 0);
+                    gGameData.mBattlePlayers->mStorytalkWindow->SetMessage(n, 0x64, 0, 0);
                 }
             }
             break;
@@ -823,7 +823,7 @@ BOOL BattleHud::StartObject(u8 side, s16 x, s16 y, u8 flag) {
 }
 
 void BattleHud::Draw() {
-    u8 selected = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u8 selected = gGameData.mBattlePlayers->mLocalPlayer;
     u8 i;
     mData->DrawCharacterIcons(0, 8, 0x1e);
     mData->DrawCharacterIcons(1, 0xb8, 0x1e);
@@ -1284,7 +1284,7 @@ void BattleHud::DrawAbilitiesAndCards() {
             if (mUnk_118[side] != 0xff) {
                 u8 x = gSmallCardX[side];
                 mCellAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
-                if (!data_020d433c.mUnk_9a_2 && mLocalSide == side) {
+                if (!gGameData.mUnk_9a_2 && mLocalSide == side) {
                     if (!mUnk_117_1 && !mCardSequenceRunning && mUnk_118[side] == 1) {
                         if (!entries[(u8) (side ^ 1)].mUnk_0f_3) {
                             mCellAnims[16]->Draw(1, x, 0x17, 0);

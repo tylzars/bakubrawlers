@@ -90,8 +90,8 @@ void GimmickIkazuchiStart::Update() {
         if (mMarkerNear) {
             return;
         }
-        data_020d433c.mFlags &= 8;
-        if (data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (gGameData.mFlags) {
             return;
         }
         mTimer--;
@@ -112,15 +112,15 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         func_ov007_022789e0(0);
-        data_020d433c.mFlags &= 8;
-        if (data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (gGameData.mFlags) {
             return;
         }
         mTimer--;
         if (mTimer) {
             return;
         }
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 1) {
             SoundManager::Get().StartSeqArc(0x61);
         }
         mTimer = 0x46;
@@ -137,7 +137,7 @@ void GimmickIkazuchiStart::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         BattleTarget *t        = list->mBattleTarget;
         if (!t) {
             return;
@@ -156,7 +156,7 @@ void GimmickIkazuchiStart::Update() {
         v.z       = t->mVelocity.z;
         v.y       = 0x2000;
         SetTargetVelocity(list->mBattleTarget, &v, 0);
-        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 8, 0x1e);
+        func_ov007_0225ca18(gGameData.mBattlePlayers->mBattleTarget, 8, 0x1e);
         mState++;
         break;
     }
@@ -189,21 +189,21 @@ void GimmickIkazuchiStart::Update() {
 
 int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
     int result = 0;
-    if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
+    if (mModel && (int)gGameData.mGimmicks->mState >= 1) {
         DrawInstance();
         if (count && mModelB) {
             MtxFx43 mtx = gIdentityMtx43;
             MTX_SetTranslation43(&mtx, &mPosition);
-            data_020d433c.mFlags &= 8;
-            if (!data_020d433c.mFlags) {
+            gGameData.mFlags &= 8;
+            if (!gGameData.mFlags) {
                 mModelB->AdvanceAnim();
             }
             mModelB->Draw(&mtx, &mScale);
         }
     }
     if (count) {
-        data_020d433c.mFlags &= 8;
-        if (!data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (!gGameData.mFlags) {
             mTimer--;
             if (mTimer == 0) {
                 mState = 1;

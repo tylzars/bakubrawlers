@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Scene/SceneBase.hpp"
 #include "System/FrameTask.hpp"
 #include "Scene/SceneManager.hpp"
@@ -146,7 +146,7 @@ void SceneRunner::SwitchToScene(s32 scene) {
     RewindUploadQueue();
     mContext->mRequest = 14;
     ((SceneRunnerContext *) mContext)->mState = scene;
-    if (data_020d433c.mTutorialPart == 0) {
+    if (gGameData.mTutorialPart == 0) {
         SoundManager::Get().RestoreHeapState();
     }
     if (scene == SCENE_BATTLE_PLAYER_LIST) {
@@ -184,7 +184,7 @@ void SceneRunner::Update() {
             break;
         case SCENE_BATTLE_PLAYER_LIST: {
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV007_ID);
-            data_020d433c.mBattlePlayers = new BattlePlayerList();
+            gGameData.mBattlePlayers = new BattlePlayerList();
             context->mState = 14;
             break;
         }

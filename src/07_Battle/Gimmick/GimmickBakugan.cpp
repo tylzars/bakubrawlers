@@ -1,5 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "System/FileSystem.hpp"
 
 static ModelResource *sResources[2];
@@ -18,7 +18,7 @@ GimmickBakugan::~GimmickBakugan() {
 }
 
 void GimmickBakugan::Load() {
-    switch (data_020d433c.mFieldId) {
+    switch (gGameData.mFieldId) {
     case 1:
         if (!sResources[0]) {
             sResources[0] = new ModelResource("pyrus_dorg00.nsbmd", "pyrus_dorg00_data.bin", "pyrus_dorg00.nsbtx", 1);
@@ -83,7 +83,7 @@ void GimmickBakugan::Load() {
     } else {
         mModel = sResources[mVariant]->mModel->CreateInstance(0);
     }
-    if (data_020d433c.mFieldId == 5) {
+    if (gGameData.mFieldId == 5) {
         mModel->mUseBoxTest = 0;
     }
     ChangeDir("/");

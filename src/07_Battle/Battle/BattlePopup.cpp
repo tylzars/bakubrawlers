@@ -1,6 +1,6 @@
 #include "Battle/BattlePopup.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
@@ -86,9 +86,9 @@ void BattlePopup::Update() {
                 s8 id = mWindow->GetSelectedId();
                 switch (id) {
                     case 0:
-                        if (data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
+                        if (gGameData.mNextScene == SCENE_ARENA_WINDOW) {
                             mNextScene = 2;
-                        } else if (data_020d433c.mUnk_8a_4 != 0) {
+                        } else if (gGameData.mUnk_8a_4 != 0) {
                             mNextScene = 1;
                         } else {
                             mNextScene = 2;
@@ -167,9 +167,9 @@ void BattlePopup::LoadWindow() {
     void *buffer      = OS_Alloc(TextManager::Get().BufferSize(0x18, 8));
     MI_CpuClearFast(buffer, 0x1800);
     int index;
-    if (data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
+    if (gGameData.mNextScene == SCENE_ARENA_WINDOW) {
         index = 0x3c;
-    } else if (data_020d433c.mUnk_8a_4 != 0) {
+    } else if (gGameData.mUnk_8a_4 != 0) {
         index = 0x3d;
     } else {
         index = 0x3b;

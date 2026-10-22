@@ -24,7 +24,7 @@ static const VecFx32 sEffectPos_02265118 = {0, 0x4800, 0};
 #include "System/WirelessManager.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleUnionAbility.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Effect.hpp"
@@ -54,7 +54,7 @@ BattleAbility::BattleAbility()
     mDestUnit = 0xff;
     mDestMarker = 0;
     mPickIndex = 0;
-    mEffects = data_020d433c.mEffects;
+    mEffects = gGameData.mEffects;
     mCameraStep = 0;
     mOrbitAngle = 0;
     mAmountStep = 0;
@@ -68,21 +68,21 @@ BattleAbility::BattleAbility()
     mAmountRemaining = 0;
     mShownAmount = 0;
     mOtherUnitCount = 0;
-    mPlayer = data_020d433c.mBattlePlayers->mTurnPlayer;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    mPlayer = gGameData.mBattlePlayers->mTurnPlayer;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 own = list->mLocalPlayer;
     mRecord = list->mPlayers[mPlayer]->mRecord;
     if (mPlayer != own) {
         mNotLocal = 1;
-        if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
+        if (gGameData.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
             mIsCpu = 1;
         }
     }
-    mTarget = data_020d433c.mBattlePlayers->mBattleTarget;
+    mTarget = gGameData.mBattlePlayers->mBattleTarget;
     mUnit = mTarget->mUnitHandle - 1;
-    mAbilityId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId;
+    mAbilityId = gGameData.mBattlePlayers->mPlayers[mPlayer]->mAbilityId;
     mAbilityIndex = mAbilityId - ABILITY_ID_REPEAT_TURN; // lowest id: the sAbilityHandlers row
-    mCamera = data_020d433c.mBattlePlayers->mCamera;
+    mCamera = gGameData.mBattlePlayers->mCamera;
     u8 i = 0;
     do {
         mNumberCellAnims[i] = 0;
@@ -264,7 +264,7 @@ void BattleAbility::Update() {
             ((u8 *) &data_0220f540)[0] = 0x14;
             break;
         case 8: {
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+            BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
             if (player->mMsg.mType != 0x14) {
                 break;
             }
@@ -309,7 +309,7 @@ void BattleAbility::Update() {
             mState++;
             break;
         case 11:
-            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (!SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 break;
             }
             mState++;
@@ -324,7 +324,7 @@ void BattleAbility::Update() {
                         mState = 0xd;
                         break;
                     }
-                    data_020d433c.mBattlePlayers->mAbilityRequest = 3;
+                    gGameData.mBattlePlayers->mAbilityRequest = 3;
                     mState                                 = 0xe;
                     break;
             }
@@ -349,7 +349,7 @@ void BattleAbility::Update() {
             mState++;
             break;
         case 17:
-            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x10)) {
+            if (!SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0x10)) {
                 break;
             }
             mState++;
@@ -423,15 +423,15 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             result = 0;
             break;
         case 2:
-            if (*((u8 *) data_020d433c.mBattlePlayers->mPlayers[mPlayer] + 0xf8) != 0) {
+            if (*((u8 *) gGameData.mBattlePlayers->mPlayers[mPlayer] + 0xf8) != 0) {
                 result = 0;
             }
             if (mIsCpu != 0 && result == 0) {
                 u8 i        = 0;
                 u8 slots[3] = {0, 0, 0};
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 u8 n        = 0;
-                u8 count    = data_020d433c.mSlotsPerPlayer;
+                u8 count    = gGameData.mSlotsPerPlayer;
                 do {
                     if (((u8 *) list->mPlayers[mPlayer] + 0x56)[i * 4] == 0) {
                         slots[n] = i;
@@ -444,8 +444,8 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             break;
         case 3: {
             u8 i             = 0;
-            BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-            u8 count         = data_020d433c.mSlotsPerPlayer;
+            BattlePlayer *pl = gGameData.mBattlePlayers->mPlayers[mPlayer];
+            u8 count         = gGameData.mSlotsPerPlayer;
             do {
                 if (pl->mRecords[i].mStatus == 0) {
                     result = 0;
@@ -459,8 +459,8 @@ BOOL BattleAbility::func_ov007_02264a5c() {
                 u8 count2;
                 u8 j        = 0;
                 u8 slots[3] = {0, 0, 0};
-                count2   = data_020d433c.mSlotsPerPlayer;
-                list = data_020d433c.mBattlePlayers;
+                count2   = gGameData.mSlotsPerPlayer;
+                list = gGameData.mBattlePlayers;
                 n        = 0;
                 do {
                     if (list->mPlayers[mPlayer]->mRecords[j].mStatus == 0) {
@@ -486,14 +486,14 @@ BOOL BattleAbility::func_ov007_02264a5c() {
                 do {
                     y = 0;
                     do {
-                        u8 v = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
+                        u8 v = gGameData.mBattlePlayers->mUnitHandles[y][x];
                         if (v != 0) {
                             u8 unit = v - 1;
                             u8 me = mPlayer;
-                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mPlayer;
+                            u8 owner = gGameData.mBattlePlayers->mUnits[unit].mPlayer;
                             if (owner != me) {
-                                if (data_020d433c.mHasPartners != 0) {
-                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[me]->mPartner) {
+                                if (gGameData.mHasPartners != 0) {
+                                    if (owner != gGameData.mBattlePlayers->mPlayers[me]->mPartner) {
                                         found[n] = unit;
                                         n++;
                                     }
@@ -524,19 +524,19 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             do {
                 y = 0;
                 do {
-                    u8 v = data_020d433c.mBattlePlayers->mMarkerHandles[y][x];
+                    u8 v = gGameData.mBattlePlayers->mMarkerHandles[y][x];
                     if (v != 0) {
                         pairs[n][0] = v - 1;
                         pairs[n][1] = 0xff;
-                        u8 w        = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
+                        u8 w        = gGameData.mBattlePlayers->mUnitHandles[y][x];
                         if (w == 0) {
                             n++;
                         } else {
                             u8 unit  = w - 1;
-                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mPlayer;
+                            u8 owner = gGameData.mBattlePlayers->mUnits[unit].mPlayer;
                             if (owner != mPlayer) {
-                                if (data_020d433c.mHasPartners != 0) {
-                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mPartner) {
+                                if (gGameData.mHasPartners != 0) {
+                                    if (owner != gGameData.mBattlePlayers->mPlayers[mPlayer]->mPartner) {
                                         pairs[n][1] = unit;
                                         n++;
                                     }
@@ -565,9 +565,9 @@ BOOL BattleAbility::func_ov007_02264a5c() {
             }
             break;
         case 8: {
-            BattleUnit *unit      = &data_020d433c.mBattlePlayers->mUnits[mUnit];
+            BattleUnit *unit      = &gGameData.mBattlePlayers->mUnits[mUnit];
             UnitIndex rec         = (UnitIndex) unit->mRecord;
-            BattleRecord *record  = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[rec];
+            BattleRecord *record  = &gGameData.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[rec];
             u16 b                 = record->mUnk_06;
             if (record->mUnk_04 + b >= 0x3de || b == 0) {
                 result = 1;
@@ -647,7 +647,7 @@ u8 BattleAbility::UpdateRepeatTurn() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 done    = 1;
-                *((u8 *) data_020d433c.mBattlePlayers + 0x2ac) = 1;
+                *((u8 *) gGameData.mBattlePlayers + 0x2ac) = 1;
             }
             break;
     }
@@ -676,7 +676,7 @@ u8 BattleAbility::UpdateShootAgain() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 done    = 1;
-                *((u8 *) data_020d433c.mBattlePlayers + 0x2ac) = 2;
+                *((u8 *) gGameData.mBattlePlayers + 0x2ac) = 2;
             }
             break;
     }
@@ -703,7 +703,7 @@ u8 BattleAbility::UpdateReassignMarker() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             UnitIndex marker       = (UnitIndex) list->mUnits[mUnit].mMarker;
             BattleMarker *entries  = list->Markers();
             list->mMarkers[marker].mStatus = 3;
@@ -729,14 +729,14 @@ u8 BattleAbility::UpdateReassignMarker() {
             break;
         }
         case 2:
-            if (data_020d433c.mBattlePlayers->mMarkers[data_020d433c.mBattlePlayers->mUnits[mUnit].mMarker].mStatus != 3) {
+            if (gGameData.mBattlePlayers->mMarkers[gGameData.mBattlePlayers->mUnits[mUnit].mMarker].mStatus != 3) {
                 mStep++;
             }
             break;
         case 3:
             mUnk_1a++;
             if (mUnk_1a > 0x78) {
-                SetMarkerPlayerSlot(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[mUnit].mMarker, mPlayer, mPickIndex);
+                SetMarkerPlayerSlot(gGameData.mBattlePlayers, gGameData.mBattlePlayers->mUnits[mUnit].mMarker, mPlayer, mPickIndex);
                 mUnk_1a = 0;
                 done    = 1;
             }
@@ -776,9 +776,9 @@ u8 BattleAbility::UpdateReplaceRecord() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            ReplaceUnitRecord(data_020d433c.mBattlePlayers, mUnit, mPickIndex);
+            ReplaceUnitRecord(gGameData.mBattlePlayers, mUnit, mPickIndex);
             {
-                BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mPickIndex];
+                BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mPickIndex];
                 ((BakuganModel *) mTarget->mBakugan)->Setup(record->mBakuganId, record->mAttribute,
                                                             BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
             }
@@ -848,7 +848,7 @@ u8 BattleAbility::UpdateMoveToUnit() {
                 mUnk_62_1               = 1;
                 caster    = mUnit;
                 sz        = UNIT_SIZE;
-                list      = data_020d433c.mBattlePlayers;
+                list      = gGameData.mBattlePlayers;
                 units     = list->mUnits;
                 unit      = UnitAt(units, mDestUnit, sz);
                 marker    = &list->Markers()[unit->mMarker];
@@ -862,7 +862,7 @@ u8 BattleAbility::UpdateMoveToUnit() {
                 mTarget->mBakugan->mVisible = 0;
                 // Both indices are read as their own statements (volatile placeholders), the list before them.
                 u8 ri;
-                BattlePlayer *pl     = data_020d433c.mBattlePlayers->mPlayers[*(volatile u8 *) &mPlayer];
+                BattlePlayer *pl     = gGameData.mBattlePlayers->mPlayers[*(volatile u8 *) &mPlayer];
                 ri                   = *(volatile u8 *) &mRecord;
                 BattleRecord *record = &pl->mRecords[ri];
                 u16 r4               = record->mUnk_04;
@@ -872,13 +872,13 @@ u8 BattleAbility::UpdateMoveToUnit() {
                 MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sizeof(tmp));
                 tmp.mPos.x = mTarget->mBakugan->mPosition.x;
                 tmp.mPos.z = mTarget->mBakugan->mPosition.z;
-                RemoveUnit(data_020d433c.mBattlePlayers, mUnit, 2);
-                AddUnit(data_020d433c.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mMarker, 1);
-                u8 *rec2 = (u8 *) data_020d433c.mBattlePlayers->mPlayers[mPlayer] + mRecord * 12;
+                RemoveUnit(gGameData.mBattlePlayers, mUnit, 2);
+                AddUnit(gGameData.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mMarker, 1);
+                u8 *rec2 = (u8 *) gGameData.mBattlePlayers->mPlayers[mPlayer] + mRecord * 12;
                 *(u16 *) (rec2 + 0x10) = r4;
                 *(u16 *) (rec2 + 0x12) = r6;
                 rec2[0x15]             = r9;
-                SetUnitAB(data_020d433c.mBattlePlayers, mDestUnit, mUnit);
+                SetUnitAB(gGameData.mBattlePlayers, mDestUnit, mUnit);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -934,7 +934,7 @@ u8 BattleAbility::UpdateMoveToMarker() {
         case 1:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1            = 1;
-                BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[mDestMarker];
+                BattleMarker *marker = &gGameData.mBattlePlayers->Markers()[mDestMarker];
                 GetCellPosition(&mDestPosition, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mTarget->mBakugan, mDestPosition.x, 0x899a, mDestPosition.z);
                 u8 idx = mDestUnit;
@@ -942,10 +942,10 @@ u8 BattleAbility::UpdateMoveToMarker() {
                     mTarget->mResult = 2;
                 } else {
                     VecFx32 a = mTarget->mBakugan->mPosition;
-                    VecFx32 b = *(VecFx32 *) &data_020d433c.mBattlePlayers->mUnits[idx];
+                    VecFx32 b = *(VecFx32 *) &gGameData.mBattlePlayers->mUnits[idx];
                     mTarget->MoveClearOfUnit(marker->mCellX, marker->mCellY, &a, &b);
                     mTarget->mBakugan->mPosition = a;
-                    SetUnitAB(data_020d433c.mBattlePlayers, mDestUnit, mUnit);
+                    SetUnitAB(gGameData.mBattlePlayers, mDestUnit, mUnit);
                     mTarget->mResult = 3;
                 }
                 mTarget->mBakugan->mVisible = 0;
@@ -953,7 +953,7 @@ u8 BattleAbility::UpdateMoveToMarker() {
                 c.x = mTarget->mBakugan->mPosition.x;
                 c.y = mTarget->mBakugan->mPosition.y;
                 c.z = mTarget->mBakugan->mPosition.z;
-                MoveUnit(data_020d433c.mBattlePlayers, mUnit, &c, mDestMarker);
+                MoveUnit(gGameData.mBattlePlayers, mUnit, &c, mDestMarker);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -1008,12 +1008,12 @@ u8 BattleAbility::UpdateDefenseUp() {
             OrbitCamera(this);
             if (!mStIconSet && mUnk_1a > 0x32) {
                 mStIconSet = 1;
-                data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnit, 0);
+                gGameData.mBattlePlayers->mUnitModels->SetStIconUnit(mUnit, 0);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                data_020d433c.mBattlePlayers->mUnits[mUnit].mStatus = 3;
+                gGameData.mBattlePlayers->mUnits[mUnit].mStatus = 3;
                 done                                                   = 1;
             }
             break;
@@ -1087,7 +1087,7 @@ u8 BattleAbility::func_ov007_02266868() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 done    = 1;
-                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0xbe;
+                gGameData.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0xbe;
             }
             break;
     }
@@ -1167,7 +1167,7 @@ u8 BattleAbility::func_ov007_02266a28() {
         case 4:
             if (UpdateCameraToFieldEffect(this)) {
                 mUnk_1a = 0;
-                const BattleAbilityFieldEffect *entry = &sFieldEffects[data_020d433c.mFieldId];
+                const BattleAbilityFieldEffect *entry = &sFieldEffects[gGameData.mFieldId];
                 VecFx32 pos                          = sEffectPos_02266a28_1;
                 pos.x                                = entry->mPos.x;
                 pos.z                                = entry->mPos.z;
@@ -1185,7 +1185,7 @@ u8 BattleAbility::func_ov007_02266a28() {
                 mUnk_1a = 0;
                 u8 i    = 0;
                 do {
-                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[i];
+                    BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[i];
                     if (unit->mStatus != 0) {
                         if (!(unit->mPlayer == mPlayer && unit->mRecord == mRecord)) {
                             mOtherUnits[mOtherUnitCount++] = i;
@@ -1202,7 +1202,7 @@ u8 BattleAbility::func_ov007_02266a28() {
                 break;
             }
             mOtherUnitCount--;
-            BattleUnit *units = data_020d433c.mBattlePlayers->Units();
+            BattleUnit *units = gGameData.mBattlePlayers->Units();
             VecFx32 *p        = (VecFx32 *) &units[mOtherUnits[mOtherUnitCount]];
             fx32 x, y, z;
             z = p->z;
@@ -1222,7 +1222,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             break;
         }
         case 7: {
-            BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mOtherUnits[mOtherUnitCount]];
+            BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[mOtherUnits[mOtherUnitCount]];
             mTarget->DrawRecordTotal(unit->mPlayer, unit->mRecord);
             OrbitCamera(this);
             if (UpdateRecordAmount(this, unit->mPlayer, unit->mRecord)) {
@@ -1231,7 +1231,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             break;
         }
         case 8: {
-            BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mOtherUnits[mOtherUnitCount]];
+            BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[mOtherUnits[mOtherUnitCount]];
             mTarget->DrawRecordTotal(unit->mPlayer, unit->mRecord);
             OrbitCamera(this);
             UpdateRecordAmount(this, unit->mPlayer, unit->mRecord);
@@ -1270,7 +1270,7 @@ BOOL UpdateCameraToFieldEffect(BattleAbility *self) {
     VecFx32 d1;
     VecFx32 d2;
     Camera *cam;
-    const BattleAbilityFieldEffect *entry = &sFieldEffects[data_020d433c.mFieldId];
+    const BattleAbilityFieldEffect *entry = &sFieldEffects[gGameData.mFieldId];
     switch (self->mCameraStep) {
         case 0:
             cam   = self->mCamera;
@@ -1375,7 +1375,7 @@ BOOL UpdateRecordAmount(BattleAbility *self, u8 player, u8 slot) {
     BOOL done = 0;
     switch (self->mAmountStep) {
         case 0: {
-            u16 value      = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_06;
+            u16 value      = gGameData.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_06;
             self->mAmountRemaining = value;
             self->mShownAmount = value;
             self->mAmountYPerFrame = 0x4000;
@@ -1387,7 +1387,7 @@ BOOL UpdateRecordAmount(BattleAbility *self, u8 player, u8 slot) {
                     i++;
                 } while (i < 2);
             } else {
-                u16 sum = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_04;
+                u16 sum = gGameData.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_04;
                 sum += self->mAmountRemaining;
                 if (self->mAmountRemaining + sum > 0x3de) {
                     self->mAmountRemaining = 0x3de - sum;
@@ -1433,7 +1433,7 @@ BOOL UpdateRecordAmount(BattleAbility *self, u8 player, u8 slot) {
                         self->mAmountRemaining = 0;
                         amount        = 30 - self->mAmountRemaining;
                     }
-                    BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[player];
+                    BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[player];
                     if (!self->mSubtract) {
                         func_ov007_0226a380(p, slot, amount);
                     } else {
@@ -1468,7 +1468,7 @@ BOOL func_ov007_022677cc(BattleAbility *self) {
     u16 a                  = 0;
     u16 b                  = 0;
     u16 c                  = 0;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     do {
         BattleUnit *unit = &list->mUnits[i];
         if (unit->mStatus) {
@@ -1492,7 +1492,7 @@ u32 func_ov007_02267884(BattleAbility *self) {
     if (self->mTarget->mResult != 3) {
         return 0;
     }
-    BattleUnit *units    = data_020d433c.mBattlePlayers->mUnits;
+    BattleUnit *units    = gGameData.mBattlePlayers->mUnits;
     u8 i                 = 0;
     BattleUnit *selfUnit = &units[self->mUnit];
     UnitCompare result   = UNIT_COMPARE_0;
@@ -1500,8 +1500,8 @@ u32 func_ov007_02267884(BattleAbility *self) {
         if (self->mUnit != i) {
             BattleUnit *unit = &units[i];
             if (selfUnit->mMarker == unit->mMarker) {
-                u16 a = data_020d433c.mBattlePlayers->mPlayers[selfUnit->mPlayer]->mRecords[selfUnit->mRecord].mUnk_06;
-                u16 b = data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord].mUnk_06;
+                u16 a = gGameData.mBattlePlayers->mPlayers[selfUnit->mPlayer]->mRecords[selfUnit->mRecord].mUnk_06;
+                u16 b = gGameData.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord].mUnk_06;
                 if (a > b) {
                     result = UNIT_COMPARE_2;
                 } else if (a < b) {
@@ -1518,14 +1518,14 @@ u32 func_ov007_02267884(BattleAbility *self) {
 BOOL func_ov007_02267944(BattleAbility *self, u16 *out) {
     u8 i = 0;
     do {
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         BattleUnit *unit       = &list->mUnits[i];
         if (unit->mStatus) {
             u8 pidx = unit->mPlayer;
             u16 v   = list->mPlayers[pidx]->mRecords[unit->mRecord].mUnk_06;
             if (pidx == self->mPlayer) {
                 out[0] += v;
-            } else if (data_020d433c.mHasPartners && pidx == list->mPlayers[self->mPlayer]->mPartner) {
+            } else if (gGameData.mHasPartners && pidx == list->mPlayers[self->mPlayer]->mPartner) {
                 out[0] += v;
             } else {
                 out[1] += v;

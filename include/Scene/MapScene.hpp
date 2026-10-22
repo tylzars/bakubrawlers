@@ -88,7 +88,7 @@ public:
     void ReloadMap();
     void LoadMapBackground();         // 0221aaa4
     void func_ov005_0221abf4();
-    // TRUE when mEvent->GetResult() is non-zero. Also writes data_020d433c: mMyroomNextScene = SCENE_MAP (MYROOM), mRules and
+    // TRUE when mEvent->GetResult() is non-zero. Also writes gGameData: mMyroomNextScene = SCENE_MAP (MYROOM), mRules and
     // mMicEnabled (BATTLE), mTutorialNumber / mTutorialPart / mUnk_82 (TUTORIAL).
     BOOL SetNextSceneFromEvent();
     BOOL func_ov005_0221b2ac();

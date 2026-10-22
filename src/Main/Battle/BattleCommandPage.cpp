@@ -30,7 +30,7 @@ inline WindowCellRecord *PageCells() {
 }
 
 #include "Text/TextManager.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -773,19 +773,19 @@ void BattleCommandPage::DrawCard() {
         return;
     }
     if (mPlayer > -1) {
-        u8 cur   = data_020d433c.mBattlePlayers->mLocalPlayer;
+        u8 cur   = gGameData.mBattlePlayers->mLocalPlayer;
         BOOL has;
         if (mPlayer == cur) {
             mCellAnims[8]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
         } else {
             has = 0;
-            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mPlayer]->mCpu != NULL) {
+            if (gGameData.mBattlePlayers->mPlayers[(u8)mPlayer]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
                 mCellAnims[9]->DrawFrame(0, mPlayer, 0x15, 0x12, 0);
             }
-            if ((data_020d433c.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
+            if ((gGameData.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
                 mCellAnims[10]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
             }
         }

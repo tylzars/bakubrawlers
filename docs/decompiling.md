@@ -187,7 +187,7 @@ that matches should replace it.
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
   BattleConfrontCard::UpdateConfrontation (case 29's loop head) is the same family: the original numbers the list
   pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index
-  (see Placeholders): `idx = count ? list->mLocalPlayer : data_020d433c.mBattlePlayers->mLocalPlayer` keeps the index a
+  (see Placeholders): `idx = count ? list->mLocalPlayer : gGameData.mBattlePlayers->mLocalPlayer` keeps the index a
   statement of its own until after the last expression propagation, and the merged arms leave no code.
 - **Game.cpp (linked).** What it took:
   - `main` (0x02000c04) is Game's but placed right after the start-up code: a stub unit GameMain.cpp holds its slot and
@@ -247,7 +247,7 @@ that matches should replace it.
   unit could own it. With `.rodata` starting at 0x0208b4bc math_sha1 links and the progress numbers stop counting
   those tables as code. A few hand-written routines inside that block (func_02090b24, func_02091768, ...) are now in
   `.rodata`; they still disassemble and link.
-- **Big globals with their own section (GameData).** data_020d433c and gSaveData are defined in GameData.cpp
+- **Big globals with their own section (GameData).** gGameData and gSaveData are defined in GameData.cpp
   inside `#pragma section npdata begin`/`end`: in the shared `.bss` the code would address them from the section
   base and stop matching. Other units still name fields inside them by address (gCharacterLook ...);
   `inner gSaveData 0xff4` in config/usa/arm9/lcf_edits.txt defines every such symbols.txt name as base + offset.
@@ -688,7 +688,7 @@ Other findings from linking:
   them in reverse declaration order (the first declared gets the highest slot); a spilled compiler temporary (such as
   a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its
   slot by declaration order may need to be a repeated expression instead (BattleCpu::PickShot: reading
-  `data_020d433c.mStIconKind` at both uses rather than through a local).
+  `gGameData.mStIconKind` at both uses rather than through a local).
 - **Which parameters are copied to the stack first.** mwcc emits every stack-parameter copy at entry, in parameter
   order (`-proc generic` shows it); the arm946e scheduler then moves a copy early only when its loaded value has a
   consumer in the same scheduled region, and leaves the rest late. A local with two definitions (`u32 spacing = unk12;`

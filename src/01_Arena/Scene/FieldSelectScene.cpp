@@ -126,7 +126,7 @@ static const u8 sFieldSelectFieldIds[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x
 #include "System/SoundManager.hpp"
 #include "Scene/FieldSelectScene.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -212,7 +212,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mSavedFieldItem = 0;
     mPendingSubPlanes = -1;
     mMessageEnabled = 1;
-    data_020d433c.mAntenna = NULL;
+    gGameData.mAntenna = NULL;
     MI_CpuFill8(mInputBytes, 0, sizeof(mInputBytes));
     MI_CpuClearFast(mCharacterLooks, sizeof(mCharacterLooks));
     MI_CpuFill8(&mMain, 0, sizeof(mMain));
@@ -236,7 +236,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mLocalIsFirstSlot = 1;
     WirelessManager::Get();
     if (IsWirelessMode(mode)) {
-        mLocalSlot = data_020d433c.mLocalSlot;
+        mLocalSlot = gGameData.mLocalSlot;
         if (mLocalSlot != 0) {
             mLocalIsFirstSlot = 0;
         }
@@ -308,15 +308,15 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
         mPageKinds[n3] = FIELD_SELECT_PAGE_RULE;
         mPageKinds[n4] = FIELD_SELECT_PAGE_END;
     }
-    data_020d433c.mSlotsPerPlayer = 3;
-    data_020d433c.mUnk_a7 = 0;
-    data_020d433c.mRules = gSaveData[0].mRules;
+    gGameData.mSlotsPerPlayer = 3;
+    gGameData.mUnk_a7 = 0;
+    gGameData.mRules = gSaveData[0].mRules;
     mUnk_25c[0]           = gSaveData[0].mRuleFieldVariant;
-    mUnk_25c[2] = data_020d433c.mUnk_9a_3 == 0;
-    mUnk_25c[4] = data_020d433c.mUnk_9a_2 == 0;
-    mUnk_25c[6] = data_020d433c.mUnk_9a_4 == 0;
-    mUnk_25c[8] = data_020d433c.mMicEnabled == 0;
-    data_020d433c.mFieldVariant = mUnk_25c[0];
+    mUnk_25c[2] = gGameData.mUnk_9a_3 == 0;
+    mUnk_25c[4] = gGameData.mUnk_9a_2 == 0;
+    mUnk_25c[6] = gGameData.mUnk_9a_4 == 0;
+    mUnk_25c[8] = gGameData.mMicEnabled == 0;
+    gGameData.mFieldVariant = mUnk_25c[0];
 }
 
 FieldSelectScene::~FieldSelectScene() {
@@ -388,8 +388,8 @@ FieldSelectScene::~FieldSelectScene() {
             }
         }
     }
-    if (data_020d433c.mWireless != 0) {
-        data_020d433c.mAntenna->mFinished = 1;
+    if (gGameData.mWireless != 0) {
+        gGameData.mAntenna->mFinished = 1;
     }
 }
 
@@ -582,13 +582,13 @@ void FieldSelectScene::LoadGraphics() {
     }
     mPanel[0] = new CharacterIcons(0x12000, 0xb, 0);
     mPanel[1] = new CharacterIcons(0x1f000, 0xb, 1);
-    if (data_020d433c.mWireless == 0) {
+    if (gGameData.mWireless == 0) {
         return;
     }
-    if (data_020d433c.mAntenna != NULL) {
-        data_020d433c.mAntenna->SetupLayout(2);
+    if (gGameData.mAntenna != NULL) {
+        gGameData.mAntenna->SetupLayout(2);
     } else {
-        data_020d433c.mAntenna = new AntennaIndicator(2);
+        gGameData.mAntenna = new AntennaIndicator(2);
     }
 }
 
@@ -893,7 +893,7 @@ void FieldSelectScene::SetupPage() {
             break;
         }
         case FIELD_SELECT_PAGE_PAIR: {
-            mPlayerCount = data_020d433c.mPlayerCount;
+            mPlayerCount = gGameData.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(0x11, 0, 1);
             } else {
@@ -988,7 +988,7 @@ void FieldSelectScene::SetupPage() {
             break;
         }
         case FIELD_SELECT_PAGE_FIELD: {
-            mPlayerCount = data_020d433c.mPlayerCount;
+            mPlayerCount = gGameData.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
                 mMessageWindow->StartMessage(8, 0, 1);
             } else {
@@ -1081,7 +1081,7 @@ BOOL FieldSelectScene::SetMessageTypeAndCheckAll(u32 unk1) {
     u8 matches = 0;
     u8 i       = 0;
     do {
-        u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
+        u8 *p = WirelessManager::Get().GetRecvBlock(gGameData.mRecvBlockIndices[i]);
         if (p != NULL && *p == unk1) {
             matches++;
         }
@@ -1100,7 +1100,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(gGameData.mRecvBlockIndices[i]);
             if (p != NULL) {
                 u8 j;
                 u8 k;
@@ -1149,13 +1149,13 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                 }
                 if (i == 0) {
                     u8 b                  = p[0xe];
-                    data_020d433c.mRules = b;
+                    gGameData.mRules = b;
                     mUnk_25c[0]           = ((u32) b << 25) >> 30;
-                    mUnk_25c[2]           = data_020d433c.mUnk_9a_3 == 0;
-                    mUnk_25c[4]           = data_020d433c.mUnk_9a_2 == 0;
-                    mUnk_25c[6]           = data_020d433c.mUnk_9a_4 == 0;
-                    mUnk_25c[8]           = data_020d433c.mMicEnabled == 0;
-                    data_020d433c.mFieldVariant = mUnk_25c[0];
+                    mUnk_25c[2]           = gGameData.mUnk_9a_3 == 0;
+                    mUnk_25c[4]           = gGameData.mUnk_9a_2 == 0;
+                    mUnk_25c[6]           = gGameData.mUnk_9a_4 == 0;
+                    mUnk_25c[8]           = gGameData.mMicEnabled == 0;
+                    gGameData.mFieldVariant = mUnk_25c[0];
                 }
                 if (p[0xf] != 0) {
                     SetFlagBit(data_020d43e3, i);
@@ -1174,7 +1174,7 @@ BOOL FieldSelectScene::ExchangeCharacterLooks() {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(gGameData.mRecvBlockIndices[i]);
             if (p != NULL) {
                 MIi_CpuCopyFast(p + 4, mCharacterLooks + i * 8, 8);
             }
@@ -1186,22 +1186,22 @@ BOOL FieldSelectScene::ExchangeCharacterLooks() {
 }
 
 void FieldSelectScene::func_ov001_02222040() {
-    if (data_020d433c.mWireless != 0) {
+    if (gGameData.mWireless != 0) {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             if (!((mState != 0) & (mState < 6))) {
                 return;
             }
             mState                = 10;
-            data_020d433c.mSlotsPerPlayer = 3;
-            data_020d433c.mPlayerCount = 2;
+            gGameData.mSlotsPerPlayer = 3;
+            gGameData.mPlayerCount = 2;
             u8 i                  = 0;
-            data_020d433c.mHasPartners = 0;
-            data_020d433c.mFieldId = 0;
-            data_020d433c.mFieldVariant = 0;
+            gGameData.mHasPartners = 0;
+            gGameData.mFieldId = 0;
+            gGameData.mFieldVariant = 0;
             do {
-                data_020d433c.mCharacterIds[i] = i;
-                data_020d433c.mPartners[i] = i;
+                gGameData.mCharacterIds[i] = i;
+                gGameData.mPartners[i] = i;
                 i++;
             } while (i < mPlayerCount);
             mNextScene = 3;
@@ -1221,7 +1221,7 @@ void FieldSelectScene::func_ov001_02222040() {
     if (IsWirelessMode(mode)) {
         i = 0;
         do {
-            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mRecvBlockIndices[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(gGameData.mRecvBlockIndices[i]);
             if (p != NULL) {
                 if (p[0] == 0xd) {
                     mInput[i].mReleased = p[6];
@@ -1535,7 +1535,7 @@ u32 FieldSelectScene::UpdatePage() {
     switch (result) {
         case 1:
             mPage++;
-            if ((data_020d433c.mPlayerCount < 4) & (mPageKinds[mPage] == FIELD_SELECT_PAGE_PAIR)) {
+            if ((gGameData.mPlayerCount < 4) & (mPageKinds[mPage] == FIELD_SELECT_PAGE_PAIR)) {
                 mPage++;
             }
             if ((mShowRulePage == 0) & (mPageKinds[mPage] == FIELD_SELECT_PAGE_RULE)) {
@@ -1561,7 +1561,7 @@ u32 FieldSelectScene::UpdatePage() {
                         u8 i = 0;
                         do {
                             mInput[i].mTaken = 1;
-                            mInput[i].mCursorItem = FindCharaItem(data_020d433c.mCharacterIds[i]);
+                            mInput[i].mCursorItem = FindCharaItem(gGameData.mCharacterIds[i]);
                             i++;
                         } while (i < mPlayerCount);
                     }
@@ -1931,15 +1931,15 @@ u32 FieldSelectScene::UpdateNumberPage() {
 u32 FieldSelectScene::UpdateRulePage() {
     u32 result = 0;
     if (func_ov001_02223914()) {
-        data_020d433c.mRuleFieldVariant = mUnk_25c[0];
-        data_020d433c.mUnk_9a_3 = (u8) ((mUnk_25c[2] == 0) ? 1 : 0);
-        data_020d433c.mUnk_9a_2 = (u8) ((mUnk_25c[4] == 0) ? 1 : 0);
-        data_020d433c.mUnk_9a_4 = (u8) ((mUnk_25c[6] == 0) ? 1 : 0);
-        data_020d433c.mMicEnabled = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
-        data_020d433c.mFieldVariant   = mUnk_25c[0];
+        gGameData.mRuleFieldVariant = mUnk_25c[0];
+        gGameData.mUnk_9a_3 = (u8) ((mUnk_25c[2] == 0) ? 1 : 0);
+        gGameData.mUnk_9a_2 = (u8) ((mUnk_25c[4] == 0) ? 1 : 0);
+        gGameData.mUnk_9a_4 = (u8) ((mUnk_25c[6] == 0) ? 1 : 0);
+        gGameData.mMicEnabled = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
+        gGameData.mFieldVariant   = mUnk_25c[0];
         if (mLocalIsFirstSlot != 0) {
-            gSaveData[0].mRules   = data_020d433c.mRules;
-            gSaveData[0].mMicEnabled = data_020d433c.mMicEnabled;
+            gSaveData[0].mRules   = gGameData.mRules;
+            gSaveData[0].mMicEnabled = gGameData.mMicEnabled;
         }
         result = 2;
     } else {
@@ -2167,17 +2167,17 @@ u32 FieldSelectScene::UpdateCharaPage() {
             if (mInput[0].mUnk_0e != 0) {
                 SoundManager::Get().StartSeqArc(0);
             }
-            data_020d433c.mPlayerCount = numDone;
+            gGameData.mPlayerCount = numDone;
             if (numDone < 4) {
                 mHasPartners              = 0;
-                data_020d433c.mHasPartners = 0;
+                gGameData.mHasPartners = 0;
             }
             u8 j = 0;
             do {
-                if ((data_020d433c.mCharacterIds[j] = sIdItems.ids[mInput[j].mCursorItem]) == 0x15) {
-                    data_020d433c.mCharacterLevels[j] = 0;
+                if ((gGameData.mCharacterIds[j] = sIdItems.ids[mInput[j].mCursorItem]) == 0x15) {
+                    gGameData.mCharacterLevels[j] = 0;
                 } else {
-                    data_020d433c.mCharacterLevels[j] = mInput[j].mTakenWindowSelection;
+                    gGameData.mCharacterLevels[j] = mInput[j].mTakenWindowSelection;
                 }
                 j++;
             } while (j < numDone);
@@ -2246,14 +2246,14 @@ u32 FieldSelectScene::UpdatePairPage() {
             } else {
                 mHasPartners                 = 1;
                 u8 a                     = sFieldSelectPairSlots[idx][1];
-                data_020d433c.mPartners[0] = a;
+                gGameData.mPartners[0] = a;
                 data_020d43d7[a]         = 0;
                 u8 b = sFieldSelectPairSlots[idx][2];
                 u8 c = sFieldSelectPairSlots[idx][3];
                 data_020d43d7[b]         = c;
                 data_020d43d7[c]         = b;
             }
-            data_020d433c.mHasPartners = mHasPartners;
+            gGameData.mHasPartners = mHasPartners;
             mSavedFieldItem              = 0;
             result                = 1;
         }
@@ -2331,7 +2331,7 @@ u32 FieldSelectScene::UpdateFieldPage() {
             }
         }
         if ((mInput[0].mTaken == 1) & (mInput[0].mWindowOpen == 0)) {
-            data_020d433c.mFieldId = sFieldSelectFieldIds[mInput[0].mCursorItem];
+            gGameData.mFieldId = sFieldSelectFieldIds[mInput[0].mCursorItem];
             result                = 1;
             mShowRulePage              = 0;
         }
@@ -2580,9 +2580,9 @@ void FieldSelectScene::Draw() {
                     sel = -1;
                 }
             } else if (kind != FIELD_SELECT_PAGE_NUMBER) {
-                if (i < data_020d433c.mPlayerCount) {
-                    if (data_020d433c.mCharacterIds[i] != 0x15) {
-                        sel = (s8) data_020d433c.mCharacterLevels[i];
+                if (i < gGameData.mPlayerCount) {
+                    if (gGameData.mCharacterIds[i] != 0x15) {
+                        sel = (s8) gGameData.mCharacterLevels[i];
                     }
                 }
             }
@@ -2827,7 +2827,7 @@ void FieldSelectScene::PrintSlotName(u8 slot) {
         s16 width;
         height = 0;
         width  = 0;
-        TextManager::Get().Print(&data_020d433c.mNames[data_020d43eb[slot]], 0x18, mNameBuffers[slot], 0x20, 2, &height, &width, 0, 0, 2,
+        TextManager::Get().Print(&gGameData.mNames[data_020d43eb[slot]], 0x18, mNameBuffers[slot], 0x20, 2, &height, &width, 0, 0, 2,
                                  0x21, 0x10, 0, 0, 0, 1, 1);
     } else {
         TextManager &text = TextManager::Get();
@@ -2874,10 +2874,10 @@ void FieldSelectScene::ResetWindow(SelectWindow *window) {
 void FieldSelectScene::MarkCharasAndFieldNotNew() {
     u8 i = 0;
     do {
-        MarkCharaNotNew(data_020d433c.mCharacterIds[i]);
+        MarkCharaNotNew(gGameData.mCharacterIds[i]);
         i++;
     } while (i < mPlayerCount);
-    SetFlagBit(gFieldNotNewBits, data_020d433c.mFieldId);
+    SetFlagBit(gFieldNotNewBits, gGameData.mFieldId);
 }
 
 void FieldSelectScene::MarkCharaNotNew(u32 index) {
@@ -2905,7 +2905,7 @@ void FieldSelectScene::func_ov001_02226d74() {
         if (mPlayerCount > i) {
             flags = data_020d43e3;
             do {
-                if (data_020d433c.mUnk_a7 & 1) {
+                if (gGameData.mUnk_a7 & 1) {
                     SetFlagBit(flags, i);
                 }
                 i++;

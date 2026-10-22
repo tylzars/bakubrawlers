@@ -1,5 +1,5 @@
 #include "Battle/BattleCardEffect.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -19,7 +19,7 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
     mSetNextScene  = d;
     LoadAnimation();
     if (mKind >= 0x11) {
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         u8 x = list->mTurnPlayer;
         if (x == list->mLocalPlayer) {
             mAnimPairIndex = 0;
@@ -28,7 +28,7 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
         }
     }
     SetFirstAnimation();
-    data_020d433c.mFlags &= ~4;
+    gGameData.mFlags &= ~4;
 }
 
 BattleCardEffect::~BattleCardEffect() {
@@ -38,8 +38,8 @@ BattleCardEffect::~BattleCardEffect() {
 }
 
 void BattleCardEffect::Update() {
-    data_020d433c.mFlags &= 4;
-    if (data_020d433c.mFlags) {
+    gGameData.mFlags &= 4;
+    if (gGameData.mFlags) {
         mFinished = 1;
         return;
     }

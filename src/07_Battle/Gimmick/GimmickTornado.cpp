@@ -44,8 +44,8 @@ void GimmickTornado::Update() {
         mState++;
         break;
     case 1:
-        data_020d433c.mFlags &= 8;
-        if (!data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (!gGameData.mFlags) {
             switch (mMoveMode) {
             case 0:
                 break;
@@ -69,7 +69,7 @@ void GimmickTornado::Update() {
         if (!mModel) {
             return;
         }
-        if ((int)data_020d433c.mGimmicks->mState < 2) {
+        if ((int)gGameData.mGimmicks->mState < 2) {
             return;
         }
         DrawInstance();

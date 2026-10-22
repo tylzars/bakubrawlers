@@ -182,7 +182,7 @@ public:
     void LoadMessages();
     void LoadNameText();
     void InitDisplay();
-    // Also sets mWindow0ItemCount (2, 1 without mLocalIsFirstSlot) and, in wireless mode, data_020d433c.mAntenna
+    // Also sets mWindow0ItemCount (2, 1 without mLocalIsFirstSlot) and, in wireless mode, gGameData.mAntenna
     // (SetupLayout(2) or a new AntennaIndicator(2)).
     void LoadGraphics();
 };

@@ -1,7 +1,7 @@
 #include "Battle/BattleCpu.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Unknown/UnkFunctions.hpp"
 
 u8 GetCardAttributeValue(u32 id, u32 index);
@@ -180,14 +180,14 @@ BattleCpu::~BattleCpu() {
 void BattleCpu::func_ov007_02231038() {
     mUnk_7b = 3;
     mUnk_7d = 0;
-    if (data_020d433c.mHasPartners) {
+    if (gGameData.mHasPartners) {
         return;
     }
     u8 i = 0;
     u8 n = 0;
     do {
-        mUnk_7d += data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee;
-        if (data_020d433c.mSlotsPerPlayer - 1 == data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee) {
+        mUnk_7d += gGameData.mBattlePlayers->mPlayers[i]->mUnk_ee;
+        if (gGameData.mSlotsPerPlayer - 1 == gGameData.mBattlePlayers->mPlayers[i]->mUnk_ee) {
             if (i == mPlayer) {
                 mUnk_7b = 0;
             } else {
@@ -195,7 +195,7 @@ void BattleCpu::func_ov007_02231038() {
             }
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     if (n == 0) {
         return;
     }
@@ -208,12 +208,12 @@ void BattleCpu::func_ov007_02231038() {
 
 u8 BattleCpu::TryPickUnflaggedSlot54() {
     u8 result = 0xff;
-    if (data_020d433c.mTutorialId != 0 || data_020d433c.mLastBattle != 0) {
+    if (gGameData.mTutorialId != 0 || gGameData.mLastBattle != 0) {
         return 0xff;
     }
     BOOL c = FALSE;
-    if (data_020d433c.mHasPartners) {
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    if (gGameData.mHasPartners) {
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         u8 a                   = list->MarkerCount();
         u8 b                   = list->mPlayers[mPlayer]->Partner();
         u8 i                   = 0;
@@ -230,7 +230,7 @@ u8 BattleCpu::TryPickUnflaggedSlot54() {
             c = TRUE;
         }
     }
-    if (!data_020d433c.mUnk_9a_3) {
+    if (!gGameData.mUnk_9a_3) {
         if (MATH_Rand32(&gRandom, 100) < 20) {
             c = TRUE;
         }
@@ -242,8 +242,8 @@ u8 BattleCpu::TryPickUnflaggedSlot54() {
         u8 m;
         BattlePlayer *pl;
         i     = 0;
-        count = data_020d433c.mSlotsPerPlayer;
-        pl    = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+        count = gGameData.mSlotsPerPlayer;
+        pl    = gGameData.mBattlePlayers->mPlayers[mPlayer];
         free  = 0;
         do {
             if (pl->Flag56(i) == 0) {
@@ -262,7 +262,7 @@ u8 BattleCpu::TryPickUnflaggedSlot54() {
         if (free != 0) {
             u8 pick          = MATH_Rand32(&gRandom, free);
             u8 k             = 0;
-            BattlePlayer *p2 = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+            BattlePlayer *p2 = gGameData.mBattlePlayers->mPlayers[mPlayer];
             u8 j             = 0;
             do {
                 if (p2->Flag56(j) == 0) {
@@ -281,7 +281,7 @@ u8 BattleCpu::TryPickUnflaggedSlot54() {
 
 u8 BattleCpu::PickMarkerCell() {
     u8 roll = MATH_Rand32(&gRandom, 100);
-    u8 t    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
+    u8 t    = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCorner;
     if (roll < 50) {
         t = 4;
     } else if (roll < 75) {
@@ -302,7 +302,7 @@ u8 BattleCpu::PickMarkerCell() {
     do {
         col = sMarkerBlockStarts[t * 2 + 1];
         do {
-            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col)) {
+            if (IsMarkerPlaceable(gGameData.mBattlePlayers, row, col)) {
                 cells[n] = col | (row << 4);
                 n++;
             }
@@ -317,7 +317,7 @@ u8 BattleCpu::PickMarkerCell() {
     do {
         u8 c = 0;
         do {
-            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, r, c)) {
+            if (IsMarkerPlaceable(gGameData.mBattlePlayers, r, c)) {
                 return c | (r << 4);
             }
             c++;
@@ -343,7 +343,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     u8 cntA     = 0;
     u8 cntB     = 0;
     u8 type;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 kind                = list->mPlayers[cpu->mPlayer]->mCharacterId;
     u8 i                   = 0;
     do {
@@ -372,7 +372,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     }
     type = list->mPlayers[cpu->mPlayer]->mRecords[cpu->mRecord].mAttribute;
     cpu->mSpKind = 0;
-    BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list2 = gGameData.mBattlePlayers;
     BattlePlayer *pl        = list2->mPlayers[cpu->mPlayer];
     if ((s32) pl->mRecords[cpu->mRecord].mLevel >= 2 && pl->mSpGauge == 0xbe) {
         u8 roll = MATH_Rand32(&gRandom, 100);
@@ -453,7 +453,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 u8 found = 0;
                 BattlePlayerList *l;
                 u8 n     = 0;
-                l = data_020d433c.mBattlePlayers;
+                l = gGameData.mBattlePlayers;
                 do {
                     BattleUnit *u = &l->Units()[idx];
                     if (u->mStatus != 0 && cpu->mPlayer == u->mPlayer) {
@@ -476,7 +476,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             case 1:
                 if (cntA != 0) {
                     j = 0;
-                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l = gGameData.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Markers()[j];
                         if (m->mStatus != 0 && m->mUnitHandle == 0) {
@@ -497,7 +497,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 if (cntB != 0) {
                     BattlePlayerList *l;
                     j = 0;
-                    l = data_020d433c.mBattlePlayers;
+                    l = gGameData.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Markers()[j];
                         if (m->mStatus != 0 && m->mUnitHandle != 0) {
@@ -529,12 +529,12 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 break;
             case 4: {
                 RecordIndex index = (RecordIndex) cpu->mRecord;
-                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->mRecords[index];
+                BattleRecord *rec = &gGameData.mBattlePlayers->mPlayers[cpu->mPlayer]->mRecords[index];
                 u32 recKind       = rec->mBakuganId;
                 u16 recValue      = rec->mUnk_04;
                 j                 = 0;
                 do {
-                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l = gGameData.mBattlePlayers;
                     BattleMarker *m     = &l->Markers()[j];
                     if (m->mStatus != 0) {
                         bool ok  = false;
@@ -557,7 +557,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     best    = 0;
                     bestIdx = 0;
                     do {
-                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *l = gGameData.mBattlePlayers;
                         BattleMarker *m     = &l->Markers()[j];
                         if (m->mStatus != 0) {
                             u8 me = cpu->mPlayer;
@@ -600,17 +600,17 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             }
         }
     } while (pick >= 12);
-    if (data_020d433c.mHasPartners != 0) {
-        BattleMarker *m     = &data_020d433c.mBattlePlayers->Markers()[pick];
+    if (gGameData.mHasPartners != 0) {
+        BattleMarker *m     = &gGameData.mBattlePlayers->Markers()[pick];
         if (m->mUnitHandle != 0) {
-            u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
-            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
+            u8 owner = gGameData.mBattlePlayers->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
+            if (owner == gGameData.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
                 j = 0;
                 do {
-                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->mMarkers[j];
+                    BattleMarker *m2 = &gGameData.mBattlePlayers->mMarkers[j];
                     if (m2->mStatus != 0) {
                         if (m2->mUnitHandle != 0) {
-                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnitHandle - 1)].mPlayer != data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
+                            if (gGameData.mBattlePlayers->Units()[(u8) (m2->mUnitHandle - 1)].mPlayer != gGameData.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
                                 pick = j;
                                 break;
                             }
@@ -627,17 +627,17 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (pick >= 12) {
         pick = 0;
     }
-    cpu->mPos.x = data_020d433c.mBattlePlayers->Markers()[pick].mCellX * 0x23000 - 0xe3800;
+    cpu->mPos.x = gGameData.mBattlePlayers->Markers()[pick].mCellX * 0x23000 - 0xe3800;
     cpu->mPos.y = 0;
-    cpu->mPos.z = data_020d433c.mBattlePlayers->Markers()[pick].mCellY * 0x2f000 - 0xd3800;
+    cpu->mPos.z = gGameData.mBattlePlayers->Markers()[pick].mCellY * 0x2f000 - 0xd3800;
     cpu->PickPushIndex();
 }
 
 u8 BattleCpu::PickRecord() {
     u8 found         = 0;
     u8 i             = 0;
-    BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-    u8 count         = data_020d433c.mSlotsPerPlayer;
+    BattlePlayer *pl = gGameData.mBattlePlayers->mPlayers[mPlayer];
+    u8 count         = gGameData.mSlotsPerPlayer;
     do {
         if (pl->mRecords[i].mStatus == 0) {
             found = i;
@@ -650,7 +650,7 @@ u8 BattleCpu::PickRecord() {
 }
 
 void BattleCpu::PickShot(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
-    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
+    u8 a    = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     u8 idx2 = 0;
     u8 spin;
     u8 idx1 = 6;
@@ -721,15 +721,15 @@ void BattleCpu::PickShot(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
         r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 5) * 65536.0f / 360.0f);
         break;
     }
-    if (data_020d433c.mFieldId == 3) {
+    if (gGameData.mFieldId == 3) {
         r.y = (u16) ((float) (MATH_Rand32(&gRandom, 30) + 120) * 65536.0f / 360.0f);
     } else {
         r.y = (u16) ((float) (sShotRotYDegrees[idx2] + MATH_Rand32(&gRandom, 20)) * 65536.0f / 360.0f);
     }
     roll = MATH_Rand32(&gRandom, 100);
     if (roll < sShotTableChances[a]) {
-        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
-        u8 sel = data_020d433c.mFieldVariant;
+        u8 f1  = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCorner;
+        u8 sel = gGameData.mFieldVariant;
         switch (sel) {
         case 0:
         case 1:
@@ -742,19 +742,19 @@ void BattleCpu::PickShot(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
             sel = MATH_Rand32(&gRandom, 3);
             break;
         }
-        power = ShotTable()[data_020d433c.mFieldId][f1][sel].mPower;
+        power = ShotTable()[gGameData.mFieldId][f1][sel].mPower;
         r.y   = 0x6000;
-        r.z   = (u16) ((float) ShotTable()[data_020d433c.mFieldId][f1][sel].mPitch * 65536.0f / 360.0f);
-        tilt  = ShotTable()[data_020d433c.mFieldId][f1][sel].mTilt;
+        r.z   = (u16) ((float) ShotTable()[gGameData.mFieldId][f1][sel].mPitch * 65536.0f / 360.0f);
+        tilt  = ShotTable()[gGameData.mFieldId][f1][sel].mTilt;
         spin  = 0;
     }
-    if (data_020d433c.mTutorialId == 2) {
+    if (gGameData.mTutorialId == 2) {
         r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
         r.z  = 0x1777;
         power = 0x3e;
-    } else if (data_020d433c.mTutorialId == 7) {
+    } else if (gGameData.mTutorialId == 7) {
         r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
@@ -800,13 +800,13 @@ void BattleCpu::PickPushIndex() {
     u8 roll;
     u8 b;
     u8 a;
-    a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
+    a    = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     roll = MATH_Rand32(&gRandom, 100);
-    b    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel;
+    b    = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel;
     if (b >= 2) {
         b = 1;
     }
-    if (data_020d433c.mScriptMode != 0 && mPlayer == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
+    if (gGameData.mScriptMode != 0 && mPlayer == gGameData.mBattlePlayers->mPlayers[0]->mPartner) {
         if (a != 0xd && a != 0xe) {
             b = 1;
         }
@@ -829,7 +829,7 @@ void BattleCpu::StartJumpObjTargets(int limit) {
     u32 n = 0;
     u32 k;
     do {
-        GimmickNode *node = &data_020d433c.mGimmicks->mNodes[i];
+        GimmickNode *node = &gGameData.mGimmicks->mNodes[i];
         if (node && node->mGimmick) {
             Gimmick *g = node->mGimmick;
             if (g->mType == GIMMICK_TYPE_JUMP_OBJ && (limit == 0 || g->mPosition.y < limit)) {
@@ -864,7 +864,7 @@ void BattleCpu::StartJumpObjTargets(int limit) {
             }
         }
         {
-            GimmickNode *node = &data_020d433c.mGimmicks->mNodes[mTargetNodeIndices[k]];
+            GimmickNode *node = &gGameData.mGimmicks->mNodes[mTargetNodeIndices[k]];
             if (node && node->mGimmick) {
                 mTargets[k] = node->mGimmick->mPosition;
             }
@@ -957,7 +957,7 @@ bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
 }
 
 void BattleCpu::GetPushOffset(s32 *x, s32 *z) {
-    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
+    if (gGameData.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
         *x = mPushOffsetX;
         *z = mPushOffsetZ;
         return;

@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Graphics/BakuganModel.hpp"
 #include "System/FileSystem.hpp"
@@ -1059,19 +1059,19 @@ void BattleCommandList::UpdatePage() {
         }
     }
     if (mPlayer > -1) {
-        u8 cur = data_020d433c.mBattlePlayers->mLocalPlayer;
+        u8 cur = gGameData.mBattlePlayers->mLocalPlayer;
         BOOL has;
         if (mPlayer == cur) {
             mCells58[4]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
         } else {
             has = 0;
-            if (data_020d433c.mBattlePlayers->mPlayers[(u8) mPlayer]->mCpu != NULL) {
+            if (gGameData.mBattlePlayers->mPlayers[(u8) mPlayer]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
                 mCells58[5]->DrawFrame(0, mPlayer, 0x15, 0x12, 0);
             }
-            if ((data_020d433c.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
+            if ((gGameData.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
                 mCells58[6]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
             }
         }

@@ -1,6 +1,6 @@
 #include "System/TouchManager.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -58,7 +58,7 @@ public:
     void ShuffleOrder();
     void InitDisplay();
     // Also ShuffleOrder (Update shuffles again right after), CharacterIcons mIcons (hidden), mMessageWindow
-    // (mes_Command) and SetupLayout(6) of data_020d433c.mAntenna when set.
+    // (mes_Command) and SetupLayout(6) of gGameData.mAntenna when set.
     void LoadGraphics();
     void SetBgSlide(u8 timer);
     BOOL UpdateTouchSelection();
@@ -73,7 +73,7 @@ BattleOrderSelect::BattleOrderSelect()
     mMessageWindow = 0;
     mState   = 0;
     mTimer   = 0;
-    u8 n     = data_020d433c.mPlayerCount;
+    u8 n     = gGameData.mPlayerCount;
     if (n > 4) {
         n = 4;
     } else if (n < 1) {
@@ -82,7 +82,7 @@ BattleOrderSelect::BattleOrderSelect()
     mCount = n;
     u8 i   = 0;
     do {
-        mCharacterIds[i] = data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId;
+        mCharacterIds[i] = gGameData.mBattlePlayers->mPlayers[i]->mCharacterId;
         i++;
     } while (i < mCount);
     if (mCount < 4) {
@@ -228,7 +228,7 @@ void BattleOrderSelect::Update() {
 BOOL BattleOrderSelect::SetAndCheckMessageType(u32 index) {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-        return SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, index) != 0;
+        return SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, index) != 0;
     }
     return 1;
 }
@@ -246,7 +246,7 @@ void BattleOrderSelect::WriteTouchMessage() {
 void BattleOrderSelect::ApplyTurnOrder() {
     u8 i = 0;
     do {
-        SetTurnOrder(data_020d433c.mBattlePlayers, mItemOrder[mPlayerItemIndex[i]], i);
+        SetTurnOrder(gGameData.mBattlePlayers, mItemOrder[mPlayerItemIndex[i]], i);
         i++;
     } while (i < mCount);
 }
@@ -366,7 +366,7 @@ void BattleOrderSelect::LoadGraphics() {
     mB[0].mCellAnim->mCharBase = screen0.GetCharBase(0x10000);
     mB[0].mCellAnim->mPaletteBase   = 10;
     mB[0].mUnk_09          = 0;
-    mB[0].mCellAnim->mFrameIndex   = data_020d433c.mBattlePlayers->mLocalPlayer;
+    mB[0].mCellAnim->mFrameIndex   = gGameData.mBattlePlayers->mLocalPlayer;
     mB[1].mCellAnim            = new CellAnimation("union_b_obj_you_nce.bin", 2, 1, 1);
     mB[1].mCellAnim->mCharBase = screen0.GetCharBase(0x10000);
     mB[1].mCellAnim->mPaletteBase   = 10;
@@ -379,14 +379,14 @@ void BattleOrderSelect::LoadGraphics() {
     mIcons = new CharacterIcons(0xa000, 6, 0);
     i      = 0;
     do {
-        mIcons->SetCharacter(i, mCharacterIds[i], data_020d433c.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
+        mIcons->SetCharacter(i, mCharacterIds[i], gGameData.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
         mIcons->SetVisible(i, 0);
         i++;
     } while (i < mCount);
     mMessageWindow = new MessageWindow("mes_Command", 1, 0x10000);
     mMessageWindow->func_02065bd4(0x14, 4, 1);
     mMessageWindow->SetWidth(0xd8);
-    AntennaIndicator *unk = data_020d433c.mAntenna;
+    AntennaIndicator *unk = gGameData.mAntenna;
     if (unk) {
         unk->SetupLayout(6);
     }
@@ -417,7 +417,7 @@ BOOL BattleOrderSelect::UpdateTouchSelection() {
             u8 y;
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4258)) {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
+                BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[i];
                 down            = p->mMsg.mTouchDown;
                 x               = p->mMsg.mTouchX;
                 y               = p->mMsg.mTouchY;
@@ -436,7 +436,7 @@ BOOL BattleOrderSelect::UpdateTouchSelection() {
                             mItemTaken[j] = 1;
                             mPlayerItemIndex[i] = j;
                             mC[(u8) (j + 4)].mCellAnim->SetAnimation(mItemOrder[mPlayerItemIndex[i]] + 8);
-                            if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                            if (i == gGameData.mBattlePlayers->mLocalPlayer) {
                                 hit = 1;
                             }
                             SoundManager::Get().StartSeqArc(0);
@@ -497,18 +497,18 @@ void BattleOrderSelect::Draw() {
                 }
                 s16 v  = mUnk_c4[slot];
                 s8 off = v * v / 8 - 0x2c;
-                u8 p   = data_020d433c.mBattlePlayers->mLocalPlayer;
+                u8 p   = gGameData.mBattlePlayers->mLocalPlayer;
                 if (i == p) {
                     mB[0].mCellAnim->Draw(0, (s16) (mC[slot].mX + 0xc), (s16) (mC[slot].mY - 0xe - off), 2);
                 } else {
                     bool flag = false;
-                    if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu) {
+                    if (gGameData.mBattlePlayers->mPlayers[i]->mCpu) {
                         flag = true;
                     }
                     if (flag == 1) {
                         mB[1].mCellAnim->DrawFrame(0, i, mC[slot].mX + 0x1b, mC[slot].mY - 0x31 - off, 2);
                     }
-                    if ((data_020d433c.mHasPartners == 1) & (i == data_020d433c.mPartners[p])) {
+                    if ((gGameData.mHasPartners == 1) & (i == gGameData.mPartners[p])) {
                         mB[2].mCellAnim->DrawFrame(0, i, mC[slot].mX + 0x10, mC[slot].mY - 0x38 - off, 2);
                     }
                 }

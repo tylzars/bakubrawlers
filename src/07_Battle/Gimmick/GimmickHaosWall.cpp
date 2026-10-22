@@ -62,13 +62,13 @@ void GimmickHaosWall::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         if (!list->mBattleTarget) {
             return;
         }
@@ -82,7 +82,7 @@ void GimmickHaosWall::Update() {
             MTX_ApplyRotY33(&m, -mRotY);
         }
         MTX_MultVec33(&a, &m, &b);
-        GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mOtherWallEntryIndex + 1)];
+        GimmickNode *node = &gGameData.mGimmicks->mNodes[(u8)(mOtherWallEntryIndex + 1)];
         ((GimmickHaosWall *)node->mGimmick)->StartTimer(0x1e);
         VecFx32 c = node->mGimmick->mPosition;
         m = gIdentityMtx33;
@@ -102,13 +102,13 @@ void GimmickHaosWall::Update() {
         h->mPosition.y = c.y;
         h->mPosition.z = c.z;
         mTimer = 0x1e;
-        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 7, 0);
+        func_ov007_0225ca18(gGameData.mBattlePlayers->mBattleTarget, 7, 0);
         SoundManager::Get().StartSeqArc(0x5b);
         mState++;
         break;
     }
     case 2:
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
         if (!mCollision) {

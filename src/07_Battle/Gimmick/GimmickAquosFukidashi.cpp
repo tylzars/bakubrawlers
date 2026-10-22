@@ -136,12 +136,12 @@ void GimmickAquosFukidashi::Update() {
             mTargetNear = 0;
         }
         if ((u32)(0x104 - mTimer) >= 10 && mCollision && mCollision->mHitCount && !mPushTimer) {
-            if (data_020d433c.mBattlePlayers->mBattleTarget) {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+            if (gGameData.mBattlePlayers->mBattleTarget) {
+                BattlePlayer *p = gGameData.mBattlePlayers->Current();
                 if (p->mRecords[p->mRecord].mAttribute != 1) {
                     VecFx32 a = sPushVelocity;
-                    VecFx32 b = data_020d433c.mBattlePlayers->mBattleTarget->mVelocity;
-                    int dy = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y - mPosition.y + -0x54cd;
+                    VecFx32 b = gGameData.mBattlePlayers->mBattleTarget->mVelocity;
+                    int dy = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y - mPosition.y + -0x54cd;
                     if (dy <= 0x1000) {
                         dy = 0x1000;
                     }
@@ -149,7 +149,7 @@ void GimmickAquosFukidashi::Update() {
                     VEC_Add(&b, &a, &b);
                     b.x = FX_Mul(b.x, 0xc00);
                     b.z = FX_Mul(b.z, 0xc00);
-                    SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &b, 0);
+                    SetTargetVelocity(gGameData.mBattlePlayers->mBattleTarget, &b, 0);
                     mPushed = 1;
                 }
             }
@@ -190,8 +190,8 @@ void GimmickAquosFukidashi::DrawModelB() {
     }
     MtxFx43 mtx = gIdentityMtx43;
     MTX_SetTranslation43(&mtx, &mPosition);
-    data_020d433c.mFlags &= 8;
-    if (!data_020d433c.mFlags) {
+    gGameData.mFlags &= 8;
+    if (!gGameData.mFlags) {
         mModelB->AdvanceAnim();
     }
     mModelB->Draw(&mtx, &mScale);
@@ -201,7 +201,7 @@ void GimmickAquosFukidashi::DrawModels(int drawB) {
     if (!mModel) {
         return;
     }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
+    if ((int)gGameData.mGimmicks->mState < 2) {
         return;
     }
     DrawInstance();
@@ -212,8 +212,8 @@ void GimmickAquosFukidashi::DrawModels(int drawB) {
 }
 
 int GimmickAquosFukidashi::CountDownToState(int frames, int state) {
-    data_020d433c.mFlags &= 8;
-    if (!data_020d433c.mFlags) {
+    gGameData.mFlags &= 8;
+    if (!gGameData.mFlags) {
         mTimer--;
         if (mTimer == 0) {
             mTimer = frames;
@@ -226,7 +226,7 @@ int GimmickAquosFukidashi::CountDownToState(int frames, int state) {
 
 int GimmickAquosFukidashi::IsTargetNear() {
     VecFx32 d;
-    BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+    BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
     if (target && target->mBakugan && target->mBakugan->mVisible) {
         VEC_Subtract(&target->mBakugan->mPosition, &mPosition, &d);
         if (VEC_Mag(&d) <= 0x96000) {

@@ -2,7 +2,7 @@
 void LoadActivisionLogo();
 #include "Scene/UnkScene_ov000.hpp"
 #include "System/SaveManager.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/TouchManager.hpp"
@@ -30,13 +30,13 @@ void UnkScene_02226e4c::Update() {
             OwnerInfo info;
             OS_GetOwnerInfo(&info);
             if (info.mKind == 1) {
-                data_020d433c.mLanguage = 0;
+                gGameData.mLanguage = 0;
                 mState = 8;
             } else if (info.mKind == 2) {
-                data_020d433c.mLanguage = 1;
+                gGameData.mLanguage = 1;
                 mState = 8;
             } else {
-                data_020d433c.mLanguage = 0;
+                gGameData.mLanguage = 0;
                 mObj0c = new MessageScreen(MESSAGE_SCREEN_TITLE_8);
                 mState = 3;
             }

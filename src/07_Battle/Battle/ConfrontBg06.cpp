@@ -1,7 +1,7 @@
 #include "System/WirelessManager.hpp"
 #include "Battle/ConfrontBg06.hpp"
 #include "Battle/BattleUtil.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Display.hpp"
 #include "System/SoundManager.hpp"
 #include <nitro/gx.h>
@@ -378,7 +378,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
 
 void ConfrontBg06::vfunc_44(int index, u16 count) {
     BattleData *data       = mData;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 current             = list->mLocalPlayer;
     BattleEntry *entries   = data->mEntries;
     if ((s32) count < 100) {

@@ -16,7 +16,7 @@ struct OwnerInfo {
 
 extern "C" void OS_GetOwnerInfo(OwnerInfo *info);
 
-// Overlay 0 scene with vtable 0x02226e4c. OwnerInfo::mKind 1 or 2 sets data_020d433c.mLanguage to 0 / 1 and calls
+// Overlay 0 scene with vtable 0x02226e4c. OwnerInfo::mKind 1 or 2 sets gGameData.mLanguage to 0 / 1 and calls
 // RequestScene(1) at once; any other kind sets 0, shows MessageScreen(MESSAGE_SCREEN_TITLE_8) until IsPressed(1) or a
 // stylus press, then calls RequestScene(1). mObj10 is never set (only deleted).
 class UnkScene_02226e4c : public SceneBase {

@@ -3,7 +3,7 @@
 #include "Battle/BattleTarget.hpp"
 #include "Battle/Gimmick.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/ModelResource.hpp"
 #include <nitro/fx.h>
 
@@ -15,7 +15,7 @@ extern MtxFx43 data_020c1cf4;
 extern "C" fx32 FX_Div(fx32 num, fx32 den); // fixed point num / den (hardware divider)
 void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y
 
-// Bakugan statue loaded per field id data_020d433c.mFieldId (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
+// Bakugan statue loaded per field id gGameData.mFieldId (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
 // subterra_majin, haos_tig, hydra). Vtable 02286c84.
 class GimmickBakugan : public Gimmick {
 public:
@@ -33,7 +33,7 @@ public:
     /* 14 */ virtual void Finish();
 };
 
-// Breakable block, model block_%02d (indexed by data_020d433c.mFieldId). Vtable 02286e30.
+// Breakable block, model block_%02d (indexed by gGameData.mFieldId). Vtable 02286e30.
 class GimmickBlock : public Gimmick {
 public:
     /* 45 */ PAD(0x45, 0x48);
@@ -117,7 +117,7 @@ public:
     void RotateDir(int reset); // its only call passes 0: the reset branch does not run in this build
 };
 
-// Helpers of the effect manager (data_020d433c.mEffects).
+// Helpers of the effect manager (gGameData.mEffects).
 u16 StartEffect(EffectManager *manager, u32 a, u32 b, u32 c, u32 d);
 void SetEffectMatrix(EffectManager *manager, u16 handle, MtxFx43 *mtx);
 void SetEffectScale(EffectManager *manager, u16 handle, VecFx32 *vec);
@@ -307,11 +307,11 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    // Advances mModelB's animation only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other
+    // Advances mModelB's animation only while bit 3 of gGameData.mFlags is clear; its `&= 8` first clears the other
     // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
-    // Steps mTimer only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
+    // Steps mTimer only while bit 3 of gGameData.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
 };
 // One row of the ability pick table at 02279568: `mCount` entries, picked by weight, mapped through `mIds`.
@@ -426,11 +426,11 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    // Advances mModelB's animation only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other
+    // Advances mModelB's animation only while bit 3 of gGameData.mFlags is clear; its `&= 8` first clears the other
     // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
-    // Steps mTimer only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
+    // Steps mTimer only while bit 3 of gGameData.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
     int IsTargetNear(); // TRUE when the target's bakugan is visible and within 0x96000 of the bubble
 };

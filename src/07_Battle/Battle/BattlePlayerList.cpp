@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "UI/StorytalkWindow.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/SaveData.hpp"
@@ -127,16 +127,16 @@ BattlePlayerList::BattlePlayerList()
     mSavedTutorialNumber = 0;
     mStorytalkMessageIndex = 0;
     mUnk_2b0 = 0;
-    if (data_020d433c.mTutorialPart) {
+    if (gGameData.mTutorialPart) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().RestoreHeapState();
     }
     SoundManager::Get().LoadSoundGroup(6);
-    data_020d433c.mGimmicks = 0;
-    data_020d433c.mEffects  = 0;
-    data_020d433c.mGimmickCollision   = 0;
-    data_020d433c.mAntenna   = 0;
+    gGameData.mGimmicks = 0;
+    gGameData.mEffects  = 0;
+    gGameData.mGimmickCollision   = 0;
+    gGameData.mAntenna   = 0;
     mTexVariant                = 0;
     mSecondTexVariant                = 0;
     MI_CpuClearFast(&mPlayers[0], 0x28c);
@@ -144,20 +144,20 @@ BattlePlayerList::BattlePlayerList()
     mTurnOrder[1] = 1;
     mTurnOrder[2] = 2;
     mTurnOrder[3] = 3;
-    if (data_020d433c.mPlayerCount != 3 && data_020d433c.mPlayerCount != 4) {
-        data_020d433c.mPlayerCount = 2;
+    if (gGameData.mPlayerCount != 3 && gGameData.mPlayerCount != 4) {
+        gGameData.mPlayerCount = 2;
     }
     mMarkerCount = 0;
     mUnitCount = 0;
-    if (data_020d433c.mSlotsPerPlayer != 6) {
-        data_020d433c.mSlotsPerPlayer = 3;
+    if (gGameData.mSlotsPerPlayer != 6) {
+        gGameData.mSlotsPerPlayer = 3;
     }
-    switch (data_020d433c.mTutorialNumber) {
+    switch (gGameData.mTutorialNumber) {
         case 5:
         case 6:
-            mSavedTutorialNumber              = data_020d433c.mTutorialNumber;
-            data_020d433c.mTutorialNumber = 0;
-            data_020d433c.mTutorialId = 0;
+            mSavedTutorialNumber              = gGameData.mTutorialNumber;
+            gGameData.mTutorialNumber = 0;
+            gGameData.mTutorialId = 0;
     }
     StartFrameTaskChannel0(this);
     mBattleTarget = 0;
@@ -169,24 +169,24 @@ BattlePlayerList::BattlePlayerList()
 BattlePlayerList::~BattlePlayerList() {
     MicManager::Get().StopSampling();
     delete mCamera;
-    if (data_020d433c.mGimmickCollision) {
-        ((SceneBase *) data_020d433c.mGimmickCollision)->mFinished = 1;
+    if (gGameData.mGimmickCollision) {
+        ((SceneBase *) gGameData.mGimmickCollision)->mFinished = 1;
     }
-    if (data_020d433c.mEffects) {
-        ((SceneBase *) data_020d433c.mEffects)->mFinished = 1;
+    if (gGameData.mEffects) {
+        ((SceneBase *) gGameData.mEffects)->mFinished = 1;
     }
-    if (data_020d433c.mAntenna) {
-        ((SceneBase *) data_020d433c.mAntenna)->mFinished = 1;
+    if (gGameData.mAntenna) {
+        ((SceneBase *) gGameData.mAntenna)->mFinished = 1;
     }
     BattleUnitModels *p = mUnitModels;
     if (p) {
         delete p;
     }
-    GimmickManager *g = data_020d433c.mGimmicks;
+    GimmickManager *g = gGameData.mGimmicks;
     if (g) {
         delete g;
     }
-    data_020d433c.mGimmicks = 0;
+    gGameData.mGimmicks = 0;
     CameraManager::Get().SetCamerasAndRequestMode(0, 0, 0);
     GX_SetDispSelect(0);
 }
@@ -204,12 +204,12 @@ void BattlePlayerList::Update() {
     u8 result;
     u8 rec;
     MicManager::Get().Update();
-    if (data_020d433c.mWireless) {
+    if (gGameData.mWireless) {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             RequestScene(SCENE_ARENA_WINDOW);
-            data_020d433c.mAntenna = 0;
+            gGameData.mAntenna = 0;
             return;
         }
     }
@@ -220,8 +220,8 @@ void BattlePlayerList::Update() {
             break;
         case 1:
             if (SetMessageTypeAndCheckAll(this, 0xf)) {
-                data_020d433c.mGimmicks->LoadSetData(data_020d433c.mFieldId, (u8) data_020d433c.mFieldVariant);
-                if (data_020d433c.mTutorialId != 0) {
+                gGameData.mGimmicks->LoadSetData(gGameData.mFieldId, (u8) gGameData.mFieldVariant);
+                if (gGameData.mTutorialId != 0) {
                     mState = 2;
                 } else {
                     mState = 4;
@@ -238,8 +238,8 @@ void BattlePlayerList::Update() {
             break;
         case 5: {
             u8 result = mContext->mRequest;
-            if (result != 0 && data_020d433c.mAntenna) {
-                data_020d433c.mAntenna->SetupLayout(0);
+            if (result != 0 && gGameData.mAntenna) {
+                gGameData.mAntenna->SetupLayout(0);
             }
             if (result == 0) {
                 return;
@@ -269,12 +269,12 @@ void BattlePlayerList::Update() {
             break;
         case 8:
             mRandomValue = MATH_Rand32(&gRandom, 100);
-            if (data_020d433c.mHasPartners) {
-                SetTurnOrder(data_020d433c.mBattlePlayers, 0, 0);
+            if (gGameData.mHasPartners) {
+                SetTurnOrder(gGameData.mBattlePlayers, 0, 0);
                 u8 i = 1;
                 u8 k = 0;
                 do {
-                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *list = gGameData.mBattlePlayers;
                     if (i == list->mPlayers[0]->mPartner) {
                         SetTurnOrder(list, 1, i);
                     } else {
@@ -282,7 +282,7 @@ void BattlePlayerList::Update() {
                         k++;
                     }
                     i++;
-                } while (i < data_020d433c.mPlayerCount);
+                } while (i < gGameData.mPlayerCount);
                 mState = 10;
                 return;
             }
@@ -294,9 +294,9 @@ void BattlePlayerList::Update() {
             } else {
                 u8 i = 0;
                 do {
-                    SetTurnOrder(data_020d433c.mBattlePlayers, i, i);
+                    SetTurnOrder(gGameData.mBattlePlayers, i, i);
                     i++;
-                } while (i < data_020d433c.mPlayerCount);
+                } while (i < gGameData.mPlayerCount);
                 mState = 10;
             }
             return;
@@ -318,7 +318,7 @@ void BattlePlayerList::Update() {
         case 10: {
             u8 flag = 0;
             func_ov007_02269ee4(mPlayers[mTurnPlayer], flag);
-            if (data_020d433c.mTutorialId == 1) {
+            if (gGameData.mTutorialId == 1) {
                 flag = 1;
             }
             new BattleObj00(flag);
@@ -330,7 +330,7 @@ void BattlePlayerList::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            if (data_020d433c.mTutorialId == 1) {
+            if (gGameData.mTutorialId == 1) {
                 mState = 0x22;
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 return;
@@ -338,7 +338,7 @@ void BattlePlayerList::Update() {
             mState++;
             mAddMarkerEnabled = 1;
             mUnk_291 = 1;
-            if (data_020d433c.mLastBattle != 0) {
+            if (gGameData.mLastBattle != 0) {
                 func_ov007_02269ee4(mPlayers[mTurnPlayer], 1);
             }
             break;
@@ -397,19 +397,19 @@ void BattlePlayerList::Update() {
             if (result == 0) {
                 return;
             }
-            u8 mode = data_020d433c.mTutorialId;
+            u8 mode = gGameData.mTutorialId;
             if (mode == 2 || mode == 3 || mode == 4 || mode == 0xc) {
                 if (result != 5) {
                     mState = 0x22;
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     if (result != 1) {
-                        if (data_020d433c.mTutorialId == 0xc && mUnk_2b0 == 0) {
-                            data_020d433c.mUnk_86++;
+                        if (gGameData.mTutorialId == 0xc && mUnk_2b0 == 0) {
+                            gGameData.mUnk_86++;
                         } else {
-                            data_020d433c.mUnk_86 = 0;
+                            gGameData.mUnk_86 = 0;
                         }
                     } else {
-                        data_020d433c.mUnk_86++;
+                        gGameData.mUnk_86++;
                     }
                     return;
                 }
@@ -423,11 +423,11 @@ void BattlePlayerList::Update() {
                     if (result == 1) {
                         mState = 0x22;
                         SpriteManager::Get().StartFade(FADE_MODE_DOWN);
-                        data_020d433c.mUnk_86++;
+                        gGameData.mUnk_86++;
                         return;
                     } else if (mLocalPlayer == mTurnPlayer) {
-                        data_020d433c.mUnk_86 = 0;
-                        data_020d433c.mTutorialPart++;
+                        gGameData.mUnk_86 = 0;
+                        gGameData.mTutorialPart++;
                     }
                 } else {
                     mStorytalkMessageIndex = 0;
@@ -476,7 +476,7 @@ void BattlePlayerList::Update() {
                         RemoveUnit(this, mUnitB, 2);
                     }
                     mState = 0x16;
-                    if (data_020d433c.mScriptMode == 0) {
+                    if (gGameData.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -497,7 +497,7 @@ void BattlePlayerList::Update() {
             }
             switch (result) {
                 case 1:
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
+                    if (gGameData.mTutorialNumber == 0 && gGameData.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
                         id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -515,10 +515,10 @@ void BattlePlayerList::Update() {
                     break;
                 case 2:
                     mState = 0x1a;
-                    if (data_020d433c.mTutorialNumber != 0) {
+                    if (gGameData.mTutorialNumber != 0) {
                         return;
                     }
-                    if (data_020d433c.mScriptMode == 0) {
+                    if (gGameData.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -538,7 +538,7 @@ void BattlePlayerList::Update() {
                 case 3: {
                     u8 ownerA = mUnits[mUnitA].mPlayer;
                     u8 ownerB = mUnits[mUnitB].mPlayer;
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
+                    if (gGameData.mTutorialNumber == 0 && gGameData.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
                         id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -562,10 +562,10 @@ void BattlePlayerList::Update() {
                         RemoveMarker(this, mUnits[mUnitA].mMarker);
                         RemoveUnit(this, mUnitA, 2);
                         RemoveUnit(this, mUnitB, 2);
-                        if (data_020d433c.mTutorialNumber != 0) {
+                        if (gGameData.mTutorialNumber != 0) {
                             return;
                         }
-                        if (data_020d433c.mScriptMode == 0) {
+                        if (gGameData.mScriptMode == 0) {
                             return;
                         }
                         if (mLocalPlayer != mTurnPlayer) {
@@ -579,10 +579,10 @@ void BattlePlayerList::Update() {
                         }
                     } else {
                         mState = 0x18;
-                        if (data_020d433c.mTutorialNumber != 0) {
+                        if (gGameData.mTutorialNumber != 0) {
                             return;
                         }
-                        if (data_020d433c.mScriptMode == 0) {
+                        if (gGameData.mScriptMode == 0) {
                             return;
                         }
                         if (mLocalPlayer != mTurnPlayer) {
@@ -611,10 +611,10 @@ void BattlePlayerList::Update() {
                     mTexVariant             = GetTexVariant(target->mBakuganId, target->mAttribute);
                     RemoveUnit(this, mUnitA, 2);
                     RemoveUnit(this, mUnitB, 2);
-                    if (data_020d433c.mTutorialNumber != 0) {
+                    if (gGameData.mTutorialNumber != 0) {
                         return;
                     }
-                    if (data_020d433c.mScriptMode == 0) {
+                    if (gGameData.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -690,16 +690,16 @@ void BattlePlayerList::Update() {
                 return;
             }
             mRandomValue = MATH_Rand32(&gRandom, 100);
-            if (data_020d433c.mTutorialNumber == 2 || data_020d433c.mTutorialNumber == 4) {
+            if (gGameData.mTutorialNumber == 2 || gGameData.mTutorialNumber == 4) {
                 SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(1);
                 RecordSndHeapState(SoundManager::Get().mHeap);
                 mState = 0x22;
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 if (mUnk_2b0 != 0) {
-                    data_020d433c.mUnk_86 = 0;
+                    gGameData.mUnk_86 = 0;
                 } else {
-                    data_020d433c.mUnk_86++;
+                    gGameData.mUnk_86++;
                 }
                 return;
             } else if (func_ov007_02263150(this)) {
@@ -718,12 +718,12 @@ void BattlePlayerList::Update() {
                 flag     = 1;
             } else {
                 mTurnCount++;
-                if (data_020d433c.mGimmicks) {
-                    data_020d433c.mGimmicks->CountTurnAll();
+                if (gGameData.mGimmicks) {
+                    gGameData.mGimmicks->CountTurnAll();
                 }
             }
-            u8 idx = (mTurnCount - 1) % data_020d433c.mPlayerCount;
-            if (data_020d433c.mHasPartners) {
+            u8 idx = (mTurnCount - 1) % gGameData.mPlayerCount;
+            if (gGameData.mHasPartners) {
                 if (idx == 1) {
                     idx = 2;
                 } else if (idx == 2) {
@@ -750,7 +750,7 @@ void BattlePlayerList::Update() {
             u8 j       = 0;
             do {
                 if (current == mUnits[j].mPlayer && mUnits[j].mUnk_12 != 0) {
-                    data_020d433c.mBattlePlayers->mUnk_292 = 2;
+                    gGameData.mBattlePlayers->mUnk_292 = 2;
                     return;
                 }
                 j++;
@@ -767,8 +767,8 @@ void BattlePlayerList::Update() {
                 return;
             }
             mState = 0xc;
-            if (data_020d433c.mBattlePlayers->mPlayers[mTurnPlayer]->mSlots54Remaining == 0) {
-                data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
+            if (gGameData.mBattlePlayers->mPlayers[mTurnPlayer]->mSlots54Remaining == 0) {
+                gGameData.mBattlePlayers->mAddMarkerEnabled = 0;
             }
             break;
         case 29:
@@ -795,30 +795,30 @@ void BattlePlayerList::Update() {
             RecordSndHeapState(SoundManager::Get().mHeap);
             break;
         case 31:
-            data_020d433c.mUnk_87   = 1;
-            data_020d433c.mUnk_88_4 = 0;
-            data_020d433c.mUnk_88_0 = 0;
+            gGameData.mUnk_87   = 1;
+            gGameData.mUnk_88_4 = 0;
+            gGameData.mUnk_88_0 = 0;
             if (mSavedTutorialNumber != 0) {
-                data_020d433c.mTutorialNumber = mSavedTutorialNumber;
+                gGameData.mTutorialNumber = mSavedTutorialNumber;
                 RequestScene(SCENE_TUTORIAL);
                 mFinished = 1;
                 return;
             }
             WirelessManager::Get();
-            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
+            if (IsWirelessMode(&data_020c4030.mUnk_228) || gGameData.mNextScene == SCENE_ARENA_WINDOW) {
                 if (mContext->mRequest == 1) {
-                    data_020d433c.mUnk_88_4 = 1;
+                    gGameData.mUnk_88_4 = 1;
                 }
                 mState++;
             } else {
-                u8 next = data_020d433c.mNextScene;
+                u8 next = gGameData.mNextScene;
                 if (next != 0) {
-                    if (data_020d433c.mScriptMode != 0 && next == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
+                    if (gGameData.mScriptMode != 0 && next == SCENE_TOURNAMENT && gGameData.mUnk_7d == 3) {
                         RequestScene(SCENE_GAME_OVER);
                         mFinished = 1;
                         return;
                     }
-                    data_020d433c.mNextScene = 0;
+                    gGameData.mNextScene = 0;
                     RequestScene(next);
                     mFinished = 1;
                 } else {
@@ -831,12 +831,12 @@ void BattlePlayerList::Update() {
             SceneContext *context = mContext;
             switch (context->mRequest) {
                 case 1:
-                    if (data_020d433c.mWireless) {
-                        data_020d433c.mUnk_89 = 1;
+                    if (gGameData.mWireless) {
+                        gGameData.mUnk_89 = 1;
                         WirelessManager::Get().Stop();
                         mState++;
                     } else {
-                        data_020d433c.mUnk_89 = 0;
+                        gGameData.mUnk_89 = 0;
                         RequestScene(SCENE_ARENA_WINDOW);
                         mFinished = 1;
                     }
@@ -846,7 +846,7 @@ void BattlePlayerList::Update() {
                     mFinished = 1;
                     break;
                 case 3:
-                    data_020d433c.mUnk_89 = 1;
+                    gGameData.mUnk_89 = 1;
                     RequestScene(SCENE_ARENA_WINDOW);
                     mFinished = 1;
                     break;
@@ -858,8 +858,8 @@ void BattlePlayerList::Update() {
             if (data_020c4030.mUnk_228 != 0) {
                 return;
             }
-            data_020d433c.mWireless = 0;
-            data_020d433c.mUnk_89 = 0;
+            gGameData.mWireless = 0;
+            gGameData.mUnk_89 = 0;
             RequestScene(SCENE_ARENA_WINDOW);
             mFinished = 1;
             break;
@@ -877,11 +877,11 @@ void BattlePlayerList::Update() {
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             SoundManager::Get().StopSeq(1);
             WirelessManager::Get();
-            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
+            if (IsWirelessMode(&data_020c4030.mUnk_228) || gGameData.mNextScene == SCENE_ARENA_WINDOW) {
                 mContext->mRequest       = 1;
-                data_020d433c.mUnk_88_4 = 0;
-                data_020d433c.mUnk_88_0 = 1;
-                data_020d433c.mUnk_87   = 1;
+                gGameData.mUnk_88_4 = 0;
+                gGameData.mUnk_88_0 = 1;
+                gGameData.mUnk_87   = 1;
                 mState                = 0x20;
             } else {
                 RequestScene(SCENE_MAP);
@@ -912,7 +912,7 @@ void InitPlayerListDisplay() {
     G2S_SetBG1Priority(1);
 }
 
-// Also sets mLocalPlayer: data_020d433c.mUnk_ae in wireless mode, else 0.
+// Also sets mLocalPlayer: gGameData.mUnk_ae in wireless mode, else 0.
 void CreateObjects(BattlePlayerList *list) {
     list->mCamera = new Camera();
     list->mCamera->SetUp(0, 0x1000, 0);
@@ -920,20 +920,20 @@ void CreateObjects(BattlePlayerList *list) {
     list->mCamera->SetClip(0x1000, 0x1388000);
     list->mCamera->SetFov(0x2aaa);
     list->mCamera->SetPosition(0, 0, list->mCamera->mUnk_34);
-    data_020d433c.mEffects = new EffectManager();
-    data_020d433c.mGimmickCollision  = new GimmickCollision();
-    data_020d433c.mGimmicks = new GimmickManager();
+    gGameData.mEffects = new EffectManager();
+    gGameData.mGimmickCollision  = new GimmickCollision();
+    gGameData.mGimmicks = new GimmickManager();
     list->mUnitModels = new BattleUnitModels();
-    if (data_020d433c.mWireless) {
-        data_020d433c.mAntenna = new AntennaIndicator(0);
+    if (gGameData.mWireless) {
+        gGameData.mAntenna = new AntennaIndicator(0);
     }
     u8 i = 0;
     do {
         list->mPlayers[i] = new BattlePlayer(i);
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     WirelessManager::Get();
-    list->mLocalPlayer = IsWirelessMode(&data_020c4030.mUnk_228) ? data_020d433c.mLocalSlot : 0;
+    list->mLocalPlayer = IsWirelessMode(&data_020c4030.mUnk_228) ? gGameData.mLocalSlot : 0;
 }
 // The address of the marker's value in its player's mSlots54.
 u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index) {
@@ -1092,7 +1092,7 @@ void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
         list->mTurnPlayer = player;
     }
     list->mTurnOrder[slot] = player;
-    if (data_020d433c.mPlayerCount == 2) {
+    if (gGameData.mPlayerCount == 2) {
         if (slot == 0) {
             list->mPlayers[player]->mCorner = 0;
         } else {
@@ -1108,9 +1108,9 @@ void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
 void SetupTutorial(BattlePlayerList *list) {
     list->mStorytalkWindow = new StorytalkWindow();
     MIi_CpuCopyFast(gCharacterLook, (u8 *) list->mPlayers[0] + 0xa8, 8);
-    switch (data_020d433c.mTutorialId) {
+    switch (gGameData.mTutorialId) {
         case 1:
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
@@ -1130,7 +1130,7 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         case 3:
         case 4:
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
@@ -1141,7 +1141,7 @@ void SetupTutorial(BattlePlayerList *list) {
             AddMarker(list, 7, 5, 1, 0);
             list->mTurnPlayer = 0;
             list->mState = 12;
-            if (data_020d433c.mTutorialId == 4) {
+            if (gGameData.mTutorialId == 4) {
                 list->mStorytalkMessageIndex = 3;
                 list->mState = 14;
             }
@@ -1150,7 +1150,7 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         case 7: {
             list->mAddMarkerEnabled = 0;
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
@@ -1176,7 +1176,7 @@ void SetupTutorial(BattlePlayerList *list) {
         }
         case 8: {
             list->mAddMarkerEnabled = 0;
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
@@ -1204,7 +1204,7 @@ void SetupTutorial(BattlePlayerList *list) {
         }
         case 10: {
             list->mAddMarkerEnabled = 0;
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
@@ -1234,7 +1234,7 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         }
         case 12:
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T003_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T003_ba_Ali.mes");
@@ -1246,7 +1246,7 @@ void SetupTutorial(BattlePlayerList *list) {
             AddMarker(list, 4, 5, 0, 0);
             break;
         case 14: {
-            if (data_020d433c.mUnk_82) {
+            if (gGameData.mUnk_82) {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T004_ba.mes");
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T004_ba_Ali.mes");
@@ -1281,8 +1281,8 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list) {
     BOOL result = FALSE;
     u8 i        = 0;
     u8 value;
-    u8 mode  = data_020d433c.mHasPartners;
-    u8 count = data_020d433c.mPlayerCount;
+    u8 mode  = gGameData.mHasPartners;
+    u8 count = gGameData.mPlayerCount;
     BattlePlayer *p;
     do {
         p     = list->mPlayers[i];
@@ -1346,14 +1346,14 @@ BOOL SetMessageType0x19AndCheckAny(BattlePlayerList *list, u32 flag) {
 
 extern "C" void StartFrameTaskChannel0(BattlePlayerList *list) {
     (void) DataLayoutSlot();
-    if (data_020d433c.mTutorialPart) {
+    if (gGameData.mTutorialPart) {
         return;
     }
-    if (data_020d433c.mNextScene != SCENE_TOURNAMENT) {
-        FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mFieldId]);
+    if (gGameData.mNextScene != SCENE_TOURNAMENT) {
+        FrameTask::Get().StartChannel(0, sFrameTaskIds[gGameData.mFieldId]);
         return;
     }
-    if (data_020d433c.mLastBattle) {
+    if (gGameData.mLastBattle) {
         FrameTask::Get().StartChannel(0, 3);
         return;
     }
@@ -1365,10 +1365,10 @@ extern "C" void StartFrameTaskChannel0(BattlePlayerList *list) {
         }
         return;
     }
-    if (data_020d433c.mUnk_8a_4) {
+    if (gGameData.mUnk_8a_4) {
         FrameTask::Get().StartChannel(0, 10);
         return;
     }
-    FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mFieldId]);
+    FrameTask::Get().StartChannel(0, sFrameTaskIds[gGameData.mFieldId]);
 }
 

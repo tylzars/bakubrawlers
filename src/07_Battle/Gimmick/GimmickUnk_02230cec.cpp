@@ -30,7 +30,7 @@ void GimmickUnk_02230cec::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (target->mUnk_1dd == 4 || !target) {
             return;
         }
@@ -46,20 +46,20 @@ void GimmickUnk_02230cec::Update() {
         if (target->mMoveFrames < 5) {
             return;
         }
-        BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+        BattlePlayer *p = gGameData.mBattlePlayers->Current();
         BattleRecord *r = &p->mRecords[p->mRecord];
         VecFx32 v;
         v.x = target->mVelocity.x;
         v.y = target->mVelocity.y;
         v.z = target->mVelocity.z;
-        data_020d433c.mFlags &= 8;
-        if (!data_020d433c.mFlags && r->mAttribute != 2) {
+        gGameData.mFlags &= 8;
+        if (!gGameData.mFlags && r->mAttribute != 2) {
             v.x = FX_Mul(v.x, 0x1000);
             v.y = FX_Mul(v.y, 0x1000);
             v.z = FX_Mul(v.z, 0x1000);
         }
         v.y = 0;
-        SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &v, 0);
+        SetTargetVelocity(gGameData.mBattlePlayers->mBattleTarget, &v, 0);
         break;
     }
     case 2:

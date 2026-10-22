@@ -9,7 +9,7 @@ class MessageWindow;
 struct SelectWindowCursor;
 struct MessageFile;
 
-// Main menu entries: the values of mMenuSelection (the cursor's selection, kept in data_020d433c.mTitleMenuSelection between
+// Main menu entries: the values of mMenuSelection (the cursor's selection, kept in gGameData.mTitleMenuSelection between
 // visits) that Update's case 40 switches on, each named after the scene it requests or, for OPTION, the OptionScene it
 // creates. The `i < 5` loops over the entries stay literals.
 #define TITLE_MENU_MAP 0

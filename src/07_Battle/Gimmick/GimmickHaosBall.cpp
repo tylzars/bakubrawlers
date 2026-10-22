@@ -60,7 +60,7 @@ void GimmickHaosBall::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+        BattlePlayer *p = gGameData.mBattlePlayers->Current();
         if (p->mRecords[p->mRecord].mAttribute == 3) {
             return;
         }
@@ -73,7 +73,7 @@ void GimmickHaosBall::Update() {
     }
     case 2: {
         DrawModel();
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -87,9 +87,9 @@ void GimmickHaosBall::Update() {
         sum.y = d.y + h->mPosition.y;
         sum.x = d.x + h->mPosition.x;
         h->mPosition = sum;
-        SetTargetVelocityXyz(data_020d433c.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
-        data_020d433c.mFlags &= 8;
-        if (data_020d433c.mFlags) {
+        SetTargetVelocityXyz(gGameData.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
+        gGameData.mFlags &= 8;
+        if (gGameData.mFlags) {
             return;
         }
         mTimer--;
@@ -112,8 +112,8 @@ void GimmickHaosBall::Update() {
         rnd.x = FX_Mul(rnd.x, 0x6000);
         rnd.y = FX_Mul(rnd.y, 0x6000);
         rnd.z = FX_Mul(rnd.z, 0x6000);
-        if (data_020d433c.mBattlePlayers->mBattleTarget) {
-            SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &rnd, 0);
+        if (gGameData.mBattlePlayers->mBattleTarget) {
+            SetTargetVelocity(gGameData.mBattlePlayers->mBattleTarget, &rnd, 0);
         }
         SoundManager::Get().StartSeqArc(0x3a);
         mState++;
@@ -142,7 +142,7 @@ void GimmickHaosBall::DrawModel() {
     if (!mModel) {
         return;
     }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
+    if ((int)gGameData.mGimmicks->mState < 2) {
         return;
     }
     DrawInstance();

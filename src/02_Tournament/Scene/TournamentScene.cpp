@@ -3,7 +3,7 @@
 #include "Unknown/UnkFunctions.hpp"
 #include "Game/Random.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/TournamentSubScene.hpp"
@@ -303,7 +303,7 @@ void TournamentScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest       = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -740,10 +740,10 @@ void TournamentScene::Update() {
             break;
         case 41:
             if (mBattlePending != 0) {
-                data_020d433c.mNextScene   = SCENE_TOURNAMENT;
-                data_020d433c.mRules   = 0x11;
-                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
-                if (data_020d433c.mLastBattle != 0) {
+                gGameData.mNextScene   = SCENE_TOURNAMENT;
+                gGameData.mRules   = 0x11;
+                gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
+                if (gGameData.mLastBattle != 0) {
                     int idx; u8 i; u32 id = (u8) gSaveData[0].mAttribute; int slot; s8 pos;
                     slot = GetBakuganEntryIndex(gSaveData, 0, 0x25, id);
                     func_020231c0(gSaveData, slot, 0x29e);
@@ -775,7 +775,7 @@ void TournamentScene::Update() {
                 return;
             }
             if (mCreditsPending != 0) {
-                data_020d433c.mCreditsRequested = 1;
+                gGameData.mCreditsRequested = 1;
                 RequestScene(SCENE_TITLE);
                 mFinished = TRUE;
                 return;

@@ -1,6 +1,6 @@
 #include "Battle/Gimmick.hpp"
 #include "Battle/BattleTarget.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/GimmickTypes.hpp"
 
 void *operator new[](size_t size);
@@ -69,7 +69,7 @@ void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set) {
 }
 
 void GimmickCollision::Update() {
-    if (data_020d433c.mFlags & 1) {
+    if (gGameData.mFlags & 1) {
         mFinished = 1;
         return;
     }

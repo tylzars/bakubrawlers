@@ -1,6 +1,6 @@
 #include "Battle/BattleBase.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 
 extern u8 gMode1Rows[];
 extern u8 gMode2Rows[];
@@ -96,14 +96,14 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     BattleEntry *entries = mData->mEntries;
     mModeRow = gModeRowTables[mode];
     int row = unk4 * 12;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[index];
     u8 base = player->mCharacterLevel;
     u8 *rowp = gCharacterModeBases + row;
     u32 a = rowp[mode];
     a = (u8) (a + base);
     u32 b = (u8) (gCharacterIntervalRowBases[row] + base);
-    if (data_020d433c.mScriptMode) {
-        if (data_020d433c.mHasPartners) {
+    if (gGameData.mScriptMode) {
+        if (gGameData.mHasPartners) {
             if (player->mPartner == 0 && player->mCharacterId != 13 && player->mCharacterId != 14) {
                 a = (u8) (a + 1);
                 b = (u8) (b + 1);
@@ -137,14 +137,14 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         mExtraRow = gExtraRows + c * 8;
         mExtraEnabled = 1;
     }
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 la = list->mPlayers[unk5]->mUnk_ee;
     u8 lb = list->mPlayers[unk6]->mUnk_ee;
     if (index == unk5) {
         mRole = 2;
     } else if (index == unk6) {
         mRole = 3;
-    } else if (data_020d433c.mHasPartners) {
+    } else if (gGameData.mHasPartners) {
         if (unk5 == list->mPlayers[index]->mPartner) {
             mRole = 0;
         } else {
@@ -255,12 +255,12 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
                                 do {
                                     sum += a[i];
                                     i++;
-                                } while (i < data_020d433c.mPlayerCount);
+                                } while (i < gGameData.mPlayerCount);
                             } else {
                                 do {
                                     sum += b[i];
                                     i++;
-                                } while (i < data_020d433c.mPlayerCount);
+                                } while (i < gGameData.mPlayerCount);
                             }
                             if (mValue - sum > 80) {
                                 SoundManager::Get().StartSeqArc(0x6c);
@@ -422,7 +422,7 @@ void BattleSlot::StartCardDelay(int sel) {
 
 u32 func_ov007_022234f0(int player, u8 mode, u8 ch) {
     u8 *rowp = gCharacterModeBases + ch * 12;
-    u32 v = (u8) (data_020d433c.mBattlePlayers->mPlayers[player]->mCharacterLevel + rowp[mode]);
+    u32 v = (u8) (gGameData.mBattlePlayers->mPlayers[player]->mCharacterLevel + rowp[mode]);
     if (v >= 8) {
         v = 7;
     }

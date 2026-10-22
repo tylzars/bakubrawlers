@@ -1,7 +1,7 @@
 #include "Battle/BattleBase.hpp"
 #include "Battle/BattleUtil.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
 

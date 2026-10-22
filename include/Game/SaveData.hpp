@@ -48,7 +48,7 @@ struct SaveData {
     /* 025 */ u8 mUnk_25;
     /* 026 */ u8 mLanguage; // written by SaveWindow; nothing in this build reads it back
     union {
-        /* 027 */ u8 mRules; // copied to and from data_020d433c.mRules; mRuleMicEnabled mirrors mMicEnabled
+        /* 027 */ u8 mRules; // copied to and from gGameData.mRules; mRuleMicEnabled mirrors mMicEnabled
         struct {
             /* 027 */ u8 mRuleMicEnabled : 1;
             /* 027 */ u8 mUnk_27_1 : 1;
@@ -68,7 +68,7 @@ struct SaveData {
     /* 043 */ u8 mUnk_43; // entry position inside data_020b4324[mUnk_42], reset with each mUnk_42 step
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
     // Counters BattleResult raises (capped): its mUnk_b3 is set when BattlePlayer::mUnk_ee of player
-    // BattlePlayerList::mLocalPlayer (plus the partner's) reaches data_020d433c.mSlotsPerPlayer.
+    // BattlePlayerList::mLocalPlayer (plus the partner's) reaches gGameData.mSlotsPerPlayer.
     /* 048 */ u16 mUnk_48; // +1 when mUnk_b3 is set
     /* 04a */ u16 mUnk_4a; // +1 when mUnk_b3 is clear
     /* 04c */ PAD(0x04c, 0x04e);
@@ -82,7 +82,7 @@ struct SaveData {
     /* 05c */ u16 mUnk_5c;
     /* 05e */ u16 mUnk_5e[17]; // [character id] +1 for each opponent that is not a partner, with mUnk_b3 set; also data_020d444e
     /* 080 */ u16 mUnk_80; // +1 with mUnk_b3 set, no partners, fewer than 4 players
-    /* 082 */ u16 mUnk_82; // +1 with mUnk_b3 set and partners (data_020d433c.mHasPartners)
+    /* 082 */ u16 mUnk_82; // +1 with mUnk_b3 set and partners (gGameData.mHasPartners)
     /* 084 */ u16 mUnk_84; // +1 with mUnk_b3 set, no partners, 4 players
     /* 086 */ PAD(0x086, 0x088);
     /* 088 */ u16 mBakuganEntries[0xf6][2]; // also reached as data_020d4478 (gSaveData + 0x88)

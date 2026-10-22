@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "types.h"
 #include "Scene/SceneBase.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleMapTypes.hpp"
 #include "Graphics/BakuganModel.hpp"
@@ -67,11 +67,11 @@ void BattleUnitModels::CreateFontObjs() {
         }
         i = (u8) (i + 1);
     } while (i <= 6);
-    u8 type = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u8 type = gGameData.mBattlePlayers->mLocalPlayer;
     if (mFontObjs[7] == 0) {
         mFontObjs[7] = new BattleFontObj((u8) (type + 7));
     }
-    type = data_020d433c.mBattlePlayers->mPlayers[type]->mPartner;
+    type = gGameData.mBattlePlayers->mPlayers[type]->mPartner;
     if (mFontObjs[8] == 0) {
         mFontObjs[8] = new BattleFontObj((u8) (type + 11));
     }
@@ -143,7 +143,7 @@ void BattleUnitModels::func_ov007_0226ff08(u32 flag) {
     s32 far[3]  = {0, 0, 0};
     s32 near[3] = {-1, -1, -1};
     VecFx32 diff;
-    if (data_020d433c.mBattlePlayers->mBattleTarget == 0) {
+    if (gGameData.mBattlePlayers->mBattleTarget == 0) {
         return;
     }
     u8 i;
@@ -153,12 +153,12 @@ void BattleUnitModels::func_ov007_0226ff08(u32 flag) {
     for (i = 0; i < 3; i++) {
         mUnk_98[i] = 0;
     }
-    BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+    BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
     BakuganModel *tp = target->mBakugan;
     u8 n = 0;
     do {
         if (tp && mBakugans[n] && mMoveStates[n] && mMoveStates[n]->mMode == MOVE_MODE_IDLE) {
-            BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[n];
+            BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[n];
             VEC_Subtract(&mBakugans[n]->mPosition, &tp->mPosition, &diff);
             s32 dist = VEC_Mag(&diff);
             if (unit->mStatus == 2 || unit->mStatus == 3 || unit->mUnk_12 != 0) {
@@ -199,7 +199,7 @@ void BattleUnitModels::func_ov007_0226ff08(u32 flag) {
 void BattleUnitModels::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) {
     if (mBakugans[index] == 0 && mMoveStates[index] == 0) {
         mBakugans[index] = new BakuganModel();
-        if (data_020d433c.mBattlePlayers->mUnitCount < 8) {
+        if (gGameData.mBattlePlayers->mUnitCount < 8) {
             mBakugans[index]->Setup(a, b, BAKUGAN_MODEL_MODE_M);
         } else {
             mBakugans[index]->Setup(a, b, BAKUGAN_MODEL_MODE_L);
@@ -261,7 +261,7 @@ void BattleUnitModels::DrawNearPnames() {
         if (k && mBakugans[k - 1]) {
             VecFx32 pos = mBakugans[k - 1]->mPosition;
             VecFx32 sc  = {0x4cd, 0x4cd, 0x4cd};
-            u8 sel      = data_020d433c.mBattlePlayers->mUnits[(u8) (k - 1)].mPlayer;
+            u8 sel      = gGameData.mBattlePlayers->mUnits[(u8) (k - 1)].mPlayer;
             pos.y += 0x14000;
             if (mFontObjs[sel]) {
                 mFontObjs[sel]->mPosition = pos;
@@ -293,8 +293,8 @@ void BattleUnitModels::DrawNearPyPt() {
             VecFx32 pos = mBakugans[mNearUnitHandles[i] - 1]->mPosition;
             VecFx32 sc  = sMarkerScale;
             u8 idx = mNearUnitHandles[i] - 1;
-            u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mPlayer;
-            u8 cur = data_020d433c.mBattlePlayers->mLocalPlayer;
+            u8 sel = gGameData.mBattlePlayers->mUnits[idx].mPlayer;
+            u8 cur = gGameData.mBattlePlayers->mLocalPlayer;
             VecFx32 off = sMarkerOffset;
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
             mtx._[9]    = 0;
@@ -309,7 +309,7 @@ void BattleUnitModels::DrawNearPyPt() {
                     mFontObjs[7]->mScale    = sc;
                     mFontObjs[7]->DrawInstance();
                 }
-            } else if (sel == data_020d433c.mBattlePlayers->mPlayers[cur]->mPartner) {
+            } else if (sel == gGameData.mBattlePlayers->mPlayers[cur]->mPartner) {
                 if (mFontObjs[8]) {
                     mFontObjs[8]->mPosition = pos;
                     mFontObjs[8]->mScale    = sc;
@@ -351,7 +351,7 @@ void BattleUnitModels::DrawStIcons() {
 void BattleUnitModels::DrawUnitStIcons(u8 index) {
     s32 scale;
     u32 i = index - 1;
-    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) i];
+    BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[(u8) i];
     if (unit->mStatus == 0 || mBakugans[i] == 0) {
         return;
     }
@@ -417,7 +417,7 @@ void BattleUnitModels::DrawUnitStIcons(u8 index) {
 }
 
 void BattleUnitModels::SetStIconUnit(u8 index, u32 type) {
-    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[index];
+    BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[index];
     mStIconUnitHandle          = index + 1;
     mStIconKind          = type;
     mStIconPosition.x        = unit->mPos.x;

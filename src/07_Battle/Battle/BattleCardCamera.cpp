@@ -1,7 +1,7 @@
 #include "Battle/BattleConfrontCard.hpp"
 #include "Battle/BattleCardEffect.hpp"
 #include "Battle/BattleMapTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
@@ -86,7 +86,7 @@ void BattleCardCamera::Update() {
 
 extern const u8 gCardCameraLights[];
 // The battle camera through an inline: the original keeps it as a compiler temporary (r5, above the path strings).
-static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCamera; }
+static inline Camera *BattleCamera() { return gGameData.mBattlePlayers->mCamera; }
 
 void BattleCardCamera::Init() {
     mBakugans[0] = new BakuganModel();
@@ -155,7 +155,7 @@ static inline void SnapshotCamera() {
 }
 
 void BattleCardCamera::UpdateCameraAndDraw() {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     camera->AdvanceFrame(0);
     camera->ApplyPath();
     SnapshotCamera();

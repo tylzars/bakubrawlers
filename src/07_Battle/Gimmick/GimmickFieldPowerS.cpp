@@ -6,7 +6,7 @@
 
 static ModelResource *sResources[2];
 
-static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0}; // [mVariant], used when data_020d433c.mHasPartners
+static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0}; // [mVariant], used when gGameData.mHasPartners
 static const u8 sPowerSTurnLimits[2][3] = {{5, 7, 9}, {5, 7, 9}};
 static const VecFx32 sPowerSEffectOffset      = {0, 0, 0x1e000};
 static const VecFx32 sPowerSEffectScale      = {0x800, 0x800, 0x800}; // applied only when mVariant == 1
@@ -74,27 +74,27 @@ void GimmickFieldPowerS::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
+        if (!gGameData.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
+        RemoveCollisionSet(gGameData.mGimmickCollision, mCollision);
         switch (mVariant) {
         case 0: {
-            BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+            BattlePlayer *p = gGameData.mBattlePlayers->Current();
             int v           = p->mSpGauge + 0xbe;
             if (v >= 0xbe) {
                 p->mSpGauge = 0xbe;
             } else {
                 p->mSpGauge = v;
             }
-            BattlePlayer *p2 = data_020d433c.mBattlePlayers->Current();
+            BattlePlayer *p2 = gGameData.mBattlePlayers->Current();
             p2->mFieldPowerSHitCount++;
             if (p2->mFieldPowerSHitCount > 0x63) {
                 p2->mFieldPowerSHitCount = 0x63;
@@ -102,7 +102,7 @@ void GimmickFieldPowerS::Update() {
             break;
         }
         case 1: {
-            BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+            BattlePlayer *p = gGameData.mBattlePlayers->Current();
             int v           = p->mSpGauge + 0xa;
             if (v < 0xbe) {
                 p->mSpGauge = v;
@@ -113,12 +113,12 @@ void GimmickFieldPowerS::Update() {
         }
         }
         SoundManager::Get().StartSeqArc(0x34);
-        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xc, 0, 1);
+        u8 handle = StartEffect(gGameData.mEffects, 1, 0xc, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
             MtxFx43 rot    = gIdentityMtx43;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+            VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             VecFx32 v      = sPowerSEffectOffset;
             VecFx32 w      = sPowerSEffectScale;
             mtx._[11]      = 0;
@@ -129,9 +129,9 @@ void GimmickFieldPowerS::Update() {
             MTX_ApplyRotX43(&rot, 0x1555);
             MTX_Concat43(&rot, &mtx, &mtx);
             MTX_SetTranslation43(&mtx, &camPos);
-            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(gGameData.mEffects, handle, &mtx);
             if (mVariant == 1) {
-                SetEffectScale(data_020d433c.mEffects, handle, &w);
+                SetEffectScale(gGameData.mEffects, handle, &w);
             }
         }
         mCountingTurns = 1;
@@ -139,12 +139,12 @@ void GimmickFieldPowerS::Update() {
         break;
     }
     case 2: {
-        u8 players = data_020d433c.mPlayerCount;
+        u8 players = gGameData.mPlayerCount;
         if (players < 2 || players > 4) {
             break;
         }
         u32 limit;
-        if (data_020d433c.mHasPartners) {
+        if (gGameData.mHasPartners) {
             limit = sPowerSPartnerTurnLimits[mVariant];
         } else {
             limit = sPowerSTurnLimits[mVariant][players - 2];

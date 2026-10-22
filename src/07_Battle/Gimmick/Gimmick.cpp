@@ -1,6 +1,6 @@
 #include "Battle/Gimmick.hpp"
 #include <nitro/fx.h>
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 
 void LoadCollisionFile(void *buf, u8 id);
 GimmickSetData *AddCollisionSet(GimmickCollision *data, int mode, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
@@ -29,14 +29,14 @@ Gimmick::~Gimmick() {
 void Gimmick::LoadCollision(int id, int mode) {
     char buf[0x804];
     LoadCollisionFile(buf, id);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, mode, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(gGameData.mGimmickCollision, mode, buf, &mPosition, &mRotX, mType);
 }
 
 BOOL Gimmick::IsNearMarker(int radius) {
     VecFx32 tmp;
     VecFx32 diff;
     for (u8 i = 0; i < 12; i++) {
-        BattleMarker *base = data_020d433c.mBattlePlayers->Markers();
+        BattleMarker *base = gGameData.mBattlePlayers->Markers();
         BattleMarker *e    = &base[i];
         if (e->mStatus) {
             GetCellPosition(&tmp, e->mCellX, e->mCellY);

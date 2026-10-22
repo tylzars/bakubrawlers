@@ -6,7 +6,7 @@
 # name in the defining source instead.
 
 # GameData's globals: other units still name some of their fields by address.
-inner data_020d433c 0xb4
+inner gGameData 0xb4
 inner gSaveData 0xff4
 
 # Game.cpp: main is placed right after the start-up code; Game.o keeps the singletons' instances, and other units

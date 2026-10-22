@@ -31,7 +31,7 @@ class TextureFile;
 // runs the story table entry only while it equals data_020b4324[gSaveData mUnk_42]->mScriptKind, which func_020667ec
 // returns (MapScene::SetupMap marks the PARK tab for SCRIPT_KIND_PARK, and for SCRIPT_KIND_TOURNAMENT the TOURNAMENT
 // tab when gSaveData[0].mUnk_24 bit 0 is set, otherwise the STORE tab with mUnk_7c = 1). SetupBattle sets
-// data_020d433c.mNextScene to SCENE_PARK for PARK, SCENE_ARENA_WINDOW for TOURNAMENT and SCENE_MAP for the others.
+// gGameData.mNextScene to SCENE_PARK for PARK, SCENE_ARENA_WINDOW for TOURNAMENT and SCENE_MAP for the others.
 // After SetupBattle, MAP always stops with SCRIPT_RESULT_BATTLE (the other kinds only with mBattlePending set); MAP
 // also gets func_0206ef4c's commands from mModelCommandIndex on; MYROOM_TIPS sets mSkipDisabled; for TUTORIAL
 // func_02066f60 returns 0 without reading the table. 7 stays a literal: MapScene, ParkScene and TournamentScene all

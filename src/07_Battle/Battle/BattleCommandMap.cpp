@@ -7,7 +7,7 @@
 #include "Battle/BattleMapTypes.hpp"
 #include "Battle/BattleStatusPanels.hpp"
 #include "Battle/GimmickTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Effect.hpp"
 #include "Graphics/Model.hpp"
@@ -183,10 +183,10 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     mShadowPiece = 0;
     mStatusPanels = 0;
     mStartCamFile = 0;
-    if (data_020d433c.mGimmicks) {
-        data_020d433c.mGimmicks->LoadAll();
+    if (gGameData.mGimmicks) {
+        gGameData.mGimmicks->LoadAll();
     }
-    mUnitModels = data_020d433c.mBattlePlayers->mUnitModels;
+    mUnitModels = gGameData.mBattlePlayers->mUnitModels;
     if (mUnitModels) {
         mUnitModels->CreateFontObjs();
     }
@@ -226,8 +226,8 @@ BattleCommandMap::~BattleCommandMap() {
         delete mStatusPanels;
     }
     FreeStartCamFile();
-    if (data_020d433c.mGimmicks) {
-        data_020d433c.mGimmicks->UnloadAll();
+    if (gGameData.mGimmicks) {
+        gGameData.mGimmicks->UnloadAll();
     }
     if (mUnitModels) {
         mUnitModels->Release();
@@ -340,7 +340,7 @@ void BattleCommandMap::UpdateStartCamPath() {
     if (mStartCamFile == 0) {
         return;
     }
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -353,7 +353,7 @@ void BattleCommandMap::UpdateCameraMove() {
     if (mCameraMoveTimer == 0) {
         return;
     }
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         VecFx32 target = *(VecFx32 *) mCameraEndTarget;
         VecFx32 pos    = *(VecFx32 *) mCameraEndPosition;
@@ -406,7 +406,7 @@ void BattleCommandMap::func_ov007_02245f08() {
     float fy;
     s32 dx;
     float fx;
-    player = data_020d433c.mBattlePlayers->Current();
+    player = gGameData.mBattlePlayers->Current();
     dy     = -player->mPushSumZ;
     dx     = player->mPushSumX;
     s32 ay = dy;
@@ -491,7 +491,7 @@ void BattleCommandMap::func_ov007_02245f08() {
         ApplyRot(obj, &rot, 0x98e3);
     }
     obj->mRotY = (u16) (65536.0f * (float) (u16) (angle % 360) / 360.0f);
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         obj->mRotY = obj->mRotY + camera->mYaw;
     }
@@ -522,7 +522,7 @@ void BattleCommandMap::func_ov007_02246450() {
         DrawPredictPieces(this);
     }
     DrawBakuganModel(this);
-    data_020d433c.mEffects->UpdateTagged(1);
+    gGameData.mEffects->UpdateTagged(1);
     BOOL show = TRUE;
     if (CameraManager::Get().mMode == 2) {
         if (CameraManager::Get().mCameraIndex != 0) {
@@ -544,12 +544,12 @@ extern "C" void DrawStatusPanels(BattleCommandMap *map) {
 }
 
 extern "C" void DrawCursorUnitFontObjs(BattleCommandMap *map) {
-    s8 index               = data_020d433c.mBattlePlayers->mUnitHandles[map->mCursorX][map->mCursorY];
-    u8 current             = data_020d433c.mBattlePlayers->mLocalPlayer;
+    s8 index               = gGameData.mBattlePlayers->mUnitHandles[map->mCursorX][map->mCursorY];
+    u8 current             = gGameData.mBattlePlayers->mLocalPlayer;
     if (index <= 0) {
         return;
     }
-    BattleUnit *unit = &data_020d433c.mBattlePlayers->Units()[(u8) (s8) (index - 1)];
+    BattleUnit *unit = &gGameData.mBattlePlayers->Units()[(u8) (s8) (index - 1)];
     if (unit->mStatus == 0) {
         return;
     }
@@ -569,7 +569,7 @@ extern "C" void DrawCursorUnitFontObjs(BattleCommandMap *map) {
     VEC_Add(&pos, &v, &pos);
     if (unit->mPlayer == current) {
         map->mUnitModels->DrawPyFontObj(&pos);
-    } else if (unit->mPlayer == data_020d433c.mBattlePlayers->mPlayers[current]->mPartner) {
+    } else if (unit->mPlayer == gGameData.mBattlePlayers->mPlayers[current]->mPartner) {
         map->mUnitModels->DrawPtFontObj(&pos);
     }
 }
@@ -623,14 +623,14 @@ extern "C" void UpdateAndDrawMapModels(BattleCommandMap *map) {
     s32 neg = -0x6000;
     u8 j    = 0;
     do {
-        BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[j];
+        BattleMarker *marker = &gGameData.mBattlePlayers->Markers()[j];
         if (marker->mStatus == 1) {
             if (map->mMarkerModel) {
                 VecFx32 b;
                 GetCellPosition(&b, marker->mCellX, marker->mCellY);
                 map->mMarkerModel->mPosition = b;
                 s32 frame = map->mMarkerModel->mModel->GetAnimFrame();
-                if (marker->mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                if (marker->mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
                     map->mMarkerModel->DrawPulsing();
                 } else {
                     map->mMarkerModel->mModel->GetAnimFrame();
@@ -654,7 +654,7 @@ extern "C" void UpdateAndDrawMapModels(BattleCommandMap *map) {
                     map->mMarkerSlideX = map->mMarkerSlideX - 0x3000;
                     map->mMarkerModel->mModel->AdvanceAnim();
                     if (map->mMarkerModel->mModel->GetAnimFrame() <= 0x6000) {
-                        data_020d433c.mBattlePlayers->Markers()[j].mStatus = 1;
+                        gGameData.mBattlePlayers->Markers()[j].mStatus = 1;
                     }
                 }
                 c.x += map->mMarkerSlideX;
@@ -682,7 +682,7 @@ extern "C" void DrawMapObj(BattleCommandMap *map) {
 }
 
 void SetupMapCamera(BattleCommandMap *map, u32 mode) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     camera->mUp.x  = 0;
     camera->mUp.y  = 0x1000;
     camera->mUp.z  = 0;
@@ -708,7 +708,7 @@ void SetupMapCamera(BattleCommandMap *map, u32 mode) {
 }
 
 extern "C" void func_ov007_02246d88(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -718,7 +718,7 @@ extern "C" void func_ov007_02246d88(BattleCommandMap *map) {
 }
 
 extern "C" void func_ov007_02246ddc(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0 || map->mUnk_14 == 0) {
         return;
     }
@@ -740,22 +740,22 @@ extern "C" void func_ov007_02246ddc(BattleCommandMap *map) {
 
 
 extern "C" void SetCornerCameraOverCursorCell(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         camera->SetFov(sCommandCamAngles[1]);
-        VecFx32 v = sCornerCameraPositions[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mCorner];
+        VecFx32 v = sCornerCameraPositions[gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mLocalPlayer]->mCorner];
         v.y       = sCameraHeights[map->mKind];
         camera->mPosition = v;
         camera->mTarget.x = 0;
         camera->mTarget.y = 0;
         camera->mTarget.z = 0;
     }
-    SetCursorCellAndMoveCamera(map, data_020d433c.mBattlePlayers->mCursorX, data_020d433c.mBattlePlayers->mCursorY, 0);
+    SetCursorCellAndMoveCamera(map, gGameData.mBattlePlayers->mCursorX, gGameData.mBattlePlayers->mCursorY, 0);
 }
 
 extern "C" u32 GetCornerRotYDegrees() {
     s32 result = 0;
-    switch (data_020d433c.mBattlePlayers->Current()->mCorner) {
+    switch (gGameData.mBattlePlayers->Current()->mCorner) {
         case 0:
             return result;
         case 1:
@@ -772,7 +772,7 @@ extern "C" u32 GetCornerRotYDegrees() {
 }
 
 extern "C" void FlipToCornerQuadrant(BattleCommandMap *map, VecFx32 *v) {
-    switch (data_020d433c.mBattlePlayers->Current()->mCorner) {
+    switch (gGameData.mBattlePlayers->Current()->mCorner) {
         case 0:
             if (v->x < 0) {
                 v->x = -v->x;
@@ -821,7 +821,7 @@ extern "C" void SetCursorCellAndMoveCamera(BattleCommandMap *map, u8 a, u8 b, u3
     }
     map->mCursorX = a;
     map->mCursorY = b;
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -866,7 +866,7 @@ extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction) {
 
 // Puts the camera at mCameraYawDegrees on a circle of radius mCameraDistance around its target (y kept).
 extern "C" void ApplyCameraYaw(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -894,7 +894,7 @@ extern "C" s32 VEC_Distance(VecFx32 *a, VecFx32 *b);
 extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map);
 
 extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -914,7 +914,7 @@ extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 
 }
 
 extern "C" void ComputeCameraDistance(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -932,7 +932,7 @@ extern "C" void ComputeCameraDistance(BattleCommandMap *map) {
 
 // mCameraYawDegrees = the camera's yaw in degrees (0..359; RotateCameraYaw wraps it with % 360).
 extern "C" void CopyCameraYaw(BattleCommandMap *map) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -950,11 +950,11 @@ extern "C" void CreateStatusPanels(BattleCommandMap *map) {
     map->mStatusPanels = new BattleStatusPanels(0, 0, 0, 1);
     u8 i         = 0;
     do {
-        u8 index             = data_020d433c.mBattlePlayers->mTurnOrder[i];
-        BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
+        u8 index             = gGameData.mBattlePlayers->mTurnOrder[i];
+        BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[index];
         map->mStatusPanels->SetupPanel(index, (s8) player->mCharacterId, data_ov007_02279eb0[i], 2);
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
 }
 
 extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
@@ -964,14 +964,14 @@ extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
     VecFx32 pos; 
     u8 i = 0;    
     do {
-        BattleUnit *unit = &data_020d433c.mBattlePlayers->Units()[i];
+        BattleUnit *unit = &gGameData.mBattlePlayers->Units()[i];
         if (unit->mStatus != 0) {
             pos.x = unit->mPos.x;
             pos.y = unit->mPos.y;
             pos.z = unit->mPos.z;
             Rot16 rot = {0, 0, 0};
             rot.y = unit->mRotY;
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
+            BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
             map->mUnitModels->CreateBakugan(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
         }
         i++;
@@ -987,7 +987,7 @@ extern "C" void UpdateMarkerAndF00gatModels(BattleCommandMap *map) {
     }
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->Markers()[i].mStatus == 1 && map->mMarkerModel == 0) {
+        if (gGameData.mBattlePlayers->Markers()[i].mStatus == 1 && map->mMarkerModel == 0) {
             map->mMarkerModel = new BattleMapModel(MAP_MODEL_KIND_CARD_00_00);
         }
         i++;
@@ -1067,10 +1067,10 @@ extern "C" void SetupTimedF00gatModelAndCamera(BattleCommandMap *map) {
     model->mAnimEnabled        = 0;
     map->mF00gatModels[0]->StartAnim(0, 0);
     VecFx32 a;
-    GetCellPosition(&a, data_020d433c.mBattlePlayers->mCursorX, data_020d433c.mBattlePlayers->mCursorY);
+    GetCellPosition(&a, gGameData.mBattlePlayers->mCursorX, gGameData.mBattlePlayers->mCursorY);
     map->mF00gatModels[0]->mPosition = a;
     map->mF00gatTimer              = 0x97;
-    Camera *camera             = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera             = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         camera->mTarget = a;
         a.y += 0x50000;
@@ -1087,9 +1087,9 @@ extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map) {
         return;
     }
     map->FreeF00gatModels();
-    u8 count    = data_020d433c.mPlayerCount;
+    u8 count    = gGameData.mPlayerCount;
     u8 coords[4][2] = {{6, 4}, {7, 5}, {7, 4}, {6, 5}};
-    if (data_020d433c.mLastBattle != 0) {
+    if (gGameData.mLastBattle != 0) {
         if (map->mF00gatModels[0] == 0) {
             BattleMapModel *model = new BattleMapModel(MAP_MODEL_KIND_F00GAT_000);
             map->mF00gatModels[0]       = model;
@@ -1102,7 +1102,7 @@ extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map) {
     } else {
         u8 i = 0;
         do {
-            if (data_020d433c.mBattlePlayers->mPlayers[i]->mSlots54Remaining != 0 && map->mF00gatModels[i] == 0) {
+            if (gGameData.mBattlePlayers->mPlayers[i]->mSlots54Remaining != 0 && map->mF00gatModels[i] == 0) {
                 BattleMapModel *model = new BattleMapModel((u8) (i + MAP_MODEL_KIND_F00GAT_000));
                 map->mF00gatModels[i]       = model;
                 model->mAnimEnabled        = 1;
@@ -1114,10 +1114,10 @@ extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map) {
             i++;
         } while (i < count);
     }
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         camera->SetFov(0x2aaa);
-        if (data_020d433c.mLastBattle != 0) {
+        if (gGameData.mLastBattle != 0) {
             camera->mTarget.x   = -0x11800;
             camera->mTarget.y   = 0;
             camera->mTarget.z   = -0x17800;
@@ -1144,7 +1144,7 @@ extern "C" void DrawShadowPiece(BattleCommandMap *map, VecFx32 *v, u32 mode);
 extern "C" void StartStartCamPath(BattleCommandMap *map) {
     ChangeDir("/Game/Battle/3d/MapCam");
     map->mUseStatusPanels  = 0;
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     if (camera) {
         map->FreeStartCamFile();
         map->mStartCamFile = LoadFile(sStartCamFiles[map->mKind], 0, 0, 0, 0, 0);
@@ -1203,7 +1203,7 @@ extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out) {
     if (map->mKind >= 8) {
         return;
     }
-    *out = sCornerPositions[map->mKind][data_020d433c.mBattlePlayers->Current()->mCorner];
+    *out = sCornerPositions[map->mKind][gGameData.mBattlePlayers->Current()->mCorner];
 }
 
 extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map);
@@ -1227,7 +1227,7 @@ extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map) {
     PredictLanding((VecFx32 *) map->mCornerPosition, (VecFx32 *) map->mVelocity, (VecFx32 *) map->mLandingPosition);
     map->mLandingPosition[1] = 0x24cd;
     map->mStopStepCount   = PredictStop((VecFx32 *) map->mCornerPosition, (VecFx32 *) map->mVelocity, &tmp, 0, 0);
-    Camera *camera  = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera  = gGameData.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
     }
@@ -1275,7 +1275,7 @@ void GetCellPosition(VecFx32 *out, u8 a, u8 b) {
 extern "C" u32 FindMarkerCellAt(VecFx32 *v, u8 *outA, u8 *outB) {
     u8 i = 0;
     do {
-        BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[i];
+        BattleMarker *marker = &gGameData.mBattlePlayers->Markers()[i];
         if (marker->mStatus != 0) {
             VecFx32 p;
             GetCellPosition(&p, marker->mCellX, marker->mCellY);

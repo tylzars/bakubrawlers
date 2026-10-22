@@ -110,7 +110,7 @@ void GimmickPyrusEruption::Update() {
         if (mCollision->mHitCount != 2) {
             return;
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -120,7 +120,7 @@ void GimmickPyrusEruption::Update() {
         if (target->mPushScaleZeroFrames > 0x5dc) {
             return;
         }
-        BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+        BattlePlayer *p = gGameData.mBattlePlayers->Current();
         if (p->mRecords[p->mRecord].mAttribute == 0) {
             return;
         }
@@ -135,7 +135,7 @@ void GimmickPyrusEruption::Update() {
         d.x      = -FX_Div(d.x, len);
         d.y      = y;
         d.z      = z;
-        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &d, &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
+        VEC_Add(&gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity, &d, &gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity);
         mState++;
         mPushed = 1;
         break;
@@ -166,8 +166,8 @@ void GimmickPyrusEruption::DrawModelB() {
     }
     MtxFx43 mtx = gIdentityMtx43;
     MTX_SetTranslation43(&mtx, &mPosition);
-    data_020d433c.mFlags &= 8;
-    if (!data_020d433c.mFlags) {
+    gGameData.mFlags &= 8;
+    if (!gGameData.mFlags) {
         mModelB->AdvanceAnim();
     }
     mModelB->Draw(&mtx, &mScale);
@@ -177,7 +177,7 @@ void GimmickPyrusEruption::DrawModels(int drawB) {
     if (!mModel) {
         return;
     }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
+    if ((int)gGameData.mGimmicks->mState < 2) {
         return;
     }
     DrawInstance();
@@ -188,8 +188,8 @@ void GimmickPyrusEruption::DrawModels(int drawB) {
 }
 
 int GimmickPyrusEruption::CountDownToState(int frames, int state) {
-    data_020d433c.mFlags &= 8;
-    if (!data_020d433c.mFlags) {
+    gGameData.mFlags &= 8;
+    if (!gGameData.mFlags) {
         mTimer--;
         if (mTimer == 0) {
             mTimer = frames;

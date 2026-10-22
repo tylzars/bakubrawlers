@@ -1,6 +1,6 @@
 #include "Text/TextManager.hpp"
 #include "UI/StorytalkWindow.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -449,7 +449,7 @@ void StorytalkWindow::SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4) {
     mTextOnly = unk4;
     SetStorytalkMessageIndex(this, unk1);
     if (unk2 == 0x64) {
-        if (data_020d433c.mUnk_82 != 0) {
+        if (gGameData.mUnk_82 != 0) {
             unk2 = 0;
         } else {
             unk2 = 5;

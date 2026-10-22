@@ -15,7 +15,7 @@
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "Battle/GimmickTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -157,7 +157,7 @@ static inline void StartResult(BattleTarget *t, u32 kind) {
         delete panels;
     }
     t->mStatusPanels                      = 0;
-    data_020d433c.mGimmicks->mState = 0;
+    gGameData.mGimmicks->mState = 0;
     new BattleCardEffect(0x1000, 0, kind, 0);
 }
 
@@ -290,7 +290,7 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mRecord = unk3;
     mPushInputStopped = 0;
     mUnk_1d7 = 0;
-    mPartner = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mPartner;
+    mPartner = gGameData.mBattlePlayers->mPlayers[mPlayer]->mPartner;
     mRotYAdjust = 0;
     mRotZAdjust = 0;
     mCameraEaseFactor = 0;
@@ -353,22 +353,22 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_1a0 = 0;
     mUnitHandle = 0;
     mBakugan = 0;
-    if (data_020d433c.mBattlePlayers->mUnitModels) {
-        data_020d433c.mBattlePlayers->mUnitModels->mDrawMode = 1;
-        data_020d433c.mBattlePlayers->mUnitModels->mUnk_9e = 1;
+    if (gGameData.mBattlePlayers->mUnitModels) {
+        gGameData.mBattlePlayers->mUnitModels->mDrawMode = 1;
+        gGameData.mBattlePlayers->mUnitModels->mUnk_9e = 1;
     }
-    if (data_020d433c.mFieldId == 7) {
+    if (gGameData.mFieldId == 7) {
         mFloorOutsideField = 1;
     } else {
         mFloorOutsideField = 0;
     }
-    data_020d433c.mGimmickCollision->mEnabled = 1;
+    gGameData.mGimmickCollision->mEnabled = 1;
 }
 
 BattleTarget::~BattleTarget() {
-    data_020d433c.mGimmickCollision->mEnabled = 0;
-    data_020d433c.mEffects->FreeAllEffects();
-    FreeEffectGroup(data_020d433c.mEffects, 1);
+    gGameData.mGimmickCollision->mEnabled = 0;
+    gGameData.mEffects->FreeAllEffects();
+    FreeEffectGroup(gGameData.mEffects, 1);
     delete mBakugan;
     if (mUnitCollisionBuffer) {
         delete mUnitCollisionBuffer;
@@ -381,16 +381,16 @@ BattleTarget::~BattleTarget() {
     u8 j = 0;
     do {
         if (mUnitCollisions[j]) {
-            RemoveCollisionSet(data_020d433c.mGimmickCollision, mUnitCollisions[j]);
+            RemoveCollisionSet(gGameData.mGimmickCollision, mUnitCollisions[j]);
             mUnitCollisions[j] = 0;
         }
         j++;
     } while (j < 12);
     if (mCollision) {
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
+        RemoveCollisionSet(gGameData.mGimmickCollision, mCollision);
     }
     if (mMapCollision) {
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mMapCollision);
+        RemoveCollisionSet(gGameData.mGimmickCollision, mMapCollision);
     }
     delete mStatusPanels;
     if (mRoulettePalette) {
@@ -400,8 +400,8 @@ BattleTarget::~BattleTarget() {
 }
 
 void BattleTarget::Update() {
-    data_020d433c.mFlags &= 8;
-    if (data_020d433c.mFlags == 0) {
+    gGameData.mFlags &= 8;
+    if (gGameData.mFlags == 0) {
         switch (mState) {
             case 0:
                 Init();
@@ -423,7 +423,7 @@ void BattleTarget::Update() {
                         SetDirAndPredict(mCommandMap, (u16) (0x6000 - mRotYAdjust), (u16) (mRotZAdjust + 0x8e + 0x300), 0x78);
                         break;
                     case 3: {
-                        u32 idx = data_020d433c.mFieldId;
+                        u32 idx = gGameData.mFieldId;
                         SetDirAndPredict(mCommandMap, (u16) (0x6000 - mRotYAdjust), sTables.mSpKind3RotZ[idx], (u16) (sTables.mSpKind3Speeds[idx] + 0x50));
                         break;
                     }
@@ -435,11 +435,11 @@ void BattleTarget::Update() {
                     UpdateMove();
                 } else {
                     mPushScaleTimer                                         = 0;
-                    data_020d433c.mBattlePlayers->mUnitModels->mUnk_9e = 0;
+                    gGameData.mBattlePlayers->mUnitModels->mUnk_9e = 0;
                     mState++;
                     mPopupEnabled = 0;
                     if (mResult >= 2) {
-                        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *list = gGameData.mBattlePlayers;
                         u8 unit                = list->Units()[(u8) (mUnitHandle - 1)].mMarker;
                         BattleMarker *marker   = &list->Markers()[unit];
                         CreateCursorModelAtCell(marker->mCellX, marker->mCellY);
@@ -486,16 +486,16 @@ void BattleTarget::Update() {
                 if (mResult == 2 && mUnitHandle != 0 && mResultFrames == 0x32) {
                     switch (mSpKind) {
                         case 6:
-                            data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 0);
+                            gGameData.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 0);
                             break;
                         case 5:
-                            data_020d433c.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 1);
+                            gGameData.mBattlePlayers->mUnitModels->SetStIconUnit(mUnitHandle - 1, 1);
                             break;
                     }
                 }
                 if (mResultFrames > sTables.mResultFrameCounts[mResult]) {
                     SoundManager::Get().StopSeqArcPlayerSounds(0x3c);
-                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *list = gGameData.mBattlePlayers;
                     u8 kind                = list->mPlayers[mPlayer]->mRecords[mRecord].mBakuganId;
                     u8 a                   = list->mUnitA;
                     u8 b                   = list->mUnitB;
@@ -521,7 +521,7 @@ void BattleTarget::Update() {
                 }
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                    if (mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
                         if (TouchManager::Get().mPressed) {
                             mState++;
                         }
@@ -529,7 +529,7 @@ void BattleTarget::Update() {
                         mState++;
                     }
                 } else {
-                    if ((mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
+                    if ((mPlayer == gGameData.mBattlePlayers->mLocalPlayer && TouchManager::Get().mPressed) || gGameData.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
                         mState++;
                     }
                 }
@@ -543,8 +543,8 @@ void BattleTarget::Update() {
                 if (n % 3 == 0) {
                     SoundManager::Get().StartSeqArc(0x59);
                 }
-                if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x15)) {
-                    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+                if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0x15)) {
+                    BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
                     u8 values[3]         = {1, 2, 4};
                     pick                 = MATH_Rand32(&gRandom, 3);
                     mCellAnims[4]->SetAnimation(pick + 3);
@@ -558,7 +558,7 @@ void BattleTarget::Update() {
             }
             case 7: {
                 if (mCellAnims[4]->mFinished != 0) {
-                    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord].mAttribute == 1) {
+                    if (gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord].mAttribute == 1) {
                         mState = 0xb;
                     } else {
                         mTimer = 0x78;
@@ -594,7 +594,7 @@ void BattleTarget::Update() {
                 if (SpriteManager::Get().IsFading()) {
                     break;
                 }
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
                 mBakugan->Setup(record->mBakuganId, record->mAttribute, BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
                 SpriteManager::Get();
@@ -613,10 +613,10 @@ void BattleTarget::Update() {
                 }
                 break;
             case 11: {
-                data_020d433c.mEffects->FreeAllEffects();
-                FreeEffectGroup(data_020d433c.mEffects, 0);
-                FreeEffectGroup(data_020d433c.mEffects, 1);
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                gGameData.mEffects->FreeAllEffects();
+                FreeEffectGroup(gGameData.mEffects, 0);
+                FreeEffectGroup(gGameData.mEffects, 1);
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 u8 cur                 = list->mTurnPlayer;
                 u8 a                   = list->mUnitA;
                 u8 b                   = list->mUnitB;
@@ -687,9 +687,9 @@ void BattleTarget::Update() {
                     break;
                 }
                 mResultFrames                                                  = 0;
-                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId = 0;
+                gGameData.mBattlePlayers->mPlayers[mPlayer]->mAbilityId = 0;
                 if (mSpKind != 0) {
-                    data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0;
+                    gGameData.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0;
                 }
                 switch (mResult) {
                     case 0:
@@ -754,17 +754,17 @@ void BattleTarget::func_ov007_02253fbc() {
     mContext->mRequest = 0;
     CloseCommandMapNow(mCommandMap);
     mBakugan->mVisible = 0;
-    data_020d433c.mFlags &= 8;
-    if (data_020d433c.mFlags) {
+    gGameData.mFlags &= 8;
+    if (gGameData.mFlags) {
         mUnk_1ec = 1;
     }
 }
 
 void BattleTarget::Init() {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
-    LoadEffectGroup(data_020d433c.mEffects, 1, "shoot");
-    mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+    LoadEffectGroup(gGameData.mEffects, 1, "shoot");
+    mCommandMap = new BattleCommandMap(gGameData.mFieldId);
     mCommandMap->mUseStatusPanels = 0;
     mCommandMap->Init();
     SetPredictVisible(mCommandMap, 1);
@@ -783,12 +783,12 @@ void BattleTarget::Init() {
     mStatusPanels = new BattleStatusPanels(0x1000, 0, 1, 1);
     u8 i = 0;
     do {
-        u8 slot = data_020d433c.mBattlePlayers->mTurnOrder[i];
+        u8 slot = gGameData.mBattlePlayers->mTurnOrder[i];
         if (slot == mPlayer) {
-            mStatusPanels->SetupPanel(slot, (s8) data_020d433c.mBattlePlayers->mPlayers[slot]->mCharacterId, data_ov007_0227a750[i], 2);
+            mStatusPanels->SetupPanel(slot, (s8) gGameData.mBattlePlayers->mPlayers[slot]->mCharacterId, data_ov007_0227a750[i], 2);
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
@@ -843,7 +843,7 @@ void BattleTarget::PlaceBakugan() {
 
 void BattleTarget::LoadUnitCollisions() {
     u16 rot[3];
-    BattleUnit *units = data_020d433c.mBattlePlayers->mUnits;
+    BattleUnit *units = gGameData.mBattlePlayers->mUnits;
     u8 i              = 0;
     do {
         BattleUnit *unit = &units[i];
@@ -855,7 +855,7 @@ void BattleTarget::LoadUnitCollisions() {
             rot[1] = unit->mRotY;
             rot[0] = 0;
             rot[2] = 0;
-            mUnitCollisions[i] = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_UNIT, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
+            mUnitCollisions[i] = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_UNIT, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
         }
         i++;
     } while (i < 12);
@@ -871,14 +871,14 @@ void BattleTarget::LoadMapCollision() {
     rot[0] = 0;
     rot[1] = 0;
     rot[2] = 0;
-    UnkStruct_020d433c *data = &data_020d433c;
+    GameData *data = &gGameData;
     u8 id                    = data->mFieldId;
     if (data->mUnk_9a_4) {
         LoadCollisionFile(buf, id);
     } else {
         LoadCollisionFile(buf, id + 0x64);
     }
-    mMapCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_FIELD, buf, &pos, rot, 0);
+    mMapCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_FIELD, buf, &pos, rot, 0);
 }
 
 void BattleTarget::SetMapPredictVisible(u32 unk) {
@@ -921,12 +921,12 @@ void BattleTarget::LaunchHitUnit(GimmickSetData *set) {
     if (!set || !set->mTag) {
         return;
     }
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     ReleaseSlot(list, set->mTag - 1);
     BakuganModel *other = list->mUnitModels->GetBakugan(set->mTag - 1);
     GetVelocityTowardXZ(&mBakugan->mPosition, &other->mPosition, &mVelocity, &state.mVelocity);
     list->mUnitModels->StartMove(set->mTag - 1, &state);
-    RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+    RemoveCollisionSet(gGameData.mGimmickCollision, set);
     mUnitCollisions[set->mTag - 1] = 0;
 }
 
@@ -957,11 +957,11 @@ void BattleTarget::UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     if (mMoveFrames != 0) {
         mInField = 0;
     }
-    record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+    record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     if (mCollision->mHitCount != 0) {
         i = 0;
         do {
-            GimmickSetData *set = &data_020d433c.mGimmickCollision->mSets[mCollision->mHitSlots[i]];
+            GimmickSetData *set = &gGameData.mGimmickCollision->mSets[mCollision->mHitSlots[i]];
             if (!set) {
                 continue;
             }
@@ -972,7 +972,7 @@ void BattleTarget::UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     if (!set->mTag) {
                         continue;
                     }
-                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
+                    BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
                     if (unit->mStatus == 2 || mSpKind == 5) {
                         continue;
                     }
@@ -1011,7 +1011,7 @@ void BattleTarget::UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     VEC_Add(&obs.o.mPos, &set->mPosition, &obs.o.mPos);
                     AddRotAtOnceFields(&obs.o, set);
                     marker = 0;
-                    if (data_020d433c.mTutorialId == 0 && unit->mPlayer != mPlayer && unit->mPlayer != mPartner && unit->mStatus != 3 &&
+                    if (gGameData.mTutorialId == 0 && unit->mPlayer != mPlayer && unit->mPlayer != mPartner && unit->mStatus != 3 &&
                         (mSkipHeadingTest != 0 || IsHeadingToward(&self.o.mPos, &obs.o.mPos, a, ((RecordBits *) ((u8 *) record + 2))->mIndex))) {
                         mUnk_1dd = 6;
                         mUnk_1db = 0;
@@ -1075,13 +1075,13 @@ void BattleTarget::UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                             if (OBST(set, mCollision->mHitObstacleIndices[i])->mKind == 2) {
                                 ceilingHit = 1;
                                 if (move.x != 0 || move.z != 0) {
-                                    handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
+                                    handle = StartEffect(gGameData.mEffects, 1, 0xd, 0, 1);
                                     if (handle != 0) {
                                         CameraManager::Get();
                                         MtxFx43 mtx = data_020c1cf4;
                                         VecFx32 pos = mBakugan->mPosition;
                                         MTX_SetTranslation43(&mtx, &pos);
-                                        SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+                                        SetEffectMatrix(gGameData.mEffects, handle, &mtx);
                                     }
                                 }
                             }
@@ -1186,10 +1186,10 @@ void BattleTarget::UpdateMove() {
         }
         StopSoundAfterVentKaze();
         mForceAirborne = 0;
-        if (data_020d433c.mTutorialId == 0 && mUnk_1dd != 4) {
+        if (gGameData.mTutorialId == 0 && mUnk_1dd != 4) {
             if ((mAirFrames == 0 && mAirFramesBeforeIntegrate != -1) || mAirFrames == -1) {
                 if (mPushScaleTimer != 0) {
-                    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+                    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mMicCharge != 0) {
                         u8 n = player->mMicBounceCount;
                         if (n < 3) {
@@ -1198,13 +1198,13 @@ void BattleTarget::UpdateMove() {
                             n        = n + 1;
                             mForceAirborne = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mMicBounceCount = n;
+                        gGameData.mBattlePlayers->mPlayers[mPlayer]->mMicBounceCount = n;
                         VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
                         mPushVelocity.x = 0;
                         mPushVelocity.y = 0;
                         mPushVelocity.z = 0;
                     }
-                    player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+                    player = gGameData.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mOtherMicCharge != 0) {
                         u8 n = player->mOtherMicBounceCount;
                         if (n < 3) {
@@ -1213,7 +1213,7 @@ void BattleTarget::UpdateMove() {
                             n        = n + 1;
                             mForceAirborne = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mOtherMicBounceCount = n;
+                        gGameData.mBattlePlayers->mPlayers[mPlayer]->mOtherMicBounceCount = n;
                         VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
                         mPushVelocity.x = 0;
                         mPushVelocity.y = 0;
@@ -1249,7 +1249,7 @@ void BattleTarget::UpdateMove() {
     mMoveFrames++;
     if (mPushScaleTimer != 0) {
         if (mLanded != 0 && mMoveFrames % 30 == 0 && mSpKind != 2) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+            BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
             mPushScale              = FX_Mul(mPushScale, sTables.mPushScaleFactors[record->mPushTableIndex]);
         }
         if (mSpKind != 2) {
@@ -1327,7 +1327,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
     m0    = gIdentityMtx33;
     rot   = m0;
     ident = m0;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
     u8 step = mState;
     if (step >= 0xb) {
         return;
@@ -1440,7 +1440,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             t.y = pos.y + mBakugan->mPosition.y + 0x4000;
             t.x = pos.x + mBakugan->mPosition.x;
             cam = t;
-            SetVec(&v, mBakugan->mPosition.x, sTables.mUnk_104[data_020d433c.mFieldId], mBakugan->mPosition.z);
+            SetVec(&v, mBakugan->mPosition.x, sTables.mUnk_104[gGameData.mFieldId], mBakugan->mPosition.z);
             if (v.x < 0) {
                 v.x = v.x - 0x14000;
             } else {
@@ -1758,8 +1758,8 @@ void BattleTarget::UpdateCamera() {
 }
 
 void BattleTarget::UpdateCameraAndDraw() {
-    data_020d433c.mFlags &= 8;
-    if (data_020d433c.mFlags == 0) {
+    gGameData.mFlags &= 8;
+    if (gGameData.mFlags == 0) {
         UpdateCamera();
     }
     if (mStatusPanels) {
@@ -1919,7 +1919,7 @@ void BattleTarget::IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32
             mRestFrames  = 0;
         }
     }
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
     BOOL charged         = FALSE;
     if (player->mMicCharge != 0) {
         if ((u8) player->mMicBounceCount < 3) {
@@ -1931,8 +1931,8 @@ void BattleTarget::IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32
             charged = TRUE;
         }
     }
-    if (mUnk_1dd != 4 && data_020d433c.mTutorialId == 0 && charged) {
-        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mMicCharge + data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mOtherMicCharge;
+    if (mUnk_1dd != 4 && gGameData.mTutorialId == 0 && charged) {
+        s32 sum = gGameData.mBattlePlayers->mPlayers[mPlayer]->mMicCharge + gGameData.mBattlePlayers->mPlayers[mPlayer]->mOtherMicCharge;
         if (sum != 0) {
             tmp.x = vel->x;
             tmp.z = vel->z;
@@ -2027,7 +2027,7 @@ void BattleTarget::HandleGimmickHit(GimmickSetData *set, u32 index, VecFx32 *vel
     BattleObstacle self = *(BattleObstacle *) ((u8 *) mCollision + 0x10);
     BattleObstacle *selfp = &self;
     BattleObstacle other = *(BattleObstacle *) ((u8 *) set + 0x10 + index * 0x20);
-    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+    BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     mHitGimmickType = set->mTag; // a gimmick's set carries its GIMMICK_TYPE in mTag
     switch (set->mTag) {
         case 0: // the Gimmick constructor's default; every subclass constructor overwrites it
@@ -2174,7 +2174,7 @@ void BattleTarget::func_ov007_02258448() {
         case 6:
             mCameraMode = 0;
             mResult = 4;
-            data_020d433c.mGimmicks->mState = 0;
+            gGameData.mGimmicks->mState = 0;
             UpdateUnitHit();
             break;
         case 7:
@@ -2234,20 +2234,20 @@ void BattleTarget::UpdateUnitHit() {
             mUnk_b8.y = 0;
             mUnk_b8.z = 0;
             SoundManager::Get().StartSeqArc(0x3c);
-            mUnitHitEffectHandle = StartEffect(data_020d433c.mEffects, 1, 1, 0, 0);
+            mUnitHitEffectHandle = StartEffect(gGameData.mEffects, 1, 1, 0, 0);
             if (mUnitHitEffectHandle != 0) {
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
                 mtx._[11]   = 0;
                 mtx._[10]   = 0;
                 mtx._[9]    = 0;
                 MTX_SetTranslation43(&mtx, &mBakugan->mPosition);
-                SetEffectMatrix(data_020d433c.mEffects, mUnitHitEffectHandle, &mtx);
+                SetEffectMatrix(gGameData.mEffects, mUnitHitEffectHandle, &mtx);
             }
             mUnitHitCount++;
             if (mUnitHitCount <= 2) {
                 return;
             }
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 a                   = 0;
             u8 b                   = 0;
             mUnk_1db               = 2;
@@ -2293,7 +2293,7 @@ void BattleTarget::UpdateHaosWall() {
             if (mShotSpKind == 3) {
                 mUnk_1dd = 2;
             }
-            BattleCpu *fighter = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCpu;
+            BattleCpu *fighter = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCpu;
             if (fighter) {
                 fighter->mTimer = 0x3c;
             }
@@ -2309,12 +2309,12 @@ void BattleTarget::UpdateIkazuchi() {
                 mShotSpKind = 0;
             }
             mUnk_1db++;
-            u16 handle = StartEffect(data_020d433c.mEffects, 1, 5, 0, 0);
+            u16 handle = StartEffect(gGameData.mEffects, 1, 5, 0, 0);
             if (handle == 0) {
                 return;
             }
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
-            VecFx32 a   = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+            VecFx32 a   = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             VecFx32 b   = sTables.mIkazuchiEffectOffset;
             mtx._[11]   = 0;
             mtx._[10]   = 0;
@@ -2322,7 +2322,7 @@ void BattleTarget::UpdateIkazuchi() {
             MTX_MultVec43(&b, &mtx, &b);
             VEC_Add(&a, &b, &a);
             MTX_SetTranslation43(&mtx, &a);
-            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(gGameData.mEffects, handle, &mtx);
             break;
         }
         case 1: {
@@ -2345,7 +2345,7 @@ void BattleTarget::UpdateIkazuchi() {
             mUnk_1dd = 0;
             mIkazuchiTimer = 0x3c;
             SoundManager::Get().StartSeqArc(0x60);
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+            BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
             u8 record            = player->mRecord;
             int v = player->mRecords[record].mUnk_04;
             if (v > 0x32) {
@@ -2371,7 +2371,7 @@ BOOL BattleTarget::StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
     state.mMode       = MOVE_MODE_DAMPED;
-    BattlePlayerList *list   = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list   = gGameData.mBattlePlayers;
     BakuganModel *pose = mBakugan;
     u16 rotY                 = pose->mRotY;
     u16 rotZ                 = pose->mRotZ;
@@ -2408,7 +2408,7 @@ BOOL BattleTarget::StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
         UpdateCameraTarget(&mBakugan->mPosition);
         UpdateCameraPosition(&mBakugan->mPosition);
         if (mShotEffectHandle != 0) {
-            FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+            FreeEffect(gGameData.mEffects, mShotEffectHandle);
             mShotEffectHandle = 0;
         }
         BattleStatusPanels *panels = mStatusPanels;
@@ -2446,7 +2446,7 @@ void BattleTarget::UpdateUnitHoming() {
             do {
                 GimmickSetData *set = mUnitCollisions[i];
                 if (set && set->mTag) {
-                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
+                    BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
                     if (unit->mPlayer != mPlayer && unit->mPlayer != mPartner && unit->mStatus != 2 &&
                         unit->mStatus != 3) {
                         VEC_Subtract(&mBakugan->mPosition, &set->mPosition, &v30);
@@ -2460,8 +2460,8 @@ void BattleTarget::UpdateUnitHoming() {
                         }
                         set = mUnitCollisions[i];
                         if (set->mHitCount != 0) {
-                            RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
-                            RemoveUnit(data_020d433c.mBattlePlayers, mUnitCollisions[i]->mTag - 1, 0);
+                            RemoveCollisionSet(gGameData.mGimmickCollision, set);
+                            RemoveUnit(gGameData.mBattlePlayers, mUnitCollisions[i]->mTag - 1, 0);
                             mUnitCollisions[i] = 0;
                             mUnk_1db   = 1;
                             mUnk_140   = i;
@@ -2494,16 +2494,16 @@ void BattleTarget::UpdateUnitHoming() {
             state.mVelocity.x = v30.x;
             state.mVelocity.y = v30.y;
             state.mVelocity.z = v30.z;
-            data_020d433c.mBattlePlayers->mUnitModels->StartMove(mUnk_140, &state);
+            gGameData.mBattlePlayers->mUnitModels->StartMove(mUnk_140, &state);
             mUnk_1db = i;
-            u8 handle = StartEffect(data_020d433c.mEffects, 1, 10, 0, i);
+            u8 handle = StartEffect(gGameData.mEffects, 1, 10, 0, i);
             u16 yaw   = FX_Atan2Idx(mVelocity.x, mVelocity.z);
             SoundManager::Get().StartSeqArc(0x10);
             rot2[0] = 0;
             rot2[1] = yaw + 0x4000;
             rot2[2] = 0;
-            SetEffectRotation(data_020d433c.mEffects, handle, rot2);
-            SetEffectPosition(data_020d433c.mEffects, handle, &mBakugan->mPosition);
+            SetEffectRotation(gGameData.mEffects, handle, rot2);
+            SetEffectPosition(gGameData.mEffects, handle, &mBakugan->mPosition);
             break;
         }
         case 2: {
@@ -2527,7 +2527,7 @@ void BattleTarget::UpdateUnitHoming() {
             mVelocity.y = mBaseVelocity.y;
             mVelocity.z = mBaseVelocity.z;
             if (mShotEffectHandle != 0) {
-                FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+                FreeEffect(gGameData.mEffects, mShotEffectHandle);
             }
             mUnk_1dd = 0;
             mUnk_1db = 0;
@@ -2725,7 +2725,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
     state.mMode       = MOVE_MODE_SLOW_LAUNCH_SPIN_X;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     if (mShotSpKind != 3) {
         return 0;
     }
@@ -2762,7 +2762,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
         if (owner != 0) {
             int idx          = owner - 1;
             BattleUnit *unit = &list->mUnits[(u8) idx];
-            if (data_020d433c.mTutorialId != 0 || (u8) (unit->mStatus + 0xfe) <= 1) {
+            if (gGameData.mTutorialId != 0 || (u8) (unit->mStatus + 0xfe) <= 1) {
                 if (unit->mPlayer == mPlayer) {
                     mResult = 3;
                     StartResult(this, 2);
@@ -2776,7 +2776,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                 }
             } else if (unit->mPlayer == mPlayer || unit->mPlayer == mPartner) {
                 mResult = 2;
-                RemoveUnit(data_020d433c.mBattlePlayers, idx, 2);
+                RemoveUnit(gGameData.mBattlePlayers, idx, 2);
                 StartResult(this, 0xa);
                 VEC_Subtract(&list->mUnitModels->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
@@ -2823,7 +2823,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                     if (other != 0) {
                         u8 kind = list->mUnits[(u8) (other - 1)].mStatus;
                         if (kind != 2 && kind != 3) {
-                            RemoveUnit(data_020d433c.mBattlePlayers, other - 1, 2);
+                            RemoveUnit(gGameData.mBattlePlayers, other - 1, 2);
                             VEC_Subtract(&list->mUnitModels->GetBakugan(other - 1)->mPosition, &mBakugan->mPosition, &d);
                             state.mVelocity.x = d.x;
                             state.mVelocity.y = d.y;
@@ -2858,7 +2858,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
 BOOL BattleTarget::TryRestOnCell() {
     u8 a = 0;
     u8 b = 0;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     if (mRestOnCellDisabled == 0) {
         BakuganModel *pose = mBakugan;
         if (pose->mPosition.y <= 0x899a) {
@@ -2883,7 +2883,7 @@ BOOL BattleTarget::TryRestOnCell() {
                     mResultFrames          = 1;
                     mCameraMode          = 0;
                     if (mShotEffectHandle != 0) {
-                        FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+                        FreeEffect(gGameData.mEffects, mShotEffectHandle);
                         mShotEffectHandle = 0;
                     }
                     mBakugan->mAnimUpdateEnabled = 1;
@@ -2921,9 +2921,9 @@ BOOL BattleTarget::TryRestOnCell() {
                             case 5: {
                                 pose     = mBakugan;
                                 mUnitHandle = AddUnit(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 2);
-                                s16 h    = StartEffect(data_020d433c.mEffects, 1, 0x13, 0, 1);
+                                s16 h    = StartEffect(gGameData.mEffects, 1, 0x13, 0, 1);
                                 if (h > 0) {
-                                    SetEffectPosition(data_020d433c.mEffects, h, &p3);
+                                    SetEffectPosition(gGameData.mEffects, h, &p3);
                                 }
                                 SoundManager::Get().StartSeqArc(0x5e);
                                 break;
@@ -2931,9 +2931,9 @@ BOOL BattleTarget::TryRestOnCell() {
                             case 6: {
                                 pose     = mBakugan;
                                 mUnitHandle = AddUnit(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 3);
-                                s16 h    = StartEffect(data_020d433c.mEffects, 1, 0x14, 0, 1);
+                                s16 h    = StartEffect(gGameData.mEffects, 1, 0x14, 0, 1);
                                 if (h > 0) {
-                                    SetEffectPosition(data_020d433c.mEffects, h, &p3);
+                                    SetEffectPosition(gGameData.mEffects, h, &p3);
                                 }
                                 SoundManager::Get().StartSeqArc(0x5e);
                                 break;
@@ -3218,14 +3218,14 @@ BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *out
         z = -z;
     }
     speed = z + x;
-    record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+    record = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     if (mPrevLanded != 0 && pos->y <= 0x899a) {
         u32 k = record->mRestLimitIndex;
         if (speed < sTables.mRestSpeedLimits[k]) {
             u16 lim = sTables.mRestAngleLimits[k];
             if (!(*angle > lim && *angle < (u16) -lim)) {
                 if (FindMarkerCellAt(pos, &a, &b)) {
-                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *list = gGameData.mBattlePlayers;
                     BattlePlayer *p0 = list->mPlayers[mPlayer];
                     BattlePlayer *p1 = list->mPlayers[mPartner];
                     u8 cell = *(u8 *) &list->mMarkerHandles[a][b];
@@ -3234,7 +3234,7 @@ BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *out
                         *outB = b;
                         u8 m = list->mMarkers[(u8) (cell - 1)].mUnitHandle;
                         if (m != 0) {
-                            BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (m - 1)];
+                            BattleUnit *unit = &gGameData.mBattlePlayers->mUnits[(u8) (m - 1)];
                             if (p0->IsCpu() && !p1->IsCpu() && unit->mPlayer == mPartner) {
                                 if (speed < 0x1000) {
                                     if (!(*angle > 0xe38 && *angle < 0x10000 - 0xe38)) {
@@ -3277,7 +3277,7 @@ void BattleTarget::StartShot() {
     vel.y                = 0;
     vel.z                = 0;
     int power;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
     BattleRecord *record = &player->mRecords[mRecord];
     dir.x                = 0x1000;
     dir.y                = 0;
@@ -3299,46 +3299,46 @@ void BattleTarget::StartShot() {
         case 1:
             rot[2] = mRotZAdjust + 0x38e;
             RotateDirScaled(rot, 0x78, &dir, &vel);
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 0, 0, 1);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 0, 0, 1);
             SoundManager::Get().StartSeqArc(0x3d);
             mSkipHeadingTest = 1;
             break;
         case 2:
             RotateDirScaled(rot, power, &dir, &vel);
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 2, 0, 1);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 2, 0, 1);
             SoundManager::Get().StartSeqArc(0x3e);
             break;
         case 5:
             RotateDirScaled(rot, power, &dir, &vel);
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 7, 0, 1);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 7, 0, 1);
             SoundManager::Get().StartSeqArc(0x41);
             break;
         case 6:
             RotateDirScaled(rot, power, &dir, &vel);
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 8, 0, 1);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 8, 0, 1);
             SoundManager::Get().StartSeqArc(0x3f);
             break;
         case 4: {
             RotateDirScaled(rot, power, &dir, &vel);
-            mShotEffectHandle  = StartEffect(data_020d433c.mEffects, 1, 9, 0, 1);
-            u8 handle = StartEffect(data_020d433c.mEffects, 1, 10, 0, 0);
+            mShotEffectHandle  = StartEffect(gGameData.mEffects, 1, 9, 0, 1);
+            u8 handle = StartEffect(gGameData.mEffects, 1, 10, 0, 0);
             u16 t = FX_Atan2Idx(vel.x, vel.z);
             rot2[0]   = 0;
             rot2[1]   = t + 0x4000;
             rot2[2]   = 0;
-            SetEffectRotation(data_020d433c.mEffects, handle, rot2);
-            SetEffectPosition(data_020d433c.mEffects, handle, &mBakugan->mPosition);
+            SetEffectRotation(gGameData.mEffects, handle, rot2);
+            SetEffectPosition(gGameData.mEffects, handle, &mBakugan->mPosition);
             SoundManager::Get().StartSeqArc(0x42);
             break;
         }
         case 3: {
             mUnk_1dd = 2;
-            u8 k     = data_020d433c.mFieldId;
+            u8 k     = gGameData.mFieldId;
             u16 a    = sTables.mSpKind3Speeds[k];
             u16 b    = sTables.mSpKind3RotZ[k];
             rot[2]   = b;
             RotateDirScaled(rot, (u16) (a + 0x50), &dir, &vel);
-            mShotEffectHandle  = StartEffect(data_020d433c.mEffects, 1, 0xb, 0, 0);
+            mShotEffectHandle  = StartEffect(gGameData.mEffects, 1, 0xb, 0, 0);
             mUnk_11c.x = 0;
             mUnk_11c.y = 0;
             mUnk_11c.z = 0;
@@ -3366,29 +3366,29 @@ void BattleTarget::StartShot() {
     mPushVelocity.z = mPushVector.z;
     LoadCollisionFile(buf, 0xa);
     if (mSpKind != 5) {
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_BAKUGAN, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
+        mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_BAKUGAN, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     } else {
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_BAKUGAN_SP5, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
+        mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_BAKUGAN_SP5, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     }
     SetPredictVisible(mCommandMap, 0);
     mBakugan->mVisible = 1;
     if (mSpKind == 0) {
         if (power > 0x59) {
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 0x11, 0, 0);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 0x11, 0, 0);
             SoundManager::Get().StartSeqArc(0x39);
         } else if (power > 0x4f) {
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 0xf, 0, 0);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 0xf, 0, 0);
             SoundManager::Get().StartSeqArc(0x3a);
         } else if (power > 0x3c) {
-            mShotEffectHandle = StartEffect(data_020d433c.mEffects, 1, 0x10, 0, 0);
+            mShotEffectHandle = StartEffect(gGameData.mEffects, 1, 0x10, 0, 0);
             SoundManager::Get().StartSeqArc(0x3b);
         }
         if (mShotEffectHandle != 0) {
             r3[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
             r3[0] = 0;
             r3[2] = 0;
-            SetEffectRotation(data_020d433c.mEffects, mShotEffectHandle, r3);
-            SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+            SetEffectRotation(gGameData.mEffects, mShotEffectHandle, r3);
+            SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
         }
     }
     player->mMicCharge = 0;
@@ -3399,7 +3399,7 @@ void BattleTarget::StartShot() {
 }
 
 void BattleTarget::AddPlayerPush() {
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
     mPushZ             = player->mPushSumZ;
     mPushX             = player->mPushSumX;
     AddPushXZ(&mPushX);
@@ -3429,7 +3429,7 @@ void BattleTarget::AddPushXZ(s32 *pair) {
     VecFx32 cam;
     mPushZ = pair[1];
     mPushX = -pair[0];
-    if (mPlayer != data_020d433c.mBattlePlayers->mLocalPlayer && data_020d433c.mTutorialId != 0) {
+    if (mPlayer != gGameData.mBattlePlayers->mLocalPlayer && gGameData.mTutorialId != 0) {
         return;
     }
     if (mAirFrames > 3) {
@@ -3499,13 +3499,13 @@ void BattleTarget::UpdateEffects() {
             if (mShotEffectHandle == 0) {
                 break;
             }
-            if (EffectAlive(data_020d433c.mEffects, mShotEffectHandle)) {
+            if (EffectAlive(gGameData.mEffects, mShotEffectHandle)) {
                 u16 rot[3];
                 rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
-                SetEffectRotation(data_020d433c.mEffects, mShotEffectHandle, rot);
-                SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+                SetEffectRotation(gGameData.mEffects, mShotEffectHandle, rot);
+                SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             } else {
                 mShotEffectHandle = 0;
             }
@@ -3516,7 +3516,7 @@ void BattleTarget::UpdateEffects() {
                 break;
             }
             if (VEC_Mag(&mVelocity) <= 0x1000) {
-                FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+                FreeEffect(gGameData.mEffects, mShotEffectHandle);
                 mSkipHeadingTest = 0;
                 mShotEffectHandle = 0;
             } else {
@@ -3524,8 +3524,8 @@ void BattleTarget::UpdateEffects() {
                 rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
-                SetEffectRotation(data_020d433c.mEffects, mShotEffectHandle, rot);
-                SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+                SetEffectRotation(gGameData.mEffects, mShotEffectHandle, rot);
+                SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             }
             break;
         }
@@ -3537,8 +3537,8 @@ void BattleTarget::UpdateEffects() {
             rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
             rot[0] = 0;
             rot[2] = 0;
-            SetEffectRotation(data_020d433c.mEffects, mShotEffectHandle, rot);
-            SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+            SetEffectRotation(gGameData.mEffects, mShotEffectHandle, rot);
+            SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             break;
         }
         case 5:
@@ -3547,15 +3547,15 @@ void BattleTarget::UpdateEffects() {
                 break;
             }
             VEC_Mag(&mVelocity);
-            SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+            SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             break;
         case 3:
             if (mShotEffectHandle == 0) {
                 break;
             }
-            SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+            SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             if (mShotSpKind != 3) {
-                FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+                FreeEffect(gGameData.mEffects, mShotEffectHandle);
                 mShotEffectHandle = 0;
             }
             break;
@@ -3564,15 +3564,15 @@ void BattleTarget::UpdateEffects() {
                 break;
             }
             fx32 mag = VEC_Mag(&mVelocity);
-            SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
+            SetEffectPosition(gGameData.mEffects, mShotEffectHandle, &mBakugan->mPosition);
             if ((float) mag <= 0.0f) {
-                FreeEffect(data_020d433c.mEffects, mShotEffectHandle);
+                FreeEffect(gGameData.mEffects, mShotEffectHandle);
                 mShotEffectHandle = 0;
             } else {
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
                 VecFx32 pos = mBakugan->mPosition;
                 MTX_SetTranslation43(&mtx, &pos);
-                SetEffectMatrix(data_020d433c.mEffects, mShotEffectHandle, &mtx);
+                SetEffectMatrix(gGameData.mEffects, mShotEffectHandle, &mtx);
             }
             break;
         }
@@ -3589,7 +3589,7 @@ void BattleTarget::UpdateEffects() {
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     MTX_SetTranslation43(&mtx, &pos);
-    SetEffectMatrix(data_020d433c.mEffects, mUnitHitEffectHandle, &mtx);
+    SetEffectMatrix(gGameData.mEffects, mUnitHitEffectHandle, &mtx);
 }
 
 void SetTargetVelocity(BattleTarget *target, VecFx32 *dir, int unk) {
@@ -3650,12 +3650,12 @@ void BattleTarget::DrawRecordTotal(u32 player, u32 record) {
     BattlePlayer *pl;
     BattleRecord *rec;
     if (player == 0xff) {
-        player = data_020d433c.mBattlePlayers->mTurnPlayer;
-        pl     = data_020d433c.mBattlePlayers->mPlayers[player];
+        player = gGameData.mBattlePlayers->mTurnPlayer;
+        pl     = gGameData.mBattlePlayers->mPlayers[player];
         RecordSlot e  = (RecordSlot) pl->mRecord;
         rec           = &pl->mRecords[e];
     } else {
-        pl  = data_020d433c.mBattlePlayers->mPlayers[player];
+        pl  = gGameData.mBattlePlayers->mPlayers[player];
         rec = &pl->mRecords[record];
     }
     u16 total         = rec->mUnk_04 + rec->mUnk_06;
@@ -3668,7 +3668,7 @@ void BattleTarget::DrawRecordTotal(u32 player, u32 record) {
         i++;
         total = total / 10;
     } while (i < 4);
-    if (data_020d433c.mBattlePlayers->mPlayers[player]->mAbilityId == 0) {
+    if (gGameData.mBattlePlayers->mPlayers[player]->mAbilityId == 0) {
         return;
     }
     mCellAnims[0]->Draw(0, 0xf2, 0xab, 1);
@@ -3708,7 +3708,7 @@ void BattleTarget::DrawBar() {
 void BattleTarget::DrawRoulette() {
     mCellAnims[4]->Update();
     mCellAnims[4]->Draw(1, 0x80, 0x62, 0);
-    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+    if (mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
         mCellAnims[5]->Update();
         mCellAnims[5]->Draw(1, 0x80, 0x62, 0);
     }
@@ -3733,13 +3733,13 @@ void BattleTarget::func_ov007_0225ce08() {
     screen.LoadCharacters("battle_shoot_b_gp.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("battle_shoot_b_gp_ncl.bin", 0x140, 0);
     ChangeDir("/");
-    mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+    mCommandMap = new BattleCommandMap(gGameData.mFieldId);
     mCommandMap->mUseStatusPanels = 0;
     mCommandMap->Init();
-    data_020d433c.mGimmicks->mState = 0;
+    gGameData.mGimmicks->mState = 0;
     mBakugan->SetupMode(BAKUGAN_MODEL_MODE_H_HOLD_FRAME);
     if (mUnitHandle != 0) {
-        BakuganModel *pose = data_020d433c.mBattlePlayers->mUnitModels->GetBakugan(mUnitHandle - 1);
+        BakuganModel *pose = gGameData.mBattlePlayers->mUnitModels->GetBakugan(mUnitHandle - 1);
         pose->mVisible            = 0;
     }
     UpdateCameraPosition(0);

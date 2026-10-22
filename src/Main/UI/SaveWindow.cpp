@@ -2,7 +2,7 @@
 #include "System/SaveManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/SaveWindow.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
@@ -122,7 +122,7 @@ void SaveWindow::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 break;
             }
-            gSaveData[0].mLanguage = data_020d433c.mLanguage;
+            gSaveData[0].mLanguage = gGameData.mLanguage;
             SaveManager::Get();
             new SaveWriter();
             mState++;

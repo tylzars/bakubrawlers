@@ -8,7 +8,7 @@
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -179,7 +179,7 @@ BattleCommand::BattleCommand(u32 unk)
     } else {
         mOffsetX = 4;
     }
-    u8 side = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mCorner;
+    u8 side = gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mLocalPlayer]->mCorner;
     if (side <= 1) {
         mFlipped = 0;
     } else {
@@ -187,21 +187,21 @@ BattleCommand::BattleCommand(u32 unk)
     }
     u8 i = 0;
     do {
-        u8 f = data_020d433c.mBattlePlayers->mPlayers[i]->mCorner;
+        u8 f = gGameData.mBattlePlayers->mPlayers[i]->mCorner;
         if (mFlipped) {
             f = (f + 2) % 4;
         }
         CommandItems()[i + 6].mX = mOffsetX + sCornerScreenPoints[f].mX;
         CommandItems()[i + 6].mY = sCornerScreenPoints[f].mY;
         i++;
-    } while (i < data_020d433c.mPlayerCount);
-    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mLocalPlayer) {
+    } while (i < gGameData.mPlayerCount);
+    if (gGameData.mBattlePlayers->mTurnPlayer != gGameData.mBattlePlayers->mLocalPlayer) {
         CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     } else {
-        if (data_020d433c.mBattlePlayers->mUnk_292 == 1) {
+        if (gGameData.mBattlePlayers->mUnk_292 == 1) {
             CommandItems()[1].mY      = 0xc0;
             CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
             CommandItems()[4].mY      = 0x22;
@@ -212,14 +212,14 @@ BattleCommand::BattleCommand(u32 unk)
             CommandItems()[4].mY      = 0xc0;
             CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         }
-        if (data_020d433c.mBattlePlayers->mAddMarkerEnabled != 0) {
+        if (gGameData.mBattlePlayers->mAddMarkerEnabled != 0) {
             CommandItems()[2].mUnk_04 = 1;
         } else {
             CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
             CommandItems()[5].mUnk_04 = WINDOW_ITEM_NO_RESULT;
         }
     }
-    if (data_020d433c.mUnk_9a_3) {
+    if (gGameData.mUnk_9a_3) {
         CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     }
@@ -257,15 +257,15 @@ BattleCommand::BattleCommand(u32 unk)
     } while (i < 4);
     mGridTouchX = 0;
     mGridTouchY = 0;
-    mPlayer = data_020d433c.mBattlePlayers->mTurnPlayer;
+    mPlayer = gGameData.mBattlePlayers->mTurnPlayer;
     mState = 0;
     mCursorX = sStartCursorPoints[side].mX;
     mCursorY = sStartCursorPoints[side].mY;
-    data_020d433c.mBattlePlayers->SetCursor(mCursorX, mCursorY);
+    gGameData.mBattlePlayers->SetCursor(mCursorX, mCursorY);
 
     InitGridMask();
-    if (data_020d433c.mBattlePlayers->mUnitModels) {
-        data_020d433c.mBattlePlayers->mUnitModels->mDrawMode = 0;
+    if (gGameData.mBattlePlayers->mUnitModels) {
+        gGameData.mBattlePlayers->mUnitModels->mDrawMode = 0;
     }
 }
 
@@ -332,11 +332,11 @@ BattleCommand::~BattleCommand() {
 void BattleCommand::Update() {
     switch (mState) {
         case 0: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             if (list->mTurnCount == 0) {
                 list->mTurnCount++;
-                if (data_020d433c.mGimmicks) {
-                    data_020d433c.mGimmicks->CountTurnAll();
+                if (gGameData.mGimmicks) {
+                    gGameData.mGimmicks->CountTurnAll();
                 }
             } else {
                 InitCommandMainScreen(this, 1);
@@ -356,7 +356,7 @@ void BattleCommand::Update() {
             mState++;
             return;
         case 2: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             if (list->mUnk_293 == 0) {
                 list->mUnk_293 = 1;
                 new BattleCardEffect(0, 10, 0x11, 1);
@@ -364,7 +364,7 @@ void BattleCommand::Update() {
             } else {
                 mContext->mRequest = 1;
             }
-            if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
+            if (gGameData.mBattlePlayers->mUnk_292 == 2) {
                 mState = 3;
                 return;
             }
@@ -388,24 +388,24 @@ void BattleCommand::Update() {
                 return;
             }
             u32 unk4 = 0;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             if (list->mUnk_292 == 2) {
                 u8 player = mPlayer;
                 u8 i = 0;
                 do {
                     BattleUnit *unit = &list->mUnits[i];
                     if (player == unit->mPlayer && unit->mUnk_12 != 0) {
-                        BattleUnit *u2 = &data_020d433c.mBattlePlayers->mUnits[i];
+                        BattleUnit *u2 = &gGameData.mBattlePlayers->mUnits[i];
                         u8 slot = u2->mRecord;
                         u8 marker = u2->mMarker;
-                        RemoveUnit(data_020d433c.mBattlePlayers, i, 2);
-                        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+                        RemoveUnit(gGameData.mBattlePlayers, i, 2);
+                        BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[mPlayer];
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;
                         p->mRecords[slot].mStatus = 0;
                         BattleRecord *rec = &p->mRecords[slot];
                         unk4 = GetTexVariant(rec->mBakuganId, rec->mAttribute);
-                        RemoveMarker(data_020d433c.mBattlePlayers, marker);
+                        RemoveMarker(gGameData.mBattlePlayers, marker);
                         break;
                     }
                     i++;
@@ -420,16 +420,16 @@ void BattleCommand::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
-                data_020d433c.mBattlePlayers->mUnk_292 = 0;
-                if (func_ov007_02263150(data_020d433c.mBattlePlayers)) {
+            if (gGameData.mBattlePlayers->mUnk_292 == 2) {
+                gGameData.mBattlePlayers->mUnk_292 = 0;
+                if (func_ov007_02263150(gGameData.mBattlePlayers)) {
                     mState = 0x37;
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     return;
                 }
                 u8 i = 0;
                 u8 found = 0;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 do {
                     if (list->mMarkers[i].mStatus != 0) {
                         found = 1;
@@ -465,17 +465,17 @@ void BattleCommand::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 cur                 = list->mLocalPlayer;
             if (list->mTurnPlayer == cur) {
-                if (data_020d433c.mTutorialId == 3 || data_020d433c.mTutorialId == 7) {
+                if (gGameData.mTutorialId == 3 || gGameData.mTutorialId == 7) {
                     list->mStorytalkWindow->LoadGraphics();
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
+                    gGameData.mBattlePlayers->mStorytalkWindow->SetMessage(gGameData.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                     mState++;
                     G2S_SetBlendBrightness(0x1f, -10);
                     return;
                 }
-                if (data_020d433c.mHasPartners != 0 && data_020d433c.mUnk_9a_3) {
+                if (gGameData.mHasPartners != 0 && gGameData.mUnk_9a_3) {
                     u8 i = 0;
                     u8 count = 0;
                     u8 need = list->mMarkerCount;
@@ -518,17 +518,17 @@ void BattleCommand::Update() {
 
         case 8: {
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
+                gGameData.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
-            if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
+            if (gGameData.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 return;
             }
             G2S_SetBlendBrightness(0x1f, 0);
-            data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
+            gGameData.mBattlePlayers->mStorytalkMessageIndex++;
             SetCommandMessage();
             mMessageWindow->UploadTextPalette();
             mCommandWindow->mEnabled = 1;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             if (mPlayer == list->mLocalPlayer) {
                 mState = 10;
                 return;
@@ -544,8 +544,8 @@ void BattleCommand::Update() {
         }
         case 9: {
             u8 i = 0;
-            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-            u8 count = data_020d433c.mSlotsPerPlayer;
+            BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[mPlayer];
+            u8 count = gGameData.mSlotsPerPlayer;
             do {
                 if (p->mSlots54[i].mFlag == 0) {
                     mPickIndex = i;
@@ -557,7 +557,7 @@ void BattleCommand::Update() {
             do {
                 u8 y = 0;
                 do {
-                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, x, y)) {
+                    if (IsMarkerPlaceable(gGameData.mBattlePlayers, x, y)) {
                         mCursorX = x;
                         mCursorY = y;
                         break;
@@ -568,7 +568,7 @@ void BattleCommand::Update() {
             } while (x < 14);
             u8 b                   = mCursorY;
             u8 a                   = mCursorX;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             list->mCursorX         = a;
             list->mCursorY         = b;
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
@@ -587,7 +587,7 @@ void BattleCommand::Update() {
                     ok = FALSE;
                 }
             }
-            if (data_020d433c.mTutorialNumber != 0) {
+            if (gGameData.mTutorialNumber != 0) {
                 ok = FALSE;
             }
             if (ok) {
@@ -637,11 +637,11 @@ void BattleCommand::Update() {
                         mNextMode = COMMAND_MODE_LIST;
                         break;
                     case 2: {
-                        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *list = gGameData.mBattlePlayers;
                         if (list->mAddMarkerEnabled != 0) {
                             u8 cur   = list->mLocalPlayer;
                             u8 i     = 0;
-                            u8 count = data_020d433c.mSlotsPerPlayer;
+                            u8 count = gGameData.mSlotsPerPlayer;
                             BattlePlayer *p = list->mPlayers[cur];
                             do {
                                 if (p->mSlots54[i].mFlag == 0) {
@@ -664,7 +664,7 @@ void BattleCommand::Update() {
                 }
             }
             u8 b                   = mCursorY;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 a                   = mCursorX;
             list->mCursorX         = a;
             list->mCursorY         = b;
@@ -673,7 +673,7 @@ void BattleCommand::Update() {
             return;
         }
         case 14: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             BattlePlayer *p        = list->mPlayers[list->mTurnPlayer];
             switch (p->mMsg.mType) {
                 case 7: {
@@ -689,7 +689,7 @@ void BattleCommand::Update() {
                     u8 b     = p->mMsg.mUnk_09;
                     mCursorY = b;
                     u8 a     = mCursorX;
-                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l = gGameData.mBattlePlayers;
                     l->mCursorX = a;
                     l->mCursorY = b;
                     mNextMode = COMMAND_MODE_NONE;
@@ -710,7 +710,7 @@ void BattleCommand::Update() {
                     CloseMode(0);
                     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                     {
-                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *l = gGameData.mBattlePlayers;
                         l->mPlayers[l->mTurnPlayer]->mRecord = p->mMsg.mUnk_0e;
                     }
                     mState = 0x35;
@@ -786,18 +786,18 @@ void BattleCommand::Update() {
             mCommandWindow->mButtons[5].mEnabled = 0;
             mCommandWindow->mButtons[4].mEnabled = 0;
             mUnk_11c                      = 0;
-            u8 r = data_020d433c.mBattlePlayers->Current()->mCpu->TryPickUnflaggedSlot54();
-            if (r == 0xff || data_020d433c.mBattlePlayers->mAddMarkerEnabled == 0) {
+            u8 r = gGameData.mBattlePlayers->Current()->mCpu->TryPickUnflaggedSlot54();
+            if (r == 0xff || gGameData.mBattlePlayers->mAddMarkerEnabled == 0) {
                 mState = 0x12;
                 return;
             }
             mPickIndex = r;
-            u8 v     = data_020d433c.mBattlePlayers->Current()->mCpu->PickMarkerCell();
+            u8 v     = gGameData.mBattlePlayers->Current()->mCpu->PickMarkerCell();
             u8 hi    = v >> 4;
             u8 lo    = v & 0xf;
             if (mGridMask[hi][lo] != 0) {
                 u8 b                   = mCursorY;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 u8 a                   = mCursorX;
                 list->mCursorX         = a;
                 list->mCursorY         = b;
@@ -838,7 +838,7 @@ void BattleCommand::Update() {
             mUnk_11c = 0;
             CloseMode(1);
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
-            if (data_020d433c.mBattlePlayers->mUnk_292 != 0) {
+            if (gGameData.mBattlePlayers->mUnk_292 != 0) {
                 mState = 0x15;
                 return;
             }
@@ -853,8 +853,8 @@ void BattleCommand::Update() {
             if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            u8 cur          = data_020d433c.mBattlePlayers->mTurnPlayer;
-            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[cur];
+            u8 cur          = gGameData.mBattlePlayers->mTurnPlayer;
+            BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[cur];
             u8 sel          = p->mCpu->PickRecord();
             func_ov007_022314bc(p->mCpu);
             BattleRecord *rec = &p->mRecords[sel];
@@ -878,15 +878,15 @@ void BattleCommand::Update() {
             return;
         case 21: {
             u8 i                   = 0;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u32 cur                 = list->mTurnPlayer;
             do {
                 if ((u8) cur == list->mUnits[i].mPlayer) {
                     list->mUnits[i].mUnk_12 = 1;
-                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l = gGameData.mBattlePlayers;
                     u8 idx              = l->mUnits[i].mMarker;
                     mCursorX            = l->mMarkers[idx].mCellX;
-                    mCursorY            = data_020d433c.mBattlePlayers->mMarkers[idx].mCellY;
+                    mCursorY            = gGameData.mBattlePlayers->mMarkers[idx].mCellY;
                     break;
                 }
                 i++;
@@ -936,7 +936,7 @@ void BattleCommand::Update() {
             }
             WindowItem *item = mCockpitWindow->mCursor->mItems;
             u8 flag          = 0;
-            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, mCursorX, mCursorY)) {
+            if (IsMarkerPlaceable(gGameData.mBattlePlayers, mCursorX, mCursorY)) {
                 item->mFlags = 5;
                 if (mReleasedOnCursorCell != 0) {
                     flag = 1;
@@ -966,7 +966,7 @@ void BattleCommand::Update() {
             }
             mMessageWindow->Update();
             u8 b                   = mCursorY;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 a                   = mCursorX;
             list->mCursorX         = a;
             list->mCursorY         = b;
@@ -989,7 +989,7 @@ void BattleCommand::Update() {
             mMessageWindow->Update();
             {
                 u8 b                   = mCursorY;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 u8 a                   = mCursorX;
                 list->mCursorX         = a;
                 list->mCursorY         = b;
@@ -1033,7 +1033,7 @@ void BattleCommand::Update() {
             if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            u8 cur = data_020d433c.mBattlePlayers->mTurnPlayer;
+            u8 cur = gGameData.mBattlePlayers->mTurnPlayer;
             new BattleCharaAct((Camera *) mCamera, cur, 1, 0, 0);
             mContext->mRequest = 0;
             GXS_SetVisibleWnd(0);
@@ -1050,13 +1050,13 @@ void BattleCommand::Update() {
             LoadCommandGraphics(mFlipped);
             LoadTurnGraphics();
             u8 b                   = mCursorY;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 a                   = mCursorX;
             list->mCursorX         = a;
             list->mCursorY         = b;
             SetupTimedF00gatModelAndCamera(mCommandMap);
             mUnk_12e = 1;
-            data_020d433c.mGimmicks->mState = 0;
+            gGameData.mGimmicks->mState = 0;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             return;
@@ -1079,13 +1079,13 @@ void BattleCommand::Update() {
             mBlendBrightness = 0;
             mAddMarkerFrames = 0;
             mState++;
-            AddMarker(data_020d433c.mBattlePlayers, mCursorX, mCursorY, mPlayer, mPickIndex);
+            AddMarker(gGameData.mBattlePlayers, mCursorX, mCursorY, mPlayer, mPickIndex);
             mUnk_130 = 1;
             SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
-            data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
+            gGameData.mBattlePlayers->mAddMarkerEnabled = 0;
             WindowItem *items = mCommandWindow->mCursor->mItems;
             items[2].mFlags   = WINDOW_ITEM_CURSOR_SKIP;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             if (list->mTurnPlayer != list->mLocalPlayer) {
                 items[5].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             } else {
@@ -1125,7 +1125,7 @@ void BattleCommand::Update() {
             mMessageWindow->UploadTextPalette();
             SetCommandMessage();
             mUnk_13a = 0;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u32 cur                 = list->mTurnPlayer;
             if (cur == list->mLocalPlayer) {
                 mState = 10;
@@ -1165,7 +1165,7 @@ void BattleCommand::Update() {
             CloseMode(1);
             SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             mPickIndex = GetLowByte(v);
-            data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecord = mPickIndex;
+            gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecord = mPickIndex;
             GXS_SetVisiblePlane(0x11);
             mState = 0x34;
             return;
@@ -1211,7 +1211,7 @@ void BattleCommand::Update() {
             }
             WindowItem *item       = mCockpitWindow->mCursor->mItems;
             u8 idx;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             s8 v                   = list->mUnitHandles[mCursorX][mCursorY];
             u8 flag                = 0;
             if (v > 0) {
@@ -1251,7 +1251,7 @@ void BattleCommand::Update() {
             mMessageWindow->Update();
             u8 b                = mCursorY;
             u8 a                = mCursorX;
-            BattlePlayerList *l = data_020d433c.mBattlePlayers;
+            BattlePlayerList *l = gGameData.mBattlePlayers;
             l->mCursorX         = a;
             l->mCursorY         = b;
             Draw();
@@ -1260,9 +1260,9 @@ void BattleCommand::Update() {
             do {
                 u8 x = 0;
                 do {
-                    s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
+                    s8 cell = gGameData.mBattlePlayers->mUnitHandles[y][x];
                     if (cell > 0) {
-                        BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *l2 = gGameData.mBattlePlayers;
                         if (l2->LocalPlayer() == l2->mUnits[(u8) (cell - 1)].mPlayer) {
                             if (mFlipped == 0) {
                                 mUnk_10->Draw(1, (s16) (mOffsetX + (y * 16 + 14 - mScrollX)), (s16) (x * 24 - 22 - mScrollY), 0);
@@ -1312,7 +1312,7 @@ void BattleCommand::Update() {
         case 45: {
             u8 b                   = mCursorY;
             u8 a                   = mCursorX;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             list->mCursorX         = a;
             list->mCursorY         = b;
             Draw();
@@ -1331,7 +1331,7 @@ void BattleCommand::Update() {
             if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (!SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 return;
             }
             mNextMode = COMMAND_MODE_MAP;
@@ -1340,7 +1340,7 @@ void BattleCommand::Update() {
             SetupMapCamera(mCommandMap, 2);
             mCommandMap->mUseStatusPanels = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
-            data_020d433c.mGimmicks->mState = 0;
+            gGameData.mGimmicks->mState = 0;
             new BattleCardEffect(0, 0xb, 0xe, 1);
             mContext->mRequest = 0;
             mState++;
@@ -1351,7 +1351,7 @@ void BattleCommand::Update() {
             }
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             CloseMode(0);
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             list->mUnits[(u8) (list->mUnitHandles[mCursorX][mCursorY] - 1)].mUnk_12 = 1;
             mState++;
             return;
@@ -1372,7 +1372,7 @@ void BattleCommand::Update() {
                     mState = 10;
                     return;
                 case 2:
-                    if (data_020d433c.mWireless != 0) {
+                    if (gGameData.mWireless != 0) {
                         WirelessManager::Get();
                         data_020c4030.mUnk_22a = WM_CALL_FAILED;
                         mState++;
@@ -1435,10 +1435,10 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
         sel = mCommandWindow->Update(1);
     }
     mUnk_13a = mCommandWindow->mUnk_0e0;
-    if (data_020d433c.mBattlePlayers->mAddMarkerEnabled == 0) {
+    if (gGameData.mBattlePlayers->mAddMarkerEnabled == 0) {
         mCommandWindow->mButtons[2].mEnabled = 0;
     }
-    if (data_020d433c.mUnk_9a_3) {
+    if (gGameData.mUnk_9a_3) {
         mCommandWindow->mButtons[2].mEnabled = 0;
         mCommandWindow->mButtons[5].mEnabled = 0;
     }
@@ -1452,7 +1452,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
                         mNextMode = COMMAND_MODE_PAGE;
                         break;
                     case COMMAND_MODE_PAGE:
-                        if (data_020d433c.mBattlePlayers->mUnitHandles[mCursorX][mCursorY] > 0) {
+                        if (gGameData.mBattlePlayers->mUnitHandles[mCursorX][mCursorY] > 0) {
                             mNextMode = COMMAND_MODE_LIST;
                         } else {
                             mNextMode = COMMAND_MODE_MAP;
@@ -1471,7 +1471,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
     Draw();
     u8 b                   = mCursorY;
     u8 a                   = mCursorX;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     list->mCursorX         = a;
     list->mCursorY         = b;
     if (mMode == COMMAND_MODE_MAP) {
@@ -1492,7 +1492,7 @@ BOOL BattleCommand::SwitchMode() {
                 SetupMapCamera(mCommandMap, 2);
                 break;
             case COMMAND_MODE_PAGE: {
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 s8 cell                = list->mMarkerHandles[mCursorX][mCursorY];
                 if (cell > 0) {
                     u8 owner  = list->mLocalPlayer;
@@ -1508,17 +1508,17 @@ BOOL BattleCommand::SwitchMode() {
                 break;
             }
             case COMMAND_MODE_LIST: {
-                BattleCellInfo *a = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
-                u16 sum           = a->mUnk_04 + GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_06;
-                u8 c              = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
-                u8 d              = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                BattleCellInfo *a = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY);
+                u16 sum           = a->mUnk_04 + GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY)->mUnk_06;
+                u8 c              = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
+                u8 d              = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
+                BattlePlayerList *list = gGameData.mBattlePlayers;
                 u8 slot                = list->mUnitHandles[mCursorX][mCursorY] - 1;
                 BattleUnit *unit       = &list->Units()[slot];
                 u8 playerIndex         = unit->mPlayer;
                 u8 recordIndex         = unit->mRecord;
                 SetCommandListBakugan(mCommandList, d, c, (s8) playerIndex);
-                SetCommandListValues(mCommandList, c, sum, (BattleCellPair *) &data_020d433c.mBattlePlayers->mPlayers[playerIndex]->mRecords[recordIndex]);
+                SetCommandListValues(mCommandList, c, sum, (BattleCellPair *) &gGameData.mBattlePlayers->mPlayers[playerIndex]->mRecords[recordIndex]);
                 break;
             }
         }
@@ -1660,7 +1660,7 @@ void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
     LoadAndQueueUpload(0, UPLOAD_KIND_OBJ, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(0, UPLOAD_KIND_OBJ_PLTT, 0, "battle_u_ncl.bin", 0, 0, 0);
-    mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+    mCommandMap = new BattleCommandMap(gGameData.mFieldId);
     mCommandMap->Init();
     CreateCursorModel(mCommandMap);
     SetupMapCamera(mCommandMap, 2);
@@ -1669,7 +1669,7 @@ void BattleCommand::func_ov007_0223a734() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     mCommandWindow->SetCells(10, sCommandCells);
-    for (i = data_020d433c.mPlayerCount; i < 4; i++) {
+    for (i = gGameData.mPlayerCount; i < 4; i++) {
         mCommandWindow->mButtons[i + 6].mEnabled = 0;
     }
     mCockpitWindow->SetCells(2, sCockpitCells);
@@ -1688,17 +1688,17 @@ void BattleCommand::func_ov007_0223a734() {
     mUnk_14 = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
     mUnk_14->mCharBase = screen.GetCharBase(0xa000);
     mUnk_14->mPaletteBase   = 0;
-    if (data_020d433c.mTutorialId) {
+    if (gGameData.mTutorialId) {
         mTutorialCellAnim = new CellAnimation("battle_b_obj_00_nce.bin", 0x45, 1, 1);
         mTutorialCellAnim->mCharBase = screen.GetCharBase(0xa000);
         mTutorialCellAnim->mPaletteBase   = 0;
     }
-    u8 cur = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u8 cur = gGameData.mBattlePlayers->mLocalPlayer;
     mLocalPlayerCellAnim = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (cur + 0x38), 1, 1);
     mLocalPlayerCellAnim->mCharBase = screen.GetCharBase(0xa000);
     mLocalPlayerCellAnim->mPaletteBase   = 0;
-    if (data_020d433c.mHasPartners) {
-        u8 partner = data_020d433c.mBattlePlayers->mPlayers[cur]->mPartner;
+    if (gGameData.mHasPartners) {
+        u8 partner = gGameData.mBattlePlayers->mPlayers[cur]->mPartner;
         mPartnerCellAnim = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (partner + 0x40), 1, 1);
         mPartnerCellAnim->mCharBase = screen.GetCharBase(0xa000);
         mPartnerCellAnim->mPaletteBase   = 0;
@@ -1711,7 +1711,7 @@ void BattleCommand::func_ov007_0223a734() {
     mTurnDigitsCellAnim->mPaletteBase   = 9;
     u8 p = 0;
     do {
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         if (mFlipped == 0) {
             u8 frame   = list->mPlayers[p]->mCorner + (p * 4 + 0x28);
             mPlayerCellAnims[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
@@ -1722,7 +1722,7 @@ void BattleCommand::func_ov007_0223a734() {
         mPlayerCellAnims[p]->mCharBase = screen.GetCharBase(0xa000);
         mPlayerCellAnims[p]->mPaletteBase   = 0;
         p++;
-    } while (p < data_020d433c.mPlayerCount);
+    } while (p < gGameData.mPlayerCount);
     ChangeDir("/");
     mMessageWindow = new MessageWindow("mes_Command", 1, 0x1f000);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
@@ -1737,21 +1737,21 @@ void LoadCommandGraphics(u32 variant) {
     MI_CpuClearFast((void *) 0x6609000, 0x1000);
     reg_GX_POWCNT |= 0x8000;
     ChangeDir("/Game/Battle/Bg");
-    if (data_020d433c.mLastBattle != 0) {
-        sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mFieldId);
+    if (gGameData.mLastBattle != 0) {
+        sprintf(path, "battle_b_bg_last_ncl.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_last_ncg.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_last_a_nsc.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_last_b_nsc.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x800, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_last_c_nsc.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_last_d_nsc.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1800, path, 0, 0, 0);
     } else {
-        switch (data_020d433c.mFieldId) {
+        switch (gGameData.mFieldId) {
             case 1:
             case 2:
             case 3:
@@ -1759,17 +1759,17 @@ void LoadCommandGraphics(u32 variant) {
                 variant = 0;
                 break;
         }
-        sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_%02d_ncl.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mFieldId);
+        sprintf(path, "battle_b_bg_%02d_ncg.bin", gGameData.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mFieldId, variant);
+        sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", gGameData.mFieldId, variant);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mFieldId, variant);
+        sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", gGameData.mFieldId, variant);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x800, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mFieldId, variant);
+        sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", gGameData.mFieldId, variant);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mFieldId, variant);
+        sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", gGameData.mFieldId, variant);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0x1800, path, 0, 0, 0);
     }
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
@@ -1784,8 +1784,8 @@ void LoadCommandGraphics(u32 variant) {
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0, "card_s_000_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->SetupLayout(8);
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->SetupLayout(8);
     }
     ChangeDir("/");
 }
@@ -1824,17 +1824,17 @@ void BattleCommand::Draw() {
                 x = 13 - i;
             }
             BOOL show;
-            s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[i][j];
+            s8 cell = gGameData.mBattlePlayers->mUnitHandles[i][j];
             if (cell > 0) {
-                GetUnitRecordAt(data_020d433c.mBattlePlayers, i, j);
-                mUnitCellAnims[k]->DrawFrame(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer, (s16) (x * 16 + 14 - mScrollX + mOffsetX), (s16) (y * 24 - 22 - mScrollY), 1);
+                GetUnitRecordAt(gGameData.mBattlePlayers, i, j);
+                mUnitCellAnims[k]->DrawFrame(1, gGameData.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer, (s16) (x * 16 + 14 - mScrollX + mOffsetX), (s16) (y * 24 - 22 - mScrollY), 1);
                 k++;
             }
-            s8 mark = data_020d433c.mBattlePlayers->mMarkerHandles[i][j];
+            s8 mark = gGameData.mBattlePlayers->mMarkerHandles[i][j];
             if (mark > 0) {
-                u8 who    = data_020d433c.mBattlePlayers->mMarkers[(u8) (mark - 1)].mPlayer;
+                u8 who    = gGameData.mBattlePlayers->mMarkers[(u8) (mark - 1)].mPlayer;
                 show      = TRUE;
-                if (data_020d433c.mBattlePlayers->mLocalPlayer == who) {
+                if (gGameData.mBattlePlayers->mLocalPlayer == who) {
                     if (!(GameSystem::Get().mFrame & 0x20)) {
                         show = FALSE;
                     }
@@ -1849,15 +1849,15 @@ void BattleCommand::Draw() {
     } while (i < 14);
     u8 p = 0;
     do {
-        u8 side = data_020d433c.mBattlePlayers->mPlayers[p]->mCorner;
+        u8 side = gGameData.mBattlePlayers->mPlayers[p]->mCorner;
         if (mFlipped) {
             side = (side + 2) % 4;
         }
-        if (p == data_020d433c.mBattlePlayers->mLocalPlayer) {
+        if (p == gGameData.mBattlePlayers->mLocalPlayer) {
             mLocalPlayerCellAnim->Update();
             mLocalPlayerCellAnim->Draw(1, (s16) (mOffsetX + sCornerScreenPoints[side].mX), sCornerScreenPoints[side].mY, 0);
-            if (data_020d433c.mHasPartners) {
-                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mPartner]->mCorner;
+            if (gGameData.mHasPartners) {
+                u8 partner = gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mPlayers[p]->mPartner]->mCorner;
                 if (mFlipped) {
                     partner = (partner + 2) % 4;
                 }
@@ -1868,8 +1868,8 @@ void BattleCommand::Draw() {
         mPlayerCellAnims[p]->Update();
         mPlayerCellAnims[p]->Draw(1, (s16) (mOffsetX + sCornerScreenPoints[side].mX), sCornerScreenPoints[side].mY, 0);
         p++;
-    } while (p < data_020d433c.mPlayerCount);
-    if (data_020d433c.mTutorialId && mCommandWindow->mState == 1) {
+    } while (p < gGameData.mPlayerCount);
+    if (gGameData.mTutorialId && mCommandWindow->mState == 1) {
         mTutorialCellAnim->Update();
         mTutorialCellAnim->Draw(1, sCommandItemX[gSaveData[0].mCommandItemXIndex], 0x22, 0);
     }
@@ -1901,7 +1901,7 @@ void BattleCommand::func_ov007_0223b874() {
             do {
                 u8 col = 0;
                 do {
-                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
+                    if (IsMarkerPlaceable(gGameData.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
                         mUnk_10->Draw(1, (s16) (mOffsetX + ((row * 16 + 14) - mScrollX)), (s16) ((col * 24 - 22) - mScrollY), 1);
                     }
                     col++;
@@ -1913,7 +1913,7 @@ void BattleCommand::func_ov007_0223b874() {
             do {
                 u8 col = 0;
                 do {
-                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
+                    if (IsMarkerPlaceable(gGameData.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
                         u8 r = 13 - row;
                         u8 c = 9 - col;
                         mUnk_10->Draw(1, (s16) (mOffsetX + ((r * 16 + 14) - mScrollX)), (s16) ((c * 24 - 22) - mScrollY), 1);
@@ -2021,8 +2021,8 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
     s32 tx = TouchManager::Get().mX;
     s32 ty = TouchManager::Get().mY;
     if (mUnk_13a == 0) {
-        u8 field = data_020d433c.mFieldId;
-        if (data_020d433c.mLastBattle != 0) {
+        u8 field = gGameData.mFieldId;
+        if (gGameData.mLastBattle != 0) {
             field = 0;
         }
         s32 off = 0;
@@ -2123,7 +2123,7 @@ void BattleCommand::RefreshCommandPageOrList() {
         case COMMAND_MODE_MAP:
             return;
         case COMMAND_MODE_PAGE: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             s8 cell                = list->mMarkerHandles[mCursorX][mCursorY];
             u8 owner               = list->mLocalPlayer;
             if (cell > 0) {
@@ -2146,18 +2146,18 @@ void BattleCommand::RefreshCommandPageOrList() {
             u8 a;
             s8 cell;
             a    = mCursorX;
-            list = data_020d433c.mBattlePlayers;
+            list = gGameData.mBattlePlayers;
             b    = mCursorY;
             cell = list->CellAt(a, b);
             if (cell > 0) {
                 BattleCellInfo *info = GetUnitRecordAt(list, a, b);
                 u16 sum              = info->mUnk_04 + GetUnitRecordAt(list, a, b)->mUnk_06;
-                u8 c                 = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
-                u32 d                = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
-                BattleCellInfo *e    = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
+                u8 c                 = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
+                u32 d                = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
+                BattleCellInfo *e    = GetUnitRecordAt(gGameData.mBattlePlayers, mCursorX, mCursorY);
                 BattleCellPair pair = *(BattleCellPair *) e;
                 if (mCommandList) {
-                    SetCommandListBakugan(mCommandList, d, c, (s8) data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer);
+                    SetCommandListBakugan(mCommandList, d, c, (s8) gGameData.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer);
                     SetCommandListValues(mCommandList, c, sum, &pair);
                 }
             } else {
@@ -2220,7 +2220,7 @@ void BattleCommand::OpenNextMode(u32 flag) {
     InitCommandMainScreen(this, 0);
     switch (mNextMode) {
         case COMMAND_MODE_MAP:
-            mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+            mCommandMap = new BattleCommandMap(gGameData.mFieldId);
             mCommandMap->Init();
             SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             break;
@@ -2238,9 +2238,9 @@ void BattleCommand::OpenNextMode(u32 flag) {
     mNextMode = COMMAND_MODE_NONE;
 }
 
-// Marks the cells of the battle grid that exist on the current field (by data_020d433c.mFieldId).
+// Marks the cells of the battle grid that exist on the current field (by gGameData.mFieldId).
 void BattleCommand::InitGridMask() {
-    if (data_020d433c.mLastBattle != 0) {
+    if (gGameData.mLastBattle != 0) {
         MI_CpuFill8(mGridMask, 0, 0x8c);
         mGridMask[6][4] = 1;
         return;
@@ -2248,7 +2248,7 @@ void BattleCommand::InitGridMask() {
     MI_CpuFill8(mGridMask, 1, 0x8c);
     u8 row;
     u8 col;
-    switch (data_020d433c.mFieldId) {
+    switch (gGameData.mFieldId) {
         case 2: {
             row = 0;
             do {
@@ -2346,7 +2346,7 @@ void BattleCommand::InitGridMask() {
 }
 
 void BattleCommand::SetCommandMessage() {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     if (list->mTurnPlayer == list->mLocalPlayer) {
         if (list->mUnk_292 == 1) {
             mMessageWindow->StartMessage(0x20, 0, 1);
@@ -2359,8 +2359,8 @@ void BattleCommand::SetCommandMessage() {
 }
 
 void BattleCommand::DrawTurnCount() {
-    u16 turn = (u16) (data_020d433c.mBattlePlayers->mTurnCount - 1);
-    u16 count = (u16) (turn / data_020d433c.mPlayerCount + 1);
+    u16 turn = (u16) (gGameData.mBattlePlayers->mTurnCount - 1);
+    u16 count = (u16) (turn / gGameData.mPlayerCount + 1);
     if (count > 99) {
         count = 99;
     }

@@ -113,17 +113,17 @@ struct BattlePlayer : public SceneBase {
     /* ec */ u8 mShotSpeed;
     /* ed */ u8 mNameLength; // length in bytes of the name at +b0 (NameText)
     /* ee */ u8 mUnk_ee; // raised by BattlePlayerList, BattleCommand and BattleConfrontCard; func_ov007_02263150 tests
-                         // it (plus the partner's) >= 3, BattleResult against data_020d433c.mSlotsPerPlayer
+                         // it (plus the partner's) >= 3, BattleResult against gGameData.mSlotsPerPlayer
     /* ef */ u8 mState; // Update's case 3 never runs: nothing writes 3
     /* f0 */ u8 mIndex;
     /* f1 */ u8 mCorner;
-    /* f2 */ u8 mPartner; // equals mIndex while data_020d433c.mHasPartners is 0
+    /* f2 */ u8 mPartner; // equals mIndex while gGameData.mHasPartners is 0
     /* f3 */ u8 mSpGauge;
     /* f4 */ u8 mHistoryCount;
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mCharacterId;
-    /* f7 */ u8 mCharacterLevel; // 0..2, copied from data_020d433c.mCharacterLevels; see there
-    /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mSlotsPerPlayer) with mFlag 0; also read raw at +0xf8 (BattleAbility)
+    /* f7 */ u8 mCharacterLevel; // 0..2, copied from gGameData.mCharacterLevels; see there
+    /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first gGameData.mSlotsPerPlayer) with mFlag 0; also read raw at +0xf8 (BattleAbility)
     /* f9 */ u8 mSlots6cRemaining; // the same for mSlots6c
     /* fa */ u16 mAbilityId; // also the message id BattleShoot shows
     /* fc */ u8 mFieldPowerSHitCount;
@@ -214,7 +214,7 @@ struct BattleMarker {
     /* 6 */ PAD(6, 8);
 };
 
-// The battle scene itself (0x2b4 bytes, vtable 02289e78, constructor 0225fd5c); data_020d433c.mBattlePlayers points to it.
+// The battle scene itself (0x2b4 bytes, vtable 02289e78, constructor 0225fd5c); gGameData.mBattlePlayers points to it.
 struct BattlePlayerList : public SceneBase {
     /* 000 SceneBase */
     /* 00c */ BattlePlayer *mPlayers[4];
@@ -242,7 +242,7 @@ struct BattlePlayerList : public SceneBase {
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ StorytalkWindow *mStorytalkWindow;
     /* 2a8 */ u8 mState;
-    /* 2a9 */ u8 mLocalPlayer; // player index: data_020d433c.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
+    /* 2a9 */ u8 mLocalPlayer; // player index: gGameData.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
     /* 2aa */ u8 mTexVariant;
     /* 2ab */ u8 mSecondTexVariant;
     /* 2ac */ u8 mAbilityRequest;
@@ -323,7 +323,9 @@ struct GimmickCollision : public SceneBase {
     BOOL TestObstacles(BattleObstacle *a, BattleObstacle *b); // 0 for type 0 against a non-zero type and for a first type >= 2
 };
 
-struct UnkStruct_020d433c {
+// Runtime game state (0xb4 bytes): cleared whole by func_02022b0c; never copied to the card (FileLoader copies
+// gSaveData only).
+struct GameData {
     /* 00 */ BattlePlayerList *mBattlePlayers;
     /* 04 */ EffectManager *mEffects;
     /* 08 */ GimmickManager *mGimmicks;
@@ -409,4 +411,4 @@ struct UnkStruct_020d433c {
     /* af */
 };
 
-extern UnkStruct_020d433c data_020d433c;
+extern GameData gGameData;

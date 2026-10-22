@@ -2,7 +2,7 @@
 #include "Battle/BattleCharaAct.hpp"
 
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/BattleCardSpec.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -106,8 +106,8 @@ BattleBase::BattleBase()
     mSide1FirstPlayer = mSide1SecondPlayer = -1;
     mUnk_52[0] = mUnk_52[1] = 0;
     mHelpers[0] = mHelpers[1] = 0;
-    if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
-        mMultiplierIndex = data_020d433c.mFieldId - 1;
+    if (gGameData.mFieldId != 0 && gGameData.mFieldId != 7) {
+        mMultiplierIndex = gGameData.mFieldId - 1;
     }
 }
 
@@ -127,7 +127,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     mBattleData = data;
     mParam = &gBattleParams[mode];
     mMode = mode;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 sel = list->mLocalPlayer;
     BattleEntry *entries = data->mEntries;
     u8 first = entries[0].mPlayer;
@@ -136,15 +136,15 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     } else if (sel == entries[1].mPlayer) {
         mLocalSide = 1;
     } else {
-        if (data_020d433c.mHasPartners != 0) {
+        if (gGameData.mHasPartners != 0) {
             if (sel == list->mPlayers[first]->mPartner) {
                 mLocalSide = 3;
-                if (data_020d433c.mScriptMode != 0) {
+                if (gGameData.mScriptMode != 0) {
                     mRateFloorSide = 0;
                 }
             } else {
                 mLocalSide = 4;
-                if (data_020d433c.mScriptMode != 0) {
+                if (gGameData.mScriptMode != 0) {
                     mRateFloorSide = 1;
                 }
             }
@@ -153,17 +153,17 @@ void BattleBase::Init(BattleData *data, u32 mode) {
         }
         mMode = BATTLE_MODE_SPECTATOR;
     }
-    if (data_020d433c.mPlayerCount == 3) {
+    if (gGameData.mPlayerCount == 3) {
         mSidePlayerValue = 30;
-    } else if (data_020d433c.mPlayerCount == 4) {
+    } else if (gGameData.mPlayerCount == 4) {
         mSidePlayerValue = 15;
     }
     u8 order[2] = {0, 0};
     u8 count = 0;
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
-            BattleSlot *slot = new BattleSlot(data, i, mode, data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId,
+        if (gGameData.mBattlePlayers->mPlayers[i]->IsCpu()) {
+            BattleSlot *slot = new BattleSlot(data, i, mode, gGameData.mBattlePlayers->mPlayers[i]->mCharacterId,
                                               entries[0].mPlayer, entries[1].mPlayer, mParam, mSidePlayerValue);
             mSlots[i] = slot;
             if (slot->mRole == 2 || slot->mRole == 3) {
@@ -171,13 +171,13 @@ void BattleBase::Init(BattleData *data, u32 mode) {
             }
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
-    if (data_020d433c.mUnk_9a_2) {
+    } while (i < gGameData.mPlayerCount);
+    if (gGameData.mUnk_9a_2) {
         u8 j = 0;
         do {
             u8 nib = entries[j].mPlayer;
-            if (!data_020d433c.mBattlePlayers->mPlayers[nib]->IsCpu()) {
-                mHelpers[j] = new BattleSideHelper(j, data_020d433c.mBattlePlayers->mPlayers[nib]->mCharacterId, entries);
+            if (!gGameData.mBattlePlayers->mPlayers[nib]->IsCpu()) {
+                mHelpers[j] = new BattleSideHelper(j, gGameData.mBattlePlayers->mPlayers[nib]->mCharacterId, entries);
             }
             j++;
         } while (j < 2);
@@ -190,8 +190,8 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     mHud = new BattleHud(data, mParam, mLocalSide, (s8 *) &mSide0FirstPlayer);
     mSub48 = new BattleSub48(data, mLocalSide);
     mField3D = new BattleField3D(data, 0);
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->SetupLayout(0xb);
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->SetupLayout(0xb);
     }
 }
 
@@ -340,11 +340,11 @@ void BattleBase::Update() {
                             } else {
                                 u8 j = 0;
                                 do {
-                                    if (data_020d433c.mBattlePlayers->mPlayers[j]->IsCpu()) {
+                                    if (gGameData.mBattlePlayers->mPlayers[j]->IsCpu()) {
                                         mSlots[j]->StartCardDelay(mCardSide);
                                     }
                                     j++;
-                                } while (j < data_020d433c.mPlayerCount);
+                                } while (j < gGameData.mPlayerCount);
                             }
                             func_ov007_0223e214(mBattleData, mCardSide, 1);
                             SetHudSequence(mHud, HUD_SEQUENCE_COUNTDOWN);
@@ -368,7 +368,7 @@ void BattleBase::Update() {
             }
             break;
         case 10:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
@@ -379,7 +379,7 @@ void BattleBase::Update() {
             }
             break;
         case 12:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 SoundManager::Get().StartSeqArc(0x32);
                 SpriteManager::Get().StartFade(FADE_MODE_UP);
                 mState++;
@@ -442,7 +442,7 @@ void BattleBase::SetupCardSequence() {
     mCardId = entries[mCardSide].mCardId;
     mCardKind = GetCardInfo(entries[mCardSide].mCardId, 3);
     mUnk_2a = 0;
-    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mPlayer], entries[mCardSide].mSlot6cIndex, 2);
+    SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[entries[mCardSide].mPlayer], entries[mCardSide].mSlot6cIndex, 2);
     BattleBase::InitSubScreen();
     mSkipDraw = 1;
     if (!mReturnPending) {
@@ -463,7 +463,7 @@ void BattleBase::SetupCardSequence() {
 }
 
 static inline Camera *GetCam() {
-    return data_020d433c.mBattlePlayers->mCamera;
+    return gGameData.mBattlePlayers->mCamera;
 }
 BOOL BattleBase::UpdateCardSequence() {
     BattleEntry *entries = mBattleData->mEntries;
@@ -485,7 +485,7 @@ BOOL BattleBase::UpdateCardSequence() {
             mCardStep++;
             break;
         case 2:
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 InitMainScreen();
                 new BattleCharaAct(GetCam(), entries[mCardSide].mPlayer, 6, (GetCardNumber(mCardId) - 0x190) / 100, 0);
                 mCardStep++;
@@ -641,7 +641,7 @@ BOOL BattleBase::UpdateCardSequence() {
                 mCardId   = entries[other & 0xff].mCardId;
                 mPrevCardKind   = mCardKind;
                 mCardKind   = GetCardInfo(entries[mCardSide].mCardId, 3);
-                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mPlayer], entries[mCardSide].mSlot6cIndex, 2);
+                SetSlot6cFlag(gGameData.mBattlePlayers->mPlayers[entries[mCardSide].mPlayer], entries[mCardSide].mSlot6cIndex, 2);
                 mHud->mUnk_118[mCardSide] = 0;
                 mCardStep                    = 2;
             }
@@ -950,7 +950,7 @@ BOOL BattleBase::func_ov007_0221bd84() {
     BOOL done = 0;
     switch (mStep) {
     case 0:
-        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+        if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
             StartAbilitiesSlide(mSub48);
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mStep++;
@@ -980,7 +980,7 @@ BOOL BattleBase::func_ov007_0221bd84() {
         }
         break;
     case 4:
-        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x10)) {
+        if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0x10)) {
             mStep = 0;
             done = 1;
         }
@@ -1019,7 +1019,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
         }
         break;
     case 4:
-        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+        if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
             done = 1;
         }
         break;
@@ -1028,7 +1028,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
 }
 
 int BattleBase::UpdateLocalPlayer(u16 *a, u16 *b, u16 *c, u8 *flag) {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     int result             = -1;
     u8 side                = list->mLocalPlayer;
     BattleEntry *entries   = mBattleData->mEntries;
@@ -1051,7 +1051,7 @@ int BattleBase::UpdateLocalPlayer(u16 *a, u16 *b, u16 *c, u8 *flag) {
                 }
             }
         } else {
-            if (data_020d433c.mUnk_9a_2) {
+            if (gGameData.mUnk_9a_2) {
                 WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                     if (mHelpers[mLocalSide]->RollForCard(mLocalSide, mHud->mPushPercent)) {
@@ -1166,13 +1166,13 @@ int BattleBase::UpdateLocalPlayer(u16 *a, u16 *b, u16 *c, u8 *flag) {
 int BattleBase::UpdateSlots(u16 *a, u16 *b, u16 *c, u8 *d) {
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
+        if (gGameData.mBattlePlayers->mPlayers[i]->IsCpu()) {
             if (mSlots[i]->Update(a, b, c, (s8 (*)[2]) &mSide0FirstPlayer, mHud->mPushPercent, d) != -1) {
                 break;
             }
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     return -1;
 }
 
@@ -1192,7 +1192,7 @@ void BattleBase::UpdatePush() {
     s32 sums[2] = {0, 0};
     u16 c[2] = {0, 0};
     u8 flag = 0;
-    u32 sel = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u32 sel = gGameData.mBattlePlayers->mLocalPlayer;
     mSide0SecondPlayer = -1;
     mSide0FirstPlayer = mSide0SecondPlayer;
     mSide1SecondPlayer = -1;
@@ -1264,7 +1264,7 @@ void BattleBase::UpdatePush() {
     if (!IsWirelessMode(mode)) {
         UpdateSlots(a, b, c, &flag);
         u8 i = 0;
-        u8 count = data_020d433c.mPlayerCount;
+        u8 count = gGameData.mPlayerCount;
         do {
             sums[0] += a[i];
             sums[1] += b[i];
@@ -1311,7 +1311,7 @@ void BattleBase::func_ov007_0221cebc(int a) {
 }
 
 void BattleBase::RollHelpersForCard(u16 *a, u16 *b, u16 *c) {
-    if (!data_020d433c.mUnk_9a_2) {
+    if (!gGameData.mUnk_9a_2) {
         return;
     }
     u8 i = 0;
@@ -1366,11 +1366,11 @@ void BattleBase::ApplySidePlayersFromMessages(u16 *a, u16 *b) {
             }
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
 }
 
 void BattleBase::PushSideFromMessages(u8 a, u16 *counts) {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 sel = list->mLocalPlayer;
     u16 hi[4] = {0, 0, 0, 0};
     u8 i = 0;
@@ -1378,7 +1378,7 @@ void BattleBase::PushSideFromMessages(u8 a, u16 *counts) {
         hi[i] = counts[i] >> 8;
         counts[i] &= 0xff;
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     u8 k;
     i = 0;
     do {
@@ -1387,20 +1387,20 @@ void BattleBase::PushSideFromMessages(u8 a, u16 *counts) {
             do {
                 if (sel == i) {
                     mHud->StartObject(a, TouchManager::Get().mX, TouchManager::Get().mY, mMode);
-                } else if (!data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
+                } else if (!gGameData.mBattlePlayers->mPlayers[i]->IsCpu()) {
                     BattleRand32(0xffff);
                 }
                 k++;
             } while (k < hi[i]);
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     s32 total = 0;
     i = 0;
     do {
         total += counts[i];
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     if (total != 0) {
         s32 v = 0x1000;
         BattleEntry *entries = mBattleData->mEntries;

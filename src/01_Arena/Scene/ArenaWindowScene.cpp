@@ -4,7 +4,7 @@
 
 extern void SeedRandomFromTick();
 #include "Scene/ArenaWindowScene.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
@@ -38,7 +38,7 @@ ArenaWindowScene::ArenaWindowScene() : SceneBase(1000, 0) {
     mTextBufferSize = 0;
     mGlyphCount = 0;
     mState = 0;
-    data_020d433c.mScriptMode = 0;
+    gGameData.mScriptMode = 0;
 }
 
 ArenaWindowScene::~ArenaWindowScene() {
@@ -61,7 +61,7 @@ void ArenaWindowScene::Update() {
         case 0: {
             InitDisplay();
             BOOL done = FALSE;
-            if (data_020d433c.mWireless != 0) {
+            if (gGameData.mWireless != 0) {
                 WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                     mState = 5;
@@ -69,9 +69,9 @@ void ArenaWindowScene::Update() {
                 }
             }
             if (!done) {
-                if (data_020d433c.mUnk_88_4 != 0) {
+                if (gGameData.mUnk_88_4 != 0) {
                     done = TRUE;
-                    if (data_020d433c.mUnk_87 != 0) {
+                    if (gGameData.mUnk_87 != 0) {
                         mState = 0xa;
                     } else {
                         mState = 0x10;
@@ -79,13 +79,13 @@ void ArenaWindowScene::Update() {
                 }
             }
             if (!done) {
-                if (data_020d433c.mUnk_88_0 != 0 && data_020d433c.mUnk_87 != 0) {
+                if (gGameData.mUnk_88_0 != 0 && gGameData.mUnk_87 != 0) {
                     mState = 0xa;
                     done    = TRUE;
                 }
             }
             if (!done) {
-                if (data_020d433c.mUnk_89 != 0) {
+                if (gGameData.mUnk_89 != 0) {
                     mState = 3;
                 } else {
                     mState++;
@@ -111,7 +111,7 @@ void ArenaWindowScene::Update() {
                 mState = 0x10;
                 return;
             }
-            data_020d433c.mUnk_87 = 0;
+            gGameData.mUnk_87 = 0;
             mState++;
             break;
         }
@@ -130,9 +130,9 @@ void ArenaWindowScene::Update() {
                     mState = 0xe;
                     break;
                 case 2:
-                    if (data_020d433c.mWireless != 0) {
+                    if (gGameData.mWireless != 0) {
                         mState = 5;
-                    } else if (data_020d433c.mUnk_87 != 0) {
+                    } else if (gGameData.mUnk_87 != 0) {
                         mState = 0xa;
                     } else {
                         mState = 1;
@@ -158,7 +158,7 @@ void ArenaWindowScene::Update() {
             if (data_020c4030.mUnk_228 != 0) {
                 return;
             }
-            data_020d433c.mWireless = 0;
+            gGameData.mWireless = 0;
             mWindow->mEnabled       = 1;
             mState++;
             break;
@@ -178,11 +178,11 @@ void ArenaWindowScene::Update() {
             break;
         case 9:
             SeedRandomFromTick();
-            if (data_020d433c.mUnk_87 != 0) {
+            if (gGameData.mUnk_87 != 0) {
                 mState = 0xa;
                 return;
             }
-            if (data_020d433c.mUnk_88_4 != 0) {
+            if (gGameData.mUnk_88_4 != 0) {
                 mState = 0x10;
             } else {
                 mState = 1;
@@ -199,8 +199,8 @@ void ArenaWindowScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest     = 0;
-            data_020d433c.mUnk_87 = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mUnk_87 = 0;
+            gGameData.mSaveDirty = 0;
             mState++;
             break;
         case 12:
@@ -215,7 +215,7 @@ void ArenaWindowScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            if (data_020d433c.mUnk_88_4 != 0) {
+            if (gGameData.mUnk_88_4 != 0) {
                 mState = 0x10;
             } else {
                 mState = 1;
@@ -229,7 +229,7 @@ void ArenaWindowScene::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 return;
             }
-            data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
+            gGameData.mNextScene = SCENE_ARENA_WINDOW;
             RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = 1;
             break;

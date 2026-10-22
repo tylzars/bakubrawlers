@@ -2,7 +2,7 @@
 #include "Unknown/UnkStruct_02071d24.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Game/SaveData.hpp"
@@ -613,7 +613,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mTextKind = LIST_TEXT_KIND_NONE;
     mPrice = 0;
     MI_CpuClear16(&mAlphabetChar, 2);
-    mFirstSlotOnly = data_020d433c.mLastBattle;
+    mFirstSlotOnly = gGameData.mLastBattle;
 }
 
 ListScene::~ListScene() {
@@ -664,7 +664,7 @@ ListScene::~ListScene() {
         }
     }
     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-    if (data_020d433c.mWireless != 0) {
+    if (gGameData.mWireless != 0) {
         mAntenna->mFinished = 1;
     }
     delete mMessageWindow;
@@ -728,7 +728,7 @@ void ListScene::Release(u32 releaseCommands) {
             mGlyphBuffers[i] = NULL;
         }
     }
-    if (data_020d433c.mWireless != 0) {
+    if (gGameData.mWireless != 0) {
         mAntenna->mFinished = 1;
     }
     delete mMessageWindow;
@@ -790,7 +790,7 @@ void ListScene::Update() {
             mDirtyFlags[1]          = one;
             mDirtyFlags[2]          = one;
             RefreshCommandList();
-            data_020d433c.mFlags |= 2;
+            gGameData.mFlags |= 2;
         } else {
             mSlotValues[mPage - 1] = mItemIds[mCursorItem];
             mSelectingPage              = one;
@@ -800,7 +800,7 @@ void ListScene::Update() {
             mDirtyFlags[1]          = one;
             mDirtyFlags[2]          = one;
             RefreshCommandPage();
-            data_020d433c.mFlags |= 2;
+            gGameData.mFlags |= 2;
         }
     }
     if (mMoveY > 0) {
@@ -898,7 +898,7 @@ void ListScene::Update() {
                         break;
                     case LIST_TEXT_KIND_PICK_SLOTS:
                         PickSlots(this);
-                        data_020d433c.mFlags |= 2;
+                        gGameData.mFlags |= 2;
                         SetupListTextKind(this, LIST_TEXT_KIND_NONE);
                         SoundManager::Get().StartSeqArc(0x67);
                         break;
@@ -1065,7 +1065,7 @@ void ListScene::Update() {
             if (mCharacterId == 0x15) {
                 CopySlotsToFirstPlayer(this);
             }
-            MIi_CpuCopyFast(gCharacterLook, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
+            MIi_CpuCopyFast(gCharacterLook, (u8 *) ((u32 *) gGameData.mBattlePlayers)[3] + 0xa8, 8);
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
             UpdateMainScreenAndDraw();
@@ -1472,7 +1472,7 @@ void ListScene::LoadSubScreenGraphics() {
     mSubScreenCellAnims[14]->SetAnimation(0);
     ChangeDir("/Game/Card/Graphic/Small");
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
-    if (data_020d433c.mWireless == 0) {
+    if (gGameData.mWireless == 0) {
         return;
     }
     if (mAntenna != NULL) {
@@ -2614,15 +2614,15 @@ void ListScene::DrawMoneyFilterButtonsAndCursor() {
 void ListScene::ReadSlots() {
     if (mCharacterId != 0x15) {
         for (u8 i = 0; i < 3; i++) {
-            u8 *entry = (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + 0xc + i * 12;
+            u8 *entry = (u8 *) ((u32 *) gGameData.mBattlePlayers)[mPlayer + 3] + 0xc + i * 12;
             mSlotValues[i] = entry[8];
             mSlotValues[9 + i] = entry[9];
         }
         for (u8 i = 0; i < 3; i++) {
-            mSlotValues[3 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x54);
+            mSlotValues[3 + i] = *(u16 *) ((u8 *) ((u32 *) gGameData.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x54);
         }
         for (u8 i = 0; i < 3; i++) {
-            mSlotValues[6 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x6c);
+            mSlotValues[6 + i] = *(u16 *) ((u8 *) ((u32 *) gGameData.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x6c);
         }
     } else {
         for (u8 i = 0; i < 3; i++) {
@@ -3001,7 +3001,7 @@ void ListScene::RefreshCommandList() {
                     return;
                 }
                 if (mCharacterId != 0x15) {
-                    BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[(u8) (mPage - 1)];
+                    BattleRecord *rec = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[(u8) (mPage - 1)];
                     pair  = (BattleCellPair *) rec;
                     value = rec->mUnk_04;
                     id    = mSlotValues[mPage - 1];
@@ -3927,21 +3927,21 @@ void func_020843ac(ListScene *self, u32 unk1) {
 
 void CopySlotsToFirstPlayer(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
-        BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i];
+        BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[0]->mRecords[i];
         record->mBakuganId      = self->mSlotValues[i];
         record->mUnk_04      = func_020231f4(gSaveData, 0, (u8) self->mSlotValues[i], (u8) self->mSlotValues[i + 9]);
         record->mAttribute      = self->mSlotValues[i + 9];
         record->mStatus      = 0;
         record->mUnk_0b      = record->mUnk_04 / 10;
-        MI_CpuCopy16(GetBakuganEntry(gSaveData, record->mBakuganId, record->mAttribute), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
+        MI_CpuCopy16(GetBakuganEntry(gSaveData, record->mBakuganId, record->mAttribute), &gGameData.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
     }
     for (u8 i = 0; i < 3; i++) {
-        BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots54[i];
+        BattlePlayerSlot *slot = &gGameData.mBattlePlayers->mPlayers[0]->mSlots54[i];
         slot->mValue         = self->mSlotValues[3 + i];
         slot->mFlag          = 0;
     }
     for (u8 i = 0; i < 3; i++) {
-        BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots6c[i];
+        BattlePlayerSlot *slot = &gGameData.mBattlePlayers->mPlayers[0]->mSlots6c[i];
         slot->mValue         = self->mSlotValues[6 + i];
         slot->mFlag          = 0;
     }
@@ -3950,7 +3950,7 @@ void CopySlotsToFirstPlayer(ListScene *self) {
 BOOL ExchangeRecords(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i];
+            BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i];
             MESSAGE->mBakuganIds[i]     = record->mBakuganId;
             MESSAGE->mUnk_04[i]     = record->mUnk_04;
             MESSAGE->mAttributes[i]     = record->mAttribute;
@@ -3960,19 +3960,19 @@ BOOL ExchangeRecords(ListScene *self) {
             MESSAGE->mAttributes[i] = self->mSlotValues[i + 9];
         }
     }
-    BattlePlayerList *players = data_020d433c.mBattlePlayers;
+    BattlePlayerList *players = gGameData.mBattlePlayers;
     MESSAGE->mRecordCount          = 3;
     if (SetMessageTypeAndCheckAll(players, 3)) {
     u32 count = WirelessManager::Get().GetRecvBlockCount();
     u8 j = 0;
     do {
-        u8 length = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mRecordCount;
+        u8 length = ((BattleListMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mRecordCount;
         for (u8 k = 0; k < 6; k++) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[j]->mRecords[k];
+            BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[j]->mRecords[k];
             if (k < length) {
-                record->mBakuganId = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mBakuganIds[k];
-                record->mUnk_04 = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_04[k];
-                record->mAttribute = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mAttributes[k];
+                record->mBakuganId = ((BattleListMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mBakuganIds[k];
+                record->mUnk_04 = ((BattleListMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_04[k];
+                record->mAttribute = ((BattleListMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mAttributes[k];
                 record->mStatus = 0;
                 record->mUnk_0b = record->mUnk_04 / 10;
             } else {
@@ -3993,27 +3993,27 @@ BOOL ExchangeRecords(ListScene *self) {
 BOOL ExchangeSlots(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
-            SLOT_MESSAGE->mSlots54Values[i] = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots54[i].mValue;
+            SLOT_MESSAGE->mSlots54Values[i] = gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mSlots54[i].mValue;
         } else {
             SLOT_MESSAGE->mSlots54Values[i] = self->mSlotValues[3 + i];
         }
     }
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
-            SLOT_MESSAGE->mSlots6cValues[i] = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots6c[i].mValue;
+            SLOT_MESSAGE->mSlots6cValues[i] = gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mSlots6c[i].mValue;
         } else {
             SLOT_MESSAGE->mSlots6cValues[i] = self->mSlotValues[6 + i];
         }
     }
     SLOT_MESSAGE->mSlots54Count = 3;
     SLOT_MESSAGE->mSlots6cCount = 3;
-    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 4)) {
+    if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 4)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
-            u8 length = ((BattleSlotMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mSlots54Count;
+            u8 length = ((BattleSlotMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mSlots54Count;
             for (u8 k = 0; k < 6; k++) {
-                BattlePlayer *player    = data_020d433c.mBattlePlayers->mPlayers[j];
+                BattlePlayer *player    = gGameData.mBattlePlayers->mPlayers[j];
                 BattlePlayerSlot *slot = &player->mSlots54[k];
                 if (k < length) {
                     slot->mValue = ((BattleSlotMessage *) &player->mMsg)->mSlots54Values[k];
@@ -4023,9 +4023,9 @@ BOOL ExchangeSlots(ListScene *self) {
                     slot->mFlag  = 3;
                 }
             }
-            u8 length2 = ((BattleSlotMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mSlots6cCount;
+            u8 length2 = ((BattleSlotMessage *) &gGameData.mBattlePlayers->mPlayers[j]->mMsg)->mSlots6cCount;
             for (u8 k = 0; k < 6; k++) {
-                BattlePlayer *player    = data_020d433c.mBattlePlayers->mPlayers[j];
+                BattlePlayer *player    = gGameData.mBattlePlayers->mPlayers[j];
                 BattlePlayerSlot *slot = &player->mSlots6c[k];
                 if (k < length2) {
                     slot->mValue = ((BattleSlotMessage *) &player->mMsg)->mSlots6cValues[k];
@@ -4044,7 +4044,7 @@ BOOL ExchangeSlots(ListScene *self) {
 
 BOOL ExchangeRandomSeed(ListScene *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
-    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 2)) {
+    if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().GetRecvBlock(0);
         if (info != NULL) {
             SeedRandom(*(u32 *) (info + 4));
@@ -4056,11 +4056,11 @@ BOOL ExchangeRandomSeed(ListScene *self) {
 
 BOOL ExchangeCharacterLooks(ListScene *self) {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
-    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 6)) {
+    if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[j];
+            BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[j];
             MIi_CpuCopyFast((u8 *) player + 0x104, (u8 *) player + 0xa8, 8);
             j++;
         } while (j < count);
@@ -4072,7 +4072,7 @@ BOOL ExchangeCharacterLooks(ListScene *self) {
 BOOL ExchangeRecordHeads(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
-            MIi_CpuCopy16(&data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
+            MIi_CpuCopy16(&gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
         } else {
             u8 id;
             u32 kind;
@@ -4089,13 +4089,13 @@ BOOL ExchangeRecordHeads(ListScene *self) {
             }
         }
     }
-    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 5)) {
+    if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 5)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
             u8 k = 0;
             do {
-                BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[j];
+                BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[j];
                 MIi_CpuCopyFast((u8 *) player + 0x104 + k * 4, &player->mRecords[k], 4);
                 k++;
             } while (k < 3);
@@ -4716,7 +4716,7 @@ s32 ListScene::func_0208644c() {
     u8 i      = 0;
     do {
         if (mCharacterId != 0x15) {
-            total += data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[i].mUnk_04;
+            total += gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[i].mUnk_04;
         } else {
             total += func_020231f4(gSaveData, 0, (u8) mSlotValues[i], (u8) mSlotValues[9 + i]);
         }

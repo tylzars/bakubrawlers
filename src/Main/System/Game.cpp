@@ -5,7 +5,7 @@
 #include "System/FrameUpdate.hpp"
 #include "Scene/SceneBase.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
@@ -103,7 +103,7 @@ void SetFrameInterval(u8 frames);
 
 
 const char *GameSystem::GetLanguageSuffix() {
-    return gLanguageSuffixes[data_020d433c.mLanguage];
+    return gLanguageSuffixes[gGameData.mLanguage];
 }
 
 // The singletons' destructors are inline here only: like the inline ones from the headers, they come out as weak

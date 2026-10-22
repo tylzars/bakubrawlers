@@ -36,8 +36,8 @@ class BattleCommandPrompt;
 #define COMMAND_RESULT_CPU_SHOOT      4
 #define COMMAND_RESULT_BATTLE_RESULT  5 // func_ov007_02263150 held; the list opens BattleResult
 #define COMMAND_RESULT_NO_MARKERS     6 // no marker has a non-zero mStatus; the list opens BattleObj00(1)
-// 7 (state 50: BattlePopup returned 2 and data_020d433c.mWireless is 0) is left a literal: the list goes to
-// its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when data_020d433c.mNextScene is
+// 7 (state 50: BattlePopup returned 2 and gGameData.mWireless is 0) is left a literal: the list goes to
+// its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when gGameData.mNextScene is
 // SCENE_ARENA_WINDOW, goes to its state 32.
 
 // Main battle command screen (battle_b_obj_00, mes_Command, union_b cockpit): the command windows, the turn
@@ -208,6 +208,6 @@ extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out); // *out 
 void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 extern "C" u32 FindMarkerCellAt(VecFx32 *v, u8 *outA, u8 *outB);
 
-// Loads the battle_b_bg files of data_020d433c.mFieldId (or the "last" set), then battle_b_obj_00, the union_b cockpit
-// and page characters and card_s_000, and sets data_020d433c.mUnk_10's layout 8.
+// Loads the battle_b_bg files of gGameData.mFieldId (or the "last" set), then battle_b_obj_00, the union_b cockpit
+// and page characters and card_s_000, and sets gGameData.mUnk_10's layout 8.
 void LoadCommandGraphics(u32 variant);

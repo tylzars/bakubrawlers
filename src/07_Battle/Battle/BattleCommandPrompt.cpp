@@ -3,7 +3,7 @@
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/InputManager.hpp"
@@ -72,7 +72,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
     mMode = mode;
     mPlayer = player;
     if (mMode >= 5) {
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         if (mPlayer == list->mLocalPlayer) {
             mCollectMode = 1;
         } else if (mPlayer == list->mPlayers[list->mLocalPlayer]->mPartner) {
@@ -87,19 +87,19 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
         case 0:
         case 1:
             mCommandPage = (BattleCommandPage *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
+            mPlayer = gGameData.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
-            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
+            CollectCards((const BattlePromptSlot *) &gGameData.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 3:
             mCommandPage = (BattleCommandPage *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
+            mPlayer = gGameData.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
-            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
+            CollectCards((const BattlePromptSlot *) &gGameData.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
         case 2:
             mCommandList = (BattleCommandList *) target;
-            mPlayer = data_020d433c.mBattlePlayers->mLocalPlayer;
+            mPlayer = gGameData.mBattlePlayers->mLocalPlayer;
             mShownPlayer = 0xff;
             CollectRecords();
             break;
@@ -113,13 +113,13 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = player;
             mShownPlayer = player;
-            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
+            CollectCards((const BattlePromptSlot *) &gGameData.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 7:
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = player;
             mShownPlayer = player;
-            CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
+            CollectCards((const BattlePromptSlot *) &gGameData.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
     }
     mWindow = new SelectWindow(2, sPromptWindowItems, -1);
@@ -192,7 +192,7 @@ void BattleCommandPrompt::Update() {
             Load();
             SelectWindow *win = mWindow;
             WindowItem *items = win->mCursor->mItems;
-            if (mMode == 0 || data_020d433c.mTutorialNumber == 4) {
+            if (mMode == 0 || gGameData.mTutorialNumber == 4) {
                 win->mButtons[1].mEnabled = 0;
                 items[1].mFlags           = WINDOW_ITEM_CURSOR_SKIP;
             } else {
@@ -221,21 +221,21 @@ void BattleCommandPrompt::Update() {
                     mMessageWindow->StartMessage(0x12, 0, 1);
                     break;
                 case 5:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                    if (mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x27, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x28), 0, 1);
                     }
                     break;
                 case 7:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                    if (mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x2c, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x2d), 0, 1);
                     }
                     break;
                 case 6:
-                    if (mPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+                    if (mPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
                         mMessageWindow->StartMessage(0x22, 0, 1);
                     } else {
                         mMessageWindow->StartMessage((s16) (mPlayer + 0x23), 0, 1);
@@ -473,7 +473,7 @@ void BattleCommandPrompt::Update() {
             mStateCellAnims[1]->Update();
             if (mCharacterIcons) {
                 mCharacterIconCellAnims[1]->Draw(1, 0x86, 1, 0);
-                if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
+                if (gGameData.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
                     mCharacterIconCellAnims[2]->Draw(1, 0x86, 1, 0);
                 }
                 mCharacterIcons->DrawIcons();
@@ -659,7 +659,7 @@ void BattleCommandPrompt::Load() {
         mCharacterIconCellAnims[2]->mFrameIndex = mPlayer;
         ChangeDir("/");
         mCharacterIcons = new CharacterIcons(0x16000, 0xb, 1);
-        BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+        BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];
         mCharacterIcons->SetCharacter(0, (s8) player->mCharacterId, player->NameInfo(), 0);
         mCharacterIcons->SetDrawArgs(0, 0x88, 5, 0);
     }
@@ -708,7 +708,7 @@ void BattleCommandPrompt::CollectCards(const BattlePromptSlot *slot) {
         }
         i++;
         slot++;
-    } while (i < data_020d433c.mSlotsPerPlayer);
+    } while (i < gGameData.mSlotsPerPlayer);
     SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mShownPlayer);
 }
 
@@ -718,7 +718,7 @@ void BattleCommandPrompt::CollectRecords() {
     BattleRecord *rec;
     mCount = 0;
     do {
-        rec = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[i];
+        rec = &gGameData.mBattlePlayers->mPlayers[mPlayer]->mRecords[i];
         ok  = 1;
         if (mCollectMode == 0) {
             if (rec->mStatus != 0) {
@@ -737,7 +737,7 @@ void BattleCommandPrompt::CollectRecords() {
             }
         }
         i++;
-    } while (i < data_020d433c.mSlotsPerPlayer);
+    } while (i < gGameData.mSlotsPerPlayer);
     SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mShownPlayer);
     BattleRecord *r = mRecords[mCursorPos + mScroll];
     SetCommandListValues(mCommandList, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);

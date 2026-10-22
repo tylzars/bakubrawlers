@@ -27,7 +27,7 @@ GimmickDashBase::~GimmickDashBase() {
 void GimmickDashBase::Init() {
     char buf[0x804];
     LoadCollisionFile(buf, 0x5e);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
     RotateDir(0);
 }
 
@@ -76,15 +76,15 @@ void GimmickDashBase::Update() {
             return;
         }
         DrawModel();
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
-        data_020d433c.mFlags &= 8;
-        if (data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (gGameData.mFlags) {
             return;
         }
-        target = data_020d433c.mBattlePlayers->mBattleTarget;
+        target = gGameData.mBattlePlayers->mBattleTarget;
         if (target->mPushScaleZeroFrames > 0x5dc) {
             return;
         }
@@ -122,7 +122,7 @@ void GimmickDashBase::DrawModel() {
     if (!mModel) {
         return;
     }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
+    if ((int)gGameData.mGimmicks->mState < 2) {
         return;
     }
     DrawInstance();

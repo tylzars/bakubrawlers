@@ -1,5 +1,5 @@
 #include "Battle/BattleBase.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
@@ -17,14 +17,14 @@ BattleData::BattleData() {
     mUnk_0b = 0;
     mMessageWindow = 0;
     mCharacterIcons = 0;
-    u8 index0         = data_020d433c.mBattlePlayers->mUnitA;
-    u8 index1         = data_020d433c.mBattlePlayers->mUnitB;
-    BattleUnit *unit0 = &data_020d433c.mBattlePlayers->mUnits[index0];
-    BattleUnit *unit1 = &data_020d433c.mBattlePlayers->mUnits[index1];
+    u8 index0         = gGameData.mBattlePlayers->mUnitA;
+    u8 index1         = gGameData.mBattlePlayers->mUnitB;
+    BattleUnit *unit0 = &gGameData.mBattlePlayers->mUnits[index0];
+    BattleUnit *unit1 = &gGameData.mBattlePlayers->mUnits[index1];
     mEntries[0].mPlayer = unit0->mPlayer;
     mEntries[1].mPlayer = unit1->mPlayer;
-    BattlePlayer *player0 = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer];
-    BattlePlayer *player1 = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer];
+    BattlePlayer *player0 = gGameData.mBattlePlayers->mPlayers[mEntries[0].mPlayer];
+    BattlePlayer *player1 = gGameData.mBattlePlayers->mPlayers[mEntries[1].mPlayer];
     BattleRecord *rec0    = &player0->mRecords[unit0->mRecord];
     BattleRecord *rec1    = &player1->mRecords[unit1->mRecord];
     mEntries[0].mBakuganId   = rec0->mBakuganId;
@@ -39,19 +39,19 @@ BattleData::BattleData() {
     mEntries[1].mUnk_06   = 0;
     mEntries[0].mUnk_0a   = 0;
     mEntries[1].mUnk_0a   = 0;
-    mEntries[0].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mCharacterId;
-    mEntries[1].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mCharacterId;
+    mEntries[0].mCharacterId   = gGameData.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mCharacterId;
+    mEntries[1].mCharacterId   = gGameData.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mCharacterId;
     mEntries[0].mUnk_10   = 0;
     mEntries[1].mUnk_10   = 0;
     mEntries[0].mSlot6cIndex   = 0;
     mEntries[1].mSlot6cIndex   = 0;
     mEntries[0].mCardId   = 0;
     mEntries[1].mCardId   = 0;
-    BattleMarker *marker = &data_020d433c.mBattlePlayers->mMarkers[data_020d433c.mBattlePlayers->mUnits[index1].mMarker];
+    BattleMarker *marker = &gGameData.mBattlePlayers->mMarkers[gGameData.mBattlePlayers->mUnits[index1].mMarker];
     u8 slot  = marker->mSlot;
     u8 owner = marker->mPlayer;
     mMarkerPlayer  = owner;
-    mMarkerCardId  = data_020d433c.mBattlePlayers->mPlayers[owner]->Slot54(slot);
+    mMarkerCardId  = gGameData.mBattlePlayers->mPlayers[owner]->Slot54(slot);
     u8 i = 0;
     do {
         if (mEntries[i].mBakuganId == 5) {
@@ -88,14 +88,14 @@ BattleData::BattleData() {
         mEntries[j].mPushedToEnd = 0;
         j++;
     } while (j < 2);
-    mUnk_08[0] = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mUnk_ee;
-    mUnk_08[1] = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mUnk_ee;
-    if (data_020d433c.mHasPartners == 0) {
+    mUnk_08[0] = gGameData.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mUnk_ee;
+    mUnk_08[1] = gGameData.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mUnk_ee;
+    if (gGameData.mHasPartners == 0) {
         mUnk_0a = 3;
     } else {
         mUnk_0a = 3;
-        mUnk_08[0] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mPartner]->mUnk_ee;
-        mUnk_08[1] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mPartner]->mUnk_ee;
+        mUnk_08[0] += gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mPartner]->mUnk_ee;
+        mUnk_08[1] += gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mPartner]->mUnk_ee;
     }
     MI_CpuClearFast(mCellAnims, 0x38);
 }
@@ -173,7 +173,7 @@ void BattleData::Load() {
     mCellAnims[8]->SetAnimation(mEntries[1].mPlayer + 7);
     mCellAnims[9]->SetAnimation(0);
     mCellAnims[10]->SetAnimation(1);
-    u8 current = data_020d433c.mBattlePlayers->mLocalPlayer;
+    u8 current = gGameData.mBattlePlayers->mLocalPlayer;
     u8 n       = 0;
     do {
         if (current == mEntries[n].mPlayer) {
@@ -185,8 +185,8 @@ void BattleData::Load() {
     mCellAnims[12]->SetAnimation(0xb);
     mCellAnims[13]->SetAnimation(6);
     mCharacterIcons = new CharacterIcons(0x6800, 3, 1);
-    mCharacterIcons->SetCharacter(0, *(s8 *) &mEntries[0].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->NameInfo(), 0);
-    mCharacterIcons->SetCharacter(1, *(s8 *) &mEntries[1].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->NameInfo(), 0);
+    mCharacterIcons->SetCharacter(0, *(s8 *) &mEntries[0].mCharacterId, gGameData.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->NameInfo(), 0);
+    mCharacterIcons->SetCharacter(1, *(s8 *) &mEntries[1].mCharacterId, gGameData.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->NameInfo(), 0);
     ChangeDir("/");
     mMessageWindow = new MessageWindow("mes_CardName", 1, 0x1f800);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
@@ -205,18 +205,18 @@ void BattleData::DrawCharacterIcons(u8 side, s16 x, s16 y) {
     px     = x + offset;
     top    = y - 4;
     mCellAnims[side + 7]->Draw(1, (s16) (px - 6), (s16) top, 2);
-    if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mPlayer]->IsCpu()) {
+    if (gGameData.mBattlePlayers->mPlayers[mEntries[side].mPlayer]->IsCpu()) {
         mCellAnims[12]->DrawFrame(1, mEntries[side].mPlayer, px - 6, top, 2);
     }
     mCellAnims[9]->Draw(1, (s16) (px - 2), (s16) (y - 2), 3);
     mCharacterIcons->SetDrawArgs(side, px, y, 2);
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 owner               = mEntries[side].mPlayer;
     u8 current             = list->mLocalPlayer;
     if (current == owner) {
         int shift = side == 0 ? 0x20 : 0;
         mCellAnims[11]->Draw(1, (s16) (x + shift), y, 3);
-    } else if (data_020d433c.mHasPartners && current == list->mPlayers[owner]->mPartner) {
+    } else if (gGameData.mHasPartners && current == list->mPlayers[owner]->mPartner) {
         int shift = side == 0 ? 0x20 : 0;
         mCellAnims[13]->DrawFrame(1, owner, x + shift, y, 3);
     }

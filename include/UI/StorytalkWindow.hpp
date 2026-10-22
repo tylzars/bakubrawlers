@@ -54,7 +54,7 @@ public:
     void LoadGraphics();
     void SetCell2FrameAndX(u32 unk1, u32 unk2);
     BOOL NextPage(u32 unk1); // sound 0x6b only when unk1 != 0; FALSE (and mLastPageDone) on the last page
-    // unk1 = message index, -1 = none; unk2 = character, 0x64 becomes 0 or 5 by data_020d433c.mUnk_82;
+    // unk1 = message index, -1 = none; unk2 = character, 0x64 becomes 0 or 5 by gGameData.mUnk_82;
     // unk3 restarts the slide-in (state 2); unk4 is stored in mTextOnly.
     void SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4);
     void SetCell1Visible(u32 unk1);

@@ -8,7 +8,7 @@
 #include "Scene/MyroomTipsScene.hpp"
 #include "UI/SaveWindow.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -150,7 +150,7 @@ MyroomScene::MyroomScene() :
     mWindows[1] = NULL;
     mWindows[2] = NULL;
     mMessageWindow  = NULL;
-    data_020d433c.mSaveDirty = 0;
+    gGameData.mSaveDirty = 0;
     FrameTask::Get().StartChannel(0, 0x13);
 }
 
@@ -364,7 +364,7 @@ void MyroomScene::Update() {
             }
             new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
             mContext->mRequest = 0;
-            data_020d433c.mSaveDirty = 0;
+            gGameData.mSaveDirty = 0;
             ctx->mInfo.mState++;
             break;
         case 14:
@@ -377,7 +377,7 @@ void MyroomScene::Update() {
             FrameTask::Get().StartChannel(0, 0x13);
             break;
         case 15:
-            if ((data_020d433c.mFlags & 2) && data_020d433c.mMyroomNextScene == SCENE_TITLE) {
+            if ((gGameData.mFlags & 2) && gGameData.mMyroomNextScene == SCENE_TITLE) {
                 new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
                 mContext->mRequest = 0;
                 ctx->mInfo.mState++;
@@ -414,7 +414,7 @@ void MyroomScene::Update() {
             }
             break;
         case 20:
-            RequestScene(data_020d433c.mMyroomNextScene);
+            RequestScene(gGameData.mMyroomNextScene);
             mFinished = 1;
             break;
     }

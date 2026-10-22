@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -103,7 +103,7 @@ MyroomShootScene::MyroomShootScene() :
         mGlyphCount[i]     = 0;
     }
     InitUnlocked();
-    data_020d433c.mEffects = NULL;
+    gGameData.mEffects = NULL;
 }
 
 MyroomShootScene::~MyroomShootScene() {
@@ -117,8 +117,8 @@ MyroomShootScene::~MyroomShootScene() {
     if (shooter != NULL) {
         delete shooter;
     }
-    data_020d433c.mEffects->FreeAllEffects();
-    FreeEffectGroup(data_020d433c.mEffects, 0);
+    gGameData.mEffects->FreeAllEffects();
+    FreeEffectGroup(gGameData.mEffects, 0);
     delete mWindow;
     delete mCamera;
     ModelLightGroup *lights = mLights;
@@ -141,9 +141,9 @@ MyroomShootScene::~MyroomShootScene() {
         }
     }
     delete mMessageWindow;
-    if (data_020d433c.mEffects != NULL) {
-        data_020d433c.mEffects->mFinished = 1;
-        data_020d433c.mEffects            = NULL;
+    if (gGameData.mEffects != NULL) {
+        gGameData.mEffects->mFinished = 1;
+        gGameData.mEffects            = NULL;
     }
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
@@ -290,8 +290,8 @@ void MyroomShootScene::Init() {
     model->Load("myroom_s.nsbmd", texture);
     texture->FreeFile();
     mRoom = model->CreateInstance(0);
-    data_020d433c.mEffects = new EffectManager();
-    LoadEffectGroup(data_020d433c.mEffects, 0, "shoot");
+    gGameData.mEffects = new EffectManager();
+    LoadEffectGroup(gGameData.mEffects, 0, "shoot");
     SpriteManager::Get().SaveSlot(0);
     SelectShooter(0);
     ChangeDir("/font/");
@@ -324,7 +324,7 @@ void MyroomShootScene::SelectShooter(s8 index) {
         }
         mShooter = NULL;
         if (mEffect != 0) {
-            FreeEffect(data_020d433c.mEffects, mEffect);
+            FreeEffect(gGameData.mEffects, mEffect);
             mEffect = 0;
         }
         if (mUnlocked[mShooterIndex] != 0) {
@@ -342,12 +342,12 @@ void MyroomShootScene::SelectShooter(s8 index) {
             modelRot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
             modelRot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
             mShooter->func_0203db94(modelRot);
-            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mShooterIndex], 0, 0);
-            SetEffectPosition(data_020d433c.mEffects, mEffect, &pos);
+            mEffect = StartEffect(gGameData.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mShooterIndex], 0, 0);
+            SetEffectPosition(gGameData.mEffects, mEffect, &pos);
             effectRot[0] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][0] / 360.0f);
             effectRot[1] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][1] / 360.0f);
             effectRot[2] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][2] / 360.0f);
-            SetEffectRotation(data_020d433c.mEffects, mEffect, effectRot);
+            SetEffectRotation(gGameData.mEffects, mEffect, effectRot);
         }
         mTextPage = 0;
         mTextX = 0x100;

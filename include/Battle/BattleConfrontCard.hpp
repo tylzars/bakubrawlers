@@ -112,7 +112,7 @@ public:
     void PrintMessage(u32 index);
     void Init();
     void InitDisplay();
-    void ResetDisplay(); // also clears data_020d433c.mAntenna->mSecondVisible (when set)
+    void ResetDisplay(); // also clears gGameData.mAntenna->mSecondVisible (when set)
     void LoadGraphics();
     void LoadCardGraphic(u16 card);
     void StartStepTimer(u16 value);

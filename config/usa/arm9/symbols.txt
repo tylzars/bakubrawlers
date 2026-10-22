@@ -863,8 +863,8 @@ _Z13func_020231f4P8SaveDatajhh kind:function(arm,size=0x28) addr:0x020231f4
 _Z15SetBakuganEntryP8SaveDataPKtjj kind:function(arm,size=0x2c) addr:0x0202321c
 _Z15GetBakuganEntryP8SaveDatajj kind:function(arm,size=0x24) addr:0x02023248
 _Z13func_0202326cP8SaveData kind:function(arm,size=0xa0) addr:0x0202326c
-_Z35RefreshRecvBlockIndicesAndLocalSlotP18UnkStruct_020d433c kind:function(arm,size=0xec) addr:0x0202330c
-_Z16RefreshLocalSlotP18UnkStruct_020d433c kind:function(arm,size=0xd0) addr:0x020233f8
+_Z35RefreshRecvBlockIndicesAndLocalSlotP8GameData kind:function(arm,size=0xec) addr:0x0202330c
+_Z16RefreshLocalSlotP8GameData kind:function(arm,size=0xd0) addr:0x020233f8
 _Z14InitFileSystemv kind:function(arm,size=0x3c) addr:0x020234c8
 _Z8LoadFilePKcjjjPjj kind:function(arm,size=0x204) addr:0x02023504
 _Z13LoadFileAsyncPKcjjjPjj kind:function(arm,size=0x15c) addr:0x02023708
@@ -4688,7 +4688,7 @@ gGameHeap kind:bss addr:0x020d4300
 @461 kind:bss addr:0x020d4318 local
 @45 kind:bss addr:0x020d4324 local
 @14 kind:bss addr:0x020d4330 local
-data_020d433c kind:bss addr:0x020d433c
+gGameData kind:bss addr:0x020d433c
 data_020d4352 kind:bss addr:0x020d4352
 data_020d43c9 kind:bss addr:0x020d43c9
 data_020d43d7 kind:bss addr:0x020d43d7

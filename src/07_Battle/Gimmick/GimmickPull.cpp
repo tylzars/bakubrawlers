@@ -40,24 +40,24 @@ void GimmickPull::Update() {
         mState++;
         break;
     case 1: {
-        if (mCollision && mCollision->mHitCount == 1 && !data_020d433c.mBattlePlayers->mBattleTarget->mOnMarkerCell &&
-            data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y <= 0x899a &&
-            data_020d433c.mBattlePlayers->mBattleTarget->mPushScaleZeroFrames <= 0x5dc && data_020d433c.mBattlePlayers->mBattleTarget->mAirFrames <= 3) {
-            BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+        if (mCollision && mCollision->mHitCount == 1 && !gGameData.mBattlePlayers->mBattleTarget->mOnMarkerCell &&
+            gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y <= 0x899a &&
+            gGameData.mBattlePlayers->mBattleTarget->mPushScaleZeroFrames <= 0x5dc && gGameData.mBattlePlayers->mBattleTarget->mAirFrames <= 3) {
+            BattlePlayer *p = gGameData.mBattlePlayers->Current();
             BattleRecord *r = &p->mRecords[p->mRecord];
             if (!mSoundStarted) {
                 SoundManager::Get().StartSeqArc(0x64);
                 mSoundStarted = 1;
             }
-            data_020d433c.mFlags &= 8;
-            if (data_020d433c.mFlags) {
+            gGameData.mFlags &= 8;
+            if (gGameData.mFlags) {
                 return;
             }
             if (r->mAttribute == 1) {
                 return;
             }
             m = gIdentityMtx33;
-            VEC_Subtract(&data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &mPosition, &d);
+            VEC_Subtract(&gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &mPosition, &d);
             d.y = 0;
             e.x = d.x;
             e.y = 0;
@@ -74,8 +74,8 @@ void GimmickPull::Update() {
             mPullPerFrame.x = FX_Mul(mPullPerFrame.x, 0x19a);
             mPullPerFrame.y = FX_Mul(mPullPerFrame.y, 0x19a);
             mPullPerFrame.z = FX_Mul(mPullPerFrame.z, 0x19a);
-            VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &mPullPerFrame,
-                          &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
+            VEC_Add(&gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity, &mPullPerFrame,
+                          &gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity);
         } else if (mSoundStarted) {
             StopSeqArc(&SoundManager::Get(), 0x64, 10);
             mSoundStarted = 0;

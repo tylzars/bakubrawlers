@@ -11,7 +11,7 @@ class SceneBase;
 // scene uses RequestScene to hand its parent a result instead (most of them 1), which is not one of these.
 // Left as literals: 1 (SwitchToScene's replacement for an id < 1 or >= 14; Update's case 1 steps on to 2), 3 (an
 // empty case nothing requests), 14 (the runner's "no request" value and the Update step that waits for one), 15 (the
-// step that switches), 0 (data_020d433c.mNextScene cleared).
+// step that switches), 0 (gGameData.mNextScene cleared).
 #define SCENE_LOGO 2
 #define SCENE_TITLE 4
 #define SCENE_BATTLE_PLAYER_LIST 5

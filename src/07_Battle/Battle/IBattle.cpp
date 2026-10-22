@@ -1,7 +1,7 @@
 #include "Battle/BattleBase.hpp"
 #include "Battle/BattleUtil.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
 
@@ -48,7 +48,7 @@ void ApplyNetMessages(BattleBase *scene) {
     u16 second[4] = {0, 0, 0, 0};
     u16 third[2] = {0, 0};
     u8 flag = 0;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     do {
         BattlePlayer *player = list->mPlayers[i];
         if (player->mMsg.mType != 0xe) {

@@ -1,6 +1,6 @@
 #include "Battle/BattleBase.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -55,9 +55,9 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     mMapObj = 0;
     mLights = 0;
     mCamFile = 0;
-    mEffects = data_020d433c.mEffects;
+    mEffects = gGameData.mEffects;
     mData = data;
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     mMapObj = new BattleMapObj(MAP_OBJ_KIND_COMMANDFILED0);
     mMapObj->Load();
     camera->SetFov(0x1555);
@@ -132,7 +132,7 @@ BattleField3D::~BattleField3D() {
 
 // The caller passes its BattleField3D, which the function doesn't use.
 BOOL UpdateCameraPath(BattleField3D *field) {
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = gGameData.mBattlePlayers->mCamera;
     camera->AdvanceFrame(0);
     camera->ApplyPath();
     SnapshotCamera();

@@ -186,7 +186,7 @@ void GimmickAbilityField::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
             DrawModelB();
         }
@@ -194,32 +194,32 @@ void GimmickAbilityField::Update() {
             return;
         }
         mState++;
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
+        RemoveCollisionSet(gGameData.mGimmickCollision, mCollision);
         SoundManager::Get().StartSeqArc(0x35);
         s8 pick = PickWeighted(gAbilityRows[mAbilityRowIndex].mCount, gAbilityRows[mAbilityRowIndex].mWeights);
-        data_020d433c.mBattlePlayers->Current()->mAbilityId = gAbilityRows[mAbilityRowIndex].mIds[pick];
-        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0x12, 0, 1);
+        gGameData.mBattlePlayers->Current()->mAbilityId = gAbilityRows[mAbilityRowIndex].mIds[pick];
+        u8 handle = StartEffect(gGameData.mEffects, 1, 0x12, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+            VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;
             MTX_SetTranslation43(&mtx, &camPos);
-            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(gGameData.mEffects, handle, &mtx);
         }
         mCountingTurns = 1;
         mCollision = 0;
         break;
     }
     case 2: {
-        u8 players = data_020d433c.mPlayerCount;
+        u8 players = gGameData.mPlayerCount;
         if (players < 2 || players > 4) {
             break;
         }
         u32 limit;
-        if (data_020d433c.mHasPartners) {
+        if (gGameData.mHasPartners) {
             limit = 3;
         } else {
             limit = sAbilityTurnLimits[players - 2];

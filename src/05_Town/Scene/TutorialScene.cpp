@@ -1,6 +1,6 @@
 #include "Scene/TutorialScene.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -84,8 +84,8 @@ TutorialScene::TutorialScene() :
             mFlags[i] = 0;
         }
     }
-    data_020d433c.mRules   = 0x11;
-    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
+    gGameData.mRules   = 0x11;
+    gGameData.mMicEnabled = gSaveData[0].mMicEnabled;
 }
 
 TutorialScene::~TutorialScene() {
@@ -124,10 +124,10 @@ void TutorialScene::Update() {
         case 0: {
             BOOL a = FALSE;
             BOOL b = FALSE;
-            switch (data_020d433c.mTutorialPart) {
+            switch (gGameData.mTutorialPart) {
                 case 0:
                     a = TRUE;
-                    if (data_020d433c.mUnk_82 == 0) {
+                    if (gGameData.mUnk_82 == 0) {
                         b = TRUE;
                     }
                     break;
@@ -141,13 +141,13 @@ void TutorialScene::Update() {
                 mState = 1;
                 return;
             }
-            u8 c = data_020d433c.mUnk_86;
+            u8 c = gGameData.mUnk_86;
             BOOL d = c == 0;
             if (d | (func_ov005_0221fd64(this) == 0)) {
-                data_020d433c.mTutorialPart++;
-                data_020d433c.mUnk_86 = 0;
+                gGameData.mTutorialPart++;
+                gGameData.mUnk_86 = 0;
             } else if (c >= 2) {
-                data_020d433c.mUnk_86 = 1;
+                gGameData.mUnk_86 = 1;
                 mUnk_4c = 1;
             }
             mState = 6;
@@ -173,8 +173,8 @@ void TutorialScene::Update() {
             if (r != 0) {
                 if (r == 1) {
                     SoundManager::Get().StartSeqArc(0);
-                    data_020d433c.mTutorialNumber = mSelection + 1;
-                    data_020d433c.mTutorialPart = 1;
+                    gGameData.mTutorialNumber = mSelection + 1;
+                    gGameData.mTutorialPart = 1;
                     mState++;
                 } else {
                     SoundManager::Get().StartSeqArc(1);
@@ -205,7 +205,7 @@ void TutorialScene::Update() {
             BOOL x = FALSE;
             switch (GetTutorialId(this)) {
                 case 0xc:
-                    if (data_020d433c.mUnk_86 != 0) {
+                    if (gGameData.mUnk_86 != 0) {
                         break;
                     }
                 case 9:
@@ -229,16 +229,16 @@ void TutorialScene::Update() {
             }
             u8 x = 0;
             if (func_ov005_0221fd64(this)) {
-                x = data_020d433c.mUnk_86;
+                x = gGameData.mUnk_86;
             }
             char second[0x7f];
             char first[0x7f];
             if (x != 0) {
-                sprintf(first, "T%03d_%d_f", data_020d433c.mTutorialNumber, data_020d433c.mTutorialPart);
+                sprintf(first, "T%03d_%d_f", gGameData.mTutorialNumber, gGameData.mTutorialPart);
             } else {
-                sprintf(first, "T%03d_%d", data_020d433c.mTutorialNumber, data_020d433c.mTutorialPart);
+                sprintf(first, "T%03d_%d", gGameData.mTutorialNumber, gGameData.mTutorialPart);
             }
-            if (data_020d433c.mUnk_82 == 0) {
+            if (gGameData.mUnk_82 == 0) {
                 sprintf(second, "cmd_%s_Ali.bin", first);
             } else {
                 sprintf(second, "cmd_%s.bin", first);
@@ -307,47 +307,47 @@ void TutorialScene::Update() {
                 mState = 0x10;
                 return;
             }
-            data_020d433c.mTutorialPart++;
-            data_020d433c.mUnk_86 = 0;
+            gGameData.mTutorialPart++;
+            gGameData.mUnk_86 = 0;
             mState = 6;
             break;
         case 16:
             mUnk_4d = 1;
             mState = 0x15;
-            switch (data_020d433c.mTutorialNumber) {
+            switch (gGameData.mTutorialNumber) {
                 case 1:
-                    if (data_020d433c.mTutorialPart >= 5) {
+                    if (gGameData.mTutorialPart >= 5) {
                         return;
                     }
-                    if (data_020d433c.mTutorialPart < 4) {
+                    if (gGameData.mTutorialPart < 4) {
                         mState = 0x1a;
                         return;
                     }
-                    data_020d433c.mTutorialPart++;
-                    data_020d433c.mUnk_86 = 0;
+                    gGameData.mTutorialPart++;
+                    gGameData.mUnk_86 = 0;
                     mState = 6;
                     break;
                 case 2:
-                    if (data_020d433c.mTutorialPart < 3) {
+                    if (gGameData.mTutorialPart < 3) {
                         mState = 0x1a;
                     }
                     break;
                 case 3:
                 case 4:
-                    if (data_020d433c.mTutorialPart < 2) {
+                    if (gGameData.mTutorialPart < 2) {
                         mState = 0x1a;
                     }
                     break;
                 case 5:
                 case 6:
-                    if (data_020d433c.mTutorialPart < 2) {
+                    if (gGameData.mTutorialPart < 2) {
                         mState = 0x11;
                     }
                     break;
             }
             break;
         case 17:
-            if (data_020d433c.mUnk_82 == 0) {
+            if (gGameData.mUnk_82 == 0) {
                 mUnk_4d = 0;
                 mState = 0x15;
                 return;
@@ -361,7 +361,7 @@ void TutorialScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            if (data_020d433c.mTutorialNumber == 5) {
+            if (gGameData.mTutorialNumber == 5) {
                 ShowText(3);
             } else {
                 ShowText(4);
@@ -389,7 +389,7 @@ void TutorialScene::Update() {
             mState = 0x15;
             break;
         case 21:
-            mFlags[data_020d433c.mTutorialNumber] = 1;
+            mFlags[gGameData.mTutorialNumber] = 1;
             if (mUnk_4d == 0) {
                 mState = 0x19;
                 return;
@@ -420,7 +420,7 @@ void TutorialScene::Update() {
                 return;
             }
             if ((u8) mWindow->mCursor->mSelection == 0) {
-                data_020d433c.mTutorialPart = 1;
+                gGameData.mTutorialPart = 1;
                 mState = 6;
                 return;
             }
@@ -428,34 +428,34 @@ void TutorialScene::Update() {
             break;
         case 25:
             mState = 0x1c;
-            if (data_020d433c.mTutorialNumber != 1) {
+            if (gGameData.mTutorialNumber != 1) {
                 return;
             }
-            if (data_020d433c.mUnk_82 == 0) {
+            if (gGameData.mUnk_82 == 0) {
                 return;
             }
-            data_020d433c.mTutorialNumber = 2;
-            data_020d433c.mTutorialPart = 1;
-            data_020d433c.mUnk_86 = 0;
+            gGameData.mTutorialNumber = 2;
+            gGameData.mTutorialPart = 1;
+            gGameData.mUnk_86 = 0;
             mState = 6;
             break;
         case 26: {
-            data_020d433c.mSlotsPerPlayer = 3;
-            data_020d433c.mPlayerCount = 2;
-            data_020d433c.mHasPartners = 0;
-            data_020d433c.mCharacterIds[0] = 0x15;
-            u8 idx = data_020d433c.mTutorialNumber;
-            data_020d433c.mCharacterIds[1] = data_ov005_022200d8[idx][0];
-            data_020d433c.mCharacterLevels[1] = 0;
-            data_020d433c.mPartners[0] = 0;
-            data_020d433c.mPartners[1] = 1;
-            data_020d433c.mFieldId = 0;
-            data_020d433c.mFieldVariant = data_ov005_022200d8[idx][1];
+            gGameData.mSlotsPerPlayer = 3;
+            gGameData.mPlayerCount = 2;
+            gGameData.mHasPartners = 0;
+            gGameData.mCharacterIds[0] = 0x15;
+            u8 idx = gGameData.mTutorialNumber;
+            gGameData.mCharacterIds[1] = data_ov005_022200d8[idx][0];
+            gGameData.mCharacterLevels[1] = 0;
+            gGameData.mPartners[0] = 0;
+            gGameData.mPartners[1] = 1;
+            gGameData.mFieldId = 0;
+            gGameData.mFieldVariant = data_ov005_022200d8[idx][1];
             u8 id = GetTutorialId(this);
             if (id == 9) {
                 id = 10;
             }
-            data_020d433c.mTutorialId = id;
+            gGameData.mTutorialId = id;
             RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = 1;
             break;
@@ -466,18 +466,18 @@ void TutorialScene::Update() {
             mFinished = 1;
             break;
         case 28: {
-            u8 prev = data_020d433c.mTutorialNumber;
-            data_020d433c.mTutorialNumber = 0;
-            data_020d433c.mTutorialPart = 0;
-            data_020d433c.mTutorialId = 0;
-            if (data_020d433c.mUnk_82 != 0) {
+            u8 prev = gGameData.mTutorialNumber;
+            gGameData.mTutorialNumber = 0;
+            gGameData.mTutorialPart = 0;
+            gGameData.mTutorialId = 0;
+            if (gGameData.mUnk_82 != 0) {
                 SoundManager::Get().RestoreHeapState();
                 switch (prev) {
                     case 1:
                     case 2: {
                         gSaveData[0].mUnk_42 = 0;
                         gSaveData[0].mUnk_43 = 2;
-                        data_020d433c.mUnk_7d = 2;
+                        gGameData.mUnk_7d = 2;
                         u8 id = gSaveData[0].mAttribute;
                         int slot = GetBakuganEntryIndex(gSaveData, 0, 0x24, id);
                         func_020231c0(gSaveData, slot, 0x1b8);
@@ -496,7 +496,7 @@ void TutorialScene::Update() {
                     case 4:
                     case 5:
                     case 6:
-                        data_020d433c.mUnk_7c = 2;
+                        gGameData.mUnk_7c = 2;
                         break;
                 }
                 RequestScene(prev <= 2 ? SCENE_MAP : SCENE_PARK);
@@ -514,9 +514,9 @@ void TutorialScene::Update() {
             break;
         }
         case 29:
-            data_020d433c.mTutorialNumber = 0;
-            data_020d433c.mTutorialPart = 0;
-            data_020d433c.mTutorialId = 0;
+            gGameData.mTutorialNumber = 0;
+            gGameData.mTutorialPart = 0;
+            gGameData.mTutorialId = 0;
             SoundManager::Get().RestoreHeapState();
             RequestScene(SCENE_TITLE);
             mFinished = 1;
@@ -621,8 +621,8 @@ void TutorialScene::LoadGraphics() {
     mWindow->mCursor->mSelection = 0;
     mWindow->mCursor->SetupScroll(0x30, 0x90, 4, 6);
     mWindow->mEnabled = 0;
-    if (data_020d433c.mTutorialNumber != 0) {
-        mSelection = data_020d433c.mTutorialNumber - 1;
+    if (gGameData.mTutorialNumber != 0) {
+        mSelection = gGameData.mTutorialNumber - 1;
     } else {
         mSelection = 0;
         for (u8 i = 1; i < 7; i++) {
@@ -811,11 +811,11 @@ void TutorialScene::DrawList() {
 
 // sTutorialFirstIds[mTutorialNumber] + mTutorialPart - 1 (for mTutorialNumber 2: doubled, + 1 when mUnk_86).
 u8 GetTutorialId(TutorialScene *scene) {
-    s8 a = data_020d433c.mTutorialPart - 1;
-    u8 b = data_020d433c.mTutorialNumber;
+    s8 a = gGameData.mTutorialPart - 1;
+    u8 b = gGameData.mTutorialNumber;
     if (b == 2) {
         a = a * 2;
-        if (data_020d433c.mUnk_86 != 0) {
+        if (gGameData.mUnk_86 != 0) {
             a = a + 1;
         }
     }
@@ -837,35 +837,35 @@ BOOL func_ov005_0221fd64(TutorialScene *scene) {
     }
 }
 
-// Also sets data_020d433c.mNextScene = SCENE_TUTORIAL and mSlotsPerPlayer = 3.
+// Also sets gGameData.mNextScene = SCENE_TUTORIAL and mSlotsPerPlayer = 3.
 void SetupFourPlayerBattle() {
-    data_020d433c.mSlotsPerPlayer = 3;
-    data_020d433c.mPlayerCount = 4;
+    gGameData.mSlotsPerPlayer = 3;
+    gGameData.mPlayerCount = 4;
     u8 i;
     for (i = 0; i < 4; i++) {
-        data_020d433c.mCharacterIds[i] = i;
-        data_020d433c.mCharacterLevels[i] = 0;
-        data_020d433c.mPartners[i] = i;
+        gGameData.mCharacterIds[i] = i;
+        gGameData.mCharacterLevels[i] = 0;
+        gGameData.mPartners[i] = i;
     }
-    data_020d433c.mNextScene = SCENE_TUTORIAL;
-    switch (data_020d433c.mTutorialNumber) {
+    gGameData.mNextScene = SCENE_TUTORIAL;
+    switch (gGameData.mTutorialNumber) {
         case 5:
-            data_020d433c.mHasPartners = 1;
-            data_020d433c.mPartners[0] = 1;
-            data_020d433c.mPartners[1] = 0;
-            data_020d433c.mPartners[2] = 3;
-            data_020d433c.mPartners[3] = 2;
-            data_020d433c.mCharacterIds[0] = 0x15;
-            data_020d433c.mCharacterIds[1] = 0;
-            data_020d433c.mCharacterIds[2] = 0xe;
-            data_020d433c.mCharacterIds[3] = 0xd;
+            gGameData.mHasPartners = 1;
+            gGameData.mPartners[0] = 1;
+            gGameData.mPartners[1] = 0;
+            gGameData.mPartners[2] = 3;
+            gGameData.mPartners[3] = 2;
+            gGameData.mCharacterIds[0] = 0x15;
+            gGameData.mCharacterIds[1] = 0;
+            gGameData.mCharacterIds[2] = 0xe;
+            gGameData.mCharacterIds[3] = 0xd;
             break;
         case 6:
-            data_020d433c.mHasPartners = 0;
-            data_020d433c.mCharacterIds[0] = 0x15;
-            data_020d433c.mCharacterIds[1] = 0xd;
-            data_020d433c.mCharacterIds[2] = 0xf;
-            data_020d433c.mCharacterIds[3] = 0x10;
+            gGameData.mHasPartners = 0;
+            gGameData.mCharacterIds[0] = 0x15;
+            gGameData.mCharacterIds[1] = 0xd;
+            gGameData.mCharacterIds[2] = 0xf;
+            gGameData.mCharacterIds[3] = 0x10;
             break;
     }
 }

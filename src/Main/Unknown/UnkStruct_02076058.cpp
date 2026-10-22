@@ -15,7 +15,7 @@ static const WindowCellRecord sResultCockpitCells[1] = {
 
 #include "Text/TextManager.hpp"
 #include "System/InputManager.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Unknown/UnkStruct_02071d24.hpp"
 #include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -114,8 +114,8 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     } while (i < 3);
     u8 slot = 0;
     do {
-        if (mMode == 0 && data_020d433c.mBattlePlayers != NULL) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mLocalPlayer]->mRecords[slot];
+        if (mMode == 0 && gGameData.mBattlePlayers != NULL) {
+            BattleRecord *record = &gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mLocalPlayer]->mRecords[slot];
             mBakuganIds[slot] = record->mBakuganId;
             if (mBakuganIds[slot] == 6) {
                 mBakuganIds[slot] = 5;
@@ -129,7 +129,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
             mUnk_70[slot] = mSaveEntries[slot]->mLevel;
         }
         slot++;
-    } while (slot < 3 && data_020d433c.mLastBattle == 0);
+    } while (slot < 3 && gGameData.mLastBattle == 0);
 }
 
 UnkStruct_02076058::~UnkStruct_02076058() {

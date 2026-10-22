@@ -2,7 +2,7 @@
 void LoadActivisionLogo();
 #include "Scene/LogoScene.hpp"
 #include "Scene/UnkScene_ov000.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/InputManager.hpp"
@@ -18,15 +18,15 @@ LogoScene::LogoScene() :
 }
 
 LogoScene::~LogoScene() {
-    data_020d433c.mSkipTitleMovie = 0;
+    gGameData.mSkipTitleMovie = 0;
 }
 
 void LogoScene::Update() {
     switch (mState) {
         case 0:
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-            if (data_020d433c.mUnk_81 == 0) {
-                data_020d433c.mUnk_81 = 1;
+            if (gGameData.mUnk_81 == 0) {
+                gGameData.mUnk_81 = 1;
                 new UnkScene_02226e4c();
                 mContext->mRequest = 0;
                 mState++;
@@ -45,15 +45,15 @@ void LogoScene::Update() {
                     new MessageScreen(MESSAGE_SCREEN_SYSTEM_5_HALT);
                     break;
                 case SAVE_STATUS_NO_MAGIC:
-                    data_020d433c.mSaveSlotContent = 0;
+                    gGameData.mSaveSlotContent = 0;
                     mState++;
                     break;
                 case SAVE_STATUS_MARKER:
-                    data_020d433c.mSaveSlotContent = 1;
+                    gGameData.mSaveSlotContent = 1;
                     mState++;
                     break;
                 case SAVE_STATUS_OK:
-                    data_020d433c.mSaveSlotContent = 2;
+                    gGameData.mSaveSlotContent = 2;
                     mState++;
                     break;
             }
@@ -190,7 +190,7 @@ void LogoScene::LoadMobiclipLogo() {
 
 void LogoScene::LoadLegaltextLogo() {
     ChangeDir("/logo");
-    if (data_020d433c.mLanguage == 0) {
+    if (gGameData.mLanguage == 0) {
         LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);

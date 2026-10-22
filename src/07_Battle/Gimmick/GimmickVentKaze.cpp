@@ -59,25 +59,25 @@ void GimmickVentKaze::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 1) {
             DrawInstance();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
+        if (!gGameData.mBattlePlayers->mBattleTarget) {
             return;
         }
-        BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
+        BattlePlayer *p = gGameData.mBattlePlayers->Current();
         BattleRecord *r = &p->mRecords[p->mRecord];
-        data_020d433c.mFlags &= 8;
-        if (data_020d433c.mFlags) {
+        gGameData.mFlags &= 8;
+        if (gGameData.mFlags) {
             return;
         }
         if (r->mAttribute == 5) {
             return;
         }
-        BakuganModel *h = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan;
+        BakuganModel *h = gGameData.mBattlePlayers->mBattleTarget->mBakugan;
         VecFx32 a           = data_ov007_02279450;
         m                   = gIdentityMtx33;
         if (mRotY) {
@@ -97,7 +97,7 @@ void GimmickVentKaze::Update() {
             MTX_ApplyRotY33(&m, mRotY);
         }
         MTX_MultVec33(&c, &m, &c);
-        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mBaseVelocity);
+        VEC_Add(&gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity, &c, &gGameData.mBattlePlayers->mBattleTarget->mBaseVelocity);
         break;
     }
     case 2:

@@ -228,7 +228,7 @@ public:
     void ReadSlots(); // from the player's battle records and slots, or the save with mCharacterId 0x15
     void BuildList(u32 unk1);
     void RefreshCounts();
-    void LoadSubScreenGraphics(); // with data_020d433c.mWireless set also creates mAntenna (AntennaIndicator layout 3) or re-lays it
+    void LoadSubScreenGraphics(); // with gGameData.mWireless set also creates mAntenna (AntennaIndicator layout 3) or re-lays it
     void UpdateListInput();
 };
 

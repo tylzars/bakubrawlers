@@ -2,7 +2,7 @@
 #include "Battle/GimmickTypes.hpp"
 #include <nitro/fx.h>
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 
@@ -42,7 +42,7 @@ GimmickFieldDestroy::~GimmickFieldDestroy() {
 void GimmickFieldDestroy::func_ov007_0222accc() {
     char buf[0x804];
     LoadCollisionFile(buf, 0x32);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
     VecFx32 v = {0x1000, 0x1000, 0x1000};
     mScale    = v;
 }
@@ -52,7 +52,7 @@ void GimmickFieldDestroy::Load() {
         char nsbmd[0x40];
         char nsbtx[0x40];
         char data[0x40];
-        u8 n = data_020d433c.mFieldId;
+        u8 n = gGameData.mFieldId;
         sprintf(nsbmd, "fielddestroy_n_%d.nsbmd", n);
         sprintf(data, "fielddestroy_n_%d_data.bin", n);
         sprintf(nsbtx, "fielddestroy_n_%d.nsbtx", n);
@@ -128,12 +128,12 @@ void GimmickFieldDestroy::Update() {
         mState++;
         break;
     case 1: {
-        if ((int)data_020d433c.mGimmicks->mState >= 2) {
+        if ((int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
         GimmickSetData *set = mCollision;
         if (set && set->mHitCount) {
-            RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+            RemoveCollisionSet(gGameData.mGimmickCollision, set);
             mCollision = 0;
             func_ov007_0222b8b4();
             mSequenceFrames++;
@@ -143,7 +143,7 @@ void GimmickFieldDestroy::Update() {
         break;
     }
     case 2:
-        if ((int)data_020d433c.mGimmicks->mState >= 2) {
+        if ((int)gGameData.mGimmicks->mState >= 2) {
             UpdateModelBAndE();
         }
         break;
@@ -152,12 +152,12 @@ void GimmickFieldDestroy::Update() {
         mState++;
         break;
     case 4: {
-        u8 players = data_020d433c.mPlayerCount;
+        u8 players = gGameData.mPlayerCount;
         if (players < 2 || players > 4) {
             break;
         }
         u32 limit;
-        if (data_020d433c.mHasPartners) {
+        if (gGameData.mHasPartners) {
             limit = 3;
         } else {
             limit = sDestroyTurnLimits[players - 2];
@@ -179,7 +179,7 @@ void GimmickFieldDestroy::Update() {
 }
 
 u8 GimmickFieldDestroy::PickKind() {
-    u8 flag   = data_020d433c.mScriptMode;
+    u8 flag   = gGameData.mScriptMode;
     u32 total = 0;
     u8 i;
     for (i = 0; i < 3; i++) {
@@ -215,7 +215,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
         BattlePlayer *p;
         u8 kind = mKind;
         if ((mSequenceFrames - 1) % sKindStepIntervals[kind] == 0) {
-            BattlePlayerList *plist = data_020d433c.mBattlePlayers;
+            BattlePlayerList *plist = gGameData.mBattlePlayers;
             p                       = plist->mPlayers[plist->mTurnPlayer];
             switch (kind) {
             case 0:
@@ -226,9 +226,9 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                 func_ov007_0226a380(p, p->mRecord, 0x1e);
                 CameraManager::Get();
                 MtxFx43 mtx    = data_020c1cf4;
-                VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+                VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
                 VecFx32 v      = {0, 0xf000, -0xa000};
-                u8 handle      = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
+                u8 handle      = StartEffect(gGameData.mEffects, 1, 3, 0, 0);
                 if (handle) {
                     mtx._[11] = 0;
                     mtx._[10] = 0;
@@ -236,24 +236,24 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                     MTX_MultVec43(&v, &mtx, &v);
                     VEC_Add(&camPos, &v, &camPos);
                     MTX_SetTranslation43(&mtx, &camPos);
-                    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+                    SetEffectMatrix(gGameData.mEffects, handle, &mtx);
                 }
                 break;
             }
             case 2: {
                 SoundManager::Get().StartSeqArc(0x36);
-                u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
+                u8 handle = StartEffect(gGameData.mEffects, 1, 0xe, 0, 1);
                 BattleRecord *rec = &p->mRecords[p->mRecord];
                 if ((int)rec->mGauge < 0xfd7) {
                     rec->mGauge += 0x28;
                 }
                 if (handle) {
                     VecFx32 d;
-                    VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+                    VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
                     CameraManager::Get();
                     MtxFx43 mtx = data_020c1cf4;
                     MTX_SetTranslation43(&mtx, &mPosition);
-                    Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
+                    Camera *h = gGameData.mBattlePlayers->mBattleTarget->mCamera;
                     d.x                 = h->mPosition.x;
                     d.y                 = h->mPosition.y;
                     d.z                 = h->mPosition.z;
@@ -262,9 +262,9 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                     d.x = FX_Mul(d.x, 0x1e000);
                     d.y = FX_Mul(d.y, 0x1e000);
                     d.z = FX_Mul(d.z, 0x1e000);
-                    VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
+                    VEC_Add(&d, &gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
                     MTX_SetTranslation43(&mtx, &d);
-                    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+                    SetEffectMatrix(gGameData.mEffects, handle, &mtx);
                 }
                 break;
             }
@@ -283,7 +283,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
 }
 
 void GimmickFieldDestroy::func_ov007_0222b8b4() {
-    BattlePlayerList *plist = data_020d433c.mBattlePlayers;
+    BattlePlayerList *plist = gGameData.mBattlePlayers;
     BattlePlayer *p         = plist->mPlayers[plist->mTurnPlayer];
     mKind                   = PickKind();
     switch (mKind) {
@@ -293,13 +293,13 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
             v = 0xbe;
         }
         p->mSpGauge = v;
-        u8 handle  = StartEffect(data_020d433c.mEffects, 1, 0xc, 0, 1);
+        u8 handle  = StartEffect(gGameData.mEffects, 1, 0xc, 0, 1);
         if (!handle) {
             return;
         }
         CameraManager::Get();
         MtxFx43 mtx2           = data_020c1cf4;
-        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattlePlayerList *list = gGameData.mBattlePlayers;
         MtxFx43 mtx            = gIdentityMtx43;
         VecFx32 camPos         = list->mBattleTarget->mBakugan->mPosition;
         VecFx32 v2             = {0, 0, 0x1e000};
@@ -311,20 +311,20 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         MTX_ApplyRotX43(&mtx, data_ov007_022793da[1]);
         MTX_Concat43(&mtx, &mtx2, &mtx2);
         MTX_SetTranslation43(&mtx2, &camPos);
-        SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
+        SetEffectMatrix(gGameData.mEffects, handle, &mtx2);
         break;
     }
     case 1: {
-        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
+        u8 handle = StartEffect(gGameData.mEffects, 1, 0xd, 0, 1);
         if (!handle) {
             return;
         }
         VecFx32 d;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+        VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
         MTX_SetTranslation43(&mtx, &mPosition);
-        Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
+        Camera *h = gGameData.mBattlePlayers->mBattleTarget->mCamera;
         d.x                 = h->mPosition.x;
         d.y                 = h->mPosition.y;
         d.z                 = h->mPosition.z;
@@ -333,9 +333,9 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         d.x = FX_Mul(d.x, 0x1e000);
         d.y = FX_Mul(d.y, 0x1e000);
         d.z = FX_Mul(d.z, 0x1e000);
-        VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
+        VEC_Add(&d, &gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
         MTX_SetTranslation43(&mtx, &d);
-        SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+        SetEffectMatrix(gGameData.mEffects, handle, &mtx);
         break;
     }
     case 2:

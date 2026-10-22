@@ -3,7 +3,7 @@
 #include "types.h"
 #include "Battle/BattleCharaAct.hpp"
 #include "Scene/SceneBase.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Battle/BattleBase.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelInternal.hpp"
@@ -136,7 +136,7 @@ static const u16 *sActFrameTaskIds[22] = {
     NULL,
     sActFrameTaskIds_21,
 };
-// Light setups (0x0227af68) indexed by data_020d433c.mFieldId: four lights each, as ModelLightGroup reads them
+// Light setups (0x0227af68) indexed by gGameData.mFieldId: four lights each, as ModelLightGroup reads them
 // (enable flag, colour, direction). The table is a section of its own, after the 16-byte tables above: a
 // function-local static of an inline accessor gets one.
 struct LightRecord {
@@ -184,7 +184,7 @@ BattleCharaAct::BattleCharaAct(Camera *camera, u8 player, u32 kind, u8 unk4, u8 
 void BattleCharaAct::Init() {
     mActFrames = 0;
     mFadeBrightness = 0;
-    mCharacterId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
+    mCharacterId = gGameData.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     if (mKind >= 0x10) {
         mKind = 10;
     }
@@ -225,7 +225,7 @@ void BattleCharaAct::Init() {
     mCamFile = LoadFile(buffer, 0, 0, 0, 0, 0);
     mCamera->SetPath(mCamFile, 0);
     ChangeDir("/");
-    mLights = new ModelLightGroup(LightSetups()[data_020d433c.mFieldId]);
+    mLights = new ModelLightGroup(LightSetups()[gGameData.mFieldId]);
 }
 
 BattleCharaAct::~BattleCharaAct() {
@@ -258,7 +258,7 @@ BattleCharaAct::~BattleCharaAct() {
 
 u8 BattleCharaAct::CreateCharacter() {
     mCharacter = new UnkStruct_0205401c();
-    mCharacter->Create(mCharacterId, 1, data_020d433c.mBattlePlayers->mPlayers[mPlayer]->NameInfo(), (u8) (mKind + 1));
+    mCharacter->Create(mCharacterId, 1, gGameData.mBattlePlayers->mPlayers[mPlayer]->NameInfo(), (u8) (mKind + 1));
     mCharacter->StartAnim(mKind, 0);
     return mCharacter->mUseCharacter;
 }
@@ -380,7 +380,7 @@ void BattleCharaAct::Update() {
     switch (mState) {
         case 0:
             run = 0;
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x1a)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0x1a)) {
                 mState++;
             }
             break;
@@ -425,7 +425,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
                 mState = 8;
                 break;
             }
-            if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 0)) {
+            if (SetMessageType0x19AndCheckAny(gGameData.mBattlePlayers, 0)) {
                 mNextScene = 2;
                 mState = 8;
                 break;
@@ -437,7 +437,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
         case 7:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 1)) {
+                if (SetMessageType0x19AndCheckAny(gGameData.mBattlePlayers, 1)) {
                     mNextScene = 2;
                     mState++;
                 }
@@ -465,7 +465,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
         case 9:
             if (!SpriteManager::Get().IsFading()) {
                 CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-                data_020d433c.mFlags |= 4;
+                gGameData.mFlags |= 4;
                 mState++;
             }
             break;
@@ -478,7 +478,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
             break;
         case 11:
             run = 0;
-            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 0xf)) {
                 RequestScene(mNextScene);
                 mFinished = 1;
             }
@@ -548,8 +548,8 @@ void BattleCharaAct::func_ov007_02269380() {
     }
     mMapObj = new BattleMapObj(type);
     mMapObj->Load();
-    if (mKind != 5 && mKind != 6 && data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->SetupLayout(0xd);
+    if (mKind != 5 && mKind != 6 && gGameData.mAntenna) {
+        gGameData.mAntenna->SetupLayout(0xd);
     }
 }
 

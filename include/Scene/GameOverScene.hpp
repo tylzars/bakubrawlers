@@ -9,7 +9,7 @@ class CellAnimation;
 class SelectWindow;
 struct MessageFile;
 
-// Result window kinds: the values of mResultWindowKind (NO_MAP when data_020d433c.mUnk_8a_4 is set). WITH_MAP builds
+// Result window kinds: the values of mResultWindowKind (NO_MAP when gGameData.mUnk_8a_4 is set). WITH_MAP builds
 // the three-item window whose second item requests SCENE_MAP; NO_MAP builds the two-item window without it.
 #define GAME_OVER_RESULT_WINDOW_WITH_MAP 0
 #define GAME_OVER_RESULT_WINDOW_NO_MAP 1

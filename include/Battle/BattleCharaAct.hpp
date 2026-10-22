@@ -50,7 +50,7 @@ public:
     void LoadActModels(); // kinds 2, 4, 5 and 11-14 load nothing
     void StartCardEffect();
     // Creates and loads mMapObj (type 9 for kind 0, 0xb for kind 15, else 0xa); unless kind 5 / 6 also sets
-    // data_020d433c.mUnk_10's layout 0xd.
+    // gGameData.mUnk_10's layout 0xd.
     void func_ov007_02269380();
     void Draw(); // also steps mCamera along its path; kind 0 calls it twice a frame while the camera index is 0
     void LoadFieldopModel();

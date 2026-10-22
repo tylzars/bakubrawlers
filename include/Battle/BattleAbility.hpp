@@ -4,7 +4,7 @@
 #include "types.h"
 
 #include "Scene/SceneBase.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 
 class CellAnimation;
 class EffectManager;

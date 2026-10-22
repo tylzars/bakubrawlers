@@ -1,7 +1,7 @@
 
 #include "Battle/BattleBase.hpp"
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
@@ -41,8 +41,8 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
         mCellAnims[i] = 0;
         i++;
     } while (i < 15);
-    if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
-        mFieldIndex = data_020d433c.mFieldId - 1;
+    if (gGameData.mFieldId != 0 && gGameData.mFieldId != 7) {
+        mFieldIndex = gGameData.mFieldId - 1;
         u8 k = 0;
         do {
             EntryIndex kk = (EntryIndex) k;
@@ -102,7 +102,7 @@ void BattleSub48::LoadCharactersAndPalettes() {
     screen.LoadCharacters("vs_u_obj_updown_32k.nce_ncg1D.bin", 0x3400, 0);
     screen.LoadPalette("vs_u_obj_updown_32k_ncl.bin", 0x60, 0);
     int emblem = -1;
-    switch (data_020d433c.mFieldId) {
+    switch (gGameData.mFieldId) {
         case 1:
             emblem = 0;
             break;
@@ -189,7 +189,7 @@ void BattleSub48::LoadGraphics() {
                         }
                         break;
                 }
-                if (data_020d433c.mUnk_9a_2) {
+                if (gGameData.mUnk_9a_2) {
                     mCellAnims[2]->SetAnimation(10);
                     mUnk_0e_0 = 1;
                 }

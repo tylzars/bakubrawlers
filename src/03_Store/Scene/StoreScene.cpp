@@ -3,7 +3,7 @@
 #include "Scene/StoreScene.hpp"
 #include "Scene/ListScene.hpp"
 #include "Game/ScriptPlayer.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d4414.hpp"
 #include "Graphics/CellAnimation.hpp"

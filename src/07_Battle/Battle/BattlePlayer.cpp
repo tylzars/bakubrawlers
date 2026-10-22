@@ -4,7 +4,7 @@
 #include "global.h"
 #include "types.h"
 #include "Battle/BattleCpu.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/SaveData.hpp"
 #include "Game/Random.hpp"
 #include "Unknown/UnkFunctions.hpp"
@@ -160,7 +160,7 @@ BattlePlayer::BattlePlayer(u32 index)
     MI_CpuFill8((u8 *) this + 0x84, 0, 0x24);
     MI_CpuFill8((u8 *) this + 0xa8, 0, 8);
     mIndex = index;
-    mPartner = data_020d433c.mHasPartners != 0 ? data_020d43d7[mIndex] : mIndex;
+    mPartner = gGameData.mHasPartners != 0 ? data_020d43d7[mIndex] : mIndex;
     mCpu = 0;
     u32 limit = 1;
     WirelessManager::Get();
@@ -200,7 +200,7 @@ BattlePlayer::BattlePlayer(u32 index)
             u32 extra = 0;
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4258)) {
-                int n = data_020d433c.mRecvBlockIndices[index];
+                int n = gGameData.mRecvBlockIndices[index];
                 if (data_020d43e3[(u32) n >> 3] & (1 << (n % 8))) {
                     extra = 0x64;
                 }
@@ -217,7 +217,7 @@ BattlePlayer::BattlePlayer(u32 index)
             k++;
         } while (k < 3);
     }
-    if (data_020d433c.mPlayerCount == 2) {
+    if (gGameData.mPlayerCount == 2) {
         switch (index) {
             case 0:
                 mCorner = 0;
@@ -242,12 +242,12 @@ BattlePlayer::BattlePlayer(u32 index)
                 break;
         }
     }
-    mSlots54Remaining = data_020d433c.mSlotsPerPlayer;
-    mSlots6cRemaining = data_020d433c.mSlotsPerPlayer;
+    mSlots54Remaining = gGameData.mSlotsPerPlayer;
+    mSlots6cRemaining = gGameData.mSlotsPerPlayer;
     MI_CpuClear32((u8 *) this + 0x100, 0x20);
     MI_CpuClear32((u8 *) this + 0x120, 0x20);
     InitPlayerName(this);
-    if (data_020d433c.mLastBattle != 0) {
+    if (gGameData.mLastBattle != 0) {
         mRecords[1].mStatus = 2;
         mRecords[2].mStatus = 2;
     }
@@ -260,7 +260,7 @@ BattlePlayer::~BattlePlayer() {
 }
 
 void BattlePlayer::Update() {
-    if (data_020d433c.mFlags & 1) {
+    if (gGameData.mFlags & 1) {
         mFinished = 1;
         return;
     }
@@ -303,7 +303,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     u8 ones;
     player->mPushSumX = 0;
     player->mPushSumZ = 0;
-    n       = data_020d433c.mSlotsPerPlayer;
+    n       = gGameData.mSlotsPerPlayer;
     hasZero = 0;
     ones    = 0;
     do {
@@ -317,11 +317,11 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
         }
         i++;
     } while (i < n);
-    data_020d433c.mBattlePlayers->mUnk_292 = 0;
+    gGameData.mBattlePlayers->mUnk_292 = 0;
     if (!hasZero) {
-        if (data_020d433c.mLastBattle != 0) {
+        if (gGameData.mLastBattle != 0) {
             if (ones == 1) {
-                data_020d433c.mBattlePlayers->mUnk_292 = 1;
+                gGameData.mBattlePlayers->mUnk_292 = 1;
             } else {
                 i = 0;
                 do {
@@ -329,11 +329,11 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                         player->mRecords[i].mStatus = 0;
                     }
                     i++;
-                } while (i < data_020d433c.mSlotsPerPlayer);
+                } while (i < gGameData.mSlotsPerPlayer);
             }
         } else {
-            if (ones == data_020d433c.mSlotsPerPlayer) {
-                data_020d433c.mBattlePlayers->mUnk_292 = 1;
+            if (ones == gGameData.mSlotsPerPlayer) {
+                gGameData.mBattlePlayers->mUnk_292 = 1;
             } else {
                 i = 0;
                 do {
@@ -341,12 +341,12 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                         player->mRecords[i].mStatus = 0;
                     }
                     i++;
-                } while (i < data_020d433c.mSlotsPerPlayer);
+                } while (i < gGameData.mSlotsPerPlayer);
             }
         }
     }
     if (player->mSlots54Remaining == 0) {
-        data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
+        gGameData.mBattlePlayers->mAddMarkerEnabled = 0;
     }
     if (player->mCpu) {
         player->mCpu->func_ov007_02231038();
@@ -355,8 +355,8 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     if (reset == 0) {
         u32 flagA = 0;
         u8 best  = 0;
-        if (data_020d433c.mHasPartners) {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        if (gGameData.mHasPartners) {
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             u8 mine                = player->mUnk_ee;
             u8 total               = mine + list->mPlayers[player->mPartner]->mUnk_ee;
             u8 sum                 = 0;
@@ -364,11 +364,11 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             do {
                 u8 partner = list->mPlayers[i]->mPartner;
                 if (i != player->mIndex && partner != player->mIndex) {
-                    sum = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee + data_020d433c.mBattlePlayers->mPlayers[partner]->mUnk_ee;
+                    sum = gGameData.mBattlePlayers->mPlayers[i]->mUnk_ee + gGameData.mBattlePlayers->mPlayers[partner]->mUnk_ee;
                     break;
                 }
                 i++;
-            } while (i < data_020d433c.mPlayerCount);
+            } while (i < gGameData.mPlayerCount);
             s8 diff = sum - total;
             if (sum == 2) {
                 flagA = 1;
@@ -377,8 +377,8 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                 best = (u8) diff;
             }
         } else {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            int top                = data_020d433c.mSlotsPerPlayer - 1;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
+            int top                = gGameData.mSlotsPerPlayer - 1;
             u8 mine                = player->mUnk_ee;
             i                      = 0;
             do {
@@ -393,7 +393,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                     best = (u8) diff;
                 }
                 i++;
-            } while (i < data_020d433c.mPlayerCount);
+            } while (i < gGameData.mPlayerCount);
         }
         u8 gain = best * 0x28 + 0x1e + flagA * 0x19;
         if (player->mSpGauge + gain < 0xbe) {
@@ -402,7 +402,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             player->mSpGauge = 0xbe;
         }
     }
-    if (data_020d433c.mLastBattle != 0) {
+    if (gGameData.mLastBattle != 0) {
         player->mRecords[1].mStatus = 2;
         player->mRecords[2].mStatus = 2;
         if (player->mIndex != 0) {
@@ -412,7 +412,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                 player->mSpGauge = 0xbe;
             }
         }
-        data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
+        gGameData.mBattlePlayers->mAddMarkerEnabled = 0;
     }
 }
 
@@ -504,12 +504,12 @@ void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag) {
 
 // Every caller is in SetupTutorial's mTutorialId cases 7, 8, 10 and 14, so the mTutorialId == 1 branch does not run.
 void SetupTutorialPlayer(BattlePlayer *player) {
-    if (data_020d433c.mTutorialId != 0xe) {
+    if (gGameData.mTutorialId != 0xe) {
         u8 two = 2;
         player->mSlots6c[0].mFlag = two;
         player->mSlots6c[1].mFlag = two;
         player->mSlots6c[2].mFlag = two;
-        if (data_020d433c.mTutorialId == 1) {
+        if (gGameData.mTutorialId == 1) {
             player->mSlots54[0].mFlag = 0;
             player->mSlots54[1].mFlag = two;
             player->mSlots54[2].mFlag = two;
@@ -553,13 +553,13 @@ void SetupTutorialPlayer(BattlePlayer *player) {
 }
 
 u8 PickUnflaggedSlot54(BattlePlayer *player) {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 first               = 0xff;
     u8 i                   = 0;
     u8 count               = 0;
     u8 j;
     BattlePlayer *owner    = list->mPlayers[player->mIndex];
-    u8 n                   = data_020d433c.mSlotsPerPlayer;
+    u8 n                   = gGameData.mSlotsPerPlayer;
     do {
         if (owner->mSlots54[i].mFlag == 0) {
             count++;
@@ -593,15 +593,15 @@ u8 PickUnflaggedSlot54(BattlePlayer *player) {
     return first;
 }
 
-// Random index (below data_020d433c.mSlotsPerPlayer) of an mSlots6c entry with mFlag 0 whose bit in mask is clear; 0xff for
+// Random index (below gGameData.mSlotsPerPlayer) of an mSlots6c entry with mFlag 0 whose bit in mask is clear; 0xff for
 // none. Slot 1 with an mValue of 0x92..0xa7 is returned at once (or, at random, slot 0 when that one is free too).
 // The pick gives 0xff instead for mValue 0x8c when x > y and for 0x8e..0x91 when y >= 0.
 u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y) {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 i = 0;
     u8 count = 0;
     BattlePlayer *owner = list->mPlayers[player->mIndex];
-    u8 n = data_020d433c.mSlotsPerPlayer;
+    u8 n = gGameData.mSlotsPerPlayer;
     u8 result = 0xff;
     do {
         if (owner->mSlots6c[i].mFlag == 0) {

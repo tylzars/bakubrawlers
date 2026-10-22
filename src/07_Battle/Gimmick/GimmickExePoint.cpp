@@ -53,30 +53,30 @@ void GimmickExePoint::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
+        if (!gGameData.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
-        BattleRecord *rec = &data_020d433c.mBattlePlayers->Current()->mRecords[data_020d433c.mBattlePlayers->Current()->mRecord];
+        RemoveCollisionSet(gGameData.mGimmickCollision, mCollision);
+        BattleRecord *rec = &gGameData.mBattlePlayers->Current()->mRecords[gGameData.mBattlePlayers->Current()->mRecord];
         if ((int)rec->mGauge < 0xfd7) {
             rec->mGauge += 0x28;
         }
         SoundManager::Get().StartSeqArc(0x36);
-        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
+        u8 handle = StartEffect(gGameData.mEffects, 1, 0xe, 0, 1);
         if (handle) {
             VecFx32 d;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
+            VecFx32 camPos = gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             CameraManager::Get();
             MtxFx43 mtx = data_020c1cf4;
             MTX_SetTranslation43(&mtx, &mPosition);
-            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
+            Camera *h = gGameData.mBattlePlayers->mBattleTarget->mCamera;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
             d.z                 = h->mPosition.z;
@@ -85,21 +85,21 @@ void GimmickExePoint::Update() {
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
+            VEC_Add(&d, &gGameData.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
             MTX_SetTranslation43(&mtx, &d);
-            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(gGameData.mEffects, handle, &mtx);
         }
         mCountingTurns = 1;
         mCollision = 0;
         break;
     }
     case 2: {
-        u8 players = data_020d433c.mPlayerCount;
+        u8 players = gGameData.mPlayerCount;
         if (players < 2 || players > 4) {
             break;
         }
         u32 limit;
-        if (data_020d433c.mHasPartners) {
+        if (gGameData.mHasPartners) {
             limit = 2;
         } else {
             limit = sExePointTurnLimits[players - 2];

@@ -214,7 +214,7 @@ public:
     /* 10 */ PAD(0x10, 0x12);
     /* 12 */ u8 mSideAttributes[2];
     /* 14 */ u16 mStepFrames; // frames in mUnk_0d steps 1 (to 0x78) and 3 (to 0x3c); not counted in step 2
-    // 90, set only when data_020d433c.mFieldId is 1-6 (otherwise mState never becomes 1, the state DrawCircleAndSides
+    // 90, set only when gGameData.mFieldId is 1-6 (otherwise mState never becomes 1, the state DrawCircleAndSides
     // runs in); step 2 raises it by 3 to 250
     /* 16 */ u16 mCircleY;
     /* 18 */ float mPos[2][2];
@@ -249,9 +249,9 @@ class TextureFile;
 struct BattleMapObjTable;
 
 // Kinds of a BattleMapObj with their own branch in Load (mKind). Other kinds load the row mKind of gMapObjKindTables
-// (BattleCommandMap passes its mKind, which its constructors set to data_020d433c.mFieldId).
+// (BattleCommandMap passes its mKind, which its constructors set to gGameData.mFieldId).
 #define MAP_OBJ_KIND_THROWFIELD00    9  // "throwfield00" model; Draw places it with gThrowfield00Scale / Offset
-#define MAP_OBJ_KIND_FIELD_TABLE     10 // the row data_020d433c.mFieldId of gMapObjFieldTables
+#define MAP_OBJ_KIND_FIELD_TABLE     10 // the row gGameData.mFieldId of gMapObjFieldTables
 #define MAP_OBJ_KIND_THROWFIELD01    11 // "throwfield01" model
 #define MAP_OBJ_KIND_REALPOP         12 // "realpop" model
 #define MAP_OBJ_KIND_COMMANDFILED0   13 // "commandfiled0" model

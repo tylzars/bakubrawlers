@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "types.h"
 #include "Scene/SceneBase.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -81,7 +81,7 @@ struct BattleShootMsg { // 0x20 bytes: a message of the shoot minigame, sent to 
         struct {
             /* 04 */ s32 mPushX; // AddPushXZ and StartShot negate it before GetPushVector
             /* 08 */ s32 mPushZ;
-            /* 0c */ u8 mMicEvent; // 1 only with data_020d433c.mMicEnabled as well as a MicManager event
+            /* 0c */ u8 mMicEvent; // 1 only with gGameData.mMicEnabled as well as a MicManager event
         };
         /* 04 */ ShootWords7 mWords;
     };
@@ -205,7 +205,7 @@ public:
     void PlotDot(u8 x, u8 y);
     void PlotPixel(u8 x, u8 y);
     void DrawPenAndIcons();
-    BOOL TryStartPopup(); // on a start also sets data_020d433c.mFlags |= 8 and clears mPlotEnabled
+    BOOL TryStartPopup(); // on a start also sets gGameData.mFlags |= 8 and clears mPlotEnabled
     void SetSubPlanes(u8 value); // the register is written later by the queued ApplySubPlanes
     void LoadShootText();
     void DrawShootText();
@@ -265,7 +265,7 @@ void BattleShoot::Init(Camera *unk1) {
     mTouchSumY = 0;
     mStrokeIconStarted = 0;
     mRotYAdjust = 0;
-    mRotZAdjust = gFieldRotZAdjust[data_020d433c.mFieldId];
+    mRotZAdjust = gFieldRotZAdjust[gGameData.mFieldId];
     mPredictVisible = 1;
     mSpEnabled = 0;
     mTurnPlayerIsLocal = 0;
@@ -299,13 +299,13 @@ void BattleShoot::Init(Camera *unk1) {
     mShootTextVisible = 0;
     mTextWidth = 0;
     mSavedTutorialNumber = 0;
-    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+    if (gGameData.mBattlePlayers->mTurnPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
         mTurnPlayerIsLocal = 1;
     }
     MI_CpuClear32(mCells, 0x54);
     MI_CpuClear32(mIcons, 0x50);
     MI_CpuClear32(mMsgs, 0x80);
-    mOtherPlayerCount = data_020d433c.mPlayerCount - 1;
+    mOtherPlayerCount = gGameData.mPlayerCount - 1;
 }
 
 BattleShoot::~BattleShoot() {
@@ -328,9 +328,9 @@ BattleShoot::~BattleShoot() {
     if (mGlyphBuffer) {
         OS_Free(mGlyphBuffer);
     }
-    data_020d433c.mEffects->FreeAllEffects();
-    FreeEffectGroup(data_020d433c.mEffects, 0);
-    data_020d433c.mBattlePlayers->mBattleTarget = 0;
+    gGameData.mEffects->FreeAllEffects();
+    FreeEffectGroup(gGameData.mEffects, 0);
+    gGameData.mBattlePlayers->mBattleTarget = 0;
     if (mWindow) {
         delete mWindow;
     }
@@ -360,16 +360,16 @@ void BattleShoot::Update() {
         case 1:
             mDelayTimer--;
             if (mDelayTimer == 0) {
-                if (data_020d433c.mTutorialId == 3) {
+                if (gGameData.mTutorialId == 3) {
                     mWindow->mEnabled = 0;
                 } else {
                     mWindow->mEnabled = 1;
                 }
                 SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
-                u8 mode = data_020d433c.mTutorialId;
+                u8 mode = gGameData.mTutorialId;
                 if (mode >= 3 && mode <= 12) {
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
+                    gGameData.mBattlePlayers->mStorytalkWindow->LoadGraphics();
+                    gGameData.mBattlePlayers->mStorytalkWindow->SetMessage(gGameData.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                     G2S_SetBlendBrightness(0x1f, -10);
                     mState = 2;
                 } else {
@@ -381,22 +381,22 @@ void BattleShoot::Update() {
             mCells[0].mX = (mCells[0].mX + 0x80) / 2;
             mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
-                data_020d433c.mBattlePlayers->mStorytalkWindow->NextPage(1);
+                gGameData.mBattlePlayers->mStorytalkWindow->NextPage(1);
             }
             u8 limit;
-            if (data_020d433c.mTutorialNumber == 3) {
+            if (gGameData.mTutorialNumber == 3) {
                 limit = 2;
-            } else if (data_020d433c.mTutorialNumber == 2) {
+            } else if (gGameData.mTutorialNumber == 2) {
                 limit = 2;
             } else {
                 limit = 4;
             }
-            if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
-                data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
-                if (data_020d433c.mBattlePlayers->mStorytalkMessageIndex > limit) {
+            if (!gGameData.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
+                gGameData.mBattlePlayers->mStorytalkMessageIndex++;
+                if (gGameData.mBattlePlayers->mStorytalkMessageIndex > limit) {
                     mState = 3;
                 } else {
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
+                    gGameData.mBattlePlayers->mStorytalkWindow->SetMessage(gGameData.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                 }
             }
             break;
@@ -411,7 +411,7 @@ void BattleShoot::Update() {
                 mPenAndIconsVisible = 0;
                 break;
             }
-            if (data_020d433c.mTutorialId != 3) {
+            if (gGameData.mTutorialId != 3) {
                 mWindow->Draw();
             }
             if (UpdateShotInput()) {
@@ -441,7 +441,7 @@ void BattleShoot::Update() {
                     mMicVisible = 1;
                     mPenStrokesRemaining = 3;
                     mShootTextVisible = 0;
-                    if (data_020d433c.mTutorialNumber != 0 || mSavedTutorialNumber != 0) {
+                    if (gGameData.mTutorialNumber != 0 || mSavedTutorialNumber != 0) {
                         mShootTextVisible = 1;
                     }
                     mState = 11;
@@ -449,7 +449,7 @@ void BattleShoot::Update() {
             }
             break;
         case 6: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
             ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
             ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
@@ -477,7 +477,7 @@ void BattleShoot::Update() {
             }
             break;
         case 9: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
             ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
             ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
@@ -492,7 +492,7 @@ void BattleShoot::Update() {
             break;
         }
         case 10: {
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayerList *list = gGameData.mBattlePlayers;
             BattleCpu *cpu = list->mPlayers[list->mTurnPlayer]->mCpu;
             if (CpuActive(cpu)) {
                 u8 kind = mSpKind;
@@ -507,12 +507,12 @@ void BattleShoot::Update() {
                     cpu->StartJumpObjTargets(0x14000);
                 }
             }
-            u8 idx = data_020d433c.mBattlePlayers->mTurnPlayer;
-            data_020d433c.mBattlePlayers->mPlayers[idx]->mShotSpeed = mShotSpeed;
-            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[idx];
+            u8 idx = gGameData.mBattlePlayers->mTurnPlayer;
+            gGameData.mBattlePlayers->mPlayers[idx]->mShotSpeed = mShotSpeed;
+            BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[idx];
             p->mPushSumX = 0;
             p->mPushSumZ = 0;
-            p = data_020d433c.mBattlePlayers->mPlayers[idx];
+            p = gGameData.mBattlePlayers->mPlayers[idx];
             p->mShotRot[0]              = mShotRotX;
             p->mShotRot[1]              = mShotRotY;
             p->mShotRot[2]              = mShotRotZ;
@@ -523,13 +523,13 @@ void BattleShoot::Update() {
             }
             mCpuPushInterval = 0x14;
             mMicVisible = 1;
-            if (data_020d433c.mTutorialId != 0 && data_020d433c.mBattlePlayers->mTurnPlayer != 0) {
+            if (gGameData.mTutorialId != 0 && gGameData.mBattlePlayers->mTurnPlayer != 0) {
                 mMicVisible = 0;
             }
             mPlotEnabled = 0;
             mPenStrokesRemaining = 3;
             mShootTextVisible = 0;
-            if (data_020d433c.mTutorialNumber != 0) {
+            if (gGameData.mTutorialNumber != 0) {
                 mPenStrokesRemaining = 0;
             } else if (mSavedTutorialNumber != 0) {
                 mShootTextVisible = 1;
@@ -542,16 +542,16 @@ void BattleShoot::Update() {
             break;
         }
         case 11: {
-            BattlePlayerList *l = data_020d433c.mBattlePlayers;
+            BattlePlayerList *l = gGameData.mBattlePlayers;
             if (l->mPlayers[l->mTurnPlayer]->mCpu == 0) {
                 u8 i = 0;
                 do {
-                    BattlePlayerList *l3 = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l3 = gGameData.mBattlePlayers;
                     if (l3->mPlayers[i]->mCpu != 0 && i != l3->mTurnPlayer) {
                         l3->mPlayers[i]->mCpu->RandomizePushOffsets();
                     }
                     i++;
-                } while (i < data_020d433c.mPlayerCount);
+                } while (i < gGameData.mPlayerCount);
             }
             mState++;
             break;
@@ -579,7 +579,7 @@ void BattleShoot::Update() {
                         mMicTargetY = 0x30;
                     }
                     if (mBattleTarget->mPushInputStopped == 0) {
-                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        BattlePlayerList *l = gGameData.mBattlePlayers;
                         if (l->mPlayers[l->mTurnPlayer]->IsCpu()) {
                             UpdateTurnPlayerCpu();
                         }
@@ -607,11 +607,11 @@ void BattleShoot::Update() {
                         SetSubPlanes(0x11);
                     }
                     ClearBitmap();
-                    data_020d433c.mFlags &= ~8;
+                    gGameData.mFlags &= ~8;
                     mContext->mRequest = 0;
                     break;
                 case 2:
-                    if (data_020d433c.mWireless != 0) {
+                    if (gGameData.mWireless != 0) {
                         WirelessManager::Get();
                         data_020c4030.mUnk_22a = WM_CALL_FAILED;
                         mState++;
@@ -633,7 +633,7 @@ void BattleShoot::Update() {
             if (!SpriteManager::Get().IsFading()) {
                 mBattleTarget->func_ov007_02253fbc();
                 mState = 15;
-                data_020d433c.mFlags &= ~8;
+                gGameData.mFlags &= ~8;
             }
             break;
     }
@@ -690,11 +690,11 @@ void BattleShoot::Setup() {
     InitDisplay();
     LoadGraphics();
     LoadShootText();
-    u8 player = data_020d433c.mBattlePlayers->mTurnPlayer;
-    u8 record = data_020d433c.mBattlePlayers->mPlayers[player]->mRecord;
+    u8 player = gGameData.mBattlePlayers->mTurnPlayer;
+    u8 record = gGameData.mBattlePlayers->mPlayers[player]->mRecord;
     delete mBattleTarget;
     mBattleTarget                              = new BattleTarget(mCamera, player, record);
-    data_020d433c.mBattlePlayers->mBattleTarget = mBattleTarget;
+    gGameData.mBattlePlayers->mBattleTarget = mBattleTarget;
     mContext->mRequest                      = 0;
     mBattleTarget->mRotYAdjust                    = mRotYAdjust;
     mBattleTarget->mRotZAdjust                    = mRotZAdjust;
@@ -704,9 +704,9 @@ void BattleShoot::LoadGraphics() {
     char buffer[0x80];
     u8 player;
     u8 record;
-    LoadEffectGroup(data_020d433c.mEffects, 0, "jammer");
-    player = data_020d433c.mBattlePlayers->mTurnPlayer;
-    record = data_020d433c.mBattlePlayers->mPlayers[player]->RecordIndex();
+    LoadEffectGroup(gGameData.mEffects, 0, "jammer");
+    player = gGameData.mBattlePlayers->mTurnPlayer;
+    record = gGameData.mBattlePlayers->mPlayers[player]->RecordIndex();
     ChangeDir("/Game/Battle/Bg/");
     LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
@@ -716,7 +716,7 @@ void BattleShoot::LoadGraphics() {
     LoadAndQueueUpload(1, UPLOAD_KIND_BG_PLTT, 0, "pentest_pen_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG2_SCR, 0, "pentest_pen_nsc.bin", 0, 0, 0);
     ClearBitmap();
-    u8 id = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[record].mAttribute;
+    u8 id = gGameData.mBattlePlayers->mPlayers[player]->mRecords[record].mAttribute;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj/");
@@ -751,7 +751,7 @@ void BattleShoot::LoadGraphics() {
     mCells[4].mX               = 0x80;
     mCells[4].mY               = 0x30;
     mCells[4].mUnk_08          = 2;
-    if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
+    if (gGameData.mMicEnabled && gGameData.mTutorialNumber == 0) {
         mCells[4].mCellAnim->SetAnimation(0);
     }
     mMicTargetY = 0x60;
@@ -784,11 +784,11 @@ void BattleShoot::LoadGraphics() {
     mCells[2].mY               = 0x18;
     mCells[2].mUnk_08          = 1;
     bool flag = false;
-    if (data_020d433c.mBattlePlayers->Current()->mSpGauge >= 0xbe) {
-        u8 kind = data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mBakuganId;
+    if (gGameData.mBattlePlayers->Current()->mSpGauge >= 0xbe) {
+        u8 kind = gGameData.mBattlePlayers->Current()->CurrentRecord()->mBakuganId;
         if ((kind == 0x24) | (kind == 0x25)) {
             flag = true;
-        } else if ((u8) data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mLevel >= 2) {
+        } else if ((u8) gGameData.mBattlePlayers->Current()->CurrentRecord()->mLevel >= 2) {
             flag = true;
         }
     }
@@ -820,8 +820,8 @@ void BattleShoot::LoadGraphics() {
     mMessageWindow->func_02065bd4(0x20, 0xa2, 2);
     mMessageWindow->SetWidth(0xe0);
     mMessageWindow->StartMessage(0, 0, 1);
-    if (data_020d433c.mAntenna) {
-        data_020d433c.mAntenna->SetupLayout(9);
+    if (gGameData.mAntenna) {
+        gGameData.mAntenna->SetupLayout(9);
     }
 }
 
@@ -986,7 +986,7 @@ BOOL BattleShoot::UpdateShotInput() {
         } else {
           if (mStartTouchInCorner != 0) {
             if (((mTouchX > 0xc8) & (mTouchY < 0x30)) && mSpEnabled != 0) {
-                u8 record = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecords[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecord].mAttribute;
+                u8 record = gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mTurnPlayer]->mRecords[gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mTurnPlayer]->mRecord].mAttribute;
                 if (mSpKind == 0) {
                     mCells[2].mCellAnim->SetAnimation(0);
                     mCells[0].mCellAnim->SetAnimation(2);
@@ -1246,7 +1246,7 @@ void BattleShoot::StartTouchShot() {
     } else {
         angle = (s16) value;
     }
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 curve = list->mPlayers[list->mTurnPlayer]->mRecords[list->mPlayers[list->mTurnPlayer]->mRecord].mShootCurveIndex;
     mShotRotY = angle * gShootCurves[curve].mNumerator / gShootCurves[curve].mDenominator + 0x6000;
     mShotRotZ = 0x38e;
@@ -1270,12 +1270,12 @@ void BattleShoot::StartTouchShot() {
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         return;
     }
-    u8 index = data_020d433c.mBattlePlayers->mTurnPlayer;
-    data_020d433c.mBattlePlayers->mPlayers[index]->mShotSpeed = mShotSpeed;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
+    u8 index = gGameData.mBattlePlayers->mTurnPlayer;
+    gGameData.mBattlePlayers->mPlayers[index]->mShotSpeed = mShotSpeed;
+    BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[index];
     player->mPushSumX = 0;
     player->mPushSumZ = 0;
-    player = data_020d433c.mBattlePlayers->mPlayers[index];
+    player = gGameData.mBattlePlayers->mPlayers[index];
     player->mShotRot[0] = mShotRotX;
     player->mShotRot[1] = mShotRotY;
     player->mShotRot[2] = mShotRotZ;
@@ -1335,7 +1335,7 @@ void BattleShoot::UpdateIcons() {
 }
 
 u16 BattleShoot::GetAngleFromOriginToCpuPos() {
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 index               = list->mTurnPlayer;
     VecFx32 cpuPos         = list->mPlayers[index]->mCpu->mPos;
     VecFx32 *pos = &mBattleTarget->mBakugan->mPosition;
@@ -1350,7 +1350,7 @@ u16 BattleShoot::GetAngleFromOriginToCpuPos() {
 
 void BattleShoot::UpdateTurnPlayerCpu() {
     VecFx32 v;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     BattleCpu *cpu         = list->mPlayers[list->mTurnPlayer]->mCpu;
     if (cpu == 0) {
         return;
@@ -1387,7 +1387,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
     VecFx32 pos2             = cpu->mPos;
     VEC_Subtract(&pos2, &pose->mPosition, &v);
     VEC_Normalize(&v, &v);
-    if (data_020d433c.mTutorialId != 0) {
+    if (gGameData.mTutorialId != 0) {
         v.x = 0;
         v.y = 0;
         v.z = 0;
@@ -1423,7 +1423,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
     if (mCpuPushCount % 5 == 0) {
         s32 out[2];
         mBattleTarget->func_ov007_02255c04(&v, out);
-        StartPushEffect(data_020d433c.mBattlePlayers->mTurnPlayer, out[0], out[1]);
+        StartPushEffect(gGameData.mBattlePlayers->mTurnPlayer, out[0], out[1]);
     }
     u8 roll = MATH_Rand32(&gRandom, (u8) (gCpuPushIntervalRanges[cpu->mPushIndex].mHigh - gCpuPushIntervalRanges[cpu->mPushIndex].mLow));
     mCpuPushInterval = roll + gCpuPushIntervalRanges[cpu->mPushIndex].mLow;
@@ -1442,14 +1442,14 @@ void BattleShoot::UpdatePushMessages() {
     s32 spread;
     u8 charged;
     u8 sent;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 self                = list->mTurnPlayer;
     data_0220f540.mUnk_00  = 9;
     data_0220f540.mUnk_04  = 0;
     *(s32 *) &data_0220f540.mUnk_08 = 0;
     data_0220f540.mUnk_0c  = 0;
     if (MicManager::Get().mEvents != 0) {
-        if (data_020d433c.mMicEnabled) {
+        if (gGameData.mMicEnabled) {
             data_0220f540.mUnk_0c = 1;
         }
     } else {
@@ -1494,8 +1494,8 @@ void BattleShoot::UpdatePushMessages() {
     animState = 0;
     i = 0;
     do {
-        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
-        if (i == data_020d433c.mBattlePlayers->mLocalPlayer) {
+        BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[i];
+        if (i == gGameData.mBattlePlayers->mLocalPlayer) {
             WirelessManager::Get();
             if (!IsWirelessMode(mode)) {
                 mMsgs[i].mType = ((u8 *) &data_0220f540)[0];
@@ -1515,10 +1515,10 @@ void BattleShoot::UpdatePushMessages() {
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
+    } while (i < gGameData.mPlayerCount);
     i = 0;
     do {
-        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
+        BattlePlayer *p = gGameData.mBattlePlayers->mPlayers[i];
         BattleCpu *cpu  = p->mCpu;
         if (cpu != 0 && self != i && self != p->mPartner) {
             s32 outX = 0;
@@ -1539,12 +1539,12 @@ void BattleShoot::UpdatePushMessages() {
             }
         }
         i++;
-    } while (i < data_020d433c.mPlayerCount);
-    BattlePlayer *me = data_020d433c.mBattlePlayers->mPlayers[self];
+    } while (i < gGameData.mPlayerCount);
+    BattlePlayer *me = gGameData.mBattlePlayers->mPlayers[self];
     if (me->mCpu != 0) {
         i = 0;
         do {
-            if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu == 0) {
+            if (gGameData.mBattlePlayers->mPlayers[i]->mCpu == 0) {
                 if (mMsgs[i].mPushX != 0) {
                     mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, gNonCpuPushScales[me->mCharacterLevel]);
                 }
@@ -1553,14 +1553,14 @@ void BattleShoot::UpdatePushMessages() {
                 }
             }
             i++;
-        } while (i < data_020d433c.mPlayerCount);
+        } while (i < gGameData.mPlayerCount);
     }
     sent    = 0;
     sumX    = 0;
     sumZ    = 0;
     charged = 0;
-    power   = data_020d433c.mBattlePlayers->mPlayers[self]->mMicCharge;
-    spread  = data_020d433c.mBattlePlayers->mPlayers[self]->mOtherMicCharge;
+    power   = gGameData.mBattlePlayers->mPlayers[self]->mMicCharge;
+    spread  = gGameData.mBattlePlayers->mPlayers[self]->mOtherMicCharge;
     if (!(mBattleTarget->mUnk_1dd == 4 && mBattleTarget->mAirFrames <= 0x1e)) {
         i = 0;
         do {
@@ -1595,7 +1595,7 @@ void BattleShoot::UpdatePushMessages() {
                 }
             }
             i++;
-        } while (i < data_020d433c.mPlayerCount);
+        } while (i < gGameData.mPlayerCount);
     }
     if (power > 0x1333) {
         power = 0x1333;
@@ -1617,15 +1617,15 @@ void BattleShoot::UpdatePushMessages() {
             }
         }
     }
-    data_020d433c.mBattlePlayers->mPlayers[self]->mMicCharge = power;
-    data_020d433c.mBattlePlayers->mPlayers[self]->mOtherMicCharge = spread;
+    gGameData.mBattlePlayers->mPlayers[self]->mMicCharge = power;
+    gGameData.mBattlePlayers->mPlayers[self]->mOtherMicCharge = spread;
     if (sent == 1) {
-        BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[self];
+        BattlePlayer *pl = gGameData.mBattlePlayers->mPlayers[self];
         pl->mPushSumX = sumX;
         pl->mPushSumZ = sumZ;
         mBattleTarget->AddPlayerPush();
     }
-    if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
+    if (gGameData.mMicEnabled && gGameData.mTutorialNumber == 0) {
         if (mMicCellEventAnim != animState) {
             mMicCellEventAnim = animState;
             if (mMicCellEventAnim) {
@@ -1643,7 +1643,7 @@ void BattleShoot::StartPushEffect(u8 player, s32 x, s32 z) {
     if ((x | z) == 0) {
         return;
     }
-    u8 handle = StartEffect(data_020d433c.mEffects, 0, gPlayerEffectIds[player], 0, 1);
+    u8 handle = StartEffect(gGameData.mEffects, 0, gPlayerEffectIds[player], 0, 1);
     if (handle == 0) {
         return;
     }
@@ -1682,12 +1682,12 @@ void BattleShoot::StartPushEffect(u8 player, s32 x, s32 z) {
         MTX_Concat43(&rot, &mtx, &mtx);
     }
     MTX_SetTranslation43(&mtx, &pos);
-    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
+    SetEffectMatrix(gGameData.mEffects, handle, &mtx);
 }
 
 void BattleShoot::UpdateMessageAndBall() {
     if (mMessageWindow) {
-        u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mAbilityId;
+        u16 id = gGameData.mBattlePlayers->mPlayers[gGameData.mBattlePlayers->mTurnPlayer]->mAbilityId;
         if (mMessageId != id) {
             if (mMessageY == 0x80) {
                 mMessageId = id;
@@ -1732,7 +1732,7 @@ void BattleShoot::DrawMic() {
 }
 
 void BattleShoot::ClearBitmap() {
-    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
+    if (gGameData.mBattlePlayers->mTurnPlayer == gGameData.mBattlePlayers->mLocalPlayer) {
         MI_CpuClearFast(mBitmap, 0x6000);
         UploadBitmap();
     }
@@ -1753,7 +1753,7 @@ void BattleShoot::PlotLine(u8 x0, u8 y0, u8 x1, u8 y1) {
     if (mPlotEnabled == 0) {
         return;
     }
-    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mLocalPlayer) {
+    if (gGameData.mBattlePlayers->mTurnPlayer != gGameData.mBattlePlayers->mLocalPlayer) {
         return;
     }
     steps = ABS(x0 - x1) >= ABS(y0 - y1) ? ABS(x0 - x1) : ABS(y0 - y1);
@@ -1826,7 +1826,7 @@ void BattleShoot::DrawPenAndIcons() {
 BOOL BattleShoot::TryStartPopup() {
     u8 ok = 1;
     WirelessManager::Get();
-    if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mTutorialNumber != 0) {
+    if (IsWirelessMode(&data_020c4030.mUnk_228) || gGameData.mTutorialNumber != 0) {
         ok = 0;
     }
     if (mBattleTarget->mPopupEnabled == 0) {
@@ -1836,7 +1836,7 @@ BOOL BattleShoot::TryStartPopup() {
         if (InputManager::Get().IsPressed(8)) {
             mReturnState = mState;
             mState = 0xd;
-            data_020d433c.mFlags |= 8;
+            gGameData.mFlags |= 8;
             mPlotEnabled = 0;
             return 1;
         }

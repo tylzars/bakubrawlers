@@ -37,7 +37,7 @@ static const WindowCellRecord sRetryCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x3000, 2, 0, 1, {10, 10, 10, 0}},
 };
 
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -59,7 +59,7 @@ GameOverScene::GameOverScene() :
     mState          = 0;
     mSelection      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
-    if (data_020d433c.mUnk_8a_4 != 0) {
+    if (gGameData.mUnk_8a_4 != 0) {
         mResultWindowKind = GAME_OVER_RESULT_WINDOW_NO_MAP;
     } else {
         mResultWindowKind = GAME_OVER_RESULT_WINDOW_WITH_MAP;
@@ -165,7 +165,7 @@ void GameOverScene::Update() {
                 next = mSelection == 0 ? SCENE_BATTLE_PLAYER_LIST : SCENE_TITLE;
             }
             if (next == SCENE_TITLE) {
-                data_020d433c.mUnk_76 = 0;
+                gGameData.mUnk_76 = 0;
             }
             RequestScene(next);
             mFinished = TRUE;

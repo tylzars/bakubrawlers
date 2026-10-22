@@ -26,7 +26,7 @@ GimmickJumpObj::~GimmickJumpObj() {
 void GimmickJumpObj::Init() {
     char buf[0x804];
     LoadCollisionFile(buf, 0x5d);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
     RotateDir(0);
 }
 
@@ -68,12 +68,12 @@ void GimmickJumpObj::Update() {
         mState++;
         break;
     case 1: {
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             if (mTimer == 0) {
                 DrawInstance();
             } else {
-                data_020d433c.mFlags &= 8;
-                if (data_020d433c.mFlags == 0) {
+                gGameData.mFlags &= 8;
+                if (gGameData.mFlags == 0) {
                     mTimer--;
                 }
             }
@@ -81,7 +81,7 @@ void GimmickJumpObj::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -92,8 +92,8 @@ void GimmickJumpObj::Update() {
         u32 r = MATH_Rand32(&gRandom, 0x444);
         MTX_ApplyRotY33(&m, r - 0x222);
         MTX_MultVec33(&mDir, &m, &mDir);
-        SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &mDir, 1);
-        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 4, 0xb4);
+        SetTargetVelocity(gGameData.mBattlePlayers->mBattleTarget, &mDir, 1);
+        func_ov007_0225ca18(gGameData.mBattlePlayers->mBattleTarget, 4, 0xb4);
         mTimer = 0x3c;
         SoundManager::Get().StartSeqArc(0x37);
         mState++;

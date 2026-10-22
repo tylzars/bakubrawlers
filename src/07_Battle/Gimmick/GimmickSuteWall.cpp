@@ -1,7 +1,7 @@
 #include "System/SoundManager.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include <nitro/fx.h>
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -33,13 +33,13 @@ void GimmickSuteWall::Load() {
         if (!set) {
             return;
         }
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+        RemoveCollisionSet(gGameData.mGimmickCollision, set);
         mCollision = 0;
         return;
     }
     if (!mCollision) {
         LoadCollisionFile(buf, 0x3c);
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK, buf, &mPosition, &mRotX, mType);
+        mCollision = AddCollisionSet(gGameData.mGimmickCollision, COLLISION_GROUP_GIMMICK, buf, &mPosition, &mRotX, mType);
     }
     if (!sResources[1]) {
         sResources[1] = new ModelResource("sutewall_n.nsbmd", "sutewall_n_data.bin", "sutewall_n.nsbtx", 1);
@@ -95,17 +95,17 @@ void GimmickSuteWall::Update() {
         if (mMarkerNear) {
             return;
         }
-        if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
+        if (mModel && (int)gGameData.mGimmicks->mState >= 2) {
             DrawInstance();
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
+        BattleTarget *target = gGameData.mBattlePlayers->mBattleTarget;
         if (!(target && mCollision && mCollision->mHitCount)) {
             return;
         }
         if (VEC_Mag(&target->mVelocity) < 0x5000) {
             return;
         }
-        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
+        RemoveCollisionSet(gGameData.mGimmickCollision, mCollision);
         SoundManager::Get().StartSeqArc(4);
         mState++;
         break;
@@ -117,7 +117,7 @@ void GimmickSuteWall::Update() {
         if (!mModel) {
             return;
         }
-        if ((int)data_020d433c.mGimmicks->mState < 2) {
+        if ((int)gGameData.mGimmicks->mState < 2) {
             return;
         }
         UpdateModelBThenRemove();
@@ -133,8 +133,8 @@ int GimmickSuteWall::UpdateModelBThenRemove() {
         return 0;
     }
     if (!mModelB->AdvanceAnim()) {
-        if (data_020d433c.mGimmicks) {
-            data_020d433c.mGimmicks->Remove(mId);
+        if (gGameData.mGimmicks) {
+            gGameData.mGimmicks->Remove(mId);
         }
         mState++;
     }

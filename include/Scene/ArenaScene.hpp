@@ -70,14 +70,14 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
-    // Nothing before state 2. Else Stop, data_020d433c.mWireless = 0, names reset, back to state 2 with mVariant 0,
+    // Nothing before state 2. Else Stop, gGameData.mWireless = 0, names reset, back to state 2 with mVariant 0,
     // the antenna finished, the sub-menu closed and StartFade(FADE_MODE_TO_ZERO).
     void StopWirelessAndReset();
     // No-op for the current mode. 1 / 2: seq 1 / 2, BG2 priority 0, a new SelectWindow(3 / 2, ...) as mSubMenuWindow,
     // PrintMessage(12 / 11); 0: deletes mSubMenuWindow, BG2 priority 3.
     void SetSubMenuMode(u32 mode);
     void InitDisplay();
-    void LoadGraphics(); // first calls data_020d433c.mAntenna->SetupLayout(1) when it is set
+    void LoadGraphics(); // first calls gGameData.mAntenna->SetupLayout(1) when it is set
     void SetupVariant();
     void RefreshSlotAnimations(); // mSlots[0] and [1] only: mFrame + 1 for the one at mSelection, else mFrame
     // 1 for cursor event 1, event 3 without a selection change, or UpdateMenu 1; 2 for UpdateMenu 2; else 0.

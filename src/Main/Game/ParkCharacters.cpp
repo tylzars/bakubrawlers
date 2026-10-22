@@ -1,5 +1,5 @@
 #include "Game/SaveData.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Game/Random.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/mi.h>
@@ -148,7 +148,7 @@ struct ParkPick {
 // some placements here are load-bearing: `j = 0` at its declaration puts j (the fill loop's index) first, `g = 0` comes
 // before `category`/`group` in the first loop, the perm loop counts with g, `flag` is shared by the duplicate check and
 // the else branch, and `k` is declared right after `group`.
-// Also writes data_020d433c.mParkGroupEntryIndices (the entry picked for each slot).
+// Also writes gGameData.mParkGroupEntryIndices (the entry picked for each slot).
 void FillParkSlots() {
     ParkGroup *group;
     u8 k;
@@ -325,7 +325,7 @@ void FillParkSlots() {
             e = 0;
             do {
                 if (entry->mType == perm[0]) {
-                    data_020d433c.mParkGroupEntryIndices[g] = e;
+                    gGameData.mParkGroupEntryIndices[g] = e;
                     break;
                 }
                 e++;
@@ -401,7 +401,7 @@ void GetParkEntry(u32 index, void *out) {
     }
     ParkEntry *list = groups[group].mEntries;
     if (gSaveData[0].mCreditsDone) {
-        MIi_CpuCopyFast(&list[data_020d433c.mParkGroupEntryIndices[index]], out, 12);
+        MIi_CpuCopyFast(&list[gGameData.mParkGroupEntryIndices[index]], out, 12);
     } else {
         MIi_CpuCopyFast(&list[groups[group].mDefault], out, 12);
     }
@@ -432,26 +432,26 @@ void func_02089a9c(u32 index) {
             u8 slotGroup = gSaveData[0].mParkSlots[index].mGroup;
             u8 charSlot;
             if (flag) {
-                charSlot = data_020d433c.mParkGroupEntryIndices[index];
+                charSlot = gGameData.mParkGroupEntryIndices[index];
             }
             gSaveData[0].mParkSlots[index].mCategory = gSaveData[0].mParkSlots[4].mCategory;
             gSaveData[0].mParkSlots[index].mGroup = gSaveData[0].mParkSlots[4].mGroup;
             if (gSaveData[0].mCreditsDone) {
-                data_020d433c.mParkGroupEntryIndices[index] = data_020d433c.mParkGroupEntryIndices[4];
+                gGameData.mParkGroupEntryIndices[index] = gGameData.mParkGroupEntryIndices[4];
             }
             i = 4;
             do {
                 gSaveData[0].mParkSlots[i].mCategory = gSaveData[0].mParkSlots[i + 1].mCategory;
                 gSaveData[0].mParkSlots[i].mGroup    = gSaveData[0].mParkSlots[i + 1].mGroup;
                 if (gSaveData[0].mCreditsDone) {
-                    data_020d433c.mParkGroupEntryIndices[i] = data_020d433c.mParkGroupEntryIndices[i + 1];
+                    gGameData.mParkGroupEntryIndices[i] = gGameData.mParkGroupEntryIndices[i + 1];
                 }
                 i++;
             } while (i < gSaveData[0].mParkSlotCount - 1);
             gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mCategory = slotCat;
             gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mGroup = slotGroup;
             if (gSaveData[0].mCreditsDone) {
-                data_020d433c.mParkGroupEntryIndices[gSaveData[0].mParkSlotCount - 1] = charSlot;
+                gGameData.mParkGroupEntryIndices[gSaveData[0].mParkSlotCount - 1] = charSlot;
             }
             break;
         }

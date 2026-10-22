@@ -1,6 +1,6 @@
 #include "Battle/BattleBase.hpp"
 #include "Battle/BattleMapTypes.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/GameData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelTransform.hpp"
@@ -109,7 +109,7 @@ void BattleMapObj::Load() {
             AddPart("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
             break;
         case MAP_OBJ_KIND_FIELD_TABLE:
-            AddTableParts(&gMapObjFieldTables[data_020d433c.mFieldId]);
+            AddTableParts(&gMapObjFieldTables[gGameData.mFieldId]);
             break;
         default:
             AddTableParts(&gMapObjKindTables[mKind]);

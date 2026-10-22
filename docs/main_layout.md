@@ -22,7 +22,7 @@ middleware) is not decompiled as game source; it will be matched or linked separ
 | 0x0200e310-0x02011c34 | CARD and CARD backup (save memory) |
 | 0x02011c34-0x020122b0 | CTRDG (approx.) |
 | 0x020122b0-0x0201d72c | MSL C runtime: printf family, string, math |
-| 0x0201d72c-0x020202bc | soft float and double math, 64-bit and 32-bit division (`_s32_div_f` at 0x0201f970), all hand-written assembly: `libs/msl/src/rt_soft_float.c` |
+| 0x0201d72c-0x020202bc | soft float and double math, 64-bit and 32-bit division (`_s32_div_f` at 0x0201f970), hand-written assembly apart from one C constant return: `libs/msl/src/rt_soft_float.c` |
 | 0x020202bc-0x0202030c | C++ runtime glue: the constructor walk and `__register_global_object` (`libs/msl/src/rt_global_ctors.c`) |
 | 0x02030880-0x02036538 | NitroSystem: FND lists and heaps (0x02030880-0x02031418), G3d (to 0x02035c68), Gfd texture VRAM manager (to about 0x02036538) |
 | 0x02036538-0x0203a52c | NNS sound (approx.) |

@@ -12,15 +12,15 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnk_5ac)
+extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnlockedTipBits0)
 
 extern u8 data_020d49a6[];
 
-extern u8 data_020d496a[];
+extern u8 gUnlockedCharacterLevel0Bits[];
 
-extern u8 data_020d496d[];
+extern u8 gUnlockedCharacterLevel1Bits[];
 
-extern u8 data_020d4970[];
+extern u8 gUnlockedCharacterLevel2Bits[];
 
 s32 UnlockEmblem8Or9();
 
@@ -306,9 +306,9 @@ BOOL UnlockStoreItems() {
     if (list != NULL) {
         i = 0;
         do {
-            if (!TEST_BIT((u8 *) gSaveData[0].mUnk_586, list[i])) {
-                SET_BIT((u8 *) gSaveData[0].mUnk_586, list[i]);
-                gSaveData[0].mUnk_5b9_0 = 1;
+            if (!TEST_BIT((u8 *) gSaveData[0].mUnlockedBakuganBits, list[i])) {
+                SET_BIT((u8 *) gSaveData[0].mUnlockedBakuganBits, list[i]);
+                gSaveData[0].mStoreItemsUnlocked = 1;
                 result                      = TRUE;
             }
             i++;
@@ -318,9 +318,9 @@ BOOL UnlockStoreItems() {
     if (list2 != NULL) {
         i = 0;
         do {
-            if (!TEST_BIT((u8 *) gSaveData[0].mUnk_58b, list2[i])) {
-                SET_BIT((u8 *) gSaveData[0].mUnk_58b, list2[i]);
-                gSaveData[0].mUnk_5b9_0 = 1;
+            if (!TEST_BIT((u8 *) gSaveData[0].mUnlockedCardBits, list2[i])) {
+                SET_BIT((u8 *) gSaveData[0].mUnlockedCardBits, list2[i]);
+                gSaveData[0].mStoreItemsUnlocked = 1;
                 result                      = TRUE;
             }
             i++;
@@ -340,17 +340,17 @@ BOOL UnlockCharacters() {
     if (list != NULL && list[0] != 0xff) {
     do {
         u8 id = list[0];
-        if (!TestFlagBit(data_020d496a + list[1] * 3, id)) {
+        if (!TestFlagBit(gUnlockedCharacterLevel0Bits + list[1] * 3, id)) {
             u32 index = (u32) id >> 3;
-            if (!((data_020d496a[index] | data_020d496d[index] | data_020d4970[index]) & (1 << (id % 8)))) {
+            if (!((gUnlockedCharacterLevel0Bits[index] | gUnlockedCharacterLevel1Bits[index] | gUnlockedCharacterLevel2Bits[index]) & (1 << (id % 8)))) {
                 result = TRUE;
             }
-            data_020d496a[index] |= 1 << (id % 8);
+            gUnlockedCharacterLevel0Bits[index] |= 1 << (id % 8);
             if (list[1] >= 1) {
-                data_020d496d[(u32) list[0] >> 3] |= 1 << (list[0] % 8);
+                gUnlockedCharacterLevel1Bits[(u32) list[0] >> 3] |= 1 << (list[0] % 8);
             }
             if (list[1] >= 2) {
-                data_020d4970[(u32) list[0] >> 3] |= 1 << (list[0] % 8);
+                gUnlockedCharacterLevel2Bits[(u32) list[0] >> 3] |= 1 << (list[0] % 8);
             }
         }
         list += 2;
@@ -361,40 +361,40 @@ BOOL UnlockCharacters() {
 
 BOOL UnlockFields() {
     BOOL result = FALSE;
-    if (!(gSaveData[0].mUnk_578 & 0x1)) {
+    if (!(gSaveData[0].mUnlockedFieldBits & 0x1)) {
         result = TRUE;
         ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x1;
     }
-    if (!(gSaveData[0].mUnk_578 & 0x80)) {
+    if (!(gSaveData[0].mUnlockedFieldBits & 0x80)) {
         result = TRUE;
         ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x80;
     }
-    if (gSaveData[0].mUnk_42 >= 4 && !(gSaveData[0].mUnk_578 & 0x4)) {
+    if (gSaveData[0].mUnk_42 >= 4 && !(gSaveData[0].mUnlockedFieldBits & 0x4)) {
         result = TRUE;
         ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x4;
     }
-    if (gSaveData[0].mUnk_42 >= 7 && !(gSaveData[0].mUnk_578 & 0x10)) {
+    if (gSaveData[0].mUnk_42 >= 7 && !(gSaveData[0].mUnlockedFieldBits & 0x10)) {
         result = TRUE;
         ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x10;
     }
-    if (gSaveData[0].mUnk_42 >= 8 && !(gSaveData[0].mUnk_578 & 0x8)) {
+    if (gSaveData[0].mUnk_42 >= 8 && !(gSaveData[0].mUnlockedFieldBits & 0x8)) {
         result = TRUE;
         ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x8;
     }
     u8 stage = gSaveData[0].mUnk_42;
     if ((stage > 8) | ((stage == 8) & (gSaveData[0].mUnk_43 == 4))) {
-        if (!(gSaveData[0].mUnk_578 & 0x2)) {
+        if (!(gSaveData[0].mUnlockedFieldBits & 0x2)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x2;
         }
     }
     stage = gSaveData[0].mUnk_42;
     if ((stage > 9) | ((stage == 9) & (gSaveData[0].mUnk_43 == 9))) {
-        if (!(gSaveData[0].mUnk_578 & 0x20)) {
+        if (!(gSaveData[0].mUnlockedFieldBits & 0x20)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x20;
         }
-        if (!(gSaveData[0].mUnk_578 & 0x40)) {
+        if (!(gSaveData[0].mUnlockedFieldBits & 0x40)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x40;
         }
@@ -422,7 +422,7 @@ BOOL func_02086d48() {
         level = 5;
     }
     if (rank <= 1) {
-        if (gSaveData[0].mUnk_5bf_0 != 0) {
+        if (gSaveData[0].mCreditsDone != 0) {
             level = 6;
         }
     }
@@ -450,38 +450,38 @@ BOOL UnlockTips() {
         SET_FLAG_LOOP(0, 3)
         SET_FLAG_LOOP(10, 13)
         if (VD.mUnk_43 != 0) {
-            if (!(VD.mUnk_5ac & 0x10)) {
+            if (!(VD.mUnlockedTipBits0 & 0x10)) {
                 result = TRUE;
                 ((volatile u8 *) gUnlockedTipBits)[0] |= 0x10;
             }
         }
         if (VD.mUnk_43 > 1) {
-            if (!(VD.mUnk_5ac & 0x20)) {
+            if (!(VD.mUnlockedTipBits0 & 0x20)) {
                 result = TRUE;
                 ((volatile u8 *) gUnlockedTipBits)[0] |= 0x20;
             }
-            if (!(VD.mUnk_5ac & 0x40)) {
+            if (!(VD.mUnlockedTipBits0 & 0x40)) {
                 result = TRUE;
                 ((volatile u8 *) gUnlockedTipBits)[0] |= 0x40;
             }
         }
     }
     if (VD.mUnk_42 > 1) {
-        if (!(VD.mUnk_5ac & 0x80)) {
+        if (!(VD.mUnlockedTipBits0 & 0x80)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedTipBits)[0] |= 0x80;
         }
-        if (!(VD.mUnk_5ad & 0x40)) {
+        if (!(VD.mUnlockedTipBits1 & 0x40)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedTipBits)[1] |= 0x40;
         }
-        if (!(VD.mUnk_5ad & 0x80)) {
+        if (!(VD.mUnlockedTipBits1 & 0x80)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedTipBits)[1] |= 0x80;
         }
     }
     if (VD.mUnk_42 > 2) {
-        if (!(VD.mUnk_5ad & 0x1)) {
+        if (!(VD.mUnlockedTipBits1 & 0x1)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedTipBits)[1] |= 0x1;
         }
@@ -490,7 +490,7 @@ BOOL UnlockTips() {
         SET_FLAG_LOOP(0x10, 0x1a)
     }
     if (VD.mUnk_42 > 5 && VD.mUnk_43 > 2) {
-        if (!(VD.mUnk_5ad & 0x2)) {
+        if (!(VD.mUnlockedTipBits1 & 0x2)) {
             result = TRUE;
             ((volatile u8 *) gUnlockedTipBits)[1] |= 0x2;
         }
@@ -507,14 +507,14 @@ BOOL UnlockTips() {
 s32 UnlockEmblem() {
     s32 result = -1;
     if (StageReached(1, 1, 2)) {
-        if (!(VD.mUnk_5b6 & 0x40)) {
+        if (!(VD.mUnlockedEmblemBits0 & 0x40)) {
             result = 6;
             ((volatile u8 *) data_020d49a6)[0] |= 0x40;
         }
     }
     if (result < 0) {
         if (StageReached(3, 3, 3)) {
-            if (!(VD.mUnk_5b6 & 0x2)) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x2)) {
                 result = 1;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x2;
             }
@@ -522,7 +522,7 @@ s32 UnlockEmblem() {
     }
     if (result < 0) {
         if (StageReached(9, 6, 2)) {
-            if (!(VD.mUnk_5b6 & 0x10)) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x10)) {
                 result = 4;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x10;
             }
@@ -530,7 +530,7 @@ s32 UnlockEmblem() {
     }
     if (result < 0) {
         if (StageReached(7, 7, 4)) {
-            if (!(VD.mUnk_5b6 & 0x20)) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x20)) {
                 result = 5;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x20;
             }
@@ -538,7 +538,7 @@ s32 UnlockEmblem() {
     }
     if (result < 0) {
         if (StageReached(8, 8, 3)) {
-            if (!(VD.mUnk_5b6 & 0x1)) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x1)) {
                 result = 0;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x1;
             }
@@ -546,7 +546,7 @@ s32 UnlockEmblem() {
     }
     if (result < 0) {
         if (StageReached(9, 9, 6)) {
-            if (!(VD.mUnk_5b6 & 0x4)) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x4)) {
                 result = 2;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x4;
             }
@@ -554,9 +554,9 @@ s32 UnlockEmblem() {
     }
     if (result < 0) {
         u8 stage = VD.mUnk_42;
-        if ((stage > 6) | ((stage == 6) & (VD.mUnk_43 == 2)) | VD.mUnk_5bf_0) {
+        if ((stage > 6) | ((stage == 6) & (VD.mUnk_43 == 2)) | VD.mCreditsDone) {
             if (data_020d48f0.mRank <= 1) {
-                if (!(VD.mUnk_5b6 & 0x80)) {
+                if (!(VD.mUnlockedEmblemBits0 & 0x80)) {
                     result = 7;
                     ((volatile u8 *) data_020d49a6)[0] |= 0x80;
                 }
@@ -564,8 +564,8 @@ s32 UnlockEmblem() {
         }
     }
     if (result < 0) {
-        if (VD.mUnk_5bf_0 != 0) {
-            if (!(VD.mUnk_5b6 & 0x8)) {
+        if (VD.mCreditsDone != 0) {
+            if (!(VD.mUnlockedEmblemBits0 & 0x8)) {
                 result = 3;
                 ((volatile u8 *) data_020d49a6)[0] |= 0x8;
             }
@@ -579,7 +579,7 @@ s32 UnlockEmblem() {
 
 s32 UnlockEmblem8Or9() {
     s32 result = -1;
-    if (!(gSaveData[0].mUnk_5b7 & 0x1)) {
+    if (!(gSaveData[0].mUnlockedEmblemBits1 & 0x1)) {
         u16 count = 0;
         u16 i     = 0;
         do {
@@ -599,7 +599,7 @@ s32 UnlockEmblem8Or9() {
         }
     }
     if (result < 0) {
-        if (!(gSaveData[0].mUnk_5b7 & 0x2)) {
+        if (!(gSaveData[0].mUnlockedEmblemBits1 & 0x2)) {
             u16 count = 0;
             u16 i     = 0;
             do {
@@ -649,7 +649,7 @@ BOOL IsProgressEntryUnlocked(u32 index) {
             const u8 *list = (const u8 *) ProgressEntries()[index].mList;
             i              = 0;
             do {
-                if (!TEST_BIT(data_020d496a + list[1] * 3, list[0])) {
+                if (!TEST_BIT(gUnlockedCharacterLevel0Bits + list[1] * 3, list[0])) {
                     result = FALSE;
                 }
                 i++;
@@ -667,9 +667,9 @@ BOOL UnlockProgressEntry(u32 index) {
             u8 i            = 0;
             const u16 *list = (const u16 *) ProgressEntries()[index].mList;
             do {
-                if (!TEST_BIT((u8 *) gSaveData[0].mUnk_58b, list[i])) {
-                    SET_BIT((u8 *) gSaveData[0].mUnk_58b, list[i]);
-                    gSaveData[0].mUnk_5b9_0 = 1;
+                if (!TEST_BIT((u8 *) gSaveData[0].mUnlockedCardBits, list[i])) {
+                    SET_BIT((u8 *) gSaveData[0].mUnlockedCardBits, list[i]);
+                    gSaveData[0].mStoreItemsUnlocked = 1;
                     result                       = TRUE;
                 }
                 i++;
@@ -685,9 +685,9 @@ BOOL UnlockProgressEntry(u32 index) {
             list  = (const u8 *) ProgressEntries()[index].mList;
             i     = 0;
             do {
-                if (!TEST_BIT((u8 *) gSaveData[0].mUnk_586, list[i])) {
-                    SET_BIT((u8 *) gSaveData[0].mUnk_586, list[i]);
-                    gSaveData[0].mUnk_5b9_0 = 1;
+                if (!TEST_BIT((u8 *) gSaveData[0].mUnlockedBakuganBits, list[i])) {
+                    SET_BIT((u8 *) gSaveData[0].mUnlockedBakuganBits, list[i]);
+                    gSaveData[0].mStoreItemsUnlocked = 1;
                     result                       = TRUE;
                 }
                 i++;
@@ -704,10 +704,10 @@ BOOL UnlockProgressEntry(u32 index) {
             i     = 0;
             do {
                 u8 id = list[0];
-                if (!((data_020d496a[(u32) id >> 3] | data_020d496d[(u32) id >> 3] | data_020d4970[(u32) id >> 3]) & (1 << (id % 8)))) {
+                if (!((gUnlockedCharacterLevel0Bits[(u32) id >> 3] | gUnlockedCharacterLevel1Bits[(u32) id >> 3] | gUnlockedCharacterLevel2Bits[(u32) id >> 3]) & (1 << (id % 8)))) {
                     result = TRUE;
                 }
-                (data_020d496a + list[1] * 3)[(u32) id >> 3] |= 1 << (id % 8);
+                (gUnlockedCharacterLevel0Bits + list[1] * 3)[(u32) id >> 3] |= 1 << (id % 8);
                 i++;
             } while (i < count);
             break;

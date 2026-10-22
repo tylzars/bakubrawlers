@@ -241,7 +241,7 @@ public:
     BOOL TryRestOnCell(); // on TRUE the ball is stopped on the cell (velocity 0, y 0x899a) and the shot ends
     void UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d);
     // One step: ++*counter, the mPushPerFrame fold-in, ground bounce and friction (mLanded) or gravity, the stop after
-    // 0x28 motionless steps (mResult 1, mResultFrames), the mUnk_dc + mUnk_e4 extra along x/z; flag forces the air branch
+    // 0x28 motionless steps (mResult 1, mResultFrames), the mMicCharge + mOtherMicCharge extra along x/z; flag forces the air branch
     void IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag, u32 mode);
     void LimitSumLength(VecFx32 *a, VecFx32 *b);
     void StopSoundAfterVentKaze(); // stops seq 0xf the step after the last VENT_KAZE hit (the tornado also uses 0xf)

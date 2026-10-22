@@ -146,15 +146,15 @@ BattlePlayer::BattlePlayer(u32 index)
     (void) DataLayoutSlot();
     mPushSumX = 0;
     mPushSumZ = 0;
-    mUnk_dc = 0;
+    mMicCharge = 0;
     mUnk_ee = 0;
     mState = 0;
-    mUnk_f3 = 0;
+    mSpGauge = 0;
     mHistoryCount = 0;
     mRecord = 0;
     mAbilityId = 0;
-    mUnk_fc = 0;
-    mUnk_fd = 0;
+    mFieldPowerSHitCount = 0;
+    mFieldPowerGHitCount = 0;
     mUnk_fe = 0;
     MI_CpuFill8((u8 *) this + 0xc, 0, 0x78);
     MI_CpuFill8((u8 *) this + 0x84, 0, 0x24);
@@ -171,7 +171,7 @@ BattlePlayer::BattlePlayer(u32 index)
         mCpu = new BattleCpu(index);
         mState = 2;
     }
-    mUnk_f7 = data_020d43df[index];
+    mCharacterLevel = data_020d43df[index];
     mCharacterId = data_020d43db[index];
     SaveData *save = gSaveData;
     mSlots54[0].mValue = save->mSlots54Values[0];
@@ -204,16 +204,16 @@ BattlePlayer::BattlePlayer(u32 index)
                 if (data_020d43e3[(u32) n >> 3] & (1 << (n % 8))) {
                     extra = 0x64;
                 }
-            } else if (gSaveData[0].mUnk_5bf_0) {
+            } else if (gSaveData[0].mCreditsDone) {
                 extra = 0x64;
             }
-            mRecords[k].mUnk_04 = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mUnk_04 * 10 + extra;
+            mRecords[k].mUnk_04 = sPlayerTemplates[mCharacterId][mCharacterLevel].mRecords[k].mUnk_04 * 10 + extra;
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
-            mRecords[k].mAttribute = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mAttribute;
-            mRecords[k].mBakuganId = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mBakuganId;
-            mRecords[k].mHead = *(BattleRecordHead *) &sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k];
-            mSlots54[k].mValue = sPlayerTemplates[mCharacterId][mUnk_f7].mSlots54Values[k][0];
-            mSlots6c[k].mValue = sPlayerTemplates[mCharacterId][mUnk_f7].mSlots6cValues[k][0];
+            mRecords[k].mAttribute = sPlayerTemplates[mCharacterId][mCharacterLevel].mRecords[k].mAttribute;
+            mRecords[k].mBakuganId = sPlayerTemplates[mCharacterId][mCharacterLevel].mRecords[k].mBakuganId;
+            mRecords[k].mHead = *(BattleRecordHead *) &sPlayerTemplates[mCharacterId][mCharacterLevel].mRecords[k];
+            mSlots54[k].mValue = sPlayerTemplates[mCharacterId][mCharacterLevel].mSlots54Values[k][0];
+            mSlots6c[k].mValue = sPlayerTemplates[mCharacterId][mCharacterLevel].mSlots6cValues[k][0];
             k++;
         } while (k < 3);
     }
@@ -242,8 +242,8 @@ BattlePlayer::BattlePlayer(u32 index)
                 break;
         }
     }
-    mSlots54Remaining = data_020d433c.mUnk_99;
-    mSlots6cRemaining = data_020d433c.mUnk_99;
+    mSlots54Remaining = data_020d433c.mSlotsPerPlayer;
+    mSlots6cRemaining = data_020d433c.mSlotsPerPlayer;
     MI_CpuClear32((u8 *) this + 0x100, 0x20);
     MI_CpuClear32((u8 *) this + 0x120, 0x20);
     InitPlayerName(this);
@@ -303,7 +303,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     u8 ones;
     player->mPushSumX = 0;
     player->mPushSumZ = 0;
-    n       = data_020d433c.mUnk_99;
+    n       = data_020d433c.mSlotsPerPlayer;
     hasZero = 0;
     ones    = 0;
     do {
@@ -329,10 +329,10 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                         player->mRecords[i].mStatus = 0;
                     }
                     i++;
-                } while (i < data_020d433c.mUnk_99);
+                } while (i < data_020d433c.mSlotsPerPlayer);
             }
         } else {
-            if (ones == data_020d433c.mUnk_99) {
+            if (ones == data_020d433c.mSlotsPerPlayer) {
                 data_020d433c.mBattlePlayers->mUnk_292 = 1;
             } else {
                 i = 0;
@@ -341,7 +341,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                         player->mRecords[i].mStatus = 0;
                     }
                     i++;
-                } while (i < data_020d433c.mUnk_99);
+                } while (i < data_020d433c.mSlotsPerPlayer);
             }
         }
     }
@@ -378,7 +378,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             }
         } else {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            int top                = data_020d433c.mUnk_99 - 1;
+            int top                = data_020d433c.mSlotsPerPlayer - 1;
             u8 mine                = player->mUnk_ee;
             i                      = 0;
             do {
@@ -396,20 +396,20 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             } while (i < data_020d433c.mPlayerCount);
         }
         u8 gain = best * 0x28 + 0x1e + flagA * 0x19;
-        if (player->mUnk_f3 + gain < 0xbe) {
-            player->mUnk_f3 += gain;
+        if (player->mSpGauge + gain < 0xbe) {
+            player->mSpGauge += gain;
         } else {
-            player->mUnk_f3 = 0xbe;
+            player->mSpGauge = 0xbe;
         }
     }
     if (data_020d433c.mLastBattle != 0) {
         player->mRecords[1].mStatus = 2;
         player->mRecords[2].mStatus = 2;
         if (player->mIndex != 0) {
-            if (player->mUnk_f3 + 0xbe < 0xbe) {
-                player->mUnk_f3 += 0xbe;
+            if (player->mSpGauge + 0xbe < 0xbe) {
+                player->mSpGauge += 0xbe;
             } else {
-                player->mUnk_f3 = 0xbe;
+                player->mSpGauge = 0xbe;
             }
         }
         data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
@@ -559,7 +559,7 @@ u8 PickUnflaggedSlot54(BattlePlayer *player) {
     u8 count               = 0;
     u8 j;
     BattlePlayer *owner    = list->mPlayers[player->mIndex];
-    u8 n                   = data_020d433c.mUnk_99;
+    u8 n                   = data_020d433c.mSlotsPerPlayer;
     do {
         if (owner->mSlots54[i].mFlag == 0) {
             count++;
@@ -593,7 +593,7 @@ u8 PickUnflaggedSlot54(BattlePlayer *player) {
     return first;
 }
 
-// Random index (below data_020d433c.mUnk_99) of an mSlots6c entry with mFlag 0 whose bit in mask is clear; 0xff for
+// Random index (below data_020d433c.mSlotsPerPlayer) of an mSlots6c entry with mFlag 0 whose bit in mask is clear; 0xff for
 // none. Slot 1 with an mValue of 0x92..0xa7 is returned at once (or, at random, slot 0 when that one is free too).
 // The pick gives 0xff instead for mValue 0x8c when x > y and for 0x8e..0x91 when y >= 0.
 u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y) {
@@ -601,7 +601,7 @@ u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     u8 i = 0;
     u8 count = 0;
     BattlePlayer *owner = list->mPlayers[player->mIndex];
-    u8 n = data_020d433c.mUnk_99;
+    u8 n = data_020d433c.mSlotsPerPlayer;
     u8 result = 0xff;
     do {
         if (owner->mSlots6c[i].mFlag == 0) {

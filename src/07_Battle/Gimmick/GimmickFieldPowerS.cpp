@@ -88,26 +88,26 @@ void GimmickFieldPowerS::Update() {
         switch (mVariant) {
         case 0: {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
-            int v           = p->mUnk_f3 + 0xbe;
+            int v           = p->mSpGauge + 0xbe;
             if (v >= 0xbe) {
-                p->mUnk_f3 = 0xbe;
+                p->mSpGauge = 0xbe;
             } else {
-                p->mUnk_f3 = v;
+                p->mSpGauge = v;
             }
             BattlePlayer *p2 = data_020d433c.mBattlePlayers->Current();
-            p2->mUnk_fc++;
-            if (p2->mUnk_fc > 0x63) {
-                p2->mUnk_fc = 0x63;
+            p2->mFieldPowerSHitCount++;
+            if (p2->mFieldPowerSHitCount > 0x63) {
+                p2->mFieldPowerSHitCount = 0x63;
             }
             break;
         }
         case 1: {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
-            int v           = p->mUnk_f3 + 0xa;
+            int v           = p->mSpGauge + 0xa;
             if (v < 0xbe) {
-                p->mUnk_f3 = v;
+                p->mSpGauge = v;
             } else {
-                p->mUnk_f3 = 0xbe;
+                p->mSpGauge = 0xbe;
             }
             break;
         }

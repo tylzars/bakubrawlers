@@ -157,7 +157,7 @@ TournamentScene::TournamentScene() :
         mTextBuffers[i] = NULL;
         mGlyphBuffers[i] = NULL;
     }
-    if (gSaveData[0].mUnk_5bf_0) {
+    if (gSaveData[0].mCreditsDone) {
         mLastIndex = 1;
     } else {
         mLastIndex = 0;
@@ -761,12 +761,12 @@ void TournamentScene::Update() {
                         } while (pos >= 1);
                     }
                     SetSlotEntryIndex(gSaveData, 0, 0, slot);
-                    data_020d4478[slot].mUnk_0 = 2;
-                    UnkStruct_02023248 *entry           = GetBakuganEntry(gSaveData, 0x25, id);
-                    entry->mUnk_0              = 3;
-                    entry->mUnk_3              = 2;
-                    entry->mUnk_6              = 3;
-                    entry->mUnk_9              = 1;
+                    data_020d4478[slot].mLevel = 2;
+                    BakuganEntry *entry           = GetBakuganEntry(gSaveData, 0x25, id);
+                    entry->mShotSpeedAdjustIndex              = 3;
+                    entry->mShootCurveIndex              = 2;
+                    entry->mPushTableIndex              = 3;
+                    entry->mRestLimitIndex              = 1;
                     entry->mUnk_12             = 2;
                     data_020d4850[GetBakuganEntryIndex(gSaveData, 0, 0x24, (u8) gSaveData[0].mAttribute)] = 0;
                 }

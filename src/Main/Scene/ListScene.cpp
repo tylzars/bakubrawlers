@@ -1140,7 +1140,7 @@ void ListScene::Update() {
             break;
         case 35:
             if (func_02078270(mUnk_1e0)) {
-                UnkStruct_02023248 *pair = GetBakuganEntry(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mListFilter);
+                BakuganEntry *pair = GetBakuganEntry(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mListFilter);
                 u16 val = func_020231f4(&gSaveData[0], 0, mItemIds[mCursorItem] & 0xff, mListFilter);
                 SetCommandListValues(mCommandList, mListFilter, val, (BattleCellPair *) pair);
             }
@@ -1554,9 +1554,9 @@ void ListScene::PrintRows() {
                 if (mScroll + i >= mItemCount) {
                     break;
                 }
-                UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
+                BakuganEntry *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
                 u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mListFilter);
-                PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mLevel);
             }
             break;
         case LIST_MODE_STORE_CARD:
@@ -1577,9 +1577,9 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
+                    BakuganEntry *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
                     u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mListFilter);
-                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mLevel);
                 }
             } else {
                 for (; i < 4; i++) {
@@ -1599,9 +1599,9 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
+                    BakuganEntry *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mListFilter);
                     u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mListFilter);
-                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mLevel);
                 }
             } else {
                 for (; i < 4; i++) {
@@ -1835,9 +1835,9 @@ void ListScene::UpdateListInput() {
                         SoundManager::Get().StartSeqArc(0);
                         return;
                     case LIST_MODE_STORE_GAUGE: {
-                        UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mListFilter);
+                        BakuganEntry *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mListFilter);
                         mPrice                  = GetEntryPrice((u8) mItemIds[mCursorItem], mListFilter);
-                        if ((s32) entry->mUnk_00_0 >= 9) {
+                        if ((s32) entry->mLevel >= 9) {
                             SetupListTextKind(this, 7);
                         } else if (gSaveData[0].mMoney < mPrice) {
                             SetupListTextKind(this, LIST_TEXT_KIND_PRICE_ABOVE_MONEY);
@@ -2835,7 +2835,7 @@ void ListScene::BuildList(u32 unk1) {
                         mItemCount++;
                     }
                 }
-                if (!(gSaveData[0].mUnk_586[4] & 4) && mListFilter == 0 && gSaveData[0].mSpecialNameCode0Used != 0) {
+                if (!(gSaveData[0].mUnlockedBakuganBits[4] & 4) && mListFilter == 0 && gSaveData[0].mSpecialNameCode0Used != 0) {
                     mItemIds[mItemCount] = 0x22;
                     mItemCount++;
                 }
@@ -3819,15 +3819,15 @@ void ResetCursorBakuganEntry(ListScene *self) {
     u8 id     = self->mItemIds[self->mCursorItem];
     int value = GetBakuganEntryIndex(gSaveData, 0, id, self->mListFilter);
     func_020231c0(gSaveData, value, self->func_02086548(id, self->mListFilter));
-    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, id, self->mListFilter);
+    BakuganEntry *entry = GetBakuganEntry(gSaveData, id, self->mListFilter);
     u32 index                 = GetBakuganTableIndex(self, id, self->mListFilter);
-    entry->mUnk_00_0          = 0;
+    entry->mLevel          = 0;
     entry->mGauge             = 0;
-    entry->mUnk_0             = sInitialEntryFields[index][0];
+    entry->mShotSpeedAdjustIndex             = sInitialEntryFields[index][0];
     entry->mUnk_12            = sInitialEntryFields[index][1];
-    entry->mUnk_3             = sInitialEntryFields[index][2];
-    entry->mUnk_6             = sInitialEntryFields[index][3];
-    entry->mUnk_9             = sInitialEntryFields[index][4];
+    entry->mShootCurveIndex             = sInitialEntryFields[index][2];
+    entry->mPushTableIndex             = sInitialEntryFields[index][3];
+    entry->mRestLimitIndex             = sInitialEntryFields[index][4];
 }
 
 BOOL ListScene::IsCommandListOrPageSettingUp() {
@@ -4661,16 +4661,16 @@ BOOL ListSceneHasAttribute(ListScene *self, u32 unk1) {
 }
 
 u32 ListScene::GetEntryPrice(u32 unk1, u32 unk2) {
-    UnkStruct_02023248 *pair = GetBakuganEntry(gSaveData, unk1, unk2);
-    if ((s32) pair->mUnk_00_0 >= 9) {
+    BakuganEntry *pair = GetBakuganEntry(gSaveData, unk1, unk2);
+    if ((s32) pair->mLevel >= 9) {
         return 10000000;
     }
     u32 cost = GetPrice(unk1, unk2);
     if (cost == 0) {
         cost = 5000;
     }
-    u32 price = cost * sPricePercents[pair->mUnk_00_0] / 100;
-    return price - price * pair->mGauge / ((pair->mUnk_00_0 + 1) * 300);
+    u32 price = cost * sPricePercents[pair->mLevel] / 100;
+    return price - price * pair->mGauge / ((pair->mLevel + 1) * 300);
 }
 
 BOOL ListScene::ShouldApplyTargetPage() {
@@ -4727,7 +4727,7 @@ s32 ListScene::func_0208644c() {
 
 u32 ListScene::GetPrice(u32 unk1, u32 unk2) {
     u32 index = GetBakuganTableIndex(this, unk1, unk2);
-    if (gSaveData[0].mUnk_5bf_0 == 0 && index == 0x24) {
+    if (gSaveData[0].mCreditsDone == 0 && index == 0x24) {
         return Table_020a3860()[index].mPriceTens * 10;
     }
     return sBakuganPriceEntries[index].mPriceTens * 10;

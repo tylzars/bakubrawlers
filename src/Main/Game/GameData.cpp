@@ -60,7 +60,7 @@ void ResetSaveData() {
     gSaveData[0].mUnk_18_8 = 2;
     gSaveData[0].mUnk_18_14 = 0;
     gSaveData[0].mUnk_18_11 = 1;
-    gSaveData[0].mUnk_27_5 = 0;
+    gSaveData[0].mRuleFieldVariant = 0;
     gSaveData[0].mRules |= 0x1c;
     data_020d433c.mRules = gSaveData[0].mRules;
     do {
@@ -87,12 +87,12 @@ void ResetSaveData() {
 // Also applies the volumes (ApplyVolumeOptions).
 void ResetOptions(SaveData *d) {
     SaveData *p = gSaveData;
-    p->mUnk_28_5 = 1;
+    p->mCommandItemXIndex = 1;
     p->mMicEnabled = 1;
     p->mVolume0Index = 5;
     p->mVolume1Index = 5;
     p->mVolume2Index = 5;
-    p->mUnk_27_0 = p->mMicEnabled;
+    p->mRuleMicEnabled = p->mMicEnabled;
     ApplyVolumeOptions(d);
 }
 
@@ -164,16 +164,16 @@ void SetBakuganEntry(SaveData *d, const u16 *src, u32 b, u32 c) {
     d->mBakuganEntries[idx][1] = src[1];
 }
 
-UnkStruct_02023248 *GetBakuganEntry(SaveData *d, u32 a, u32 b) {
+BakuganEntry *GetBakuganEntry(SaveData *d, u32 a, u32 b) {
     int idx = GetBakuganEntryIndex(d, 0, a, b);
-    return (UnkStruct_02023248 *) &d->mBakuganEntries[idx];
+    return (BakuganEntry *) &d->mBakuganEntries[idx];
 }
 
 BOOL func_0202326c(SaveData *d) {
     BOOL found = FALSE;
     u8 pairs[6][2] = {{1, 2}, {3, 3}, {6, 2}, {7, 4}, {8, 3}, {9, 6}};
     u8 i = 0;
-    u8 flag = data_020d433c.mUnk_7a;
+    u8 flag = data_020d433c.mScriptMode;
     do {
         if (flag && d->mUnk_42 == pairs[i][0] && d->mUnk_43 == pairs[i][1]) {
             found = TRUE;

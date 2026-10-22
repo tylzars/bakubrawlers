@@ -689,7 +689,7 @@ void BattleTarget::Update() {
                 mResultFrames                                                  = 0;
                 data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId = 0;
                 if (mSpKind != 0) {
-                    data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f3 = 0;
+                    data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0;
                 }
                 switch (mResult) {
                     case 0:
@@ -775,7 +775,7 @@ void BattleTarget::Init() {
     mPushVector.z = -0x1000;
     mBakugan = new BakuganModel();
     if ((u8) (record->mBakuganId + 0xfb) <= 1) {
-        record->mBakuganId = list->mUnk_2b1 % 2 + 5;
+        record->mBakuganId = list->mRandomValue % 2 + 5;
     }
     mBakugan->Setup(record->mBakuganId, record->mAttribute, BAKUGAN_MODEL_MODE_H_NO_LOOP);
     mBakugan->mVisible = 0;
@@ -852,7 +852,7 @@ void BattleTarget::LoadUnitCollisions() {
                 mUnitCollisionBuffer = (u8 *) new GimmickBuffer;
                 LoadCollisionFile(mUnitCollisionBuffer, 0xb);
             }
-            rot[1] = unit->mUnk_0c;
+            rot[1] = unit->mRotY;
             rot[0] = 0;
             rot[2] = 0;
             mUnitCollisions[i] = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_UNIT, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
@@ -1190,30 +1190,30 @@ void BattleTarget::UpdateMove() {
             if ((mAirFrames == 0 && mAirFramesBeforeIntegrate != -1) || mAirFrames == -1) {
                 if (mPushScaleTimer != 0) {
                     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-                    if (player->mUnk_dc != 0) {
-                        u8 n = player->mUnk_e0;
+                    if (player->mMicCharge != 0) {
+                        u8 n = player->mMicBounceCount;
                         if (n < 3) {
                             mBaseVelocity.y += (3 - n) * 0x2666 / 3;
                             SoundManager::Get().StartSeqArc(0x43);
                             n        = n + 1;
                             mForceAirborne = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e0 = n;
+                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mMicBounceCount = n;
                         VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
                         mPushVelocity.x = 0;
                         mPushVelocity.y = 0;
                         mPushVelocity.z = 0;
                     }
                     player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-                    if (player->mUnk_e4 != 0) {
-                        u8 n = player->mUnk_e8;
+                    if (player->mOtherMicCharge != 0) {
+                        u8 n = player->mOtherMicBounceCount;
                         if (n < 3) {
                             mBaseVelocity.y += (3 - n) * 0x2666 / 3;
                             SoundManager::Get().StartSeqArc(0x43);
                             n        = n + 1;
                             mForceAirborne = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e8 = n;
+                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mOtherMicBounceCount = n;
                         VEC_Add(&mBaseVelocity, &mPushVelocity, &mBaseVelocity);
                         mPushVelocity.x = 0;
                         mPushVelocity.y = 0;
@@ -1250,7 +1250,7 @@ void BattleTarget::UpdateMove() {
     if (mPushScaleTimer != 0) {
         if (mLanded != 0 && mMoveFrames % 30 == 0 && mSpKind != 2) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
-            mPushScale              = FX_Mul(mPushScale, sTables.mPushScaleFactors[record->mUnk_02_6]);
+            mPushScale              = FX_Mul(mPushScale, sTables.mPushScaleFactors[record->mPushTableIndex]);
         }
         if (mSpKind != 2) {
             mPushScaleTimer--;
@@ -1921,18 +1921,18 @@ void BattleTarget::IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32
     }
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
     BOOL charged         = FALSE;
-    if (player->mUnk_dc != 0) {
-        if ((u8) player->mUnk_e0 < 3) {
+    if (player->mMicCharge != 0) {
+        if ((u8) player->mMicBounceCount < 3) {
             charged = TRUE;
         }
     }
-    if (player->mUnk_e4 != 0) {
-        if ((u8) player->mUnk_e8 < 3) {
+    if (player->mOtherMicCharge != 0) {
+        if ((u8) player->mOtherMicBounceCount < 3) {
             charged = TRUE;
         }
     }
     if (mUnk_1dd != 4 && data_020d433c.mTutorialId == 0 && charged) {
-        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_dc + data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e4;
+        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mMicCharge + data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mOtherMicCharge;
         if (sum != 0) {
             tmp.x = vel->x;
             tmp.z = vel->z;
@@ -3220,7 +3220,7 @@ BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *out
     speed = z + x;
     record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     if (mPrevLanded != 0 && pos->y <= 0x899a) {
-        u32 k = record->mUnk_02_9;
+        u32 k = record->mRestLimitIndex;
         if (speed < sTables.mRestSpeedLimits[k]) {
             u16 lim = sTables.mRestAngleLimits[k];
             if (!(*angle > lim && *angle < (u16) -lim)) {
@@ -3284,8 +3284,8 @@ void BattleTarget::StartShot() {
     dir.z                = 0;
     *(Rot3 *) rot = *(Rot3 *) player->mShotRot;
     rot[1]               = rot[1] + sTables.mBaseRotY[player->mCorner];
-    power             = (u8) (sShotSpeedAdjusts[record->mUnk_02_0] + player->mShotSpeed);
-    mPushScaleTimer = mPushScaleFrameCount = sTables.mPushScaleFrameCounts[record->mUnk_02_6];
+    power             = (u8) (sShotSpeedAdjusts[record->mShotSpeedAdjustIndex] + player->mShotSpeed);
+    mPushScaleTimer = mPushScaleFrameCount = sTables.mPushScaleFrameCounts[record->mPushTableIndex];
     if (player->mShotSpeed == 0) {
         power = 10;
     }
@@ -3391,10 +3391,10 @@ void BattleTarget::StartShot() {
             SetEffectPosition(data_020d433c.mEffects, mShotEffectHandle, &mBakugan->mPosition);
         }
     }
-    player->mUnk_dc = 0;
-    player->mUnk_e0 = 0;
-    player->mUnk_e4 = 0;
-    player->mUnk_e8 = 0;
+    player->mMicCharge = 0;
+    player->mMicBounceCount = 0;
+    player->mOtherMicCharge = 0;
+    player->mOtherMicBounceCount = 0;
     mState++;
 }
 

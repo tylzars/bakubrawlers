@@ -30,10 +30,10 @@ struct BattleUnk022637acUnit {
 // Ability ids (BattleAbility::mAbilityId, copied from BattlePlayer::mAbilityId, which GimmickAbilityField sets from
 // gAbilityRows). The handler for an id is sAbilityHandlers[id - 0xc9] (BattleAbility.cpp).
 // The caster is mPlayer (the turn player); its unit is mUnit (BattleTarget::mUnitHandle - 1).
-// 0xc9: plays "shuto_return" and sets BattlePlayerList::mUnk_2ac = 1; the list then sets mRepeatTurn, and its state 26
+// 0xc9: plays "shuto_return" and sets BattlePlayerList::mAbilityRequest = 1; the list then sets mRepeatTurn, and its state 26
 // skips mTurnCount++ for it, so mTurnPlayer stays the same.
 #define ABILITY_ID_REPEAT_TURN     0xc9
-// 0xca: plays "shuto_return" and sets mUnk_2ac = 2: the list removes mUnitA (or mUnitB and puts mUnitA back on its
+// 0xca: plays "shuto_return" and sets mAbilityRequest = 2: the list removes mUnitA (or mUnitB and puts mUnitA back on its
 // cell) and goes straight back to BattleShoot for the same turn player (BattleCommand, mAddMarkerEnabled cleared, when that
 // player is not BattlePlayerList::mLocalPlayer).
 #define ABILITY_ID_SHOOT_AGAIN     0xca
@@ -54,8 +54,8 @@ struct BattleUnk022637acUnit {
 #define ABILITY_ID_MOVE_TO_MARKER  0xcf
 // 0xd0: plays "defense_up" and sets mUnit's mStatus to 3; BattleTarget's unit checks skip units with mStatus 3.
 #define ABILITY_ID_DEFENSE_UP      0xd0
-// Not named (no word for what they change): 0xcd (no handler; sets mUnk_2ac = 3 when mUnk_0f is 3); 0xd1 (adds
-// the record's mUnk_06 to itself); 0xd2 (sets BattlePlayer::mUnk_f3 to 0xbe); 0xd3 / 0xd4 ("gp_down" /
+// Not named (no word for what they change): 0xcd (no handler; sets mAbilityRequest = 3 when mUnk_0f is 3); 0xd1 (adds
+// the record's mUnk_06 to itself); 0xd2 (sets BattlePlayer::mSpGauge to 0xbe); 0xd3 / 0xd4 ("gp_down" /
 // "gp_pickup2": clear / add to itself the record mUnk_06 of the caster's unit, then of every other placed unit).
 
 // Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Update

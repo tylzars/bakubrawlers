@@ -139,12 +139,12 @@ void BattleBase::Init(BattleData *data, u32 mode) {
         if (data_020d433c.mHasPartners != 0) {
             if (sel == list->mPlayers[first]->mPartner) {
                 mLocalSide = 3;
-                if (data_020d433c.mUnk_7a != 0) {
+                if (data_020d433c.mScriptMode != 0) {
                     mRateFloorSide = 0;
                 }
             } else {
                 mLocalSide = 4;
-                if (data_020d433c.mUnk_7a != 0) {
+                if (data_020d433c.mScriptMode != 0) {
                     mRateFloorSide = 1;
                 }
             }

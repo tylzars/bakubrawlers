@@ -1181,11 +1181,11 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
    // 0x20 bytes cleared before the first text of a page
 
 void SetInitialEntryFields(u32 index, u32 unk2) {
-    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, index, unk2);
-    entry->mUnk_0  = sCommandListInitialEntryFields[index][0];
-    entry->mUnk_3  = sCommandListInitialEntryFields[index][2];
-    entry->mUnk_6  = sCommandListInitialEntryFields[index][3];
-    entry->mUnk_9  = sCommandListInitialEntryFields[index][4];
+    BakuganEntry *entry = GetBakuganEntry(gSaveData, index, unk2);
+    entry->mShotSpeedAdjustIndex  = sCommandListInitialEntryFields[index][0];
+    entry->mShootCurveIndex  = sCommandListInitialEntryFields[index][2];
+    entry->mPushTableIndex  = sCommandListInitialEntryFields[index][3];
+    entry->mRestLimitIndex  = sCommandListInitialEntryFields[index][4];
     entry->mUnk_12 = sCommandListInitialEntryFields[index][1];
 }
 

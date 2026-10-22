@@ -458,7 +458,7 @@ void ParkScene::Update() {
                 case PARK_ENTRY_TYPE_TUTORIAL:
                     sprintf(name, "mes_pm_Tutorial");
                     shown = entry.mUnk_0a_h;
-                    if (shown == 0 && (gSaveData[0].mUnk_5be & 8)) {
+                    if (shown == 0 && (gSaveData[0].mTutorialBits & 8)) {
                         shown = 1;
                     }
                     kind = 9;
@@ -564,29 +564,29 @@ void ParkScene::Update() {
                 switch (entry.mType) {
                     case PARK_ENTRY_TYPE_BATTLE:
                         data_020d433c.mPlayerCount = 2;
-                        data_020d433c.mUnk_99      = 3;
+                        data_020d433c.mSlotsPerPlayer      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mUnk_96      = entry.mUnk_09;
+                        data_020d433c.mFieldVariant      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mUnk_a3[0]      = 0;
+                        data_020d433c.mCharacterLevels[0]      = 0;
                         data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
+                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
                         break;
                     case PARK_ENTRY_TYPE_TEAMBATTLE:
                         data_020d433c.mPlayerCount = 4;
-                        data_020d433c.mUnk_99      = 3;
+                        data_020d433c.mSlotsPerPlayer      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mUnk_96      = entry.mUnk_09;
+                        data_020d433c.mFieldVariant      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 1;
                         data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mUnk_a3[0]      = 0;
+                        data_020d433c.mCharacterLevels[0]      = 0;
                         data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
+                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
                         data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
-                        data_020d433c.mUnk_a3[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
+                        data_020d433c.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
                         data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
-                        data_020d433c.mUnk_a3[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
+                        data_020d433c.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
                         data_020d433c.mPartners[0]      = 1;
                         data_020d433c.mPartners[1]      = 0;
                         data_020d433c.mPartners[2]      = 3;
@@ -594,25 +594,25 @@ void ParkScene::Update() {
                         break;
                     case PARK_ENTRY_TYPE_BATTLE_ROYALE:
                         data_020d433c.mPlayerCount = 4;
-                        data_020d433c.mUnk_99      = 3;
+                        data_020d433c.mSlotsPerPlayer      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
-                        data_020d433c.mUnk_96      = entry.mUnk_09;
+                        data_020d433c.mFieldVariant      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;
-                        data_020d433c.mUnk_a3[0]      = 0;
+                        data_020d433c.mCharacterLevels[0]      = 0;
                         data_020d433c.mCharacterIds[1]      = idx;
-                        data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
+                        data_020d433c.mCharacterLevels[1]      = func_ov004_0221b8c4(idx);
                         data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
-                        data_020d433c.mUnk_a3[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
+                        data_020d433c.mCharacterLevels[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
                         data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
-                        data_020d433c.mUnk_a3[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
+                        data_020d433c.mCharacterLevels[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
                         break;
                 }
                 data_020d433c.mRules = 0x11;
                 data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
-                if (gSaveData[0].mUnk_5bf_0) {
+                if (gSaveData[0].mCreditsDone) {
                     if (entry.mProgressEntryIndex == 0x19 && idx == 7) {
-                        data_020d433c.mUnk_a3[1] = 2;
+                        data_020d433c.mCharacterLevels[1] = 2;
                     }
                 }
                 data_020d433c.mParkEntryIndex = mEntryIndex;
@@ -664,7 +664,7 @@ void ParkScene::Update() {
                 ParkEntry entry;
                 GetParkEntry(mEntryIndex, &entry);
                 if (entry.mUnk_0a_h == 0) {
-                    if (gSaveData[0].mUnk_5be & 8) {
+                    if (gSaveData[0].mTutorialBits & 8) {
                         data_020d433c.mTutorialNumber = 4;
                     } else {
                         data_020d433c.mTutorialNumber = 3;
@@ -827,16 +827,16 @@ void ParkScene::Draw() {
 }
 
 u8 ParkScene::func_ov004_0221b8c4(int index) {
-    if (TestFlagBit(data_020d4970, index)) {
+    if (TestFlagBit(gUnlockedCharacterLevel2Bits, index)) {
         return 2;
     }
-    return TestFlagBit(data_020d496d, index) ? 1 : 0;
+    return TestFlagBit(gUnlockedCharacterLevel1Bits, index) ? 1 : 0;
 }
 
 int ParkScene::GetUnlockedFieldId(int index) {
     if (!TestFlagBit(gUnlockedFieldBits, index)) {
         index = 2;
-        if (!(gSaveData[0].mUnk_578 & 4)) {
+        if (!(gSaveData[0].mUnlockedFieldBits & 4)) {
             index = 0;
         }
     }

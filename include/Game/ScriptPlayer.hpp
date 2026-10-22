@@ -282,7 +282,7 @@ public:
     /* 14e6 */ u8 mGraphicsLoaded; // set only after wait kind 9's LoadGraphics (command 232); the scene clears it
     /* 14e7 */ u8 mUnk_14e7;
     /* 14e8 */ u8 mUnk_14e8;
-    // set by some SetupBattle paths only; the readers do not clear it, only the gSaveData[0].mUnk_5bf_0 test does
+    // set by some SetupBattle paths only; the readers do not clear it, only the gSaveData[0].mCreditsDone test does
     /* 14e9 */ u8 mBattlePending;
     /* 14ea */ u8 mSaveRequested; // also makes state 5 run the unlock checks; state 6 waits until it is cleared
     /* 14eb */ u8 mUnlockPopupHandle; // 1 characters, 2 fields, 3 tips (state 5); callers open UnlockPopup(it - 1)

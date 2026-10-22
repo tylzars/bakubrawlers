@@ -37,7 +37,7 @@ BattleStatusPanels::BattleStatusPanels(u32 charBase, u8 palette, u8 mode, u8 fla
             }
             mPanels[i].mUnk_29 = 3;
         } else {
-            mPanels[i].mUnk_29 = data_020d433c.mUnk_99;
+            mPanels[i].mUnk_29 = data_020d433c.mSlotsPerPlayer;
         }
         i++;
     } while (i < 4);
@@ -436,7 +436,7 @@ void BattleStatusPanels::PrintName(u32 index) {
 }
 
 u8 BattleStatusPanels::GetLevel(u32 index) {
-    int level = data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_f3 / 10;
+    int level = data_020d433c.mBattlePlayers->mPlayers[index]->mSpGauge / 10;
     if (level > 0x13) {
         level = 0x13;
     }

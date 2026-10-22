@@ -54,7 +54,7 @@ public:
     void RandomizePushOffsets();
     void SetPushOffset();
     bool func_ov007_02232e04(u32 a, u32 b, u32 c);
-    // (0, 0) unless the player's mUnk_f7 != 0 and mPushOffsetFrames % mPushOffsetInterval == 0
+    // (0, 0) unless the player's mCharacterLevel != 0 and mPushOffsetFrames % mPushOffsetInterval == 0
     void GetPushOffset(s32 *x, s32 *z);
 };
 

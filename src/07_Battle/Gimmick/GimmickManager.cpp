@@ -94,7 +94,7 @@ void GimmickManager::CreateFromFile(GimmickSetFile *file) {
             g = new GimmickVentKaze(mIds[mTop]);
             break;
         case GIMMICK_TYPE_EXE_POINT:
-            if (data_020d433c.mUnk_7a) {
+            if (data_020d433c.mScriptMode) {
                 g = new GimmickExePoint(mIds[mTop]);
             } else {
                 g = new GimmickFieldPowerS(mIds[mTop], 1);

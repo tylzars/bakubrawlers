@@ -803,7 +803,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
             {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mStorytalkWindow->SetMessage(list->mUnk_2af, 0x64, 0, 0);
+                list->mStorytalkWindow->SetMessage(list->mStorytalkMessageIndex, 0x64, 0, 0);
             }
             G2S_SetBlendBrightness(0x1f, -10);
             mStep++;
@@ -815,7 +815,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 break;
             }
-            data_020d433c.mBattlePlayers->mUnk_2af++;
+            data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
             G2S_SetBlendBrightness(0x1f, 0);
             mStep = 0x1c;
             break;
@@ -865,7 +865,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     bit++;
                 }
                 j++;
-            } while (j < data_020d433c.mUnk_99);
+            } while (j < data_020d433c.mSlotsPerPlayer);
             if (count != 0) {
                 mUnk_66 = 0;
                 mStep = 0x1e;
@@ -983,7 +983,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                             }
                             k++;
                             j++;
-                        } while (j < data_020d433c.mUnk_99);
+                        } while (j < data_020d433c.mSlotsPerPlayer);
                         u8 other = (i + 1) % 2;
                         u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
@@ -1009,7 +1009,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                             }
                             k++;
                             j++;
-                        } while (j < data_020d433c.mUnk_99);
+                        } while (j < data_020d433c.mSlotsPerPlayer);
                         u8 other = (i + 1) % 2;
                         u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
@@ -1291,7 +1291,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     if (idx == mUnk_21) {
                         u32 v = GetTexVariant(e[mUnk_21].mBakuganId, e[mUnk_21].mAttribute);
                         new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mPlayer, 10, v, 0);
-                        if (data_020d433c.mUnk_7a) {
+                        if (data_020d433c.mScriptMode) {
                             s16 d = (s16) (e[(mUnk_21 + 1) % 2].mUnk_04 - e[mUnk_21].mUnk_04);
                             if (d < 0) {
                                 d = 0;
@@ -1557,7 +1557,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                 do {
                     SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                     j++;
-                } while (j < data_020d433c.mUnk_99);
+                } while (j < data_020d433c.mSlotsPerPlayer);
                 (&mSide0MarkerCardApplied)[i] = 1;
                 break;
             }
@@ -1567,7 +1567,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                     do {
                         SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         j++;
-                    } while (j < data_020d433c.mUnk_99);
+                    } while (j < data_020d433c.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1581,7 +1581,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                             SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         }
                         j++;
-                    } while (j < data_020d433c.mUnk_99);
+                    } while (j < data_020d433c.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1595,7 +1595,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                             SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mPlayer], j, 0);
                         }
                         j++;
-                    } while (j < data_020d433c.mUnk_99);
+                    } while (j < data_020d433c.mSlotsPerPlayer);
                     (&mSide0MarkerCardApplied)[side] = 1;
                 }
                 break;
@@ -1651,7 +1651,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                         n++;
                     }
                     j++;
-                } while (j < data_020d433c.mUnk_99);
+                } while (j < data_020d433c.mSlotsPerPlayer);
                 mData->mEntries[side].mUnk_08 = n * 100;
                 (&mSide0MarkerCardApplied)[side]              = 1;
                 break;
@@ -1668,7 +1668,7 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
                         n++;
                     }
                     j++;
-                } while (j < data_020d433c.mUnk_99);
+                } while (j < data_020d433c.mSlotsPerPlayer);
                 mData->mEntries[side].mUnk_08 = n * 150;
                 (&mSide0MarkerCardApplied)[side]              = 1;
                 break;
@@ -2026,7 +2026,7 @@ BOOL BattleConfrontCard::TestCardCondition(u8 side, u16 id) {
             pattern[1] = 1;
         scan2 : {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer];
-            u8 playerCount       = data_020d433c.mUnk_99;
+            u8 playerCount       = data_020d433c.mSlotsPerPlayer;
             do {
                 u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
@@ -2055,7 +2055,7 @@ BOOL BattleConfrontCard::TestCardCondition(u8 side, u16 id) {
             pattern[2] = 5;
         scan3 : {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer];
-            u8 playerCount       = data_020d433c.mUnk_99;
+            u8 playerCount       = data_020d433c.mSlotsPerPlayer;
             do {
                 u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
@@ -2297,7 +2297,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
                 }
                 k++;
                 j++;
-            } while (j < data_020d433c.mUnk_99);
+            } while (j < data_020d433c.mSlotsPerPlayer);
             u8 other = (i + 1) % 2;
             mSlot6cIndex = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[cur->mPlayer], mask,
                                           (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));

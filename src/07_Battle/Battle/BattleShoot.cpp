@@ -186,7 +186,7 @@ public:
     void Setup(); // once per object, from Update state 0 or 7
     void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mSpCellTargetX = 0xdc when set)
     void ClearBitmap(); // only for the local turn player (mTurnPlayer == mLocalPlayer); the upload needs mPlotEnabled
-    // also folds the mMicEvent flags into the turn player's mUnk_dc / mUnk_e4 and steps the other CPUs' offset entries
+    // also folds the mMicEvent flags into the turn player's mMicCharge / mOtherMicCharge and steps the other CPUs' offset entries
     void UpdatePushMessages();
     void UpdateTurnPlayerCpu();
     void StartPushEffect(u8 player, s32 x, s32 z);
@@ -369,7 +369,7 @@ void BattleShoot::Update() {
                 u8 mode = data_020d433c.mTutorialId;
                 if (mode >= 3 && mode <= 12) {
                     data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                     G2S_SetBlendBrightness(0x1f, -10);
                     mState = 2;
                 } else {
@@ -392,11 +392,11 @@ void BattleShoot::Update() {
                 limit = 4;
             }
             if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
-                data_020d433c.mBattlePlayers->mUnk_2af++;
-                if (data_020d433c.mBattlePlayers->mUnk_2af > limit) {
+                data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
+                if (data_020d433c.mBattlePlayers->mStorytalkMessageIndex > limit) {
                     mState = 3;
                 } else {
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                 }
             }
             break;
@@ -784,11 +784,11 @@ void BattleShoot::LoadGraphics() {
     mCells[2].mY               = 0x18;
     mCells[2].mUnk_08          = 1;
     bool flag = false;
-    if (data_020d433c.mBattlePlayers->Current()->mUnk_f3 >= 0xbe) {
+    if (data_020d433c.mBattlePlayers->Current()->mSpGauge >= 0xbe) {
         u8 kind = data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mBakuganId;
         if ((kind == 0x24) | (kind == 0x25)) {
             flag = true;
-        } else if ((u8) data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mUnk_00_0 >= 2) {
+        } else if ((u8) data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mLevel >= 2) {
             flag = true;
         }
     }
@@ -1247,7 +1247,7 @@ void BattleShoot::StartTouchShot() {
         angle = (s16) value;
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 curve = list->mPlayers[list->mTurnPlayer]->mRecords[list->mPlayers[list->mTurnPlayer]->mRecord].mUnk_02_3;
+    u8 curve = list->mPlayers[list->mTurnPlayer]->mRecords[list->mPlayers[list->mTurnPlayer]->mRecord].mShootCurveIndex;
     mShotRotY = angle * gShootCurves[curve].mNumerator / gShootCurves[curve].mDenominator + 0x6000;
     mShotRotZ = 0x38e;
     u8 power = mPrevTouchFrames;
@@ -1546,10 +1546,10 @@ void BattleShoot::UpdatePushMessages() {
         do {
             if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu == 0) {
                 if (mMsgs[i].mPushX != 0) {
-                    mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, gNonCpuPushScales[me->mUnk_f7]);
+                    mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, gNonCpuPushScales[me->mCharacterLevel]);
                 }
                 if (mMsgs[i].mPushZ != 0) {
-                    mMsgs[i].mPushZ = FX_Mul(mMsgs[i].mPushZ, gNonCpuPushScales[me->mUnk_f7]);
+                    mMsgs[i].mPushZ = FX_Mul(mMsgs[i].mPushZ, gNonCpuPushScales[me->mCharacterLevel]);
                 }
             }
             i++;
@@ -1559,8 +1559,8 @@ void BattleShoot::UpdatePushMessages() {
     sumX    = 0;
     sumZ    = 0;
     charged = 0;
-    power   = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_dc;
-    spread  = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4;
+    power   = data_020d433c.mBattlePlayers->mPlayers[self]->mMicCharge;
+    spread  = data_020d433c.mBattlePlayers->mPlayers[self]->mOtherMicCharge;
     if (!(mBattleTarget->mUnk_1dd == 4 && mBattleTarget->mAirFrames <= 0x1e)) {
         i = 0;
         do {
@@ -1617,8 +1617,8 @@ void BattleShoot::UpdatePushMessages() {
             }
         }
     }
-    data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_dc = power;
-    data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4 = spread;
+    data_020d433c.mBattlePlayers->mPlayers[self]->mMicCharge = power;
+    data_020d433c.mBattlePlayers->mPlayers[self]->mOtherMicCharge = spread;
     if (sent == 1) {
         BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[self];
         pl->mPushSumX = sumX;

@@ -970,7 +970,7 @@ extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
             pos.y = unit->mPos.y;
             pos.z = unit->mPos.z;
             Rot16 rot = {0, 0, 0};
-            rot.y = unit->mUnk_0c;
+            rot.y = unit->mRotY;
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
             map->mUnitModels->CreateBakugan(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
         }

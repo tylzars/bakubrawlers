@@ -110,7 +110,7 @@ public:
     /* 6c */ CharacterIcons *mIcons;
     /* 70 */ CellAnimation *mCellAnimsB[5];
     /* 84 */ u32 mHistoryValues[6];
-    // if mUnk_b3: SCENE_TOURNAMENT sPrizeTable * 100, else sRankTable * 100 per opponent (+ 0x708 with mUnk_5bf_0)
+    // if mUnk_b3: SCENE_TOURNAMENT sPrizeTable * 100, else sRankTable * 100 per opponent (+ 0x708 with mCreditsDone)
     /* 9c */ s32 mPrizeMoney;
     /* a0 */ s32 mRewardMoney;
     /* a4 */ s32 mMoneyRemaining; // counted down by 10s: into mMoneyTotal (steps 1-13), shown as added from step 17
@@ -140,7 +140,7 @@ public:
     void ComputeAmounts();
     void PrintResultText();
     void PrintMoney(); // does not clear mTextBuffers[1] itself (UpdateMoneyCount does)
-    // Step 16 adds mMoneyTotal (capped 9999990) to gSaveData[0].mMoney and mUnk_20; step 17 ends with mState + 1
+    // Step 16 adds mMoneyTotal (capped 9999990) to gSaveData[0].mMoney and mBattleMoneyTotal; step 17 ends with mState + 1
     // and *((u8 *) mUnk_68 + 0x78) = 1.
     void UpdateMoneyCount();
     void DrawResultText();
@@ -232,7 +232,7 @@ void BattleResult::Update() {
             break;
         case 1: {
             u8 best = 0;
-            u8 count = data_020d433c.mUnk_99;
+            u8 count = data_020d433c.mSlotsPerPlayer;
             u8 i = 0;
             u32 v;
             u32 limit;
@@ -300,7 +300,7 @@ void BattleResult::Update() {
             }
             break;
         case 3:
-            if (data_020d433c.mUnk_7a != 0) {
+            if (data_020d433c.mScriptMode != 0) {
                 if (data_020d433c.mNextScene == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
                     if (gSaveData[0].mUnk_4a < 9999) {
                         gSaveData[0].mUnk_4a++;
@@ -321,10 +321,10 @@ void BattleResult::Update() {
             BattlePlayer *player = list->mPlayers[me];
             u8 own = player->mUnk_ee;
             u8 partner = player->mPartner;
-            if (own >= data_020d433c.mUnk_99) {
+            if (own >= data_020d433c.mSlotsPerPlayer) {
                 mUnk_b3 = 1;
             } else if (data_020d433c.mHasPartners != 0) {
-                if ((u8) (own + list->mPlayers[partner]->mUnk_ee) >= data_020d433c.mUnk_99) {
+                if ((u8) (own + list->mPlayers[partner]->mUnk_ee) >= data_020d433c.mSlotsPerPlayer) {
                     mUnk_b3 = 1;
                 }
             }
@@ -681,7 +681,7 @@ void BattleResult::LoadResultGraphics() {
             mCellAnims[i + 2]->mFrameIndex = rec[i * 6 + 2];
         }
         i++;
-    } while (i < data_020d433c.mUnk_99);
+    } while (i < data_020d433c.mSlotsPerPlayer);
     AntennaIndicator *unk = data_020d433c.mAntenna;
     if (unk) {
         unk->SetupLayout(12);
@@ -862,7 +862,7 @@ void BattleResult::DrawRetryScreen() {
         y = (i + 1) * 0x28;
         mCellAnimsB[0]->Draw(0, 0x20, y, 1);
         if (data_020d433c.mCharacterIds[i] != 0x15) {
-            mCellAnimsB[4]->mFrameIndex = data_020d433c.mUnk_a3[i];
+            mCellAnimsB[4]->mFrameIndex = data_020d433c.mCharacterLevels[i];
             mCellAnimsB[4]->Draw(0, 0x48, base + 0x37, 0);
         }
         i++;
@@ -938,25 +938,25 @@ void BattleResult::ComputeAmounts() {
         if (data_020d433c.mNextScene == SCENE_TOURNAMENT) {
             switch (gSaveData[0].mUnk_42) {
                 case 1:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][0][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 3:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][1][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][1][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 6:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][2][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][2][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 7:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][3][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][3][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 8:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][4][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][4][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 9:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][5][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][5][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 10:
-                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mCreditsDone][0][gSaveData[0].mUnk_43] * 100;
                     break;
             }
         } else {
@@ -969,10 +969,10 @@ void BattleResult::ComputeAmounts() {
                 u8 rem = idx % count;
                 BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[rem];
                 u8 a = player->mCharacterId;
-                u8 b = player->mUnk_f7;
+                u8 b = player->mCharacterLevel;
                 if (data_020d433c.mHasPartners == 0 || rem != data_020d433c.mBattlePlayers->mPlayers[me]->mPartner) {
                     mPrizeMoney += tbl[a][b % 3] * 100;
-                    if (gSaveData[0].mUnk_5bf_0) {
+                    if (gSaveData[0].mCreditsDone) {
                         mPrizeMoney += 0x308 + 0x400;
                     }
                 }
@@ -985,9 +985,9 @@ void BattleResult::ComputeAmounts() {
     do {
         mHistoryValues[j] = *(u16 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[me2] + 0x84 + j * 6);
         j++;
-    } while (j < data_020d433c.mUnk_99);
-    mUnk_ad = data_020d433c.mBattlePlayers->mPlayers[me2]->mUnk_fd;
-    mUnk_ae = data_020d433c.mBattlePlayers->mPlayers[me2]->mUnk_fc;
+    } while (j < data_020d433c.mSlotsPerPlayer);
+    mUnk_ad = data_020d433c.mBattlePlayers->mPlayers[me2]->mFieldPowerGHitCount;
+    mUnk_ae = data_020d433c.mBattlePlayers->mPlayers[me2]->mFieldPowerSHitCount;
     u32 n2 = data_020d433c.mPlayerCount;
     u16 v = data_020d433c.mBattlePlayers->mTurnCount;
     if (v != 0) {
@@ -1004,7 +1004,7 @@ void BattleResult::ComputeAmounts() {
         if (k < 3) {
             if (data_020d433c.mHasPartners != 0) {
                 mRewardMoney = sRewardRates[1][k] * 100;
-            } else if (data_020d433c.mUnk_99 < 6) {
+            } else if (data_020d433c.mSlotsPerPlayer < 6) {
                 mRewardMoney = sRewardRates[0][k] * 100;
             } else {
                 mRewardMoney = sRewardRates[2][k] * 100;
@@ -1059,8 +1059,8 @@ void BattleResult::PrintResultText() {
     }
     if (mMoneyStep >= 2) {
         u8 n = mMoneyStep - 2;
-        if (n > data_020d433c.mUnk_99) {
-            n = data_020d433c.mUnk_99;
+        if (n > data_020d433c.mSlotsPerPlayer) {
+            n = data_020d433c.mSlotsPerPlayer;
         }
         u8 i = 0;
         do {
@@ -1387,9 +1387,9 @@ void BattleResult::UpdateMoneyCount() {
             if (add > 9999990) {
                 add = 9999990;
             }
-            gSaveData[0].mUnk_20 += add;
-            if (gSaveData[0].mUnk_20 > 9999990) {
-                gSaveData[0].mUnk_20 = 9999990;
+            gSaveData[0].mBattleMoneyTotal += add;
+            if (gSaveData[0].mBattleMoneyTotal > 9999990) {
+                gSaveData[0].mBattleMoneyTotal = 9999990;
             }
             mMoneyRemaining = mMoneyTotal;
             mDelayTimer = 30;

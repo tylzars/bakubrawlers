@@ -187,7 +187,7 @@ void BattleCpu::func_ov007_02231038() {
     u8 n = 0;
     do {
         mUnk_7d += data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee;
-        if (data_020d433c.mUnk_99 - 1 == data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee) {
+        if (data_020d433c.mSlotsPerPlayer - 1 == data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee) {
             if (i == mPlayer) {
                 mUnk_7b = 0;
             } else {
@@ -242,7 +242,7 @@ u8 BattleCpu::TryPickUnflaggedSlot54() {
         u8 m;
         BattlePlayer *pl;
         i     = 0;
-        count = data_020d433c.mUnk_99;
+        count = data_020d433c.mSlotsPerPlayer;
         pl    = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
         free  = 0;
         do {
@@ -374,7 +374,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mSpKind = 0;
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
     BattlePlayer *pl        = list2->mPlayers[cpu->mPlayer];
-    if ((s32) pl->mRecords[cpu->mRecord].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
+    if ((s32) pl->mRecords[cpu->mRecord].mLevel >= 2 && pl->mSpGauge == 0xbe) {
         u8 roll = MATH_Rand32(&gRandom, 100);
         if (cpu->mUnk_7b == 0) {
             roll = 99;
@@ -386,7 +386,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         } else if (cpu->mUnk_7b == 5) {
             roll = 0;
         }
-        if (list2->mPlayers[cpu->mPlayer]->mUnk_f7 == 2) {
+        if (list2->mPlayers[cpu->mPlayer]->mCharacterLevel == 2) {
             roll = 0;
         }
         if (roll < sSpKindChances[kind]) {
@@ -637,7 +637,7 @@ u8 BattleCpu::PickRecord() {
     u8 found         = 0;
     u8 i             = 0;
     BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-    u8 count         = data_020d433c.mUnk_99;
+    u8 count         = data_020d433c.mSlotsPerPlayer;
     do {
         if (pl->mRecords[i].mStatus == 0) {
             found = i;
@@ -729,7 +729,7 @@ void BattleCpu::PickShot(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
     roll = MATH_Rand32(&gRandom, 100);
     if (roll < sShotTableChances[a]) {
         u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
-        u8 sel = data_020d433c.mUnk_96;
+        u8 sel = data_020d433c.mFieldVariant;
         switch (sel) {
         case 0:
         case 1:
@@ -802,11 +802,11 @@ void BattleCpu::PickPushIndex() {
     u8 a;
     a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     roll = MATH_Rand32(&gRandom, 100);
-    b    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7;
+    b    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel;
     if (b >= 2) {
         b = 1;
     }
-    if (data_020d433c.mUnk_7a != 0 && mPlayer == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
+    if (data_020d433c.mScriptMode != 0 && mPlayer == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
         if (a != 0xd && a != 0xe) {
             b = 1;
         }
@@ -957,7 +957,7 @@ bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
 }
 
 void BattleCpu::GetPushOffset(s32 *x, s32 *z) {
-    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7 != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
+    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterLevel != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
         *x = mPushOffsetX;
         *z = mPushOffsetZ;
         return;

@@ -66,7 +66,7 @@ public:
     void DrawCategoryCursor(const u8 *pos, u32 index);
     // Nothing while mEvent runs (both windows disabled). WINDOW_A: category input while mInfo byte 0x02 (mUnk_02 of the
     // .cpp's MyroomTipsSceneInfo) is 0, which is always in this build; picking the current unlocked category (category
-    // 0 not while !mUnk_5bf_0 and mUnk_42 == 6) calls func_0206f88c on mEvent and sets up the row list (mInfo state 8).
+    // 0 not while !mCreditsDone and mUnk_42 == 6) calls func_0206f88c on mEvent and sets up the row list (mInfo state 8).
     // WINDOW_B: row input while mUnk_85 is 0 (a pick starts mRowCells[1] animation 3 and sets mUnk_85); then, once that
     // animation ends, starts the tip's message (mInfo state 0xb) and sets its data_020d49a1 bit (mNew - 1 when newly
     // set).

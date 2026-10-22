@@ -179,7 +179,7 @@ void GimmickFieldDestroy::Update() {
 }
 
 u8 GimmickFieldDestroy::PickKind() {
-    u8 flag   = data_020d433c.mUnk_7a;
+    u8 flag   = data_020d433c.mScriptMode;
     u32 total = 0;
     u8 i;
     for (i = 0; i < 3; i++) {
@@ -288,11 +288,11 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
     mKind                   = PickKind();
     switch (mKind) {
     case 0: {
-        int v = p->mUnk_f3 + 0xbe;
+        int v = p->mSpGauge + 0xbe;
         if (v >= 0xbe) {
             v = 0xbe;
         }
-        p->mUnk_f3 = v;
+        p->mSpGauge = v;
         u8 handle  = StartEffect(data_020d433c.mEffects, 1, 0xc, 0, 1);
         if (!handle) {
             return;

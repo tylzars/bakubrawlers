@@ -2,7 +2,7 @@
 #include "Scene/MyroomTipsScene.hpp"
 #include "Game/ScriptPlayer.hpp"
 #include "Game/SaveData.hpp"
-extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnk_5ac), set by UnlockTips
+extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnlockedTipBits0), set by UnlockTips
 extern u8 data_020d49a1[];
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -435,7 +435,7 @@ void MyroomTipsScene::Draw() {
     if (mFlags & MYROOM_TIPS_WINDOW_A) {
         mNewCells[0]->Update();
         BOOL show = TRUE;
-        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6) {
+        if (!gSaveData[0].mCreditsDone && gSaveData[0].mUnk_42 == 6) {
             show = FALSE;
         }
         BOOL first = (show == FALSE);
@@ -469,7 +469,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
     if (mFlags & MYROOM_TIPS_WINDOW_A) {
         BOOL drawn = FALSE;
         mCellAnimA->Update();
-        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
+        if (!gSaveData[0].mCreditsDone && gSaveData[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
             mCellAnimA->Draw(1, 0x14, 0x22, 2);
             drawn = TRUE;
         }
@@ -560,7 +560,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 } else if (mUnlocked[category] != 0) {
                     BOOL available = TRUE;
                     if (category == 0) {
-                        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6) {
+                        if (!gSaveData[0].mCreditsDone && gSaveData[0].mUnk_42 == 6) {
                             available = FALSE;
                         }
                     }
@@ -633,7 +633,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
         u8 entry     = mIndices[mRow];
         u16 message  = sMyroomTipsEntries[category][entry].mMessage;
         if (category == 4 && sMyroomTipsEntries[category][entry].mText == 0x20) {
-            if (gSaveData[0].mUnk_5bf_0) {
+            if (gSaveData[0].mCreditsDone) {
                 message = 0x2b;
             } else {
                 u8 level = gSaveData[0].mUnk_42;

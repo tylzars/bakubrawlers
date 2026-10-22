@@ -38,7 +38,7 @@ ArenaWindowScene::ArenaWindowScene() : SceneBase(1000, 0) {
     mTextBufferSize = 0;
     mGlyphCount = 0;
     mState = 0;
-    data_020d433c.mUnk_7a = 0;
+    data_020d433c.mScriptMode = 0;
 }
 
 ArenaWindowScene::~ArenaWindowScene() {

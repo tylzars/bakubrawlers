@@ -13,7 +13,7 @@ u8 GetCardInfo(u32 id, u32 kind);
 BOOL UnlockProgressEntry(u32 unk1);
 BOOL UnlockStoreItems();
 // For each UnlockPair of the save position's list sets the id's bit in the level arrays up to its mLevel
-// (data_020d496a, 496d, 4970); TRUE when an id had no bit in any of them before.
+// (gUnlockedCharacterLevel0Bits, 496d, 4970); TRUE when an id had no bit in any of them before.
 BOOL UnlockCharacters();
 // Sets gUnlockedFieldBits bits (bit = field id): 0x1 and 0x80 always, the others by gSaveData[0].mUnk_42 / mUnk_43;
 // TRUE when one of them was clear.
@@ -26,7 +26,7 @@ void RefreshParkSlotProgressEntryFlag();
 // partners, BATTLE_ROYALE four without; MES_ONLY_1..3 show their message and return to the menu; TUTORIAL opens the
 // mes_park entry 4 popup (state 36), whose first button leads to SCENE_TUTORIAL. FillParkSlots' random fill takes
 // only battle types and draws each slot's type from BATTLE (twice), TEAMBATTLE and BATTLE_ROYALE; GetParkEntry skips
-// its unlock search for MES_ONLY_1..3 (unless gSaveData mUnk_5bf_0), and func_02089a9c treats every non-battle type as
+// its unlock search for MES_ONLY_1..3 (unless gSaveData mCreditsDone), and func_02089a9c treats every non-battle type as
 // BATTLE when that flag is set.
 #define PARK_ENTRY_TYPE_BATTLE 0
 #define PARK_ENTRY_TYPE_TEAMBATTLE 1

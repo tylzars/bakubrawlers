@@ -185,7 +185,7 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     FrameTask::Get().StopChannel(1);
     data_020d433c.mRules = 0x11;
     data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
-    data_020d433c.mUnk_7a = 1;
+    data_020d433c.mScriptMode = 1;
     if (data_020d433c.mTutorialPart != 0) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
@@ -342,7 +342,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     }
                     break;
             }
-            if (gSaveData[0].mUnk_5bf_0) {
+            if (gSaveData[0].mCreditsDone) {
                 mBattlePending = 0;
             }
             if (seen) {
@@ -358,7 +358,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
             }
             if (advance != 0) {
                 u32 limit = 10;
-                if (gSaveData[0].mUnk_5bf_0) {
+                if (gSaveData[0].mCreditsDone) {
                     limit = func_02067240(type);
                 }
                 u8 now = ++gSaveData[0].mUnk_43;
@@ -370,7 +370,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                 data_020d433c.mUnk_7d = 0;
             }
             if (done != 0) {
-                if (gSaveData[0].mUnk_5bf_0) {
+                if (gSaveData[0].mCreditsDone) {
                     switch (gSaveData[0].mUnk_42) {
                         case 1:
                             gSaveData[0].mUnk_5bf |= 0x2;
@@ -415,7 +415,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
             }
         }
     }
-    if (gSaveData[0].mUnk_5bf_0) {
+    if (gSaveData[0].mCreditsDone) {
         result = -1;
     }
     return result;
@@ -426,12 +426,12 @@ BOOL ScriptPlayer::func_02066c7c() {
 }
 
 void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
-    data_020d433c.mUnk_99 = 3;
+    data_020d433c.mSlotsPerPlayer = 3;
     data_020d433c.mPlayerCount = 2;
     data_020d433c.mHasPartners = 0;
     for (u8 i = 0; i < 4; i++) {
         data_020d433c.mCharacterIds[i] = i;
-        data_020d433c.mUnk_a3[i] = 0;
+        data_020d433c.mCharacterLevels[i] = 0;
         data_020d433c.mPartners[i] = i;
     }
     switch (mKind) {
@@ -449,15 +449,15 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
     data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
     for (u8 j = 0; j < 3; j++) {
         data_020d433c.mCharacterIds[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
-        data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
+        data_020d433c.mCharacterLevels[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
     }
     UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
     data_020d433c.mFieldId = entry->mFieldId;
-    data_020d433c.mUnk_96 = entry->mUnk_08;
-    if (gSaveData[0].mUnk_5bf_0 && (gSaveData[0].mUnk_580 & 0x80)) {
+    data_020d433c.mFieldVariant = entry->mUnk_08;
+    if (gSaveData[0].mCreditsDone && (gSaveData[0].mUnlockedCharacterLevel2Bits & 0x80)) {
         for (u8 k = 0; k < 3; k++) {
             if (data_020d433c.mCharacterIds[k + 1] == 7) {
-                data_020d433c.mUnk_a3[k + 1] = 2;
+                data_020d433c.mCharacterLevels[k + 1] = 2;
             }
         }
     }
@@ -471,7 +471,7 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
             data_020d433c.mPartners[3] = 2;
             break;
         case 4:
-            data_020d433c.mUnk_99 = 6;
+            data_020d433c.mSlotsPerPlayer = 6;
             break;
         case 5:
             data_020d433c.mPlayerCount = 4;
@@ -549,7 +549,7 @@ u32 ScriptPlayer::func_020670b4(u32 id) {
 u8 ScriptPlayer::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     if (unk3 != 0) {
         u8 slot = unk3 - 1;
-        if (gSaveData[0].mUnk_5bf_0) {
+        if (gSaveData[0].mCreditsDone) {
             u32 kind = func_020670b4(unk1);
             if (kind == 0) {
                 kind = 1;
@@ -2951,7 +2951,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                     v = -v;
                 }
                 data_020d433c.mFieldId = v % 8;
-                data_020d433c.mUnk_96 = 0;
+                data_020d433c.mFieldVariant = 0;
                 break;
             }
         case 222:

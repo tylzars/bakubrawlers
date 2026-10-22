@@ -56,7 +56,7 @@ extern u8 gIntervalRows[];
 
 extern u8 gExtraRows[];
 
-// [character * 12 + mode] plus BattlePlayer::mUnk_f7 gives the ctor's mModeRow row (after its +1 / +2 cases, at
+// [character * 12 + mode] plus BattlePlayer::mCharacterLevel gives the ctor's mModeRow row (after its +1 / +2 cases, at
 // most 9) and func_ov007_022234f0's result (at most 7), which BattleConfrontCard multiplies a power by.
 extern u8 gCharacterModeBases[];
 
@@ -97,12 +97,12 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mModeRow = gModeRowTables[mode];
     int row = unk4 * 12;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
-    u8 base = player->mUnk_f7;
+    u8 base = player->mCharacterLevel;
     u8 *rowp = gCharacterModeBases + row;
     u32 a = rowp[mode];
     a = (u8) (a + base);
     u32 b = (u8) (gCharacterIntervalRowBases[row] + base);
-    if (data_020d433c.mUnk_7a) {
+    if (data_020d433c.mScriptMode) {
         if (data_020d433c.mHasPartners) {
             if (player->mPartner == 0 && player->mCharacterId != 13 && player->mCharacterId != 14) {
                 a = (u8) (a + 1);
@@ -422,7 +422,7 @@ void BattleSlot::StartCardDelay(int sel) {
 
 u32 func_ov007_022234f0(int player, u8 mode, u8 ch) {
     u8 *rowp = gCharacterModeBases + ch * 12;
-    u32 v = (u8) (data_020d433c.mBattlePlayers->mPlayers[player]->mUnk_f7 + rowp[mode]);
+    u32 v = (u8) (data_020d433c.mBattlePlayers->mPlayers[player]->mCharacterLevel + rowp[mode]);
     if (v >= 8) {
         v = 7;
     }

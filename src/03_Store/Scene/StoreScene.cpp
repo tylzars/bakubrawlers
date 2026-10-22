@@ -81,7 +81,7 @@ StoreScene::StoreScene() :
     for (u8 i = 0; i < 2; i++) {
         mCellAnims[i] = NULL;
     }
-    gSaveData[0].mUnk_5b9_0 = 0;
+    gSaveData[0].mStoreItemsUnlocked = 0;
     FrameTask::Get().StartChannel(0, 0x16);
 }
 

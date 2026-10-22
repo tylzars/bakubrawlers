@@ -70,9 +70,9 @@ void GimmickFieldPowerG::Update() {
         RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
         func_ov007_0226a380(p, p->mRecord, 0x1e);
-        p->mUnk_fd++;
-        if (p->mUnk_fd > 0x63) {
-            p->mUnk_fd = 0x63;
+        p->mFieldPowerGHitCount++;
+        if (p->mFieldPowerGHitCount > 0x63) {
+            p->mFieldPowerGHitCount = 0x63;
         }
         SoundManager::Get().StartSeqArc(0x35);
         CameraManager::Get();

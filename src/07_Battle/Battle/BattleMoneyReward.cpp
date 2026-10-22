@@ -117,7 +117,7 @@ BattleMoneyReward::BattleMoneyReward()
             mKind = 0;
             break;
     }
-    if (gSaveData[0].mUnk_5bf_0) {
+    if (gSaveData[0].mCreditsDone) {
         mAmount = sRewards[mKind][1];
     } else {
         mAmount = sRewards[mKind][0];
@@ -135,9 +135,9 @@ BattleMoneyReward::BattleMoneyReward()
     if (add > 9999990) {
         add = 9999990;
     }
-    gSaveData[0].mUnk_20 += add;
-    if (gSaveData[0].mUnk_20 > 9999990) {
-        gSaveData[0].mUnk_20 = 9999990;
+    gSaveData[0].mBattleMoneyTotal += add;
+    if (gSaveData[0].mBattleMoneyTotal > 9999990) {
+        gSaveData[0].mBattleMoneyTotal = 9999990;
     }
 }
 
@@ -311,7 +311,7 @@ void BattleMoneyReward::Update() {
             }
             G2S_SetBlendBrightness(0x1f, 0);
             draw = 0;
-            if (!gSaveData[0].mUnk_5bf_0) {
+            if (!gSaveData[0].mCreditsDone) {
                 ClearBit(data_020d49a1, 13);
             }
             RequestScene(1);

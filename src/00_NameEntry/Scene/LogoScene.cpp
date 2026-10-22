@@ -18,7 +18,7 @@ LogoScene::LogoScene() :
 }
 
 LogoScene::~LogoScene() {
-    data_020d433c.mUnk_80 = 0;
+    data_020d433c.mSkipTitleMovie = 0;
 }
 
 void LogoScene::Update() {

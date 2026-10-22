@@ -78,7 +78,7 @@ TutorialScene::TutorialScene() :
     mUnk_4d        = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     for (u8 i = 0; i < 7; i++) {
-        if (TestFlagBit(data_020d49ae, i)) {
+        if (TestFlagBit(gTutorialBits, i)) {
             mFlags[i] = 1;
         } else {
             mFlags[i] = 0;
@@ -114,7 +114,7 @@ TutorialScene::~TutorialScene() {
     }
     for (u8 i = 0; i < 7; i++) {
         if (mFlags[i] != 0) {
-            SetFlagBit(data_020d49ae, i);
+            SetFlagBit(gTutorialBits, i);
         }
     }
 }
@@ -440,17 +440,17 @@ void TutorialScene::Update() {
             mState = 6;
             break;
         case 26: {
-            data_020d433c.mUnk_99 = 3;
+            data_020d433c.mSlotsPerPlayer = 3;
             data_020d433c.mPlayerCount = 2;
             data_020d433c.mHasPartners = 0;
             data_020d433c.mCharacterIds[0] = 0x15;
             u8 idx = data_020d433c.mTutorialNumber;
             data_020d433c.mCharacterIds[1] = data_ov005_022200d8[idx][0];
-            data_020d433c.mUnk_a3[1] = 0;
+            data_020d433c.mCharacterLevels[1] = 0;
             data_020d433c.mPartners[0] = 0;
             data_020d433c.mPartners[1] = 1;
             data_020d433c.mFieldId = 0;
-            data_020d433c.mUnk_96 = data_ov005_022200d8[idx][1];
+            data_020d433c.mFieldVariant = data_ov005_022200d8[idx][1];
             u8 id = GetTutorialId(this);
             if (id == 9) {
                 id = 10;
@@ -482,12 +482,12 @@ void TutorialScene::Update() {
                         int slot = GetBakuganEntryIndex(gSaveData, 0, 0x24, id);
                         func_020231c0(gSaveData, slot, 0x1b8);
                         SetSlotEntryIndex(gSaveData, 0, 0, slot);
-                        data_020d4478[slot].mUnk_0 = 2;
-                        UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, 0x24, id);
-                        entry->mUnk_0 = 2;
-                        entry->mUnk_3 = 1;
-                        entry->mUnk_6 = 3;
-                        entry->mUnk_9 = 2;
+                        data_020d4478[slot].mLevel = 2;
+                        BakuganEntry *entry = GetBakuganEntry(gSaveData, 0x24, id);
+                        entry->mShotSpeedAdjustIndex = 2;
+                        entry->mShootCurveIndex = 1;
+                        entry->mPushTableIndex = 3;
+                        entry->mRestLimitIndex = 2;
                         entry->mUnk_12 = 1;
                         SetFlagBit(data_020d49b0, id);
                         break;
@@ -837,14 +837,14 @@ BOOL func_ov005_0221fd64(TutorialScene *scene) {
     }
 }
 
-// Also sets data_020d433c.mNextScene = SCENE_TUTORIAL and mUnk_99 = 3.
+// Also sets data_020d433c.mNextScene = SCENE_TUTORIAL and mSlotsPerPlayer = 3.
 void SetupFourPlayerBattle() {
-    data_020d433c.mUnk_99 = 3;
+    data_020d433c.mSlotsPerPlayer = 3;
     data_020d433c.mPlayerCount = 4;
     u8 i;
     for (i = 0; i < 4; i++) {
         data_020d433c.mCharacterIds[i] = i;
-        data_020d433c.mUnk_a3[i] = 0;
+        data_020d433c.mCharacterLevels[i] = 0;
         data_020d433c.mPartners[i] = i;
     }
     data_020d433c.mNextScene = SCENE_TUTORIAL;

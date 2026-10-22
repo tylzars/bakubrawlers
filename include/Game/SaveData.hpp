@@ -3,13 +3,13 @@
 #include "global.h"
 #include "types.h"
 
-struct UnkStruct_02023248 {
-    /* 0 */ u16 mUnk_00_0 : 4;
+struct BakuganEntry {
+    /* 0 */ u16 mLevel : 4;
     /* 0 */ u16 mGauge : 12; // BattlePlayer copies the entry into BattleRecord::mHead, whose mGauge this is
-    /* 2 */ u16 mUnk_0 : 3;
-    /* 2 */ u16 mUnk_3 : 3;
-    /* 2 */ u16 mUnk_6 : 3;
-    /* 2 */ u16 mUnk_9 : 3;
+    /* 2 */ u16 mShotSpeedAdjustIndex : 3;
+    /* 2 */ u16 mShootCurveIndex : 3;
+    /* 2 */ u16 mPushTableIndex : 3;
+    /* 2 */ u16 mRestLimitIndex : 3;
     /* 2 */ u16 mUnk_12 : 3;
     /* 2 */ u16 mUnk_15 : 1;
     /* 4 */
@@ -43,22 +43,22 @@ struct SaveData {
     /* 01a */ u16 mUnk_1a_3 : 5;
     /* 01a */ u16 mAttribute : 8; // AttrSelScene's choice (sAttribToSaved[mAttrib]); 0..5
     /* 01c */ u32 mMoney;
-    /* 020 */ u32 mUnk_20;
+    /* 020 */ u32 mBattleMoneyTotal;
     /* 024 */ u8 mUnk_24;
     /* 025 */ u8 mUnk_25;
     /* 026 */ u8 mLanguage; // written by SaveWindow; nothing in this build reads it back
     union {
-        /* 027 */ u8 mRules; // copied to and from data_020d433c.mRules; mUnk_27_0 mirrors mMicEnabled
+        /* 027 */ u8 mRules; // copied to and from data_020d433c.mRules; mRuleMicEnabled mirrors mMicEnabled
         struct {
-            /* 027 */ u8 mUnk_27_0 : 1;
+            /* 027 */ u8 mRuleMicEnabled : 1;
             /* 027 */ u8 mUnk_27_1 : 1;
             /* 027 */ u8 mUnk_27_2 : 3;
-            /* 027 */ u8 mUnk_27_5 : 2;
+            /* 027 */ u8 mRuleFieldVariant : 2;
             /* 027 */ u8 mUnk_27_7 : 1;
         };
     };
     /* 028 */ u16 mUnk_28_0 : 5;
-    /* 028 */ u16 mUnk_28_5 : 1;
+    /* 028 */ u16 mCommandItemXIndex : 1;
     /* 028 */ u16 mMicEnabled : 1;
     /* 028 */ u16 mVolume0Index : 3; // also selects gSeqVolumes -> SoundManager::mSeqVolume
     /* 028 */ u16 mVolume1Index : 3; // also selects gSeqArcVolumes -> SoundManager::mSeqArcVolume
@@ -68,7 +68,7 @@ struct SaveData {
     /* 043 */ u8 mUnk_43; // entry position inside data_020b4324[mUnk_42], reset with each mUnk_42 step
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
     // Counters BattleResult raises (capped): its mUnk_b3 is set when BattlePlayer::mUnk_ee of player
-    // BattlePlayerList::mLocalPlayer (plus the partner's) reaches data_020d433c.mUnk_99.
+    // BattlePlayerList::mLocalPlayer (plus the partner's) reaches data_020d433c.mSlotsPerPlayer.
     /* 048 */ u16 mUnk_48; // +1 when mUnk_b3 is set
     /* 04a */ u16 mUnk_4a; // +1 when mUnk_b3 is clear
     /* 04c */ PAD(0x04c, 0x04e);
@@ -88,31 +88,31 @@ struct SaveData {
     /* 088 */ u16 mBakuganEntries[0xf6][2]; // also reached as data_020d4478 (gSaveData + 0x88)
     /* 460 */ u8 mUnk_460[0xf6];
     /* 556 */ u8 mUnk_556[0x22];
-    /* 578 */ volatile u8 mUnk_578;
+    /* 578 */ volatile u8 mUnlockedFieldBits;
     /* 579 */ PAD(0x579, 0x580);
-    /* 580 */ u8 mUnk_580;
+    /* 580 */ u8 mUnlockedCharacterLevel2Bits;
     /* 581 */ PAD(0x581, 0x586);
-    // Flag arrays read and written as `(u8 *) gSaveData[0].mUnk_586` (UnlockStoreItems, UnlockProgressEntry): the
+    // Flag arrays read and written as `(u8 *) gSaveData[0].mUnlockedBakuganBits` (UnlockStoreItems, UnlockProgressEntry): the
     // cast gives them their own pool word, hoisted after the loop's other tables, while still aliasing gSaveData so
     // the following mUnk_5b9 load stays after the store. Some callers address the same bytes through the
     // data_020d4976/data_020d497b externs and match that way.
-    /* 586 */ u8 mUnk_586[5];
-    /* 58b */ u8 mUnk_58b[0x21];
-    /* 5ac */ u8 mUnk_5ac;
-    /* 5ad */ u8 mUnk_5ad;
+    /* 586 */ u8 mUnlockedBakuganBits[5];
+    /* 58b */ u8 mUnlockedCardBits[0x21];
+    /* 5ac */ u8 mUnlockedTipBits0;
+    /* 5ad */ u8 mUnlockedTipBits1;
     /* 5ae */ PAD(0x5ae, 0x5b6);
-    /* 5b6 */ u8 mUnk_5b6;
-    /* 5b7 */ u8 mUnk_5b7;
+    /* 5b6 */ u8 mUnlockedEmblemBits0;
+    /* 5b7 */ u8 mUnlockedEmblemBits1;
     /* 5b8 */ u8 mUnk_5b8;
-    /* 5b9 */ u8 mUnk_5b9_0 : 1;
-    /* 5b9 */ u8 mUnk_5b9_1 : 1;
+    /* 5b9 */ u8 mStoreItemsUnlocked : 1;
+    /* 5b9 */ u8 mParkSlotHasProgressEntry : 1;
     /* 5b9 */ u8 mUnk_5b9_2 : 6;
     /* 5ba */ PAD(0x5ba, 0x5be); // UnkStruct_020d48f0::mRank / mPrevRank (data_020d48f0 = gSaveData + 0x500)
-    /* 5be */ u8 mUnk_5be;
+    /* 5be */ u8 mTutorialBits;
     union {
         /* 5bf */ u8 mUnk_5bf;
         struct {
-            /* 5bf */ u8 mUnk_5bf_0 : 1;
+            /* 5bf */ u8 mCreditsDone : 1;
             /* 5bf */ u8 mUnk_5bf_1 : 7;
         };
     };
@@ -127,19 +127,19 @@ struct SaveData {
 extern SaveData gSaveData[1];
 
 // Bit-flag arrays inside gSaveData (at +0x578, +0x57d, +0x580) that code addresses directly.
-extern u8 gUnlockedFieldBits[]; // SaveData::mUnk_578 onward; bit = field id (UnlockFields, FieldSelectScene, ParkScene)
-extern u8 data_020d496d[];
-extern u8 data_020d4970[];
-extern u8 data_020d4969[];
-extern u8 data_020d496a[];
-extern u8 data_020d4973[];
-extern u8 data_020d49ae[];
+extern u8 gUnlockedFieldBits[]; // SaveData::mUnlockedFieldBits onward; bit = field id (UnlockFields, FieldSelectScene, ParkScene)
+extern u8 gUnlockedCharacterLevel1Bits[];
+extern u8 gUnlockedCharacterLevel2Bits[];
+extern u8 gFieldNotNewBits[];
+extern u8 gUnlockedCharacterLevel0Bits[];
+extern u8 gCharacterNotNewBits[];
+extern u8 gTutorialBits[];
 extern u8 gCharacterLook[]; // gSaveData + 0x14, read as a CharacterLook (a different bit layout from the fields above)
 
 // Records reached through gSaveData by the helpers below.
 struct UnkStruct_020d4478 {
-    /* 0 */ u16 mUnk_0 : 4;
-    /* 0 */ u16 mUnk_4 : 12;
+    /* 0 */ u16 mLevel : 4;
+    /* 0 */ u16 mGauge : 12;
     /* 2 */ u16 mPad;
     /* 4 */
 };
@@ -154,7 +154,7 @@ int GetBakuganEntryIndex(SaveData *base, u32 unk1, u32 unk2, u32 unk3);
 u16 func_020231f4(SaveData *base, u32 unk1, u8 unk2, u8 unk3);
 void SetSlotEntryIndex(SaveData *base, u32 unk1, u32 unk2, int unk3); // slot unk2 = unk3; 0xffff = empty
 void func_020231c0(SaveData *base, int unk1, u32 unk2);
-UnkStruct_02023248 *GetBakuganEntry(SaveData *base, u32 unk1, u32 unk2);
+BakuganEntry *GetBakuganEntry(SaveData *base, u32 unk1, u32 unk2);
 
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));

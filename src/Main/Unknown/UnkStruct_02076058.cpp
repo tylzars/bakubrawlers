@@ -45,7 +45,7 @@ public:
     /* 48 */ void *mGlyphBuffer;
     /* 4c */ u32 mTextBufferSize;
     /* 50 */ u32 mGlyphCount;
-    /* 54 */ UnkStruct_02023248 *mSaveEntries[3];
+    /* 54 */ BakuganEntry *mSaveEntries[3];
     /* 60 */ UnkStruct_02071d24 *mUnk_60;
     /* 64 */ u16 mRemainingGauge[3]; // gauge still to be moved into the save entry's mGauge
     /* 6a */ u8 mBakuganIds[3]; // mode 0 stores a record's id 6 as 5
@@ -122,11 +122,11 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
             }
             u8 variant = record->mAttribute;
             mAttributes[slot] = variant;
-            UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, mBakuganIds[slot], variant);
+            BakuganEntry *entry = GetBakuganEntry(gSaveData, mBakuganIds[slot], variant);
             mSaveEntries[slot] = entry;
             u32 base = entry->mGauge;
             mRemainingGauge[slot] = record->mGauge - base;
-            mUnk_70[slot] = mSaveEntries[slot]->mUnk_00_0;
+            mUnk_70[slot] = mSaveEntries[slot]->mLevel;
         }
         slot++;
     } while (slot < 3 && data_020d433c.mLastBattle == 0);
@@ -228,7 +228,7 @@ void UnkStruct_02076058::Update() {
             mContext->mRequest = 0;
             for (u8 i = 0; i < 3; i++) {
                 if (mSaveEntries[i] != NULL) {
-                    u8 gain = mSaveEntries[i]->mUnk_00_0 - mUnk_70[i];
+                    u8 gain = mSaveEntries[i]->mLevel - mUnk_70[i];
                     if (gain != 0) {
                         mUnk_60->SetBakugan(count, mBakuganIds[i], mAttributes[i], gain);
                         count++;
@@ -312,7 +312,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i]->mPaletteBase = 0;
                 mCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
                 if (mSaveEntries[i % 3] != NULL) {
-                    s32 level = mSaveEntries[i % 3]->mUnk_00_0;
+                    s32 level = mSaveEntries[i % 3]->mLevel;
                     if (level < 9) {
                         mCellAnims[i]->mFrameIndex = level;
                     } else {
@@ -329,7 +329,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i]->SetAnimation(1);
                 mCellAnims[i]->SetMode(CELL_ANIM_MODE_STOP);
                 mCellAnims[i]->mFrameIndex = 0;
-                UnkStruct_02023248 *entry = mSaveEntries[i % 3];
+                BakuganEntry *entry = mSaveEntries[i % 3];
                 if (entry != NULL) {
                     int gauge = entry->mGauge;
                     u16 rest = gauge % 300;
@@ -388,16 +388,16 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
     if (mSaveEntries[slot] != NULL) {
         u8 k = 0;
         do {
-            UnkStruct_02023248 *entry = mSaveEntries[slot];
-            u16 cost = (entry->mUnk_00_0 + 1) * 300;
+            BakuganEntry *entry = mSaveEntries[slot];
+            u16 cost = (entry->mLevel + 1) * 300;
             if (unk2 != 0) {
                 u16 points = mRemainingGauge[slot];
                 if (points >= cost) {
                     mRemainingGauge[slot] = points - cost;
-                    if ((s32) mSaveEntries[slot]->mUnk_00_0 < 9) {
-                        mSaveEntries[slot]->mUnk_00_0 = mSaveEntries[slot]->mUnk_00_0 + 1;
+                    if ((s32) mSaveEntries[slot]->mLevel < 9) {
+                        mSaveEntries[slot]->mLevel = mSaveEntries[slot]->mLevel + 1;
                     }
-                    s32 level = mSaveEntries[slot]->mUnk_00_0;
+                    s32 level = mSaveEntries[slot]->mLevel;
                     if (level < 9) {
                         mCellAnims[index + 6]->mFrameIndex = level;
                     }
@@ -415,10 +415,10 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
                     break;
                 }
                 entry->mGauge = gauge - cost;
-                if ((s32) mSaveEntries[slot]->mUnk_00_0 < 9) {
-                    mSaveEntries[slot]->mUnk_00_0 = mSaveEntries[slot]->mUnk_00_0 + 1;
+                if ((s32) mSaveEntries[slot]->mLevel < 9) {
+                    mSaveEntries[slot]->mLevel = mSaveEntries[slot]->mLevel + 1;
                 }
-                s32 level = mSaveEntries[slot]->mUnk_00_0;
+                s32 level = mSaveEntries[slot]->mLevel;
                 if (level < 9) {
                     mCellAnims[index + 6]->mFrameIndex = level;
                 }
@@ -454,8 +454,8 @@ void UnkStruct_02076058::Draw() {
     }
     for (u32 i = 0; i < 3; i = (u8) (i + 1)) {
         u8 slot = i + 3;
-        UnkStruct_02023248 *entry = mSaveEntries[i + mSlotOffset];
-        if (entry != NULL && (s32) entry->mUnk_00_0 < 9 && mCellAnims[slot] != NULL) {
+        BakuganEntry *entry = mSaveEntries[i + mSlotOffset];
+        if (entry != NULL && (s32) entry->mLevel < 9 && mCellAnims[slot] != NULL) {
             u32 last = mCellAnims[slot]->mFrames[mCellAnims[slot]->mAnimIndex].mFrameCount - 1;
             u8 count = entry->mGauge / 300;
             u8 n = 0;
@@ -476,7 +476,7 @@ void UnkStruct_02076058::Draw() {
     }
     for (u8 i = 0; i < 3; i++) {
         u8 slot = i + 6;
-        if (mSaveEntries[i + mSlotOffset] != NULL && (s32) mSaveEntries[i + mSlotOffset]->mUnk_00_0 < 9 && mCellAnims[slot] != NULL) {
+        if (mSaveEntries[i + mSlotOffset] != NULL && (s32) mSaveEntries[i + mSlotOffset]->mLevel < 9 && mCellAnims[slot] != NULL) {
             mCellAnims[slot]->Draw(1, sResultCellPositions[slot][0], sResultCellPositions[slot][1], 1);
         }
     }
@@ -493,9 +493,9 @@ void UnkStruct_02076058::UpdateGauge() {
     u32 changed = 0;
     for (u8 i = 0; i < 3; i++) {
         u8 slot = i + mSlotOffset;
-        UnkStruct_02023248 *entry = mSaveEntries[slot];
+        BakuganEntry *entry = mSaveEntries[slot];
         if (entry != NULL) {
-            if ((s32) entry->mUnk_00_0 >= 9) {
+            if ((s32) entry->mLevel >= 9) {
                 entry->mGauge = 0;
                 mRemainingGauge[slot] = 0;
             } else if (mCellAnims[i + 9]->mFinished != 0 && mRemainingGauge[slot] != 0) {
@@ -561,10 +561,10 @@ void UnkStruct_02076058::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     mBakuganIds[index] = unk2;
     mAttributes[index] = unk3;
     mSaveEntries[index] = GetBakuganEntry(gSaveData, unk2, unk3);
-    mUnk_70[index] = mSaveEntries[index]->mUnk_00_0;
+    mUnk_70[index] = mSaveEntries[index]->mLevel;
     if (unk4 != 0) {
         GetBakuganEntry(gSaveData, unk2, unk3);
-        u16 cost = (mSaveEntries[index]->mUnk_00_0 + 1) * 300;
+        u16 cost = (mSaveEntries[index]->mLevel + 1) * 300;
         mRemainingGauge[index] = cost - mSaveEntries[index]->mGauge;
     }
 }
@@ -609,7 +609,7 @@ void UnkStruct_02076058::PrintText() {
             MessageFile *labels = mResultMessages;
             text2.Print(labels->GetText(5), labels->GetLength(5), mTextBuffer, 0x18, 0x10, &labelX, &labelY, &pixelWidth, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
             x += pixelWidth;
-            u8 level = mSaveEntries[i + mSlotOffset]->mUnk_00_0;
+            u8 level = mSaveEntries[i + mSlotOffset]->mLevel;
             if (level < 9) {
                 TextManager::Get().PrintNumber(level + 1, 1, 0, mTextBuffer, 0x18, 0x10, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
             } else {

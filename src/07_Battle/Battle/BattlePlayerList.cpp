@@ -122,10 +122,10 @@ BattlePlayerList::BattlePlayerList()
     mCamera = 0;
     mStorytalkWindow = 0;
     mState = 0;
-    mUnk_2ac = 0;
+    mAbilityRequest = 0;
     mRepeatTurn = 0;
     mSavedTutorialNumber = 0;
-    mUnk_2af = 0;
+    mStorytalkMessageIndex = 0;
     mUnk_2b0 = 0;
     if (data_020d433c.mTutorialPart) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
@@ -149,8 +149,8 @@ BattlePlayerList::BattlePlayerList()
     }
     mMarkerCount = 0;
     mUnitCount = 0;
-    if (data_020d433c.mUnk_99 != 6) {
-        data_020d433c.mUnk_99 = 3;
+    if (data_020d433c.mSlotsPerPlayer != 6) {
+        data_020d433c.mSlotsPerPlayer = 3;
     }
     switch (data_020d433c.mTutorialNumber) {
         case 5:
@@ -220,7 +220,7 @@ void BattlePlayerList::Update() {
             break;
         case 1:
             if (SetMessageTypeAndCheckAll(this, 0xf)) {
-                data_020d433c.mGimmicks->LoadSetData(data_020d433c.mFieldId, (u8) data_020d433c.mUnk_96);
+                data_020d433c.mGimmicks->LoadSetData(data_020d433c.mFieldId, (u8) data_020d433c.mFieldVariant);
                 if (data_020d433c.mTutorialId != 0) {
                     mState = 2;
                 } else {
@@ -268,7 +268,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 8:
-            mUnk_2b1 = MATH_Rand32(&gRandom, 100);
+            mRandomValue = MATH_Rand32(&gRandom, 100);
             if (data_020d433c.mHasPartners) {
                 SetTurnOrder(data_020d433c.mBattlePlayers, 0, 0);
                 u8 i = 1;
@@ -414,9 +414,9 @@ void BattlePlayerList::Update() {
                     return;
                 }
                 if (mode == 0xc) {
-                    mUnk_2af = 0;
+                    mStorytalkMessageIndex = 0;
                 } else {
-                    mUnk_2af = 2;
+                    mStorytalkMessageIndex = 2;
                 }
             } else if (mode == 7 || mode == 8) {
                 if (result != 5) {
@@ -430,13 +430,13 @@ void BattlePlayerList::Update() {
                         data_020d433c.mTutorialPart++;
                     }
                 } else {
-                    mUnk_2af = 0;
+                    mStorytalkMessageIndex = 0;
                 }
             }
-            switch (mUnk_2ac) {
+            switch (mAbilityRequest) {
                 case 1:
                     mRepeatTurn = 1;
-                    mUnk_2ac = 0;
+                    mAbilityRequest = 0;
                     break;
                 case 2:
                     if (mLocalPlayer == mTurnPlayer) {
@@ -445,7 +445,7 @@ void BattlePlayerList::Update() {
                         mState = 0xc;
                         mAddMarkerEnabled = 0;
                     }
-                    mUnk_2ac = 0;
+                    mAbilityRequest = 0;
                     if (result == 3) {
                         u8 a  = mUnits[mUnitA].mMarker;
                         u8 m3 = mMarkers[a].mCellX;
@@ -457,7 +457,7 @@ void BattlePlayerList::Update() {
                     }
                     return;
                 case 3: {
-                    mUnk_2ac = 0;
+                    mAbilityRequest = 0;
                     owner = mUnits[mUnitA].mPlayer;
                     if (result != 3) {
                         slot = mUnits[mUnitA].mRecord;
@@ -476,7 +476,7 @@ void BattlePlayerList::Update() {
                         RemoveUnit(this, mUnitB, 2);
                     }
                     mState = 0x16;
-                    if (data_020d433c.mUnk_7a == 0) {
+                    if (data_020d433c.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -497,7 +497,7 @@ void BattlePlayerList::Update() {
             }
             switch (result) {
                 case 1:
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mLocalPlayer == mTurnPlayer) {
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
                         id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -518,7 +518,7 @@ void BattlePlayerList::Update() {
                     if (data_020d433c.mTutorialNumber != 0) {
                         return;
                     }
-                    if (data_020d433c.mUnk_7a == 0) {
+                    if (data_020d433c.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -538,7 +538,7 @@ void BattlePlayerList::Update() {
                 case 3: {
                     u8 ownerA = mUnits[mUnitA].mPlayer;
                     u8 ownerB = mUnits[mUnitB].mPlayer;
-                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mLocalPlayer == mTurnPlayer) {
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mScriptMode != 0 && mLocalPlayer == mTurnPlayer) {
                         id = mPlayers[mLocalPlayer]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -565,7 +565,7 @@ void BattlePlayerList::Update() {
                         if (data_020d433c.mTutorialNumber != 0) {
                             return;
                         }
-                        if (data_020d433c.mUnk_7a == 0) {
+                        if (data_020d433c.mScriptMode == 0) {
                             return;
                         }
                         if (mLocalPlayer != mTurnPlayer) {
@@ -582,7 +582,7 @@ void BattlePlayerList::Update() {
                         if (data_020d433c.mTutorialNumber != 0) {
                             return;
                         }
-                        if (data_020d433c.mUnk_7a == 0) {
+                        if (data_020d433c.mScriptMode == 0) {
                             return;
                         }
                         if (mLocalPlayer != mTurnPlayer) {
@@ -614,7 +614,7 @@ void BattlePlayerList::Update() {
                     if (data_020d433c.mTutorialNumber != 0) {
                         return;
                     }
-                    if (data_020d433c.mUnk_7a == 0) {
+                    if (data_020d433c.mScriptMode == 0) {
                         return;
                     }
                     if (mLocalPlayer != mTurnPlayer) {
@@ -689,7 +689,7 @@ void BattlePlayerList::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            mUnk_2b1 = MATH_Rand32(&gRandom, 100);
+            mRandomValue = MATH_Rand32(&gRandom, 100);
             if (data_020d433c.mTutorialNumber == 2 || data_020d433c.mTutorialNumber == 4) {
                 SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(1);
@@ -813,7 +813,7 @@ void BattlePlayerList::Update() {
             } else {
                 u8 next = data_020d433c.mNextScene;
                 if (next != 0) {
-                    if (data_020d433c.mUnk_7a != 0 && next == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
+                    if (data_020d433c.mScriptMode != 0 && next == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
                         RequestScene(SCENE_GAME_OVER);
                         mFinished = 1;
                         return;
@@ -1003,7 +1003,7 @@ u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 
             list->mUnits[i].mPos = *pos;
             list->mUnits[i].mPlayer = player;
             list->mUnits[i].mRecord = record;
-            list->mUnits[i].mUnk_0c = value;
+            list->mUnits[i].mRotY = value;
             list->mUnits[i].mMarker = marker;
             list->mMarkers[marker].mUnitHandle = i + 1;
             list->mUnitHandles[list->mMarkers[marker].mCellX][list->mMarkers[marker].mCellY] = i + 1;
@@ -1115,7 +1115,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
-            list->mUnk_2af = 0;
+            list->mStorytalkMessageIndex = 0;
             SetSlot54Flag(list->mPlayers[0], 1, 2);
             SetSlot54Flag(list->mPlayers[0], 2, 2);
             list->mState = 10;
@@ -1135,14 +1135,14 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
-            list->mUnk_2af = 2;
+            list->mStorytalkMessageIndex = 2;
             list->mTurnCount = 3;
             AddMarker(list, 6, 4, 0, 0);
             AddMarker(list, 7, 5, 1, 0);
             list->mTurnPlayer = 0;
             list->mState = 12;
             if (data_020d433c.mTutorialId == 4) {
-                list->mUnk_2af = 3;
+                list->mStorytalkMessageIndex = 3;
                 list->mState = 14;
             }
             list->mPlayers[0]->mRecords[1].mStatus = 2;
@@ -1155,7 +1155,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
-            list->mUnk_2af = 0;
+            list->mStorytalkMessageIndex = 0;
             list->mTurnCount = 10;
             list->mTurnPlayer = 1;
             list->mState = 12;
@@ -1181,7 +1181,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
-            list->mUnk_2af = 0;
+            list->mStorytalkMessageIndex = 0;
             list->mTurnCount = 11;
             list->mTurnPlayer = 0;
             list->mState = 12;
@@ -1209,7 +1209,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
-            list->mUnk_2af = 3;
+            list->mStorytalkMessageIndex = 3;
             list->mTurnCount = 11;
             list->mTurnPlayer = 0;
             list->mState = 24;
@@ -1239,7 +1239,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T003_ba_Ali.mes");
             }
-            list->mUnk_2af = 0;
+            list->mStorytalkMessageIndex = 0;
             list->mState = 14;
             list->mTurnPlayer = 0;
             list->mTurnCount = 1;
@@ -1251,7 +1251,7 @@ void SetupTutorial(BattlePlayerList *list) {
             } else {
                 list->mStorytalkWindow->LoadMessageFile("font/mes_T004_ba_Ali.mes");
             }
-            list->mUnk_2af = 0;
+            list->mStorytalkMessageIndex = 0;
             list->mState = 24;
             list->mTurnPlayer = 0;
             list->mTurnCount = 1;

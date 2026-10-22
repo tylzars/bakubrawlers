@@ -125,11 +125,11 @@ u8 GetStageParkCategory() {
 void RefreshParkSlotProgressEntryFlag() {
     u8 i = 0;
     u8 buf[12];
-    gSaveData[0].mUnk_5b9_1 = 0;
+    gSaveData[0].mParkSlotHasProgressEntry = 0;
     do {
         GetParkEntry(i, buf);
         if (buf[6] != 0xff) {
-            gSaveData[0].mUnk_5b9_1 = 1;
+            gSaveData[0].mParkSlotHasProgressEntry = 1;
             return;
         }
         i++;
@@ -148,7 +148,7 @@ struct ParkPick {
 // some placements here are load-bearing: `j = 0` at its declaration puts j (the fill loop's index) first, `g = 0` comes
 // before `category`/`group` in the first loop, the perm loop counts with g, `flag` is shared by the duplicate check and
 // the else branch, and `k` is declared right after `group`.
-// Also writes data_020d433c.mUnk_8d (the entry picked for each slot).
+// Also writes data_020d433c.mParkGroupEntryIndices (the entry picked for each slot).
 void FillParkSlots() {
     ParkGroup *group;
     u8 k;
@@ -162,7 +162,7 @@ void FillParkSlots() {
     s32 last;
     u8 i;
     u8 j = 0;
-    if (gSaveData[0].mUnk_5bf_0) {
+    if (gSaveData[0].mCreditsDone) {
         ParkPick picks[26] = {0};
         count = 0;
         cat   = 0;
@@ -325,7 +325,7 @@ void FillParkSlots() {
             e = 0;
             do {
                 if (entry->mType == perm[0]) {
-                    data_020d433c.mUnk_8d[g] = e;
+                    data_020d433c.mParkGroupEntryIndices[g] = e;
                     break;
                 }
                 e++;
@@ -347,10 +347,10 @@ void FillParkSlots() {
             flag       = FALSE;
             if (stageEntry->mType == PARK_ENTRY_TYPE_TUTORIAL) {
                 if (stageEntry->mUnk_0a == 0) {
-                    if ((gSaveData[0].mUnk_5be & 8) && (gSaveData[0].mUnk_5be & 0x10)) {
+                    if ((gSaveData[0].mTutorialBits & 8) && (gSaveData[0].mTutorialBits & 0x10)) {
                         flag = TRUE;
                     }
-                } else if (gSaveData[0].mUnk_5be & 0x10) {
+                } else if (gSaveData[0].mTutorialBits & 0x10) {
                     flag = TRUE;
                 }
             }
@@ -380,10 +380,10 @@ void GetParkEntry(u32 index, void *out) {
     found             = FALSE;
     u32 type          = groups[group].mEntries[groups[group].mDefault].mType;
     if ((type != PARK_ENTRY_TYPE_MES_ONLY_1 && type != PARK_ENTRY_TYPE_MES_ONLY_2 && type != PARK_ENTRY_TYPE_MES_ONLY_3) ||
-        gSaveData[0].mUnk_5bf_0) {
+        gSaveData[0].mCreditsDone) {
         ParkEntry *entries = groups[group].mEntries;
         i                  = 0;
-        if (gSaveData[0].mUnk_5bf_0) {
+        if (gSaveData[0].mCreditsDone) {
             category = 0xff;
         }
         do {
@@ -400,8 +400,8 @@ void GetParkEntry(u32 index, void *out) {
         return;
     }
     ParkEntry *list = groups[group].mEntries;
-    if (gSaveData[0].mUnk_5bf_0) {
-        MIi_CpuCopyFast(&list[data_020d433c.mUnk_8d[index]], out, 12);
+    if (gSaveData[0].mCreditsDone) {
+        MIi_CpuCopyFast(&list[data_020d433c.mParkGroupEntryIndices[index]], out, 12);
     } else {
         MIi_CpuCopyFast(&list[groups[group].mDefault], out, 12);
     }
@@ -415,7 +415,7 @@ u8 GetParkGroupId(u32 index) {
 void func_02089a9c(u32 index) {
     ParkEntry entry;
     GetParkEntry(index, &entry);
-    u32 flag = gSaveData[0].mUnk_5bf_0;
+    u32 flag = gSaveData[0].mCreditsDone;
     if (flag && entry.mType != PARK_ENTRY_TYPE_BATTLE && entry.mType != PARK_ENTRY_TYPE_TEAMBATTLE &&
         entry.mType != PARK_ENTRY_TYPE_BATTLE_ROYALE) {
         entry.mType = PARK_ENTRY_TYPE_BATTLE; // with the flag set, every other type is handled as a battle
@@ -432,31 +432,31 @@ void func_02089a9c(u32 index) {
             u8 slotGroup = gSaveData[0].mParkSlots[index].mGroup;
             u8 charSlot;
             if (flag) {
-                charSlot = data_020d433c.mUnk_8d[index];
+                charSlot = data_020d433c.mParkGroupEntryIndices[index];
             }
             gSaveData[0].mParkSlots[index].mCategory = gSaveData[0].mParkSlots[4].mCategory;
             gSaveData[0].mParkSlots[index].mGroup = gSaveData[0].mParkSlots[4].mGroup;
-            if (gSaveData[0].mUnk_5bf_0) {
-                data_020d433c.mUnk_8d[index] = data_020d433c.mUnk_8d[4];
+            if (gSaveData[0].mCreditsDone) {
+                data_020d433c.mParkGroupEntryIndices[index] = data_020d433c.mParkGroupEntryIndices[4];
             }
             i = 4;
             do {
                 gSaveData[0].mParkSlots[i].mCategory = gSaveData[0].mParkSlots[i + 1].mCategory;
                 gSaveData[0].mParkSlots[i].mGroup    = gSaveData[0].mParkSlots[i + 1].mGroup;
-                if (gSaveData[0].mUnk_5bf_0) {
-                    data_020d433c.mUnk_8d[i] = data_020d433c.mUnk_8d[i + 1];
+                if (gSaveData[0].mCreditsDone) {
+                    data_020d433c.mParkGroupEntryIndices[i] = data_020d433c.mParkGroupEntryIndices[i + 1];
                 }
                 i++;
             } while (i < gSaveData[0].mParkSlotCount - 1);
             gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mCategory = slotCat;
             gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mGroup = slotGroup;
-            if (gSaveData[0].mUnk_5bf_0) {
-                data_020d433c.mUnk_8d[gSaveData[0].mParkSlotCount - 1] = charSlot;
+            if (gSaveData[0].mCreditsDone) {
+                data_020d433c.mParkGroupEntryIndices[gSaveData[0].mParkSlotCount - 1] = charSlot;
             }
             break;
         }
         case PARK_ENTRY_TYPE_TUTORIAL: {
-            if (entry.mUnk_0a == 0 && !(gSaveData[0].mUnk_5be & 0x10)) {
+            if (entry.mUnk_0a == 0 && !(gSaveData[0].mTutorialBits & 0x10)) {
                 return;
             }
             do {
@@ -491,7 +491,7 @@ BOOL CanUnlockProgressEntry(u32 id) {
         case 14:
         case 15:
         case 16:
-            if (!gSaveData[0].mUnk_5bf_0) {
+            if (!gSaveData[0].mCreditsDone) {
                 result = FALSE;
             }
             break;

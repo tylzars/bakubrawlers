@@ -28,8 +28,8 @@ public:
 // STORE_BAKUGAN lists bakugan ids picked by the data_020d4976 bits (BuildList), prices them with GetPrice, and a
 //   purchase resets the bakugan's save entry (ResetCursorBakuganEntry);
 // STORE_GAUGE lists the bakugan with a non-zero func_020231f4, prices them with GetEntryPrice (reduced by the share
-//   the entry's mGauge has of (mUnk_00_0 + 1) * 300) and a purchase opens UnkStruct_02076058(1) with
-//   SetBakugan(.., 1), which sets mRemainingGauge to (mUnk_00_0 + 1) * 300 - mGauge (UnkStruct_02076058 later moves
+//   the entry's mGauge has of (mLevel + 1) * 300) and a purchase opens UnkStruct_02076058(1) with
+//   SetBakugan(.., 1), which sets mRemainingGauge to (mLevel + 1) * 300 - mGauge (UnkStruct_02076058 later moves
 //   it into the entry);
 // STORE_CARD lists card ids (GetCardInfo) and prints card rows (PrintCardNameShort).
 // EDIT (list_edit_b_* / list_edit_u_*, from MyroomScene) and BATTLE_EDIT (select_arena_b_bg_* and the /Game/Deck/ and
@@ -178,9 +178,9 @@ public:
     void DrawRows();
     void DrawItemNumberAndCount();
     void DrawMoneyFilterButtonsAndCursor();
-    // GetEntryPrice uses it (5000 when 0), scaled by sPricePercents[entry mUnk_00_0] and reduced by the entry's mGauge
+    // GetEntryPrice uses it (5000 when 0), scaled by sPricePercents[entry mLevel] and reduced by the entry's mGauge
     u32 GetPrice(u32 unk1, u32 unk2);
-    u32 GetEntryPrice(u32 unk1, u32 unk2); // 10000000 when the entry's mUnk_00_0 >= 9
+    u32 GetEntryPrice(u32 unk1, u32 unk2); // 10000000 when the entry's mLevel >= 9
     void DrawMoneyAmount(u32 unk1, u32 unk2);
     BOOL IsInSlots(u32 unk1, u32 unk2, u32 unk3); // unk1 != 0: id and attribute in slots 0-2, else id in 3-8
     void DrawPagesAndMovingItem();

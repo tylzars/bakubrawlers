@@ -202,7 +202,7 @@ void TitleScene::Update() {
                 mState = 0x2a;
                 break;
             }
-            if (data_020d433c.mUnk_80) {
+            if (data_020d433c.mSkipTitleMovie) {
                 mState = 3;
                 break;
             }
@@ -565,7 +565,7 @@ void TitleScene::Update() {
             }
             break;
         case 32:
-            data_020d433c.mUnk_80 = 1;
+            data_020d433c.mSkipTitleMovie = 1;
             SelectWindowCursor *cursor = mCursor;
             cursor->mItems = (WindowItem *) sTitleMenuItems;
             cursor->mCount = 5;
@@ -663,7 +663,7 @@ void TitleScene::Update() {
             switch (mMenuSelection) {
                 case TITLE_MENU_MAP:
                     scene = SCENE_MAP;
-                    if (gSaveData[0].mUnk_5bf_0) {
+                    if (gSaveData[0].mCreditsDone) {
                         FillParkSlots();
                     }
                     break;
@@ -709,7 +709,7 @@ void TitleScene::Update() {
             }
             break;
         case 44: {
-            gSaveData[0].mUnk_5bf_0 = 1;
+            gSaveData[0].mCreditsDone = 1;
             s32 id = UnlockEmblem();
             if (id >= 0) {
                 new GiftUnlockScene(id);

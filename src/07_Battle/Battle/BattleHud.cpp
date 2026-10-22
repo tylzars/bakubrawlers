@@ -393,7 +393,7 @@ void BattleHud::Update() {
             if (data_020d433c.mTutorialId == 0xe || (data_020d433c.mTutorialId >= 7 && data_020d433c.mTutorialId <= 10)) {
                 mState = 2;
                 data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
-                data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
                 SetupCountdown();
@@ -406,8 +406,8 @@ void BattleHud::Update() {
             }
             u32 limit = data_020d433c.mTutorialNumber == 4 ? 0 : 5;
             if (!data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
-                data_020d433c.mBattlePlayers->mUnk_2af++;
-                u8 n = data_020d433c.mBattlePlayers->mUnk_2af;
+                data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
+                u8 n = data_020d433c.mBattlePlayers->mStorytalkMessageIndex;
                 if (n > limit) {
                     SetupCountdown();
                     mState = 3;

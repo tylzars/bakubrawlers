@@ -64,7 +64,7 @@ public:
     /* 3c */ u8 mFlipped;
     /* 3d */ PAD(0x3d, 0x3e);
     /* 3e */ u8 mUnk_3e;
-    /* 3f */ u8 mOffsetX; // 0 or 4 by gSaveData mUnk_28_5; mUnk_2a is always 0, so the sub screen gets x -mOffsetX
+    /* 3f */ u8 mOffsetX; // 0 or 4 by gSaveData mCommandItemXIndex; mUnk_2a is always 0, so the sub screen gets x -mOffsetX
     /* 40 */
 
     BattleObj00(u8 flag);
@@ -83,7 +83,7 @@ BattleObj00::BattleObj00(u8 flag)
     mCornerCellY = 0;
     mUnk_36 = 0;
     mUnk_3e = 0;
-    if (gSaveData[0].mUnk_28_5 != 0) {
+    if (gSaveData[0].mCommandItemXIndex != 0) {
         mOffsetX = 0;
     } else {
         mOffsetX = 4;
@@ -438,7 +438,7 @@ void BattleObj00::Update() {
                 mState = 0x14;
                 data_020d433c.mBattlePlayers->mStorytalkWindow->LoadGraphics();
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mStorytalkWindow->SetMessage(list->mUnk_2af, 0x64, 0, 0);
+                list->mStorytalkWindow->SetMessage(list->mStorytalkMessageIndex, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
                 SetCursorAndMarkerModelsVisible(mMap, 0);
                 return;
@@ -455,13 +455,13 @@ void BattleObj00::Update() {
             if (data_020d433c.mBattlePlayers->mStorytalkWindow->func_02087cac()) {
                 return;
             }
-            data_020d433c.mBattlePlayers->mUnk_2af++;
-            if (data_020d433c.mBattlePlayers->mUnk_2af == 2) {
+            data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
+            if (data_020d433c.mBattlePlayers->mStorytalkMessageIndex == 2) {
                 mState++;
                 G2S_SetBlendBrightness(0x1f, 0);
                 return;
             }
-            data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+            data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
             return;
         case 21:
             CloseCommandMap(mMap);

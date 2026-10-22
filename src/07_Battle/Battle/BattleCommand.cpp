@@ -174,7 +174,7 @@ BattleCommand::BattleCommand(u32 unk)
     mOffsetX = 0;
     mUnk_13a = 0;
     mReleasedOnCursorCell = 0;
-    if (gSaveData[0].mUnk_28_5) {
+    if (gSaveData[0].mCommandItemXIndex) {
         mOffsetX = 0;
     } else {
         mOffsetX = 4;
@@ -223,11 +223,11 @@ BattleCommand::BattleCommand(u32 unk)
         CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     }
-    u8 x = sCommandItemX[gSaveData[0].mUnk_28_5];
+    u8 x = sCommandItemX[gSaveData[0].mCommandItemXIndex];
     i = 1;
     do {
         CommandItems()[i].mX = x;
-        if (gSaveData[0].mUnk_28_5 == 0) {
+        if (gSaveData[0].mCommandItemXIndex == 0) {
             CommandItems()[i].mSlideIn  = 4;
             CommandItems()[i].mSlideOut = 3;
         }
@@ -470,7 +470,7 @@ void BattleCommand::Update() {
             if (list->mTurnPlayer == cur) {
                 if (data_020d433c.mTutorialId == 3 || data_020d433c.mTutorialId == 7) {
                     list->mStorytalkWindow->LoadGraphics();
-                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mStorytalkWindow->SetMessage(data_020d433c.mBattlePlayers->mStorytalkMessageIndex, 0x64, 0, 0);
                     mState++;
                     G2S_SetBlendBrightness(0x1f, -10);
                     return;
@@ -524,7 +524,7 @@ void BattleCommand::Update() {
                 return;
             }
             G2S_SetBlendBrightness(0x1f, 0);
-            data_020d433c.mBattlePlayers->mUnk_2af++;
+            data_020d433c.mBattlePlayers->mStorytalkMessageIndex++;
             SetCommandMessage();
             mMessageWindow->UploadTextPalette();
             mCommandWindow->mEnabled = 1;
@@ -545,7 +545,7 @@ void BattleCommand::Update() {
         case 9: {
             u8 i = 0;
             BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-            u8 count = data_020d433c.mUnk_99;
+            u8 count = data_020d433c.mSlotsPerPlayer;
             do {
                 if (p->mSlots54[i].mFlag == 0) {
                     mPickIndex = i;
@@ -641,7 +641,7 @@ void BattleCommand::Update() {
                         if (list->mAddMarkerEnabled != 0) {
                             u8 cur   = list->mLocalPlayer;
                             u8 i     = 0;
-                            u8 count = data_020d433c.mUnk_99;
+                            u8 count = data_020d433c.mSlotsPerPlayer;
                             BattlePlayer *p = list->mPlayers[cur];
                             do {
                                 if (p->mSlots54[i].mFlag == 0) {
@@ -1871,7 +1871,7 @@ void BattleCommand::Draw() {
     } while (p < data_020d433c.mPlayerCount);
     if (data_020d433c.mTutorialId && mCommandWindow->mState == 1) {
         mTutorialCellAnim->Update();
-        mTutorialCellAnim->Draw(1, sCommandItemX[gSaveData[0].mUnk_28_5], 0x22, 0);
+        mTutorialCellAnim->Draw(1, sCommandItemX[gSaveData[0].mCommandItemXIndex], 0x22, 0);
     }
     mCommandWindow->Draw();
     DrawTurnCount();
@@ -2034,12 +2034,12 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
             case 5:
                 break;
             case 6:
-                if (gSaveData[0].mUnk_28_5 == 0) {
+                if (gSaveData[0].mCommandItemXIndex == 0) {
                     off = 0xa;
                 }
                 break;
             case 4:
-                if (gSaveData[0].mUnk_28_5 == 0) {
+                if (gSaveData[0].mCommandItemXIndex == 0) {
                     off = 0x20;
                 }
                 break;
@@ -2374,6 +2374,6 @@ void BattleCommand::DrawTurnCount() {
 
 void ApplyScrollOffset(void *arg) {
     BattleCommand *command = (BattleCommand *) arg;
-    int adjust             = gSaveData[0].mUnk_28_5 ? 0 : 4;
+    int adjust             = gSaveData[0].mCommandItemXIndex ? 0 : 4;
     G2S_SetBG0Offset(command->mScrollX + sSubBg0Offset[0] - adjust, command->mScrollY + sSubBg0Offset[1]);
 }

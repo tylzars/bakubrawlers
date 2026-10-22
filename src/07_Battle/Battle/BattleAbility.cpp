@@ -324,7 +324,7 @@ void BattleAbility::Update() {
                         mState = 0xd;
                         break;
                     }
-                    data_020d433c.mBattlePlayers->mUnk_2ac = 3;
+                    data_020d433c.mBattlePlayers->mAbilityRequest = 3;
                     mState                                 = 0xe;
                     break;
             }
@@ -431,7 +431,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
                 u8 slots[3] = {0, 0, 0};
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 u8 n        = 0;
-                u8 count    = data_020d433c.mUnk_99;
+                u8 count    = data_020d433c.mSlotsPerPlayer;
                 do {
                     if (((u8 *) list->mPlayers[mPlayer] + 0x56)[i * 4] == 0) {
                         slots[n] = i;
@@ -445,7 +445,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
         case 3: {
             u8 i             = 0;
             BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-            u8 count         = data_020d433c.mUnk_99;
+            u8 count         = data_020d433c.mSlotsPerPlayer;
             do {
                 if (pl->mRecords[i].mStatus == 0) {
                     result = 0;
@@ -459,7 +459,7 @@ BOOL BattleAbility::func_ov007_02264a5c() {
                 u8 count2;
                 u8 j        = 0;
                 u8 slots[3] = {0, 0, 0};
-                count2   = data_020d433c.mUnk_99;
+                count2   = data_020d433c.mSlotsPerPlayer;
                 list = data_020d433c.mBattlePlayers;
                 n        = 0;
                 do {
@@ -1087,7 +1087,7 @@ u8 BattleAbility::func_ov007_02266868() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 done    = 1;
-                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f3 = 0xbe;
+                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mSpGauge = 0xbe;
             }
             break;
     }

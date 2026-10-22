@@ -866,7 +866,7 @@ void MapScene::ShowTabInfo(u32 index) {
             mMyroomPopupVisible = 1;
             break;
         case MAP_TAB_STORE:
-            if (gSaveData[0].mUnk_5b9_0 == 0) {
+            if (gSaveData[0].mStoreItemsUnlocked == 0) {
                 return;
             }
             ShowText(2, 0x20);
@@ -874,7 +874,7 @@ void MapScene::ShowTabInfo(u32 index) {
             break;
         case MAP_TAB_PARK:
             RefreshParkSlotProgressEntryFlag();
-            if (gSaveData[0].mUnk_5b9_1 == 0) {
+            if (gSaveData[0].mParkSlotHasProgressEntry == 0) {
                 return;
             }
             ShowText(0x11, 0x20);

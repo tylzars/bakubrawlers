@@ -11,7 +11,7 @@ struct MessageFile;
 // VOLUME goes to BuildSettings: three rows of six levels stored in gSaveData mVolume0Index / mVolume1Index / mVolume2Index,
 // which ApplyVolumeOptions turns into FrameTask::mVolume0 / mVolume1 / mVolume2 and the SoundManager volumes. RESET
 // goes to BuildMenu3, whose first button calls ResetOptions, and CREDITS to a CreditsScene. Left as literals: 1 (BuildMenu2, sets gSaveData mMicEnabled and
-// mUnk_27_0) and 2 (BuildMenu4, sets mUnk_28_5); nothing in the tree names those flags.
+// mRuleMicEnabled) and 2 (BuildMenu4, sets mCommandItemXIndex).
 #define OPTION_MENU_VOLUME 0
 #define OPTION_MENU_RESET 3
 #define OPTION_MENU_CREDITS 4
@@ -36,7 +36,7 @@ public:
     // (BuildMainMenu), which works because the ids are 0-5 in item order
     /* 4d */ s8 mSelectedId;
     /* 4e */ u8 mRow;
-    /* 4f */ u8 mFlagSelectedId; // id < 2 of the BuildMenu2 / BuildMenu4 windows; 0 stores 1 in mMicEnabled / mUnk_28_5
+    /* 4f */ u8 mFlagSelectedId; // id < 2 of the BuildMenu2 / BuildMenu4 windows; 0 stores 1 in mMicEnabled / mCommandItemXIndex
     /* 50 */
 
     OptionScene();

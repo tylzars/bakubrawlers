@@ -232,7 +232,7 @@ void OptionScene::Update() {
             switch (result) {
                 case 1:
                     gSaveData[0].mMicEnabled = mFlagSelectedId == 0 ? 1 : 0;
-                    gSaveData[0].mUnk_27_0 = gSaveData[0].mMicEnabled;
+                    gSaveData[0].mRuleMicEnabled = gSaveData[0].mMicEnabled;
                     mState++;
                     break;
                 case 2:
@@ -301,7 +301,7 @@ void OptionScene::Update() {
             DrawMenu4();
             switch (result) {
                 case 1:
-                    gSaveData[0].mUnk_28_5 = mFlagSelectedId == 0 ? 1 : 0;
+                    gSaveData[0].mCommandItemXIndex = mFlagSelectedId == 0 ? 1 : 0;
                     mState++;
                     break;
                 case 2:
@@ -680,10 +680,10 @@ void OptionScene::BuildMenu4() {
     mPosY[0] = 0x50;
     mSlideTimer = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, sOptionMenu4Items, (s8) (gSaveData[0].mUnk_28_5 == 0 ? 1 : 0));
+    mWindow = new SelectWindow(4, sOptionMenu4Items, (s8) (gSaveData[0].mCommandItemXIndex == 0 ? 1 : 0));
     mWindow->SetCells(4, sOptionMenu4Cells);
     mWindow->Update(1);
-    int sel = gSaveData[0].mUnk_28_5 == 0 ? 1 : 0;
+    int sel = gSaveData[0].mCommandItemXIndex == 0 ? 1 : 0;
     mWindow->mCellAnims[(u8) sel]->SetAnimation(sOptionMenu4Cells[sel].mAnimIndices[2]);
 }
 

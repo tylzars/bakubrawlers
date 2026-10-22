@@ -708,7 +708,7 @@ void BattleCommandPrompt::CollectCards(const BattlePromptSlot *slot) {
         }
         i++;
         slot++;
-    } while (i < data_020d433c.mUnk_99);
+    } while (i < data_020d433c.mSlotsPerPlayer);
     SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mShownPlayer);
 }
 
@@ -737,7 +737,7 @@ void BattleCommandPrompt::CollectRecords() {
             }
         }
         i++;
-    } while (i < data_020d433c.mUnk_99);
+    } while (i < data_020d433c.mSlotsPerPlayer);
     SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mShownPlayer);
     BattleRecord *r = mRecords[mCursorPos + mScroll];
     SetCommandListValues(mCommandList, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);

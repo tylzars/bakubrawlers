@@ -54,14 +54,14 @@ struct BattlePlayerSlot {
 };
 
 // 12 byte per-slot record of a player, the second field is a 12 bit gauge.
-// The first four bytes as a copyable unit (same layout as the save entry, UnkStruct_02023248).
+// The first four bytes as a copyable unit (same layout as the save entry, BakuganEntry).
 struct BattleRecordHead {
-    /* 00 */ u16 mUnk_00_0 : 4;
+    /* 00 */ u16 mLevel : 4;
     /* 00 */ u16 mGauge : 12;
-    /* 02 */ u16 mUnk_02_0 : 3;
-    /* 02 */ u16 mUnk_02_3 : 3;
-    /* 02 */ u16 mUnk_02_6 : 3;
-    /* 02 */ u16 mUnk_02_9 : 3;
+    /* 02 */ u16 mShotSpeedAdjustIndex : 3;
+    /* 02 */ u16 mShootCurveIndex : 3;
+    /* 02 */ u16 mPushTableIndex : 3;
+    /* 02 */ u16 mRestLimitIndex : 3;
     /* 02 */ u16 mUnk_02_12 : 4;
 };
 
@@ -69,12 +69,12 @@ struct BattleRecord {
     union {
         /* 00 */ BattleRecordHead mHead;
         struct {
-            /* 00 */ u16 mUnk_00_0 : 4;
+            /* 00 */ u16 mLevel : 4;
             /* 00 */ u16 mGauge : 12;
-            /* 02 */ u16 mUnk_02_0 : 3;
-            /* 02 */ u16 mUnk_02_3 : 3;
-            /* 02 */ u16 mUnk_02_6 : 3;
-            /* 02 */ u16 mUnk_02_9 : 3;
+            /* 02 */ u16 mShotSpeedAdjustIndex : 3;
+            /* 02 */ u16 mShootCurveIndex : 3;
+            /* 02 */ u16 mPushTableIndex : 3;
+            /* 02 */ u16 mRestLimitIndex : 3;
             /* 02 */ u16 mUnk_02_12 : 4;
         };
     };
@@ -83,7 +83,7 @@ struct BattleRecord {
     /* 08 */ u8 mBakuganId;
     /* 09 */ u8 mAttribute; // also written raw by BattleAbility (rec2[0x15])
     /* 0a */ u8 mStatus; // 0 free, 1 placed, 2 (BattlePlayer set-up, RemoveUnit), 3 (ListScene: past the received list);
-                         // BattlePlayer may set 2 back to 0 when none of the first mUnk_99 is 0
+                         // BattlePlayer may set 2 back to 0 when none of the first mSlotsPerPlayer is 0
     /* 0b */ u8 mUnk_0b;
 };
 
@@ -106,28 +106,28 @@ struct BattlePlayer : public SceneBase {
     /* d2 */ PAD(0xd2, 0xd4);
     /* d4 */ s32 mPushSumX;
     /* d8 */ s32 mPushSumZ;
-    /* dc */ u32 mUnk_dc;
-    /* e0 */ u32 mUnk_e0;
-    /* e4 */ u32 mUnk_e4;
-    /* e8 */ u32 mUnk_e8;
+    /* dc */ u32 mMicCharge;
+    /* e0 */ u32 mMicBounceCount;
+    /* e4 */ u32 mOtherMicCharge;
+    /* e8 */ u32 mOtherMicBounceCount;
     /* ec */ u8 mShotSpeed;
     /* ed */ u8 mNameLength; // length in bytes of the name at +b0 (NameText)
     /* ee */ u8 mUnk_ee; // raised by BattlePlayerList, BattleCommand and BattleConfrontCard; func_ov007_02263150 tests
-                         // it (plus the partner's) >= 3, BattleResult against data_020d433c.mUnk_99
+                         // it (plus the partner's) >= 3, BattleResult against data_020d433c.mSlotsPerPlayer
     /* ef */ u8 mState; // Update's case 3 never runs: nothing writes 3
     /* f0 */ u8 mIndex;
     /* f1 */ u8 mCorner;
     /* f2 */ u8 mPartner; // equals mIndex while data_020d433c.mHasPartners is 0
-    /* f3 */ u8 mUnk_f3;
+    /* f3 */ u8 mSpGauge;
     /* f4 */ u8 mHistoryCount;
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mCharacterId;
-    /* f7 */ u8 mUnk_f7; // 0..2, copied from data_020d433c.mUnk_a3; see there
-    /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mUnk_99) with mFlag 0; also read raw at +0xf8 (BattleAbility)
+    /* f7 */ u8 mCharacterLevel; // 0..2, copied from data_020d433c.mCharacterLevels; see there
+    /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mSlotsPerPlayer) with mFlag 0; also read raw at +0xf8 (BattleAbility)
     /* f9 */ u8 mSlots6cRemaining; // the same for mSlots6c
     /* fa */ u16 mAbilityId; // also the message id BattleShoot shows
-    /* fc */ u8 mUnk_fc;
-    /* fd */ u8 mUnk_fd;
+    /* fc */ u8 mFieldPowerSHitCount;
+    /* fd */ u8 mFieldPowerGHitCount;
     /* fe */ u8 mUnk_fe;
     /* ff */ PAD(0xff, 0x100);
     /* 100 */ BattlePlayerMessage mMsg;
@@ -193,7 +193,7 @@ struct BattlePlayer : public SceneBase {
 // 0x14 byte entry of the unit table at BattlePlayerList+0x7c.
 struct BattleUnit {
     /* 00 */ VecFx32 mPos;
-    /* 0c */ u16 mUnk_0c;
+    /* 0c */ u16 mRotY;
     /* 0e */ u8 mRecord; // the view BattleUnk022637acUnit keeps the name mUnk_0e
     /* 0f */ u8 mPlayer;
     /* 10 */ u8 mStatus; // 0 free, else AddUnit's flag (ReplaceUnitRecord sets 1); BattleAbility writes 3
@@ -245,12 +245,12 @@ struct BattlePlayerList : public SceneBase {
     /* 2a9 */ u8 mLocalPlayer; // player index: data_020d433c.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
     /* 2aa */ u8 mTexVariant;
     /* 2ab */ u8 mSecondTexVariant;
-    /* 2ac */ u8 mUnk_2ac;
+    /* 2ac */ u8 mAbilityRequest;
     /* 2ad */ u8 mRepeatTurn;
     /* 2ae */ u8 mSavedTutorialNumber;
-    /* 2af */ u8 mUnk_2af;
+    /* 2af */ u8 mStorytalkMessageIndex;
     /* 2b0 */ u8 mUnk_2b0;
-    /* 2b1 */ u8 mUnk_2b1;
+    /* 2b1 */ u8 mRandomValue;
     /* 2b2 */ PAD(0x2b2, 0x2b4);
 
     BattlePlayerList(); // 0225fd5c
@@ -344,10 +344,10 @@ struct UnkStruct_020d433c {
     /* 77 */ u8 mSaveSlotContent;
     /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mLanguage;
-    /* 7a */ u8 mUnk_7a;
+    /* 7a */ u8 mScriptMode;
     /* 7b */ u8 mNextScene; // SCENE_* id BattlePlayerList requests when the battle ends, clearing it first (0
                             // requests SCENE_TITLE; SCENE_TOURNAMENT becomes SCENE_GAME_OVER, not cleared, with
-                            // mUnk_7a and mUnk_7d == 3); SCENE_ARENA_WINDOW takes the wireless-mode path instead;
+                            // mScriptMode and mUnk_7d == 3); SCENE_ARENA_WINDOW takes the wireless-mode path instead;
                             // BattleResult, BattlePopup and StartFrameTaskChannel0 also test it
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
@@ -355,7 +355,7 @@ struct UnkStruct_020d433c {
     /* 7e */ u8 mTitleMenuSelection : 4;
     /* 7f */ u8 mMyroomNextScene; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
                          // SCENE_MAP); with SCENE_TITLE and mFlags & 2 (mSaveDirty) it opens a SaveWindow first
-    /* 80 */ u8 mUnk_80;
+    /* 80 */ u8 mSkipTitleMovie;
     /* 81 */ u8 mUnk_81;
     /* 82 */ u8 mUnk_82;
     // 0 outside tutorials; BattlePlayerList clears it (and mTutorialId) for 5 / 6 and puts it back (:802) before
@@ -375,12 +375,12 @@ struct UnkStruct_020d433c {
     /* 8b */ u8 mUnk_8b_4 : 4;
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
-    /* 8d */ u8 mUnk_8d[8];
+    /* 8d */ u8 mParkGroupEntryIndices[8];
     /* 95 */ u8 mFieldId;
-    /* 96 */ s8 mUnk_96;
+    /* 96 */ s8 mFieldVariant;
     /* 97 */ u8 mPlayerCount;
     /* 98 */ u8 mHasPartners;
-    /* 99 */ u8 mUnk_99;
+    /* 99 */ u8 mSlotsPerPlayer;
     union {
         /* 9a */ u8 mRules;
         struct {
@@ -389,19 +389,19 @@ struct UnkStruct_020d433c {
             /* 9a */ u8 mUnk_9a_2 : 1;
             /* 9a */ u8 mUnk_9a_3 : 1;
             /* 9a */ u8 mUnk_9a_4 : 1;
-            /* 9a */ u8 mUnk_9a_5 : 2;
+            /* 9a */ u8 mRuleFieldVariant : 2;
             /* 9a */ u8 mUnk_9a_7 : 1;
         };
     };
     /* 9b */ u8 mPartners[4]; // also data_020d43d7; read only while mHasPartners is set
     /* 9f */ u8 mCharacterIds[4]; // also data_020d43db
-    /* a3 */ u8 mUnk_a3[4]; // also data_020d43df: per player 0..2, copied to BattlePlayer::mUnk_f7; second index of the
+    /* a3 */ u8 mCharacterLevels[4]; // also data_020d43df: per player 0..2, copied to BattlePlayer::mCharacterLevel; second index of the
                             // player templates, a BattleShoot multiplier index, BattleCpu tests, a cell frame drawn by
                             // FieldSelectScene / BattleResult
     /* a7 */ u8 mUnk_a7;
     /* a8 */ u8 mWireless; // set by ArenaScene when it starts the wireless session; cleared by ArenaScene, ArenaWindowScene, BattlePlayerList
     /* a9 */ u8 mUnk_a9[4];
-    // TitleScene state 0 then runs the credits, sets gSaveData[0].mUnk_5bf_0, GiftUnlockScene and a SaveWindow, and
+    // TitleScene state 0 then runs the credits, sets gSaveData[0].mCreditsDone, GiftUnlockScene and a SaveWindow, and
     // clears it before SCENE_LOGO
     /* ad */ u8 mCreditsRequested;
     /* ae */ u8 mLocalSlot;

@@ -1,5 +1,5 @@
-// Soft-float and integer-division runtime (main 0x0201d72c-0x020202bc). Every routine here is
-// hand-written ARM assembly. A float or int travels in r0 (second operand r1); a double or 64-bit
+// Soft-float and integer-division runtime (main 0x0201d72c-0x020202bc). Every routine here except
+// func_0201e7dc (C) is hand-written ARM assembly. A float or int travels in r0 (second operand r1); a double or 64-bit
 // integer in the pair r0 (low word) / r1 (high word), the second operand in r2/r3. The C
 // prototypes only document register use.
 
@@ -1426,9 +1426,8 @@ L_0201e7d4:
 
 // func_0201e7dc: returns the constant 0x7fffffff (the NaN pattern used by the float
 // routines above); no arguments are read.
-asm int func_0201e7dc(void) {
-    mvn r0, #0x80000000
-    bx lr
+int func_0201e7dc(void) {
+    return 0x7fffffff;
 }
 
 // _dgeq: returns 1 if a >= b (doubles a in r1:r0, b in r3:r2), else 0.

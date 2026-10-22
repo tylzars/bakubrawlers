@@ -109,7 +109,8 @@ These routines are not compiler output. Where they are matched, it is as comment
   (`cp/cp_context.c`), the LZ streaming step `MI_UncompLZChunk` (`mi/mi_uncompress.c`), CRI's MPEG synthesis dot
   products `func_0204c088` (`cri_mpa_dec.c`), the cache, protection-unit, interrupt-mask and context routines
   (`os/os_cache.c`, `os/os_protection.c`, `os/os_system.c`, `os/os_thread.c`, `os/os_exception.c`), and in ITCM
-  the identity fills, the `MIi_Cpu*` clear/copy routines and the IRQ dispatcher with the thread-switch return
+  the identity fills, the `MIi_Cpu*` clear/copy routines (except `MIi_CpuClear16` and `MIi_CpuCopy16`, which are
+  C) and the IRQ dispatcher with the thread-switch return
   (`os/os_irq_itcm.c`).
 - Labels inside one asm function are not visible to another, so a branch into the middle of a neighbouring routine
   is written as a raw instruction word (`dcd`) with a comment. objdiff reads such a word as data where the original

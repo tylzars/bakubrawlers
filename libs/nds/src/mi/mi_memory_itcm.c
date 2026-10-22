@@ -1,34 +1,35 @@
 // MI_CpuFill8 and MI_CpuCopy8 (ITCM) are asm bodies as well: their byte loops don't come out of C.
 // ITCM memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
-// Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
-//   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, MI_CpuSend32,
-//   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, MI_Copy48B, MI_Copy64B,
-//   MI_Zero36B (thumb, stm x3).
+// MIi_CpuClear16 0x01ff94c8 and MIi_CpuCopy16 0x01ff94e0 are C. Hand-written asm (single-register ldm/stm with
+// write-back, 8-register stm runs): MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, MI_CpuSend32, MIi_CpuClearFast 0x01ff9540,
+//   MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, MI_Copy48B, MI_Copy64B, MI_Zero36B (thumb, stm x3).
 // MI_CpuFill8 and MI_CpuCopy8 (byte fill/copy) follow near the end.
 #include <nitro/internal.h>
 
 // MIi_CpuClear16(value, dst, size): stores the halfword 'value' over 'size'
 // bytes at dst, two bytes at a time, while the running offset is below size.
-asm void MIi_CpuClear16(unsigned int value, void *dst, unsigned int size) {
-    mov r3, #0
-L1:
-    cmp r3, r2
-    strlth r0, [r1, r3]
-    addlt r3, r3, #2
-    blt L1
-    bx lr
+// The loop tests the offset first and returns from inside it; a plain for loop is rotated (test at the bottom).
+void MIi_CpuClear16(u16 data, void *dest, u32 size) {
+    int i = 0;
+    for (;;) {
+        if (i >= (int) size) {
+            return;
+        }
+        *(u16 *) ((u32) dest + i) = data;
+        i += 2;
+    }
 }
 
 // MIi_CpuCopy16(src, dst, size): copies size bytes as halfwords.
-asm void MIi_CpuCopy16(const void *src, void *dst, unsigned int size) {
-    mov ip, #0
-L1:
-    cmp ip, r2
-    ldrlth r3, [r0, ip]
-    strlth r3, [r1, ip]
-    addlt ip, ip, #2
-    blt L1
-    bx lr
+void MIi_CpuCopy16(const void *src, void *dst, u32 size) {
+    int i = 0;
+    for (;;) {
+        if (i >= (int) size) {
+            return;
+        }
+        *(u16 *) ((u32) dst + i) = *(const u16 *) ((u32) src + i);
+        i += 2;
+    }
 }
 
 // MIi_CpuClear32(value, dst, size): stores the word 'value' over size bytes.

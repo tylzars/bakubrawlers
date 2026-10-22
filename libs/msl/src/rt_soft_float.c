@@ -20,6 +20,9 @@ extern int data_020c1790;
 // treated as exponent 1 without hidden bit. Overflow gives +-Inf. Result is rounded to
 // nearest, ties to even, using the 11 bits shifted out plus a sticky bit.
 // The `dcd` word below is the cross-routine branch (no label can be shared between asm functions).
+// Not compiled: part of one hand-written object with _dsub. The `bmi` written as the `dcd` word branches into the
+// middle of _dsub (_dsub+0x10), and _dsub branches back into this routine at _dadd+0x10; a C function can neither
+// branch into another function's body nor be entered anywhere but at its start.
 asm double _dadd(double a, double b) {
     stmfd sp!, {r4, lr}
     // different signs? then flip b's sign and take the subtract path
@@ -271,6 +274,11 @@ L_0201da20:
 // gives +-Inf; a result exponent <= 0 goes to the denormal path, where the mantissa
 // (with hidden bit) is shifted right, keeping a sticky bit. The 29 dropped mantissa bits
 // are rounded to nearest, ties to even.
+// Not compiled: `subs ip, ip, #0x380` is followed by `bls`, a test of the subtract's own carry and zero flags. In
+// this build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi
+// or pl (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those
+// tests only. Written in C, unsigned `if (e <= 0x380)` with `e - 0x380` used afterwards compiles to `cmp rN, #0x380`
+// and a separate `sub`, and signed `s = e - 0x380; if (s <= 0)` to `sub; cmp rN, #0`.
 asm float _d2f(double a) {
     // r2 = sign; ip = biased exponent
     and r2, r1, #0x80000000
@@ -360,6 +368,11 @@ L_0201db3c:
 // shift = 0x41e - biased exponent. shift <= 0 (|x| >= 2^31, Inf, NaN) saturates by sign
 // to 0x7fffffff / 0x80000000; shift >= 32 (|x| < 1) gives 0; otherwise the top 32
 // mantissa bits (hidden bit included) are shifted right by `shift` and negated if x < 0.
+// Not compiled: `subs r2, r2, r3, lsr #0x14` is followed by `ble`, a signed test of the subtract's own flags. In this
+// build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl
+// (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests
+// only. Written in C, `s = k - (e >> 20); if (s <= 0)` compiles to `sub; cmp rN, #0`, `if (s < 0)` to `subs` with mi,
+// and `if (k <= (e >> 20))` to `cmp` plus a separate `sub`.
 asm int _dfix(double a) {
     bic r3, r1, #0x80000000
     ldr r2, =0x41e
@@ -389,6 +402,11 @@ L_0201db84:
 // Negative inputs give 0, except a negative NaN which gives 0xffffffff. For positive
 // inputs shift = 0x41e - biased exponent: shift < 0 (>= 2^32, +Inf, NaN) gives
 // 0xffffffff, shift >= 32 (< 1) gives 0, otherwise the mantissa is shifted right.
+// Not compiled: `subs r2, r2, r1, lsr #0x14` is followed by `blt`, a signed test of the subtract's own flags. In this
+// build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl
+// (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests
+// only. Written in C, `s = k - (e >> 20); if (s < 0)` compiles to `subs` with mi, `if (s <= 0)` to `sub; cmp rN, #0`,
+// and `if (k < (e >> 20))` to `cmp` plus a separate `sub`.
 asm unsigned int _dfixu(double a) {
     tst r1, #0x80000000
     bne L_0201dbcc
@@ -424,6 +442,11 @@ L_0201dbe0:
 // inputs give 0 (a negative NaN gives all ones); shift < 0 saturates to all ones;
 // shift >= 64 gives 0; otherwise the 53-bit mantissa, left-justified in a 64-bit value,
 // is shifted right by `shift`.
+// Not compiled: `subs r2, r2, r1, lsr #0x14` is followed by `blt`, a signed test of the subtract's own flags. In this
+// build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl
+// (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests
+// only. Written in C, `s = k - (e >> 20); if (s < 0)` compiles to `subs` with mi, `if (s <= 0)` to `sub; cmp rN, #0`,
+// and `if (k < (e >> 20))` to `cmp` plus a separate `sub`.
 asm unsigned long long func_0201dbec(double a) {
     tst r1, #0x80000000
     bne L_0201dc50
@@ -473,6 +496,8 @@ L_0201dc68:
 // Takes the magnitude, returns +0 for zero, normalizes with a leading-zero count, and
 // builds the exponent as 0x41e - clz. The 32-bit value always fits in the 53-bit
 // mantissa, so no rounding is needed; the hidden bit is dropped when packing.
+// Not compiled: normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz`
+// and `__clz` compile as calls to an external function.
 asm double _dflt(int a) {
     // r2 = sign; take magnitude
     ands r2, r0, #0x80000000
@@ -496,6 +521,8 @@ asm double _dflt(int a) {
 
 // _dfltu: unsigned 32-bit integer (r0) to double (r1:r0). Like _dflt but with no sign
 // handling; if the top bit is already set the normalization step is skipped.
+// Not compiled: normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz`
+// and `__clz` compile as calls to an external function.
 asm double _dfltu(unsigned int a) {
     cmp r0, #0x0
     mov r1, #0x0
@@ -527,6 +554,8 @@ L_0201dcdc:
 // normalized first with a leading-zero count. Exponent overflow -> signed Inf; exponent
 // underflow shifts into a denormal (smallest denormal / zero when far enough down).
 // Rounding is to nearest, ties to even.
+// Not compiled: normalises denormal operands with `clz`, which this compiler never emits: it has no clz intrinsic,
+// and `__builtin_clz` and `__clz` compile as calls to an external function.
 asm double _dmul(double a, double b) {
     stmfd sp!, {r4, r5, r6, r7, lr}
     // sign of the product
@@ -800,6 +829,8 @@ L_0201e044:
 // and 31 more for the rest of the low word (r0). The last root bit is the round bit: it is
 // cleared when the remainder is zero, then added in after the final shift right by one, and
 // the exponent is rebiased.
+// Not compiled: normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz`
+// and `__clz` compile as calls to an external function.
 asm double sqrt(double x) {
     stmfd sp!, {r4, r5, r6, lr}
     ldr r2, =0x7ff00000
@@ -929,6 +960,9 @@ L_0201e1cc:
 // func_0201e1f4: reverse-operand entry for _dsub: swaps the two double operands with three
 // exclusive-ors each and falls through into _dsub, which follows directly. Nothing in
 // the program calls it, so the link keeps it with a force_active entry.
+// Not compiled: has no return. After swapping the operands it runs on into _dsub, which is placed directly after it.
+// A compiled function always ends in a return or a branch: `return _dsub(b, a);` moves the operands through spare
+// registers and calls _dsub.
 asm void func_0201e1f4(void) {
     eor r1, r1, r3
     eor r3, r1, r3
@@ -948,6 +982,11 @@ asm void func_0201e1f4(void) {
 // the result is rounded to nearest-even. NaN/Inf/zero/denormal inputs are handled as in
 // _dadd (NaN -> 0x7fffffffffffffff; Inf - Inf of the same sign and Inf with NaN -> NaN).
 // The `dcd` word below is the cross-routine branch (no label can be shared between asm functions).
+// Not compiled: part of one hand-written object with _dadd. The `bmi` written as the `dcd` word branches into the
+// middle of _dadd (_dadd+0x10), _dadd branches into this routine at _dsub+0x10, and func_0201e1f4 runs into its first
+// instruction; a C function can neither branch into another function's body nor be entered anywhere but at its start.
+// It also normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz` and
+// `__clz` compile as calls to an external function.
 asm double _dsub(double a, double b) {
     stmfd sp!, {r4, lr}
     // different signs? then flip b's sign and take the add path
@@ -1251,6 +1290,9 @@ L_0201e5ac:
 // NaN -> 0x7fffffff, Inf + finite or Inf + Inf -> Inf, a zero operand returns the other
 // one, denormal inputs are treated as exponent 1 without hidden bit.
 // The `dcd` word below is the cross-routine branch (no label can be shared between asm functions).
+// Not compiled: part of one hand-written object with _fsub. The `bmi` written as the `dcd` word branches into the
+// middle of _fsub (_fsub+0xc), and _fsub branches back into this routine at _fadd+0xc; a C function can neither
+// branch into another function's body nor be entered anywhere but at its start.
 asm float _fadd(float a, float b) {
     // different signs? flip b and take the subtract path
     eors r2, r0, r1
@@ -1435,6 +1477,8 @@ int func_0201e7dc(void) {
 // equal (C set). Non-negative operands compare as unsigned 64-bit values; if either is
 // negative the raw bits are compared in reverse order, which is correct for two negatives
 // and for mixed signs. The flags are left as the result of the final comparison.
+// Not compiled: sets or clears the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _dgeq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1488,6 +1532,8 @@ L_0201e86c:
 
 // _dgr: returns 1 if a > b (doubles), else 0. Same structure as _dgeq; unordered gives 0
 // with C cleared, and the +0 == -0 case gives 0 with C cleared.
+// Not compiled: clears the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The result
+// is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _dgr(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1541,6 +1587,8 @@ L_0201e904:
 
 // _dleq: returns 1 if a <= b (doubles), else 0. Same structure as _dgeq.
 // Unordered gives 0 with Z cleared and C set; equal zeros give 1 with Z set and C cleared.
+// Not compiled: sets or clears the C and Z flags with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression
+// for. The result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _dleq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1599,6 +1647,8 @@ L_0201e9a8:
 
 // _dls: returns 1 if a < b (doubles), else 0. Same structure as _dgeq.
 // Unordered and the +0/-0 case give 0 with C set.
+// Not compiled: sets the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The result is
+// returned in the flags as well as in r0, which no C calling convention provides.
 asm int _dls(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1655,6 +1705,8 @@ L_0201ea44:
 
 // _deq: returns 1 if a == b (doubles), else 0. NaN gives 0 with Z cleared; +0 equals -0;
 // otherwise both words must be equal.
+// Not compiled: clears the Z flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The result
+// is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _deq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1705,6 +1757,8 @@ L_0201ead0:
 
 // _dneq: returns 1 if a != b (doubles), else 0. NaN gives 1 with Z cleared;
 // +0 and -0 are equal (0).
+// Not compiled: clears the Z flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The result
+// is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _dneq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
@@ -1758,6 +1812,8 @@ L_0201eb5c:
 // Otherwise each operand is converted from sign-magnitude to two's complement and the two
 // are compared as signed integers, so +0 and -0 compare equal. The flags are left set to
 // match the returned condition.
+// Not compiled: sets or clears the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _fgeq(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1792,6 +1848,8 @@ L_0201ebb4:
 // Otherwise each operand is converted from sign-magnitude to two's complement and the two
 // are compared as signed integers, so +0 and -0 compare equal. The flags are left set to
 // match the returned condition.
+// Not compiled: sets or clears the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _fgr(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1826,6 +1884,8 @@ L_0201ec10:
 // Otherwise each operand is converted from sign-magnitude to two's complement and the two
 // are compared as signed integers, so +0 and -0 compare equal. The flags are left set to
 // match the returned condition.
+// Not compiled: sets or clears the C and Z flags with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression
+// for. The result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _fleq(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1863,6 +1923,8 @@ L_0201ec74:
 // Otherwise each operand is converted from sign-magnitude to two's complement and the two
 // are compared as signed integers, so +0 and -0 compare equal. The flags are left set to
 // match the returned condition.
+// Not compiled: sets or clears the C flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _fls(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1894,6 +1956,8 @@ L_0201ecd4:
 
 // _feq: returns 1 if a == b (floats), else 0. NaN -> 0 with Z cleared. Two zeros of either
 // sign are equal (Z set); otherwise the raw bit patterns are compared.
+// Not compiled: sets or clears the Z flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _feq(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1930,6 +1994,8 @@ L_0201ed3c:
 
 // _fneq: returns 1 if a != b (floats), else 0. NaN -> 1 with Z cleared. Two zeros of either
 // sign are equal (returns 0); otherwise the raw bit patterns are compared.
+// Not compiled: sets or clears the Z flag with `mrs ip, cpsr` / `msr cpsr_f, ip`, which C has no expression for. The
+// result is returned in the flags as well as in r0, which no C calling convention provides.
 asm int _fneq(float a, float b) {
     mov r3, #0xff000000
     cmp r3, r0, lsl #0x1
@@ -1967,6 +2033,9 @@ L_0201eda4:
 // func_0201edb8: reverse-operand entry for _fdiv: swaps the two float operands with three
 // exclusive-ors each and falls through into _fdiv, which follows directly. Nothing in
 // the program calls it, so the link keeps it with a force_active entry.
+// Not compiled: has no return. After swapping the operands it runs on into _fdiv, which is placed directly after it.
+// A compiled function always ends in a return or a branch: `return _fdiv(b, a);` moves the operands through a spare
+// register and ends in a tail call (`ldr ip, =_fdiv; bx ip`).
 asm void func_0201edb8(void) {
     eor r0, r0, r1
     eor r1, r0, r1
@@ -2000,6 +2069,10 @@ extern int _s32_div_f(int a, int b);
 // Special cases: NaN operand, 0/0 and inf/inf return the quiet NaN 0x7fffffff; x/0 and
 // inf/finite return a signed infinity; 0/finite and finite/inf return a signed zero. Denormal
 // operands are normalised with clz first.
+// Not compiled: keeps its 256-byte reciprocal table inside its own code and addresses it with `sub r0, pc, #0x94` (pc
+// read as data), and normalises denormal operands with `clz`, which this compiler never emits: it has no clz
+// intrinsic, and `__builtin_clz` and `__clz` compile as calls to an external function. func_0201edb8 runs into its
+// first instruction.
 asm float _fdiv(float a, float b) {
     stmdb sp!, {lr}
     mov ip, #0xff
@@ -2286,6 +2359,8 @@ L_0201f170:
 // Normal numbers: rebias the exponent (+0x380) and shift the 23-bit mantissa into the 52-bit
 // field. Zero maps to signed zero; a float denormal is normalised with clz so it becomes a
 // normal double; infinity becomes the double infinity; any NaN becomes 0x7fffffff_ffffffff.
+// Not compiled: normalises a denormal with `clz`, which this compiler never emits: it has no clz intrinsic, and
+// `__builtin_clz` and `__clz` compile as calls to an external function.
 asm double _f2d(float a) {
     and r2, r0, #0x80000000
     mov ip, r0, lsr #0x17
@@ -2333,6 +2408,11 @@ L_0201f1f0:
 // The shift is 0x9e minus the biased exponent; if it is not positive (|a| >= 2^31, infinity,
 // NaN) the result saturates to 0x7fffffff for a non-negative input or 0x80000000 for a negative
 // one. Otherwise the mantissa with its implicit bit is shifted right and negated if a < 0.
+// Not compiled: `subs r2, r2, r1, lsr #0x17` is followed by `ble`, a signed test of the subtract's own flags. In this
+// build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl
+// (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests
+// only. Written in C, `s = 0x9e - (m >> 23); if (s <= 0)` compiles to `lsr; rsb; cmp rN, #0`, `if (s < 0)` to `rsbs`
+// with mi, and `if (0x9e <= (m >> 23))` to `cmp` plus a separate `rsb`.
 asm int _ffix(float a) {
     bic r1, r0, #0x80000000
     mov r2, #0x9e
@@ -2355,6 +2435,11 @@ L_0201f228:
 // Negative inputs give 0, except NaN which gives 0xffffffff. Non-negative inputs too large for
 // 32 bits (including infinity and NaN) give 0xffffffff; otherwise the mantissa with its
 // implicit bit is shifted right by (0x9e - exponent).
+// Not compiled: `subs r1, r1, r0, lsr #0x17` is followed by `blt`, a signed test of the subtract's own flags. In this
+// build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl
+// (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests
+// only. Written in C, `s = 0x9e - (a >> 23); if (s < 0)` compiles to `rsbs` with mi, `if (s <= 0)` to
+// `rsb; cmp rN, #0`, and `if (0x9e < (a >> 23))` to `cmp` plus a separate `rsb`.
 asm unsigned _ffixu(float a) {
     tst r0, #0x80000000
     bne L_0201f258
@@ -2383,6 +2468,8 @@ L_0201f26c:
 // exponent to 0x9e - clz, packs sign | exponent | top 23 mantissa bits, and uses the 8 bits
 // shifted out below the mantissa to round: exact or below half truncates, above half rounds up,
 // exactly half rounds to even.
+// Not compiled: normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz`
+// and `__clz` compile as calls to an external function.
 asm float _fflt(int a) {
     ands r2, r0, #0x80000000
     rsbmi r0, r0, #0x0
@@ -2406,6 +2493,8 @@ asm float _fflt(int a) {
 
 // _ffltu: unsigned int (r0) to float, round to nearest even.
 // Same as _fflt without the sign handling; a value with bit 31 set needs no normalisation.
+// Not compiled: normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz`
+// and `__clz` compile as calls to an external function.
 asm float _ffltu(unsigned a) {
     cmp r0, #0x0
     bxeq lr
@@ -2438,6 +2527,8 @@ L_0201f2d8:
 // bits below the mantissa plus a sticky bit from the low product word.
 // Special cases: NaN operand or 0 * inf return 0x7fffffff; inf * finite gives signed infinity;
 // zero * finite gives signed zero; denormal inputs are normalised with clz.
+// Not compiled: normalises denormal operands with `clz`, which this compiler never emits: it has no clz intrinsic,
+// and `__builtin_clz` and `__clz` compile as calls to an external function.
 asm float _fmul(float a, float b) {
     eor r2, r0, r1
     and r2, r2, #0x80000000
@@ -2594,6 +2685,9 @@ L_0201f4dc:
 // func_0201f4e4: reverse-operand entry for _fsub: swaps r0 and r1 with three exclusive-ors
 // and falls through into _fsub, which follows directly. Nothing in the program calls it, so
 // the link keeps it with a force_active entry.
+// Not compiled: has no return. After swapping the operands it runs on into _fsub, which is placed directly after it.
+// A compiled function always ends in a return or a branch: `return _fsub(b, a);` moves the operands through a spare
+// register and ends in a tail call (`ldr ip, =_fsub; bx ip`).
 asm void func_0201f4e4(void) {
     eor r0, r0, r1
     eor r1, r0, r1
@@ -2609,6 +2703,11 @@ asm void func_0201f4e4(void) {
 // rounded to nearest even. Denormals, infinities and NaNs are handled in the tail blocks:
 // inf - inf and NaN operands give 0x7fffffff, otherwise the infinity or the other operand is
 // returned.
+// Not compiled: part of one hand-written object with _fadd. The `bmi` written as the `dcd` word branches into the
+// middle of _fadd (_fadd+0xc), _fadd branches into this routine at _fsub+0xc, and func_0201f4e4 runs into its first
+// instruction; a C function can neither branch into another function's body nor be entered anywhere but at its start.
+// It also normalises with `clz`, which this compiler never emits: it has no clz intrinsic, and `__builtin_clz` and
+// `__clz` compile as calls to an external function.
 asm float _fsub(float a, float b) {
     eors r2, r0, r1
     eormi r1, r1, #0x80000000
@@ -2818,6 +2917,9 @@ L_0201f760:
 // quotient in r11:ip (high:low) and the partial remainder in r7:r1:r0. The remainder case shifts
 // the partial remainder back right by r5; finally the result is negated if bit 31 of r4 is set.
 // L_0201f7ec in _ll_sdiv is also the target of a branch in _ull_mod (code shared with _ll_udiv).
+// Not compiled: an entry of the hand-written 64-bit divider. It pushes registers, puts a mode flag in r4 and branches
+// into the middle of _ll_sdiv (_ll_sdiv+0x10, the `dcd` word), whose code then finishes and returns for it; a C
+// function can't branch into another function's body, and no C calling convention passes r4.
 asm long long func_0201f768(long long a, long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     mov r4, r1
@@ -2826,6 +2928,9 @@ asm long long func_0201f768(long long a, long long b) {
 }
 
 // _ll_sdiv: signed 64-bit quotient, a / b; also the shared body of func_0201f768 (see above).
+// Not compiled: entered in the middle by two other routines, which push the registers and set the mode flag in r4
+// themselves: func_0201f768 branches to _ll_sdiv+0x10 and _ull_mod to _ll_sdiv+0x74. A compiled function can be
+// entered only at its start, and no C calling convention passes r4.
 asm long long _ll_sdiv(long long a, long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     eor r4, r1, r3
@@ -2970,6 +3075,9 @@ L_0201f914:
 // it is a 32-bit divide: the compare/divide part of _u32_div_f (_u32_div_f+0x8) is called, r0
 // takes the quotient (or the remainder) and r1 is cleared. Otherwise it jumps into the 64-bit
 // divide in _ll_sdiv at L_0201f7ec (0x0201f7ec), past the absolute-value step.
+// Not compiled: an entry of the hand-written 64-bit divider. It pushes registers, puts a mode flag in r4 and branches
+// into the middle of _ull_mod (_ull_mod+0x8, the `dcd` word), whose code then finishes and returns for it; a C
+// function can't branch into another function's body, and no C calling convention passes r4.
 asm unsigned long long _ll_udiv(unsigned long long a, unsigned long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     mov r4, #0x0
@@ -2977,6 +3085,10 @@ asm unsigned long long _ll_udiv(unsigned long long a, unsigned long long b) {
 }
 
 // _ull_mod: unsigned 64-bit remainder, a % b; also the shared body of _ll_udiv (see above).
+// Not compiled: part of the hand-written 64-bit divider. _ll_udiv enters it at _ull_mod+0x8 with r4 already set; it
+// branches into the middle of _ll_sdiv (_ll_sdiv+0x74) and calls _u32_div_f past its zero test (_u32_div_f+0x8), both
+// written as `dcd` words, and takes the remainder from r1 after that call. A compiled function can't branch or call
+// into another function's body or be entered anywhere but at its start.
 asm unsigned long long _ull_mod(unsigned long long a, unsigned long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     mov r4, #0x1
@@ -3008,6 +3120,12 @@ L_0201f94c:
 // computed jump (add pc, pc, r2*12) lands in an unrolled sequence of 32 three-instruction
 // steps, each of which shifts the partial remainder in r3, subtracts the divisor when it fits,
 // and shifts the new quotient bit into r0. The signs are then applied.
+// Not compiled: `add pc, pc, r2, lsl #0x2` (r2 = 3 * shift count) jumps straight into an unrolled run of 32
+// three-instruction steps. Every computed write of pc in this build's compiled code is a switch's conditional
+// `add pc, pc, rN, lsl #2` (ls, pl or ge) into a table of branches. The steps pass each quotient bit through the
+// carry flag (`adcs`, `sublo`, `adcs`): written as `q = q + q + (r >= d)` or `q = (q << 1) | (r >= d)`, the compiler
+// gives `cmp; movcs rN, #1; movcc rN, #0` and an add/orr, never adc. The remainder is also returned in r1 beside the
+// int result, and _ll_sdiv reads it there.
 asm int _s32_div_f(int a, int b) {
     eor ip, r0, r1
     and ip, ip, #0x80000000
@@ -3149,6 +3267,10 @@ L_0201fb68:
 // _ull_mod share) is the same
 // shift-count search and unrolled 32-step computed-jump divide as in _s32_div_f, without sign
 // handling. If a < b the quotient is 0 and the remainder is a.
+// Not compiled: _ull_mod calls into it at _u32_div_f+0x8, past the zero test, and a compiled function can be entered
+// only at its start. Like _s32_div_f it also jumps with `add pc, pc, r2, lsl #0x2` straight into an unrolled run of
+// steps that pass each quotient bit through the carry flag (`adcs`), and returns the remainder in r1 beside the
+// result.
 asm unsigned _u32_div_f(unsigned a, unsigned b) {
     cmp r1, #0x0
     bxeq lr
@@ -3278,6 +3400,9 @@ L_0201fb84:
 // func_0201fd60: reverse-operand entry for _ddiv: swaps the two double operands (r1:r0 with
 // r3:r2) with three exclusive-ors per word and falls through into _ddiv, which follows
 // directly. Nothing in the program calls it, so the link keeps it with a force_active entry.
+// Not compiled: has no return. After swapping the operands it runs on into _ddiv, which is placed directly after it.
+// A compiled function always ends in a return or a branch: `return _ddiv(b, a);` moves the operands through spare
+// registers and calls _ddiv.
 asm void func_0201fd60(void) {
     eor r1, r1, r3
     eor r3, r1, r3
@@ -3302,6 +3427,10 @@ asm void func_0201fd60(void) {
 // 0x7ff80000 into the working high word with r0 unchanged, which for 0/0 and inf/inf gives
 // 0x7ff80000_00000000 with a's sign. x/0 and inf/finite give a signed infinity; 0/finite and
 // finite/inf give signed zero; denormal operands are normalised with clz first.
+// Not compiled: keeps its 256-byte reciprocal table inside its own code and addresses it with `sub r4, pc, #0x24` (pc
+// read as data), and normalises denormal operands with `clz`, which this compiler never emits: it has no clz
+// intrinsic, and `__builtin_clz` and `__clz` compile as calls to an external function. func_0201fd60 runs into its
+// first instruction.
 asm double _ddiv(double a, double b) {
     stmdb sp!, {r4, r5, r6, lr}
     ldr lr, =0xffe

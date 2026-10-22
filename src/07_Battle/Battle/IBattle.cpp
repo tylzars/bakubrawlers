@@ -67,14 +67,14 @@ void ApplyNetMessages(BattleBase *scene) {
         }
         i++;
     } while (i < count);
-    scene->func_ov007_0221ced0(first, second, third);
-    scene->func_ov007_0221cfac(first, second);
+    scene->RollHelpersForCard(first, second, third);
+    scene->ApplySidePlayersFromMessages(first, second);
     scene->UpdateSlotsFromMessages(first, second, third, &flag);
     if (flag != 0) {
         scene->func_ov007_0221cebc((u8) (flag - 1));
     }
     scene->TryStartCardSequenceFromMessages(third);
-    scene->func_ov007_0221d088(0, first);
-    scene->func_ov007_0221d088(1, second);
+    scene->PushSideFromMessages(0, first);
+    scene->PushSideFromMessages(1, second);
 }
 

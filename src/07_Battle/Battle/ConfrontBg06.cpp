@@ -352,7 +352,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
     if (mEmblem->IsBursting()) {
         if (mEmblem->TakeBurstStarted()) {
             hit = 100;
-            func_ov007_0221bb68();
+            SetTouchFramesToLimits();
         }
     } else {
         hit = mEmblem->func_ov007_02221f2c(a);
@@ -362,7 +362,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
         if (hit == -1) {
             hit = mEmblem->func_ov007_0222210c();
             if (hit != -1) {
-                func_ov007_0221bb68();
+                SetTouchFramesToLimits();
                 SoundManager::Get().StartSeqArc(0x2f);
             }
         }

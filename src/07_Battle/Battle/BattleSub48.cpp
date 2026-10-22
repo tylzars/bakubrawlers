@@ -65,7 +65,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
             mPos[k][1] = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
             k++;
         } while (k < 2);
-        if (!entries[0].mUnk_0f_5 && !entries[1].mUnk_0f_5) {
+        if (!entries[0].mNextBattleRequested && !entries[1].mNextBattleRequested) {
             mState = 1;
         } else {
             u32 left = 8;
@@ -207,7 +207,7 @@ void BattleSub48::LoadGraphics() {
     i = 0;
     j = 5;
     do {
-        if (entries[i].mUnk_0f_2) {
+        if (entries[i].mKind3CardRemoved) {
             mCellAnims[j]->SetAnimation(3);
         } else {
             int k = GetCardInfo(entries[i].mCardId, 3);
@@ -432,7 +432,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
     i = 0;
     do {
         if (entries[i].mCardId == 0) {
-            if (entries[i].mUnk_0f_2) {
+            if (entries[i].mKind3CardRemoved) {
                 s16 x = xs[i];
                 u8 slot = i + 5;
                 mCellAnims[slot]->Draw(0, x, y, 1);

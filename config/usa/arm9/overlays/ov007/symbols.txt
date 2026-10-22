@@ -10,26 +10,26 @@ _ZN10BattleBase13InitSubScreenEv kind:function(arm,size=0x40) addr:0x0221a624
 _ZN10BattleBase15RaiseBlendAlphaEv kind:function(arm,size=0x50) addr:0x0221a664
 _ZN10BattleBase17SetupCardSequenceEv kind:function(arm,size=0x11c) addr:0x0221a6b4
 _ZN10BattleBase18UpdateCardSequenceEv kind:function(arm,size=0x1118) addr:0x0221a7d0
-_ZN10BattleBase19func_ov007_0221b8e8Ev kind:function(arm,size=0xb0) addr:0x0221b8e8
+_ZN10BattleBase24UpdateCardSequenceReturnEv kind:function(arm,size=0xb0) addr:0x0221b8e8
 _Z19func_ov007_0221b998iiP11BattleEntry kind:function(arm,size=0x38) addr:0x0221b998
 _Z19func_ov007_0221b9d0iiP11BattleEntry kind:function(arm,size=0x3c) addr:0x0221b9d0
 _Z19func_ov007_0221ba0ciiP11BattleEntry kind:function(arm,size=0x2c) addr:0x0221ba0c
 _Z19func_ov007_0221ba38ihiP11BattleEntry kind:function(arm,size=0x50) addr:0x0221ba38
-_Z19func_ov007_0221ba88iiP11BattleEntry kind:function(arm,size=0xa0) addr:0x0221ba88
+_Z20GetNextBattleRequestiiP11BattleEntry kind:function(arm,size=0xa0) addr:0x0221ba88
 _ZN10BattleBase14SetPenPositionEss kind:function(arm,size=0x14) addr:0x0221bb28
 _ZN10BattleBase10SetTouchedEv kind:function(arm,size=0x2c) addr:0x0221bb3c
-_ZN10BattleBase19func_ov007_0221bb68Ev kind:function(arm,size=0x1c) addr:0x0221bb68
+_ZN10BattleBase22SetTouchFramesToLimitsEv kind:function(arm,size=0x1c) addr:0x0221bb68
 _ZN10BattleBase14CheckBattleEndEv kind:function(arm,size=0x200) addr:0x0221bb84
 _ZN10BattleBase19func_ov007_0221bd84Ev kind:function(arm,size=0x220) addr:0x0221bd84
 _ZN10BattleBase19func_ov007_0221bfa4Ev kind:function(arm,size=0x1d4) addr:0x0221bfa4
-_ZN10BattleBase19func_ov007_0221c178EPtS0_S0_Ph kind:function(arm,size=0x6d8) addr:0x0221c178
+_ZN10BattleBase17UpdateLocalPlayerEPtS0_S0_Ph kind:function(arm,size=0x6d8) addr:0x0221c178
 _ZN10BattleBase11UpdateSlotsEPtS0_S0_Ph kind:function(arm,size=0xa8) addr:0x0221c850
 _ZN10BattleBase20TryStartCardSequenceEPt kind:function(arm,size=0x40) addr:0x0221c8f8
-_ZN10BattleBase19func_ov007_0221c938Ev kind:function(arm,size=0x584) addr:0x0221c938
+_ZN10BattleBase10UpdatePushEv kind:function(arm,size=0x584) addr:0x0221c938
 _ZN10BattleBase19func_ov007_0221cebcEi kind:function(arm,size=0x14) addr:0x0221cebc
-_ZN10BattleBase19func_ov007_0221ced0EPtS0_S0_ kind:function(arm,size=0xdc) addr:0x0221ced0
-_ZN10BattleBase19func_ov007_0221cfacEPtS0_ kind:function(arm,size=0xdc) addr:0x0221cfac
-_ZN10BattleBase19func_ov007_0221d088EhPt kind:function(arm,size=0x2c0) addr:0x0221d088
+_ZN10BattleBase18RollHelpersForCardEPtS0_S0_ kind:function(arm,size=0xdc) addr:0x0221ced0
+_ZN10BattleBase28ApplySidePlayersFromMessagesEPtS0_ kind:function(arm,size=0xdc) addr:0x0221cfac
+_ZN10BattleBase20PushSideFromMessagesEhPt kind:function(arm,size=0x2c0) addr:0x0221d088
 _Z12BattleRand32j kind:function(arm,size=0x50) addr:0x0221d348
 _ZN10BattleBase11UpdateFlashEv kind:function(arm,size=0xf0) addr:0x0221d398
 _ZN10BattleBase32TryStartCardSequenceFromMessagesEPt kind:function(arm,size=0xc) addr:0x0221d488
@@ -172,7 +172,7 @@ _ZN10BattleSlotD1Ev kind:function(arm,size=0x34) addr:0x02222b3c
 _ZN10BattleSlotD0Ev kind:function(arm,size=0x3c) addr:0x02222b70
 _ZN10BattleSlot14UpdateIntervalEv kind:function(arm,size=0x88) addr:0x02222bac
 _ZN10BattleSlot12ComputeValueEhPtS0_ kind:function(arm,size=0x480) addr:0x02222c34
-_ZN10BattleSlot19func_ov007_022230b4Eth kind:function(arm,size=0x1ac) addr:0x022230b4
+_ZN10BattleSlot16UpdateExtraValueEth kind:function(arm,size=0x1ac) addr:0x022230b4
 _ZN10BattleSlot6UpdateEPtS0_S0_PA2_ahPh kind:function(arm,size=0x224) addr:0x02223260
 _ZN10BattleSlot14StartCardDelayEi kind:function(arm,size=0x6c) addr:0x02223484
 _Z19func_ov007_022234f0ihh kind:function(arm,size=0x44) addr:0x022234f0
@@ -232,7 +232,7 @@ _ZN9BattleHud18ComputeObjectCountEjhh kind:function(arm,size=0x20) addr:0x022275
 _ZN9BattleHud11StartObjectEhssh kind:function(arm,size=0x170) addr:0x022275c0
 _ZN9BattleHud4DrawEv kind:function(arm,size=0x48c) addr:0x02227730
 _ZN9BattleHud19func_ov007_02227bbcEh kind:function(arm,size=0x98) addr:0x02227bbc
-_ZN9BattleHud19func_ov007_02227c54Ev kind:function(arm,size=0x7f8) addr:0x02227c54
+_ZN9BattleHud18DrawBarsAndObjectsEv kind:function(arm,size=0x7f8) addr:0x02227c54
 _Z19func_ov007_0222844cP9BattleHudhh kind:function(arm,size=0x30) addr:0x0222844c
 _Z19func_ov007_0222847cP9BattleHud kind:function(arm,size=0x24) addr:0x0222847c
 _ZN9BattleHud19StartAbilitySlideInEi kind:function(arm,size=0x20) addr:0x022284a0
@@ -484,8 +484,8 @@ _ZN10BattleData19func_ov007_0223ddacEh kind:function(arm,size=0xdc) addr:0x0223d
 _ZN10BattleData20DrawBakuganAndNumberEhssht kind:function(arm,size=0x144) addr:0x0223de88
 _ZN10BattleData15DrawEntryNumberEhhishjtt kind:function(arm,size=0x1b4) addr:0x0223dfcc
 _ZN10BattleData19func_ov007_0223e180Ev kind:function(arm,size=0x24) addr:0x0223e180
-_ZN10BattleData19func_ov007_0223e1a4Ejh kind:function(arm,size=0x28) addr:0x0223e1a4
-_ZN10BattleData19func_ov007_0223e1ccEhh kind:function(arm,size=0x48) addr:0x0223e1cc
+_ZN10BattleData20SetNextBattleRequestEjh kind:function(arm,size=0x28) addr:0x0223e1a4
+_ZN10BattleData10RemoveCardEhh kind:function(arm,size=0x48) addr:0x0223e1cc
 _Z19func_ov007_0223e214P10BattleDataih kind:function(arm,size=0x24) addr:0x0223e214
 _ZN18BattleConfrontCardC1Ej kind:function(arm,size=0x218) addr:0x0223e238
 _ZN18BattleConfrontCardD1Ev kind:function(arm,size=0x304) addr:0x0223e450
@@ -957,10 +957,10 @@ gMode5Rows kind:data(any) addr:0x02278c94
 gMode0Rows kind:data(any) addr:0x02278cbc
 gMode3Rows kind:data(any) addr:0x02278ce4
 gMode4Rows kind:data(any) addr:0x02278d0c
-data_ov007_02278d34 kind:data(any) addr:0x02278d34
+gExtraRows kind:data(any) addr:0x02278d34
 gCharacterModeBases kind:data(any) addr:0x02278d74
-data_ov007_02278d7a kind:data(any) addr:0x02278d7a
-data_ov007_02278d7b kind:data(any) addr:0x02278d7b
+gCharacterBg01ExtraRowBases kind:data(any) addr:0x02278d7a
+gCharacterBg04ExtraRowBases kind:data(any) addr:0x02278d7b
 gCharacterIntervalRowBases kind:data(any) addr:0x02278d7c
 gCharacterCardDelayFrameCounts kind:data(any) addr:0x02278d7d
 gCharacterCardDelayRandomRanges kind:data(any) addr:0x02278d7e
@@ -971,12 +971,12 @@ gSideTargetX kind:data(any) addr:0x022790bc
 gCircleSlots kind:data(any) addr:0x022790c0
 data_ov007_022790c8 kind:data(any) addr:0x022790c8
 data_ov007_02279158 kind:data(any) addr:0x02279158
-data_ov007_0227915c kind:data(any) addr:0x0227915c
-data_ov007_02279160 kind:data(any) addr:0x02279160
+gHalfPushPercent kind:data(any) addr:0x0227915c
+gSideY kind:data(any) addr:0x02279160
 gLargeCardTouchHeight kind:data(any) addr:0x02279164
 gLargeCardTouchWidth kind:data(any) addr:0x02279168
 gSmallCardTouchY kind:data(any) addr:0x0227916c
-data_ov007_02279170 kind:data(any) addr:0x02279170
+gFullPushPercent kind:data(any) addr:0x02279170
 gLargeCardTouchX kind:data(any) addr:0x02279174
 gSmallCardX kind:data(any) addr:0x02279178
 gLargeCardTouchY kind:data(any) addr:0x0227917c
@@ -1094,7 +1094,7 @@ sCockpitCells kind:data(any) addr:0x02279b44 local
 sPromptItems kind:data(any) addr:0x02279b7c local
 sPromptCells kind:data(any) addr:0x02279bd0 local
 sCommandCells kind:data(any) addr:0x02279c24 local
-data_ov007_02279d3c kind:data(any) addr:0x02279d3c
+gEntryNumberPaletteBase kind:data(any) addr:0x02279d3c
 gIconPaletteBase kind:data(any) addr:0x02279d40
 gIconCharBase kind:data(any) addr:0x02279d44
 sWindowItems kind:data(any) addr:0x02279d48 local

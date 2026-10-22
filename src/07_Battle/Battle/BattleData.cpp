@@ -13,7 +13,7 @@ u8 GetCardAttributeValue(u32 id, u32 index);
 BattleData::BattleData() {
     mMarkerCardId = 0;
     mMarkerPlayer = 0;
-    mUnk_07 = 0;
+    mNextBattleRequest = 0;
     mUnk_0b = 0;
     mMessageWindow = 0;
     mCharacterIcons = 0;
@@ -79,13 +79,13 @@ BattleData::BattleData() {
     u8 j = 0;
     do {
         mEntries[j].mUnk_08   = 0;
-        mEntries[j].mUnk_0f_0 = 0;
-        mEntries[j].mUnk_0f_1 = 0;
-        mEntries[j].mUnk_0f_2 = 0;
+        mEntries[j].mSkipCardPick = 0;
+        mEntries[j].mCardRemoved = 0;
+        mEntries[j].mKind3CardRemoved = 0;
         mEntries[j].mUnk_0f_3 = 0;
         mEntries[j].mUnk_0f_4 = 0;
-        mEntries[j].mUnk_0f_5 = 0;
-        mEntries[j].mUnk_0f_6 = 0;
+        mEntries[j].mNextBattleRequested = 0;
+        mEntries[j].mPushedToEnd = 0;
         j++;
     } while (j < 2);
     mUnk_08[0] = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mUnk_ee;
@@ -362,19 +362,19 @@ void BattleData::func_ov007_0223e180() {
     mEntries[1].mUnk_00 = average;
 }
 
-void BattleData::func_ov007_0223e1a4(u32 unk, u8 side) {
-    mUnk_07 = unk;
+void BattleData::SetNextBattleRequest(u32 request, u8 side) {
+    mNextBattleRequest = request;
     if (side == 0xff) {
         return;
     }
-    mEntries[side].mUnk_0f_5 = 1;
+    mEntries[side].mNextBattleRequested = 1;
 }
 
-void BattleData::func_ov007_0223e1cc(u8 side, u8 kind) {
+void BattleData::RemoveCard(u8 side, u8 kind) {
     if (kind == 3) {
-        mEntries[side].mUnk_0f_2 = 1;
+        mEntries[side].mKind3CardRemoved = 1;
     }
-    mEntries[side].mUnk_0f_1 = 1;
+    mEntries[side].mCardRemoved = 1;
     mEntries[side].mCardId   = 0;
 }
 

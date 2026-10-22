@@ -9,7 +9,7 @@ u32 BattleRand32(u32 max);
 
 // Per-character table of four 8-byte records (0x20 bytes per character).
 struct BattleSideRow {
-    u8 mUnk_00[0x20];
+    u8 mCardKindRows[0x20];
 };
 extern BattleSideRow gCharacterRollRows[];
 extern BattleSideRow gPlayerRollRow;
@@ -31,16 +31,16 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
         mRollEnabled = 1;
         switch (GetCardInfo(*id, 3)) {
             case 0:
-                MIi_CpuCopyFast(row->mUnk_00, &mPeriodFrameCount, 8);
+                MIi_CpuCopyFast(row->mCardKindRows, &mPeriodFrameCount, 8);
                 break;
             case 1:
-                MIi_CpuCopyFast(row->mUnk_00 + 8, &mPeriodFrameCount, 8);
+                MIi_CpuCopyFast(row->mCardKindRows + 8, &mPeriodFrameCount, 8);
                 break;
             case 2:
-                MIi_CpuCopyFast(row->mUnk_00 + 0x10, &mPeriodFrameCount, 8);
+                MIi_CpuCopyFast(row->mCardKindRows + 0x10, &mPeriodFrameCount, 8);
                 break;
             case 3:
-                MIi_CpuCopyFast(row->mUnk_00 + 0x18, &mPeriodFrameCount, 8);
+                MIi_CpuCopyFast(row->mCardKindRows + 0x18, &mPeriodFrameCount, 8);
                 break;
             default:
                 mRollEnabled = 0;

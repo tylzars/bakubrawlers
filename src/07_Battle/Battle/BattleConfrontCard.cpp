@@ -62,7 +62,7 @@ static const s32 sAttributeRates[6][6] = {
 
 void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag);
 
-extern const s8 data_ov007_02279d3c[];
+extern const s8 gEntryNumberPaletteBase[];
 u8 GetCardAttributeValue(u32 id, u32 index);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
@@ -880,7 +880,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             break;
         }
         case 30:
-            if (e[mLocalSide].mUnk_0f_0) {
+            if (e[mLocalSide].mSkipCardPick) {
                 mUnionAbility = new BattleUnionAbility(4, 0x1a000, 0xc);
                 mCardId = 0;
                 mStep = 0x20;
@@ -971,7 +971,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 BattleEntry *ent = &e[i];
                 
                 if (data_020d433c.mBattlePlayers->mPlayers[ent->mPlayer]->IsCpu()) {
-                    if (e[i].mUnk_0f_0) {
+                    if (e[i].mSkipCardPick) {
                         mUnk_56 = 0;
                     } else {
                         j = 0;
@@ -997,7 +997,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                         }
                     }
                 } else if (data_020d433c.mUnk_9a_2) {
-                    if (e[i].mUnk_0f_0) {
+                    if (e[i].mSkipCardPick) {
                         mCardId = 0;
                     } else {
                         j = 0;
@@ -1077,8 +1077,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             ResetDisplay();
             MI_CpuClearFast((void *) 0x6200000, 0x20000);
             MI_CpuClearFast((void *) 0x6607000, 0x19000);
-            u8 kind = mData->mUnk_07;
-            mData->func_ov007_0223e1a4(0, 0xff);
+            u8 kind = mData->mNextBattleRequest;
+            mData->SetNextBattleRequest(0, 0xff);
             switch (kind) {
                 case 1:
                     mBattleMode = BATTLE_MODE_CONFRONT_BG01;
@@ -1133,7 +1133,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             }
             break;
         case 41:
-            if (mData->mUnk_07 == 0) {
+            if (mData->mNextBattleRequest == 0) {
                 ResetDisplay();
                 MI_CpuClearFast((void *) 0x6200000, 0x20000);
                 LoadGraphics();
@@ -1297,7 +1297,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                                 d = 0;
                             }
                             u16 add = d + 0x50;
-                            if (e[mUnk_21].mUnk_0f_6) {
+                            if (e[mUnk_21].mPushedToEnd) {
                                 add = (u16) (add << 1);
                             }
                             if (data_020d433c.mTutorialNumber == 0) {
@@ -1321,7 +1321,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     } else {
                         new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[idx].mPlayer, 0xb, 0, 0);
                     }
-                    if (data_020d433c.mTutorialNumber == 4 && e[idx].mUnk_0f_1) {
+                    if (data_020d433c.mTutorialNumber == 4 && e[idx].mCardRemoved) {
                         data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
                     }
                 } else {
@@ -1525,30 +1525,30 @@ u8 BattleConfrontCard::ApplyMarkerCard(u16 card) {
         }
         switch (card) {
             case 0x48:
-                mData->mEntries[i].mUnk_0f_0 = 1;
+                mData->mEntries[i].mSkipCardPick = 1;
                 (&mSide0MarkerCardApplied)[i]                = 1;
                 break;
             case 0x49:
                 if (selfLevel > oppLevel) {
-                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    mData->mEntries[side].mSkipCardPick = 1;
                     (&mSide0MarkerCardApplied)[side]                = 1;
                 }
                 break;
             case 0x4a:
                 if (e[side].mUnk_06 > e[other].mUnk_06) {
-                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    mData->mEntries[side].mSkipCardPick = 1;
                     (&mSide0MarkerCardApplied)[side]                = 1;
                 }
                 break;
             case 0x4b:
                 if (e[side].mUnk_04 > e[other].mUnk_04) {
-                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    mData->mEntries[side].mSkipCardPick = 1;
                     (&mSide0MarkerCardApplied)[side]                = 1;
                 }
                 break;
             case 0x4c:
                 if (e[side].mUnk_06 < e[other].mUnk_06) {
-                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    mData->mEntries[side].mSkipCardPick = 1;
                     (&mSide0MarkerCardApplied)[side]                = 1;
                 }
                 break;
@@ -1733,8 +1733,8 @@ void BattleConfrontCard::DrawEntriesAndCard() {
 
 void BattleConfrontCard::DrawEntryNumbers(u8 kind, u32 mode, u32 flag) {
     if (flag == 0) {
-        mData->mCellAnims[4]->mPaletteBase = data_ov007_02279d3c[0];
-        mData->mCellAnims[3]->mPaletteBase = data_ov007_02279d3c[0];
+        mData->mCellAnims[4]->mPaletteBase = gEntryNumberPaletteBase[0];
+        mData->mCellAnims[3]->mPaletteBase = gEntryNumberPaletteBase[0];
     } else {
         mData->mCellAnims[4]->mPaletteBase = 0xb;
         mData->mCellAnims[3]->mPaletteBase = 0xb;
@@ -2285,7 +2285,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
     u8 i = 0;
     do {
         BattleEntry *cur = &e[i];
-        if (e[i].mUnk_0f_0) {
+        if (e[i].mSkipCardPick) {
             mUnk_56 = 0;
         } else {
             u8 j    = 0;

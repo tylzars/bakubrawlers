@@ -54,15 +54,15 @@ u32 BattleRand32(u32 max);
 
 extern u8 gIntervalRows[];
 
-extern u8 data_ov007_02278d34[];
+extern u8 gExtraRows[];
 
 // [character * 12 + mode] plus BattlePlayer::mUnk_f7 gives the ctor's mModeRow row (after its +1 / +2 cases, at
 // most 9) and func_ov007_022234f0's result (at most 7), which BattleConfrontCard multiplies a power by.
 extern u8 gCharacterModeBases[];
 
-extern u8 data_ov007_02278d7a[];
+extern u8 gCharacterBg01ExtraRowBases[];
 
-extern u8 data_ov007_02278d7b[];
+extern u8 gCharacterBg04ExtraRowBases[];
 
 extern const u8 gCharacterIntervalRowBases[];
 
@@ -70,22 +70,23 @@ extern const u8 gCharacterCardDelayFrameCounts[];
 
 extern const u8 gCharacterCardDelayRandomRanges[];
 
-BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
+BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param,
+                       u8 sidePlayerValue) {
     mMode = mode;
     mCharacterId = unk4;
     mStartTimer = 0;
-    mUnk_07 = unk8;
+    mSidePlayerValue = sidePlayerValue;
     mIntervalFrames = 0;
     mIntervalFrameCount = 0;
     mValue = 0;
     mValueFrames = 0;
     mRollFrames = 0;
     mRollFrameCount = 0;
-    mUnk_14_0 = 0;
-    mUnk_14_1 = 0;
-    mUnk_14_2 = 0;
-    mUnk_15 = 0;
-    mUnk_16 = 0;
+    mExtraEnabled = 0;
+    mExtraRunning = 0;
+    mBothEntriesCpu = 0;
+    mBelowHalfFrames = 0;
+    mExtraTimer = 0;
     mIndex = index;
     mCardDelayTimer = 0;
     mSoundTimer = 0;
@@ -125,16 +126,16 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     if (mMode == BATTLE_MODE_CONFRONT_BG01 || mMode == BATTLE_MODE_CONFRONT_BG04) {
         u8 c;
         if (mMode == BATTLE_MODE_CONFRONT_BG01) {
-            c = data_ov007_02278d7a[row];
+            c = gCharacterBg01ExtraRowBases[row];
         } else {
-            c = data_ov007_02278d7b[row];
+            c = gCharacterBg04ExtraRowBases[row];
         }
         c += base;
         if (c >= 8) {
             c = 7;
         }
-        mUnk_2c = data_ov007_02278d34 + c * 8;
-        mUnk_14_0 = 1;
+        mExtraRow = gExtraRows + c * 8;
+        mExtraEnabled = 1;
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 la = list->mPlayers[unk5]->mUnk_ee;
@@ -213,7 +214,7 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
     u32 ret = 0;
     if (mRole == 2 || mRole == 3) {
         mValueFrames++;
-        if (mValueFrames >= mParam->mUnk_08) {
+        if (mValueFrames >= mParam->mValueFrameCount) {
             mValueFrames = 0;
             switch (mMode) {
                 case BATTLE_MODE_CONFRONT_BG01:
@@ -307,7 +308,7 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
             mIntervalFrames = 0;
             mIntervalFrameCount = mIntervalRow[0];
             mIntervalFrameCount += BattleRand32(mIntervalRow[1]);
-            ret = mUnk_07;
+            ret = mSidePlayerValue;
         }
     }
     if (ret > 100) {
@@ -316,38 +317,38 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
     return ret;
 }
 
-u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
-    if (mUnk_14_0) {
-        if (!mUnk_14_1) {
+u32 BattleSlot::UpdateExtraValue(u16 value, u8 n) {
+    if (mExtraEnabled) {
+        if (!mExtraRunning) {
             if (mRole == 3) {
                 n = 100 - n;
             }
-            if (mUnk_14_2) {
+            if (mBothEntriesCpu) {
                 n = 0;
             }
             if (n < 50) {
-                mUnk_15++;
-                if (mUnk_15 >= mUnk_2c[0]) {
-                    mUnk_15 = 0;
-                    if (mUnk_2c[1] >= BattleRand32(100)) {
-                        mUnk_14_1 = 1;
-                        mUnk_16 = mUnk_2c[2];
-                        if (!mUnk_14_2) {
+                mBelowHalfFrames++;
+                if (mBelowHalfFrames >= mExtraRow[0]) {
+                    mBelowHalfFrames = 0;
+                    if (mExtraRow[1] >= BattleRand32(100)) {
+                        mExtraRunning = 1;
+                        mExtraTimer = mExtraRow[2];
+                        if (!mBothEntriesCpu) {
                             SoundManager::Get().StartSeqArc(0x6c);
                             func_020247fc(&SoundManager::Get(), 0x312);
                         }
                     }
                 }
             } else {
-                mUnk_15 = 0;
+                mBelowHalfFrames = 0;
             }
         } else {
-            value = value + mUnk_2c[3];
-            value = BattleRand32(mUnk_2c[4]) + value;
-            if (mUnk_16 != 0) {
-                mUnk_16--;
+            value = value + mExtraRow[3];
+            value = BattleRand32(mExtraRow[4]) + value;
+            if (mExtraTimer != 0) {
+                mExtraTimer--;
             } else {
-                mUnk_14_1 = 0;
+                mExtraRunning = 0;
                 mValue = mModeRow[0];
             }
         }
@@ -355,7 +356,7 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
     return value;
 }
 
-int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
+int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*sidePlayers)[2], u8 n, u8 *d) {
     int role = mRole;
     if (role == 4) {
         return -1;
@@ -385,7 +386,7 @@ int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
             if (c[side] == 0) {
                 if (UpdateInterval()) {
                     u16 v = ComputeValue(n, a, b);
-                    u32 w = func_ov007_022230b4(v, n);
+                    u32 w = UpdateExtraValue(v, n);
                     if (mIndex == data->mEntries[0].mPlayer) {
                         a[mIndex] = w;
                     } else {
@@ -403,10 +404,10 @@ int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
         }
     }
     if (mRole <= 1) {
-        if (choice[mRole][0] == -1) {
-            choice[mRole][0] = mIndex;
+        if (sidePlayers[mRole][0] == -1) {
+            sidePlayers[mRole][0] = mIndex;
         } else {
-            choice[mRole][1] = mIndex;
+            sidePlayers[mRole][1] = mIndex;
         }
     }
     return ret;

@@ -40,43 +40,44 @@ public:
     /* 04 */ u8 mMode; // BATTLE_MODE_* (0..5)
     /* 05 */ u8 mCharacterId;
     /* 06 */ u8 mStartTimer; // 50 in BATTLE_MODE_CONFRONT_BG02 only (roles 2 / 3); Update waits while non-zero
-    /* 07 */ u8 mUnk_07;
+    /* 07 */ u8 mSidePlayerValue;
     /* 08 */ u16 mIntervalFrames;
     // re-rolled at each end: mModeRow[0] + BattleRand32(mModeRow[1]) for roles 2 / 3, the same from mIntervalRow for
     // the other roles
     /* 0a */ u16 mIntervalFrameCount;
     /* 0c */ s16 mValue;
-    /* 0e */ u16 mValueFrames; // +1 per ComputeValue call (mRole 2 / 3); at mParam->mUnk_08 the mMode step runs
+    // +1 per ComputeValue call (mRole 2 / 3); at mParam->mValueFrameCount the mMode step runs
+    /* 0e */ u16 mValueFrames;
     /* 10 */ u16 mRollFrames; // +1 per CONFRONT_BG06 step of ComputeValue (not per frame); rolls at mRollFrameCount
     /* 12 */ u16 mRollFrameCount;
     union {
         /* 14 */ u8 mUnk_14;
         struct {
-            /* 14 */ u8 mUnk_14_0 : 1;
-            /* 14 */ u8 mUnk_14_1 : 1;
-            /* 14 */ u8 mUnk_14_2 : 1;
+            /* 14 */ u8 mExtraEnabled : 1;
+            /* 14 */ u8 mExtraRunning : 1;
+            /* 14 */ u8 mBothEntriesCpu : 1; // set in BG01 / BG04 only
         };
     };
-    /* 15 */ u8 mUnk_15;
-    /* 16 */ u8 mUnk_16;
+    /* 15 */ u8 mBelowHalfFrames;
+    /* 16 */ u8 mExtraTimer;
     /* 17 */ u8 mIndex;
     /* 18 */ int mRole;
     /* 1c */ u16 mCardDelayTimer;
-    /* 1e */ u8 mSoundTimer; // counted per recompute (mValueFrames >= mParam->mUnk_08), read in BG05 only
+    /* 1e */ u8 mSoundTimer; // counted per recompute (mValueFrames >= mParam->mValueFrameCount), read in BG05 only
     /* 20 */ BattleData *mData;
     /* 24 */ u8 *mModeRow;
     /* 28 */ u8 *mIntervalRow;
-    /* 2c */ u8 *mUnk_2c;
+    /* 2c */ u8 *mExtraRow;
     /* 30 */ BattleParam *mParam;
     /* 34 */ BattleSideHelper *mHelper;
     /* 38 */
 
-    BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8);
+    BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 sidePlayerValue);
     ~BattleSlot();
-    int Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d); // 1 when mHelper->RollForCard fired, else -1
+    int Update(u16 *a, u16 *b, u16 *c, s8 (*sidePlayers)[2], u8 n, u8 *d); // 1 when mHelper->RollForCard fired, else -1
     BOOL UpdateInterval(); // TRUE every call in BG01 / BG04-BG06; in BG02 / CONFRONT_03 when the interval ends
     int ComputeValue(u8 n, u16 *a, u16 *b); // 0 between recomputes
-    u32 func_ov007_022230b4(u16 value, u8 n);
+    u32 UpdateExtraValue(u16 value, u8 n);
     // Sets mCardDelayTimer on the slot across from `sel`; at 0 Update calls func_ov007_0223e214(mData, other, 0)
     // (in wireless mode it writes other + 1 to *d instead).
     void StartCardDelay(int sel);
@@ -110,13 +111,13 @@ public:
     IBattle();
     virtual ~IBattle();
     /* 08 */ virtual void func_ov007_0221cebc(int a) = 0;
-    /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c) = 0;
-    /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b) = 0;
+    /* 0c */ virtual void RollHelpersForCard(u16 *a, u16 *b, u16 *c) = 0;
+    /* 10 */ virtual void ApplySidePlayersFromMessages(u16 *a, u16 *b) = 0;
     /* 14 */ virtual int UpdateSlotsFromMessages(u16 *a, u16 *b, u16 *c, u8 *d) = 0;
     // Slot 18: forwards to TryStartCardSequence with the array ApplyNetMessages built (UpdateSlotsFromMessages runs first
     // and its CPU slots can also set entries of it).
     /* 18 */ virtual void TryStartCardSequenceFromMessages(u16 *p) = 0;
-    /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts) = 0;
+    /* 1c */ virtual void PushSideFromMessages(u8 a, u16 *counts) = 0;
 };
 
 // One 0x14-byte player/slot record inside BattleData (array starts at +0x0c).
@@ -131,13 +132,13 @@ struct BattleEntry {
     /* 0d */ u8 mAttribute : 4; // the record's mAttribute (BattleData ctor)
     /* 0d */ u8 mPlayer : 4; // the unit's mPlayer: index into BattlePlayerList::mPlayers
     /* 0e */ u8 mCharacterId;
-    /* 0f */ u8 mUnk_0f_0 : 1;
-    /* 0f */ u8 mUnk_0f_1 : 1;
-    /* 0f */ u8 mUnk_0f_2 : 1;
+    /* 0f */ u8 mSkipCardPick : 1;
+    /* 0f */ u8 mCardRemoved : 1;
+    /* 0f */ u8 mKind3CardRemoved : 1;
     /* 0f */ u8 mUnk_0f_3 : 1;
     /* 0f */ u8 mUnk_0f_4 : 1;
-    /* 0f */ u8 mUnk_0f_5 : 1;
-    /* 0f */ u8 mUnk_0f_6 : 1;
+    /* 0f */ u8 mNextBattleRequested : 1;
+    /* 0f */ u8 mPushedToEnd : 1;
     /* 0f */ u8 mUnk_0f_7 : 1;
     /* 10 */ u8 mUnk_10;
     /* 11 */ u8 mSlot6cIndex; // kept when the pick returns 0xff (no pick)
@@ -151,7 +152,7 @@ struct BattleData {
     /* 00 (vtable) */
     /* 04 */ u16 mMarkerCardId;
     /* 06 */ u8 mMarkerPlayer;
-    /* 07 */ u8 mUnk_07;
+    /* 07 */ u8 mNextBattleRequest;
     /* 08 */ u8 mUnk_08[2];
     /* 0a */ u8 mUnk_0a;
     /* 0b */ u8 mUnk_0b;
@@ -172,8 +173,8 @@ struct BattleData {
     // kind 0 / 1 / 2: the entry's mUnk_06 / mUnk_08 / mUnk_0a (nothing drawn for 0); mode 0 offsets by a - b * 2 / 3.
     void DrawEntryNumber(u8 side, u8 kind, s32 x, s16 y, u8 flag, u32 mode, u16 a, u16 b);
     void func_ov007_0223e180();
-    void func_ov007_0223e1a4(u32 unk, u8 side);
-    void func_ov007_0223e1cc(u8 side, u8 kind);
+    void SetNextBattleRequest(u32 request, u8 side);
+    void RemoveCard(u8 side, u8 kind);
 };
 
 // 12-byte per-mode parameter record (table at 0x02278b20).
@@ -182,10 +183,10 @@ struct BattleParam {
     /* 01 */ u8 mCutinDelayFrameCount; // frames after the mTouched request before the cut-in cell plays animation 2
     /* 02 */ u16 mBattleFrameCount;
     /* 04 */ u32 mPushScale;
-    /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
-    /* 0a */ u8 mUnk_0a;
-    /* 0b */ u8 mUnk_0b;
+    /* 08 */ u8 mValueFrameCount;
+    /* 09 */ u8 mDefaultObjectCount;
+    /* 0a */ u8 mObjectCountPercent;
+    /* 0b */ u8 mTouchObjectFrameCount;
     /* 0c */
 };
 extern BattleParam gBattleParams[];
@@ -193,7 +194,7 @@ extern BattleParam gBattleParams[];
 class CellAnimation;
 class BattleObj01;
 
-// Confrontation screen overlay (0x80 bytes): the two players' emblems and gauges on the sub screen.
+// Confrontation screen overlay (0x80 bytes): the two players' emblems and gauges on the main screen.
 class BattleSub48 : public SceneBase {
 public:
     /* 00 SceneBase */
@@ -363,7 +364,7 @@ class BattleHud : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ int mLocalSide; // 0/1: this console plays entry 0/1; 2: spectator with no side; 3/4: partner on side 0/1 (>= 2: spectator)
-    /* 10 */ u16 mUnk_10;
+    /* 10 */ u16 mSlideSidesOutDistance;
     /* 12 */ u8 mUnk_12;
     /* 13 */ u8 mPushPercent; // gauge position in percent
     /* 14 */ s32 mPushPercentFixed; // same, 20.12 fixed point
@@ -393,14 +394,15 @@ public:
         };
     };
     /* 24 */ u16 mPenToggleFrames;
-    /* 26 */ u8 mUnk_26;
-    /* 27 */ u8 mUnk_27;
+    /* 26 */ u8 mSide0BarEndHidden;
+    /* 27 */ u8 mSide1BarEndHidden;
     /* 28 */ s32 mLastPush[2]; // latest Push delta per side (20.12); cleared after the marker animation reads it
     /* 30 */ CellAnimation *mCellAnims[23];
     /* 8c */ BattleData *mData;
     /* 90 */ BattleParam *mParam;
     // per side: up to two player indices (BattlePlayerList::mPlayers) other than the two entries' players, filled by
-    // BattleBase::func_ov007_0221cfac; -1 = none. Points at BattleBase::mUnk_1c..mUnk_1f
+    // BattleBase::ApplySidePlayersFromMessages, BattleSlot::Update (through UpdateSlots) and the spectator touch path;
+    // -1 = none. Points at BattleBase::mSide0FirstPlayer..mSide1SecondPlayer
     /* 94 */ s8 (*mSidePlayers)[2];
     /* 98 */ u32 mCountdownFrames; // also counts UpdateSwap's 20 push frames
     /* 9c */ u16 mCountdownFrameCount;
@@ -429,8 +431,8 @@ public:
         struct {
             /* 117 */ u8 mUnk_117_0 : 1;
             /* 117 */ u8 mUnk_117_1 : 1;
-            /* 117 */ u8 mUnk_117_2 : 1;
-            /* 117 */ u8 mUnk_117_3 : 1;
+            /* 117 */ u8 mCardSequenceRunning : 1; // stays set when the sequence ends the battle through state 12
+            /* 117 */ u8 mPushAnimPaused : 1;
         };
     };
     /* 118 */ u8 mUnk_118[2];
@@ -462,7 +464,8 @@ public:
     void StartSwap(); // swaps the two entries' mUnk_00 at once and calls StartCountdown
     BOOL UpdateSwap(); // pushes for 20 calls; returns UpdateCountdown's done flag
     void StartBarSlide(); // also CloseLargeCard when mLargeCardOpen
-    // side 0's bar grows to 1.0 when mEntries[0].mUnk_10 is set, else side 1's; TRUE when mUnk_26 and mUnk_27 are 1
+    // side 0's bar grows to 1.0 when mEntries[0].mUnk_10 is set, else side 1's; TRUE when mSide0BarEndHidden and
+    // mSide1BarEndHidden are 1 (both bar-end cells hidden)
     BOOL UpdateBarSlide();
     void StartCountdown();
     BOOL UpdateCountdown(); // TRUE once the cell finished; then sets mUnk_117_0 when mLargeCardOpen
@@ -473,7 +476,7 @@ public:
     BOOL StartObject(u8 side, s16 x, s16 y, u8 flag); // flag: BattleBase::mMode, or 6 from BattleHud itself
     void Draw();
     void func_ov007_02227bbc(u8 index);
-    void func_ov007_02227c54();
+    void DrawBarsAndObjects();
     void StartAbilitySlideIn(int side);
     void StartAbilitySlideOut(int side);
     void StartAbilitySlideAcross(int side); // side's cell slides out (2); the other side's cell slides across (3)
@@ -491,7 +494,7 @@ public:
     /* 10 */ u8 mState;
     /* 11 */ u8 mStep;
     /* 12 */ u8 mLocalSide;
-    /* 13 */ u8 mUnk_13;
+    /* 13 */ u8 mSidePlayerValue;
     /* 14 */ s8 mMultiplierIndex; // row of gAttributeRates (mFieldId - 1); -1 (fields 0, 7) = factor 0x1000 (1.0)
     /* 15 */ u8 mMode; // BATTLE_MODE_*
     /* 16 */ u16 mElapsedFrames;
@@ -499,15 +502,15 @@ public:
     /* 18 */ u8 mTouched : 1;
     /* 18 */ u8 mFlashEnabled : 1;
     /* 19 */ u8 mSpectatorTouchSide;
-    /* 1a */ u8 mUnk_1a;
+    /* 1a */ u8 mSpectatorTouchTimer;
     /* 1b */ u8 mSpectatorHoldFrames;
-    /* 1c */ s8 mUnk_1c;
-    /* 1d */ s8 mUnk_1d;
-    /* 1e */ s8 mUnk_1e;
-    /* 1f */ s8 mUnk_1f;
+    /* 1c */ s8 mSide0FirstPlayer;
+    /* 1d */ s8 mSide0SecondPlayer;
+    /* 1e */ s8 mSide1FirstPlayer;
+    /* 1f */ s8 mSide1SecondPlayer;
     /* 20 */ BattleParam *mParam;
-    /* 24 */ u8 mUnk_24;
-    /* 25 */ u8 mUnk_25;
+    /* 24 */ u8 mTouchValueFrames;
+    /* 25 */ u8 mTouchObjectFrames;
     /* 26 */ s16 mFlashBrightness;
     /* 28 */ u8 mFlashFalling;
     /* 29 */ u8 mRateFloorSide;
@@ -529,11 +532,12 @@ public:
     union {
         /* 54 */ u8 mUnk_54;
         struct {
-            /* 54 */ u8 mUnk_54_0 : 1;
-            /* 54 */ u8 mUnk_54_1 : 1;
+            // read at the state end (mState = mReturnState); also switches card-sequence branches
+            /* 54 */ u8 mReturnPending : 1;
+            /* 54 */ u8 mBothSides : 1;
             /* 54 */ u8 mUnk_54_2 : 1;
-            /* 54 */ u8 mUnk_54_3 : 1;
-            /* 54 */ u8 mUnk_54_4 : 1;
+            /* 54 */ u8 mSkipDraw : 1;
+            /* 54 */ u8 mSlideDoneSoundPending : 1;
             /* 54 */ u8 mUnk_54_5 : 1;
         };
     };
@@ -552,11 +556,11 @@ public:
     BattleBase();
     virtual ~BattleBase();
     /* 08 */ virtual void func_ov007_0221cebc(int a);
-    /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c);
-    /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b);
+    /* 0c */ virtual void RollHelpersForCard(u16 *a, u16 *b, u16 *c);
+    /* 10 */ virtual void ApplySidePlayersFromMessages(u16 *a, u16 *b);
     /* 14 */ virtual int UpdateSlotsFromMessages(u16 *a, u16 *b, u16 *c, u8 *d);
     /* 18 */ virtual void TryStartCardSequenceFromMessages(u16 *p);
-    /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts);
+    /* 1c */ virtual void PushSideFromMessages(u8 a, u16 *counts);
     /* 20 */ virtual void Update();
     /* 24 */ virtual void Init(BattleData *data, u32 mode);
     /* 28 */ virtual void LoadGraphics() = 0;
@@ -564,7 +568,7 @@ public:
     /* 30 */ virtual BOOL func_ov007_0221bd84();
     /* 34 */ virtual void UpdateEmblems() = 0; // state 7 only; empty for ConfrontBg01 / ConfrontBg04 (no emblems)
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
-    /* 3c */ virtual void Draw() = 0; // skipped while mUnk_54_3; ConfrontBg01 / ConfrontBg04 draw no cells
+    /* 3c */ virtual void Draw() = 0; // skipped while mSkipDraw; ConfrontBg01 / ConfrontBg04 draw no cells
     // The side's amount (0 = none); called for the local player's side (mLocalSide, from BattlePlayerList::mLocalPlayer) while
     // its c[] is 0; low: that side's push percent is below 0x32.
     /* 40 */ virtual u8 UpdateTouch(int low) = 0;
@@ -573,19 +577,19 @@ public:
     BOOL RaiseBlendAlpha(); // sub engine: G2S_SetBlendAlpha(4, 0x1b, 0, ++mBlendAlpha); TRUE at 0x1f
     void SetPenPosition(s16 a, s16 b); // mHud->mPenX / Y; a negative x hides the pen
     void SetTouched();
-    void func_ov007_0221bb68();
+    void SetTouchFramesToLimits();
     void TryStartCardSequence(u16 *p);
     int UpdateSlots(u16 *a, u16 *b, u16 *c, u8 *d); // CPU players' slots up to the first != -1; returns -1
     // VRAM banks of both engines (SetupMode(0, 7)), then the main engine's mode and BG priorities.
     void InitMainScreen();
-    void func_ov007_0221c938();
-    int func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag);
+    void UpdatePush();
+    int UpdateLocalPlayer(u16 *a, u16 *b, u16 *c, u8 *flag);
     // Master brightness of both screens up by 3 to 15, then down to 0; at the peak with mBattleEnded also FreeAuras,
     // seq 0x25 and ClearSub48State.
     BOOL UpdateFlash();
     void SetupCardSequence();
-    void func_ov007_0221b8e8();
-    // Also counts mElapsedFrames; on an end writes the BattleData entries' mUnk_10 / mUnk_0f_6 (and mHud->mUnk_22 |=
+    void UpdateCardSequenceReturn();
+    // Also counts mElapsedFrames; on an end writes the BattleData entries' mUnk_10 / mPushedToEnd (and mHud->mUnk_22 |=
     // 0x20 at either end of the push), then func_ov007_0222847c, mBattleEnded = 1 and StopSeqArc 0x24; otherwise
     // MovePlayerAnimX while mBattleEnded is clear.
     BOOL CheckBattleEnd();
@@ -596,7 +600,7 @@ BOOL func_ov007_0221b998(int unk1, int mode, BattleEntry *entry);
 BOOL func_ov007_0221b9d0(int unk1, int mode, BattleEntry *entry);
 BOOL func_ov007_0221ba0c(int unk1, int mode, BattleEntry *entry);
 BOOL func_ov007_0221ba38(int unk1, u8 side, int value, BattleEntry *entries);
-int func_ov007_0221ba88(int unk1, int index, BattleEntry *entries);
+int GetNextBattleRequest(int unk1, int index, BattleEntry *entries);
 void func_ov007_0223e214(BattleData *data, int side, u8 bit); // sets mEntries[side].mUnk_0f_3
 u32 BattleRand32(u32 max);
 int func_ov007_02222764(int side, BattleEntry *entry);

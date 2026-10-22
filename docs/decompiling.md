@@ -550,7 +550,7 @@ Other findings from linking:
   motion in the source, so source forms that try to stop a "hoist" cannot work. The original keeps such loads in
   each arm only because the arms load into different registers (CharacterModel::SetExtraAnimEnabled's restart arm uses
   r2 for the part pointer, plus a `mov r2, r0` copy).
-- **One more live value across a loop changes the loop body's schedule.** BattleBase::func_ov007_0221c938 matched with
+- **One more live value across a loop changes the loop body's schedule.** BattleBase::UpdatePush matched with
   `const u8 *mode = &data_020c4258;` used by the three IsWirelessMode calls: the pointer is reloaded from the pool,
   so it leaves no visible code, but it changes the schedule before allocation. A block-local pointer also gets a
   different register from a function-scope one (ParkCharacters GetParkEntry's loop pointer). A local reassigned in
@@ -676,7 +676,7 @@ Other findings from linking:
 - **One loop counter for every loop.** Original functions often reuse one function-scope `u8 i` (and a second `j`)
   for all their loops, even where one counts down; per-loop locals colour differently, and no declaration order
   fixes that. A counter shared by several loops is coloured above a hoisted singleton address, separate per-loop
-  counters below it (BattleHud::func_ov007_02227c54, BattleBase::func_ov007_0221d088). When two counters step together,
+  counters below it (BattleHud::DrawBarsAndObjects, BattleBase::PushSideFromMessages). When two counters step together,
   the order of `j++; i++;` matters too.
 - **Chained member assignments in constructors.** `a = b = 0;` reproduces the reload-and-truncate sequences
   (`ldrb`/`and #0xff`) that separate stores don't (BattleBase's constructor).

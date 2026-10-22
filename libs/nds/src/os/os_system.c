@@ -2,6 +2,7 @@
 
 // OS_EnableInterrupts: clears the IRQ-disable bit (0x80) in CPSR; returns the
 // previous value of that bit.
+// Not compiled: reads and writes CPSR with mrs/msr, which C has no expression for.
 asm unsigned int OS_EnableInterrupts(void) {
     mrs r0, cpsr
     bic r1, r0, #0x80
@@ -11,6 +12,7 @@ asm unsigned int OS_EnableInterrupts(void) {
 }
 
 // OS_DisableInterrupts: sets the IRQ-disable bit; returns its previous value.
+// Not compiled: reads and writes CPSR with mrs/msr, which C has no expression for.
 asm unsigned int OS_DisableInterrupts(void) {
     mrs r0, cpsr
     orr r1, r0, #0x80
@@ -21,6 +23,7 @@ asm unsigned int OS_DisableInterrupts(void) {
 
 // OS_RestoreInterrupts(old): sets the IRQ-disable bit to 'old' (0 or 0x80);
 // returns the bit's previous value.
+// Not compiled: reads and writes CPSR with mrs/msr, which C has no expression for.
 asm unsigned int OS_RestoreInterrupts(unsigned int old) {
     mrs r1, cpsr
     bic r2, r1, #0x80
@@ -32,6 +35,7 @@ asm unsigned int OS_RestoreInterrupts(unsigned int old) {
 
 // OS_DisableInterrupts_IrqAndFiq: sets both disable bits (0xc0); returns their
 // previous value.
+// Not compiled: reads and writes CPSR with mrs/msr, which C has no expression for.
 asm unsigned int OS_DisableInterrupts_IrqAndFiq(void) {
     mrs r0, cpsr
     orr r1, r0, #0xc0
@@ -42,6 +46,7 @@ asm unsigned int OS_DisableInterrupts_IrqAndFiq(void) {
 
 // OS_RestoreInterrupts_IrqAndFiq(old): sets both bits (0xc0 field) to 'old';
 // returns the previous value.
+// Not compiled: reads and writes CPSR with mrs/msr, which C has no expression for.
 asm unsigned int OS_RestoreInterrupts_IrqAndFiq(unsigned int old) {
     mrs r1, cpsr
     bic r2, r1, #0xc0
@@ -52,6 +57,7 @@ asm unsigned int OS_RestoreInterrupts_IrqAndFiq(unsigned int old) {
 }
 
 // OS_GetCpsrIrqBits: returns CPSR & 0x80.
+// Not compiled: reads CPSR with mrs, which C has no expression for.
 asm unsigned int OS_GetCpsrIrqBits(void) {
     mrs r0, cpsr
     and r0, r0, #0x80
@@ -59,6 +65,7 @@ asm unsigned int OS_GetCpsrIrqBits(void) {
 }
 
 // OS_GetProcMode: returns the mode field of CPSR (CPSR & 0x1f).
+// Not compiled: reads CPSR with mrs, which C has no expression for.
 asm unsigned int OS_GetProcMode(void) {
     mrs r0, cpsr
     and r0, r0, #0x1f
@@ -67,6 +74,11 @@ asm unsigned int OS_GetProcMode(void) {
 
 // OS_SpinWait(n): busy loop; subtracts 4 from n until the subtraction borrows
 // (about n/4 iterations).
+// Not compiled: the loop is `subs r0, r0, #4; bhs L1`, a branch on the subtract's carry. In this build's compiled
+// code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi or pl (or feeds the
+// carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those tests only; the
+// unsigned forms tried (`do { o = n; n -= 4; } while (o >= 4);` and the like) compile to `cmp r0, #4`,
+// `sub r0, r0, #4`, `bcs`.
 asm void OS_SpinWait(unsigned int n) {
 L1:
     subs r0, r0, #4

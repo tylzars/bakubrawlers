@@ -4,6 +4,11 @@
 
 // MTX_Identity33_: writes a 3x3 fixed-point identity matrix to r0 (nine words,
 // 0x1000 on the diagonal). Element 8 is stored first, then the rest in order.
+// Not compiled: stores elements 0-7 with four `stmia r0!` pairs (base written back). In this build's compiled code an
+// ldm/stm writes back a base other than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for
+// a fill) and never use r0 or r1 as the base. In the forms tried, stores merged into one stm keep the pointer step as
+// a separate `add` (`p[0] = a; p[1] = b; p[2] = c; p += 3;` gives `stm r0, {r1, r2, r3}` and `add r0, r0, #12`).
+// Element stores compile to `str` at offsets from r0, one register per constant.
 asm void MTX_Identity33_(void *m) {
     mov r2, #0x1000
     str r2, [r0, #32]           // m[8] = 1.0
@@ -54,6 +59,11 @@ void MTX_RotX33_(MtxFx33 *mtx, fx32 sin, fx32 cos) {
     mtx->_[8] = cos;
 }
 
+// Not compiled (Thumb): keeps the zero in r3 although r2 is free once cos has been stored at offset 0x20, and builds
+// -sin (r2) and 0x1000 (r3) before the store of sin at offset 0x18. Every C form tried (plain stores in this order,
+// -sin and 0x1000 in locals assigned first, nested blocks; -O1 to -O4 alike) gives the zero r2 and stores sin first
+// (`str r1, [r0, #0x18]`), then negates it in r1 and builds 0x1000 in r1, each next to its own store. This rests on
+// the forms tried; the compiled neighbour MTX_RotX33_ shows the same store-by-store order.
 asm void MTX_RotY33_(MtxFx33 *m, fx32 sin, fx32 cos) {
     str r2, [r0, #0]
     str r2, [r0, #0x20]
@@ -71,6 +81,9 @@ asm void MTX_RotY33_(MtxFx33 *m, fx32 sin, fx32 cos) {
     bx lr
 }
 
+// Not compiled: Thumb `stmia r0!, {r2}`, `stmia r0!, {r1, r3}` and `stmia r0!, {r1, r2}` on the incoming pointer. In
+// every form tried the compiler emits a Thumb stmia only in struct copies and fills, which first move the pointer off
+// r0 (`adds r3, r0, #0`) and store pairs from r0 and r1; element stores compile to `str` at offsets from r0.
 asm void MTX_RotZ33_(MtxFx33 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r2}
     mov r3, #0
@@ -135,6 +148,11 @@ void MTX_MultVec33(const VecFx32 *v, const MtxFx33 *m, VecFx32 *out) {
     out->z = (fx32) (((fx64) x * m->_[2] + (fx64) y * m->_[5] + (fx64) z * m->_[8]) >> 12);
 }
 
+// Not compiled: fills the matrix with six `stmia r0!` pairs (base written back). In this build's compiled code an
+// ldm/stm writes back a base other than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for
+// a fill) and never use r0 or r1 as the base. In the forms tried, stores merged into one stm keep the pointer step as
+// a separate `add` (`p[0] = a; p[1] = b; p[2] = c; p += 3;` gives `stm r0, {r1, r2, r3}` and `add r0, r0, #12`).
+// Element stores compile to `str` at offsets from r0, one register per constant.
 asm void MTX_Identity43_(MtxFx43 *m) {
     mov r2, #0x1000
     mov r3, #0
@@ -148,6 +166,11 @@ asm void MTX_Identity43_(MtxFx43 *m) {
     bx lr
 }
 
+// Not compiled: copies with `ldmia r0!, {r2, r3, r4}` and `stmia r1!, {r2, r3, r4, ip}` (base written back, data
+// outside r0-r3), and saves r4 alone (`stmfd sp!, {r4}` ... `bx lr`). In this build's compiled code an ldm/stm writes
+// back a base other than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for a fill) and
+// never use r0 or r1 as the base. Every compiled ARM function in this build that saves any of r4-r11 pushes lr with
+// them and, unless it is variadic, returns by popping pc.
 asm void MTX_Copy43To44(const MtxFx43 *src, void *dst) {
     stmfd sp!, {r4}
     mov ip, #0
@@ -172,6 +195,9 @@ void MTX_ApplyScale43(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) 
 }
 
 #pragma thumb on
+// Not compiled: Thumb `stmia r0!` with one or two of r1-r3 on the incoming pointer. In every form tried the compiler
+// emits a Thumb stmia only in struct copies and fills, which first move the pointer off r0 (`adds r3, r0, #0`) and
+// store pairs from r0 and r1; element stores compile to `str` at offsets from r0.
 asm void MTX_RotX43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     str r1, [r0, #0x14]
     neg r1, r1
@@ -189,6 +215,9 @@ asm void MTX_RotX43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r1, r3}
     bx lr
 }
+// Not compiled: Thumb `stmia r0!` with two or three of r1-r3 on the incoming pointer. In every form tried the
+// compiler emits a Thumb stmia only in struct copies and fills, which first move the pointer off r0
+// (`adds r3, r0, #0`) and store pairs from r0 and r1; element stores compile to `str` at offsets from r0.
 asm void MTX_RotY43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     str r1, [r0, #0x18]
     mov r3, #0
@@ -204,6 +233,9 @@ asm void MTX_RotY43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r1, r3}
     bx lr
 }
+// Not compiled: Thumb `stmia r0!` with one to three of r1-r3 on the incoming pointer. In every form tried the
+// compiler emits a Thumb stmia only in struct copies and fills, which first move the pointer off r0
+// (`adds r3, r0, #0`) and store pairs from r0 and r1; element stores compile to `str` at offsets from r0.
 asm void MTX_RotZ43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r2}
     mov r3, #0

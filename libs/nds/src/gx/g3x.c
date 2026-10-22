@@ -134,6 +134,12 @@ void WriteBG0Offset(u32 value) {
 // GXi_NopClearFifo128_: r0 points at a write-only FIFO port. Writes 32 groups of
 // four zero words (128 words in all) to the same address with 4-register
 // block stores, then returns.
+// Not compiled: zeroes r1, r2, r3 and ip and stores them with 32 `stmia r0, {r1, r2, r3, ip}`. In every form tried
+// the zeros share one register: stores of 0 to four consecutive words compile to one `mov r1, #0` and four `str`
+// (with `register` locals too), and different constants also reuse one register, so no stm can form (merged stores
+// need distinct registers: `p[0] = a; p[1] = b; p[2] = c;` gives `stm r0, {r1, r2, r3}`). A struct copy from a zeroed
+// local moves the data through r0-r3 from a base moved off r0. At -O0 the `register` locals live in r4-r7 and no
+// stores are combined.
 asm void GXi_NopClearFifo128_(volatile void *fifo) {
     mov r1, #0
     mov r2, #0

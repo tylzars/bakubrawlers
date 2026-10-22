@@ -22,6 +22,10 @@ extern OSThreadQueue data_027e0060q;
 
 // MI_Send48B: copies 12 words from src, three at a time, to the same
 // destination address dst (nothing advances dst).
+// Not compiled: `ldmia r0!, {r2, r3, ip}` (base written back, data outside r0-r3). In this build's compiled code an
+// ldm/stm writes back a base other than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for
+// a fill) and never use r0 or r1 as the base. A 12-byte struct copy carries its words in r0-r2 from a base moved off
+// r0 and steps on with `add` (no writeback); word-by-word copies stay separate `ldr`/`str`.
 asm void MI_Send48B(const u32 *src, vu32 *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1, {r2, r3, ip}
@@ -36,6 +40,10 @@ asm void MI_Send48B(const u32 *src, vu32 *dst) {
 
 // MI_Send128B: copies 32 words from src, eight at a time, to the single
 // destination address dst (nothing advances dst).
+// Not compiled: `ldmia r0!, {r2-r8, ip}` (eight registers, base written back), and it saves {r4-r8} without lr and
+// returns with `bx lr`. Compiled struct copies move four words at a time through r0-r3 (the 32-byte form here pushed
+// {r3-r7, lr}), and every compiled ARM function in this build that saves any of r4-r11 pushes lr with them and,
+// unless it is variadic, returns by popping pc.
 asm void MI_Send128B(const u32 *src, vu32 *dst) {
     stmfd sp!, {r4, r5, r6, r7, r8}
     ldmia r0!, {r2, r3, r4, r5, r6, r7, r8, ip}

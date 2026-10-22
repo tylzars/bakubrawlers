@@ -457,6 +457,11 @@ void OS_SetThreadDestructor(OSThread *thread, void (*dtor)(void *)) {
 // newsp, +0x38 (sp slot) = newsp - 0x40, lowered by 4 more if that leaves bit
 // 2 set; +0 (CPSR) = 0x3f if newpc has bit 0 set, else 0x1f; zeroes r0-r12
 // (+4..+0x34) and lr (+0x3c). Returns nothing.
+// Not compiled: three conditional branches over a lone `b` (`bne sp_adj; b sp_done`, `bne thumb; b chk`,
+// `beq arm; b store`), and at chk `beq arm` tests the flags of the `ands` before the split: chk sets no flags itself
+// and is reached two ways (`b chk`, and the fall-through after `mov r1, #0x3f`). No compiled function in this build
+// has a conditional branch over a lone `b` that nothing else reaches, and none of the forms tried produced one at any
+// level from -O0 to -O4.
 asm void OS_InitContext(OSContext *context, u32 newpc, u32 newsp) {
     add r1, r1, #4
     str r1, [r0, #0x40]
@@ -509,6 +514,8 @@ extern void RestoreDivSqrtRegisters(void);
 // the CPSR value), plus at +0x40 the address 4 bytes past the final 'bx lr'.
 // Returns 0 on the direct path; OS_LoadContext resumes at that address minus
 // 4, i.e. at the 'bx lr', with r0 = 1, so the caller sees a second return of 1.
+// Not compiled: reads CPSR with mrs and changes mode with msr, which C has no expression for. It also reads pc as
+// data (`add r0, pc, #8`) for the resume address.
 asm u32 OS_SaveContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48
@@ -536,6 +543,8 @@ asm u32 OS_SaveContext(OSContext *ctx) {
 // supervisor sp from +0x44 and lr from +0x40, then loads r0-r12 and the
 // user/system-bank sp and lr from +4..+0x3c, and returns to lr - 4 with CPSR
 // restored from SPSR.
+// Not compiled: writes CPSR and SPSR with msr, which C has no expression for. It also loads the user-bank registers
+// with `ldmia ...^` and returns with `subs pc, lr, #4`.
 asm void OS_LoadContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48

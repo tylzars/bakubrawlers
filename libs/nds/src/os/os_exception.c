@@ -41,6 +41,8 @@ extern void func_02006850(void);
 // (func_02006978). Afterwards the code loops forever whether or not the first
 // word is non-zero; the trailing restore of r0-r3, sp (through ip) and lr and
 // the return are never reached.
+// Not compiled: reads the processor mode from CPSR with mrs, which C has no expression for. It also calls the hook
+// with `mov lr, pc; bx ip` and moves sp onto a fixed stack below 0x02000000.
 asm void OSi_ExceptionHandler(void) {
     ldr ip, =exceptionState
     ldr ip, [ip]
@@ -86,6 +88,10 @@ Lnop:
 
 // func_02006978: saves r0 and lr, runs the register capture (func_0200698c)
 // and the hook launcher (func_02006a1c), then returns.
+// Not compiled: part of the exception handler's register interface. It passes ip, the exception frame address that
+// func_0200698c reads, through unchanged, and saves r0 with lr. Compiled, `func_0200698c(); func_02006a1c();` gives
+// `push {r3, lr}` ... `pop {r3, pc}`: the compiler pads the push with r3 and returns by popping pc rather than
+// `ldmfd sp!, {r0, lr}; bx lr`.
 asm void func_02006978(void) {
     stmfd sp!, {r0, lr}
     bl func_0200698c
@@ -103,6 +109,8 @@ asm void func_02006978(void) {
 // those words to CPSR (IRQ bit set, Thumb bit cleared), entering that mode, to
 // grab that mode's sp (+0x38), lr (+0x3c) and SPSR (+0x7c), and restores the
 // original CPSR.
+// Not compiled: reads CPSR and SPSR with mrs and changes mode with msr, which C has no expression for. It also takes
+// the exception frame address in ip.
 asm void func_0200698c(void) {
     ldr r1, =data_020bdf98
     mrs r2, cpsr
@@ -149,6 +157,8 @@ asm void func_0200698c(void) {
 // 'bl func_02006850' instruction (address 0x02006a6c, held as a constant).
 // After that function returns, calls func_02006850, restores system mode's sp
 // and the caller's CPSR and returns.
+// Not compiled: reads CPSR with mrs and changes mode with msr, which C has no expression for. It also calls the hook
+// with lr preset to the address of its own following `bl func_02006850`.
 asm void func_02006a1c(void) {
     stmfd sp!, {r3, lr}
     ldr r0, =exceptionState

@@ -36,6 +36,10 @@ struct {
     BOOL exArena;
 } arenaState;
 
+// Not compiled: the 0x04000000 base is set once and kept in ip, with r2 and r3 unused. No compiled function in this
+// build that makes no call or tail jump uses ip without also using r3, and every form tried that keeps one base (char
+// or word pointer, `register` locals, do/while) puts the base in r0 and the saved IME word in r2, then copies the
+// base to r1 (`mov r1, r0`) before the loop so that the loaded counter can take r0.
 asm void OSi_WaitVCount0(void) {
     mov ip, #0x4000000
     ldr r1, [ip, #0x208]

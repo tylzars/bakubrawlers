@@ -26,6 +26,10 @@ void MI_InitUncompContextLZ(MIUncompContextLZ *context, u8 *dest, const MICompre
 // referenced bytes are copied one at a time.
 // All output bytes are written with an atomic byte swap. Runs until the output count reaches zero
 // or the input runs out; the state is stored back and the remaining output count is returned in r0.
+// Not compiled: writes every output byte with `swpb`, which the compiler never emits from C. Apart from that it saves
+// r4-r11 without lr (`stmfd sp!, {r4-r11}` ... `bx lr`), where every compiled ARM function in this build that saves
+// them pushes lr too, and ends its copy loop with `subs r7, r7, #1; bgt`, where `(n -= 1) > 0` compiles to `sub`,
+// `cmp rN, #0`, `bgt` (the compiler folds a compare with zero into the subtract only for eq, ne, mi and pl tests).
 asm int MI_UncompLZChunk(void *state, const unsigned char *in, unsigned avail) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11}
     ldr r3, [r0, #0]                    // output pointer

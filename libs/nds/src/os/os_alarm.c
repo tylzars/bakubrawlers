@@ -147,6 +147,10 @@ void OS_CancelAlarm(OSAlarm *alarm) {
     OS_RestoreInterrupts(e);
 }
 
+// Not compiled: saves r0 beside lr (`stmfd sp!, {r0, lr}`) and returns with `ldmfd sp!, {r0, lr}; bx lr`. In this
+// build's compiled code r0 is pushed only in a variadic function's r0-r3 spill (lr goes in a second push); an `__irq`
+// function also saves it, with every other scratch register the call may change (`push {r0, r1, r2, r3, ip, lr}`) and
+// returns with `ldm sp!, {..., pc}^`; the plain call compiles to the tail call `ldr ip, =OSi_AlarmHandler; bx ip`.
 asm void AlarmTimerEntry(void *arg) {
     stmfd sp!, {r0, lr}
     bl OSi_AlarmHandler

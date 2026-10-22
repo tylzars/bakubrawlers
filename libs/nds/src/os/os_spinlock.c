@@ -109,6 +109,10 @@ s32 OS_UnlockCartridge(u16 lockID) {
 
 // OS_UnLockCartridge(lockID): jumps straight to OS_UnlockCartridge with the
 // argument unchanged.
+// Not compiled: jumps on through r1 (`ldr r1, =OS_UnlockCartridge; bx r1`). In the forms tried the compiler turns a
+// final call into a jump only when it calls a named function, and then as `ldr ip, =f; bx ip` (for a function in the
+// same file as well); a call through a pointer saves lr and uses `blx`. No compiled function in this build jumps
+// through r0-r3.
 asm void OS_UnLockCartridge(u16 lockID) {
     ldr r1, =OS_UnlockCartridge
     bx r1
@@ -152,6 +156,8 @@ u16 OS_ReadOwnerOfLockWord(OSLockWord *lockp) {
 // base + leading-zero count, and that bit is cleared. Returns -3 when both
 // words are empty. Some compares feed two consecutive conditional branches
 // (the flags are reused across them).
+// Not compiled: finds the free bit with clz, which this compiler never emits: it has no clz intrinsic, and
+// `__builtin_clz` and `__clz` compile as calls to an external function.
 asm int OS_GetLockID(void) {
     ldr r3, =0x27fffb0
     ldr r1, [r3, #0]
@@ -189,6 +195,12 @@ Ltake:
 // 0x80000000 >> (id - 0x60) in the word at 0x027fffb4 (ids 0x60 and up; the
 // compare is signed). Returns nothing. The flags of the single compare are
 // reused by all the conditional branches.
+// Not compiled: one `cmp r0, #0x60` feeds `bpl`, `bpl` and `bmi` with instructions between them, each a conditional
+// branch over a lone `b`. No compiled function in this build tests a compare with mi or pl or has such a branch. In
+// the forms tried, `(int)id >= 0x60` is tested with ge/lt and the compare is repeated when the test is written again;
+// pl/mi came only from a subtract made flag-setting (`(int)(id - 0x60) >= 0` gave `subs r1, r0, #0x60`). -O2 and up
+// turn the steps into conditional instructions (`addge`, `subge`, `sublt`), -O1 into single inverted branches, and at
+// -O0 the parameter leaves r0.
 asm void OS_FreeLockID(unsigned int id) {
     ldr r3, =0x27fffb0
     cmp r0, #0x60

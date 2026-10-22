@@ -144,6 +144,11 @@ void MicStoreResult(u32 res, void *arg)
 
 extern vu32 data_020bfd50;   // micWork.busy as a pool symbol
 
+// Not compiled: keeps the flag's address in ip and the loaded value in r0 while r1-r3 stay unused. No compiled
+// function in this build that makes no call or tail jump uses ip without also using r3, and every form tried takes
+// r0-r3 first: a plain while loop loads the address into r0 and the value into r1; a do/while through a pointer local
+// and `register` locals give r1 and r0. Only with three arguments live across the loop did ip appear (value in ip,
+// address in r3); with four, the address took ip and the value lr, which then has to be saved.
 asm void MicWaitNotBusy(void)
 {
     ldr ip, =data_020bfd50

@@ -201,6 +201,9 @@ void MATH_Hmac(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen, Hash
 // The block transform below (with its five-word constant block, 0x0200bb74-0x0200be08) is hand-written assembly.
 // Constant block (0x0200bb74, 20 bytes): a byte-lane mask 0x00ff00ff, then four round constants
 // 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6. Not a function.
+// Not compiled as C data here: a table placed in .text through a section pragma is emitted ahead of every function of
+// the file (its section comes first in the object), so it would land at the start of this unit, ahead of
+// MATH_SHA1Init, not directly in front of SHA1ProcessBlocks.
 asm void data_0200bb74(void) {
     dcd 0x00ff00ff
     dcd 0x5a827999
@@ -219,6 +222,11 @@ asm void data_0200bb74(void) {
 // the first word rotated left by 5, the fifth word, the constant, the schedule word and the
 // function of words two to four, and the second word rotated right by 2 moves into the third
 // position. The block result is added back into the state at r0.
+// Not compiled: loads its mask and stage constants with `ldr rN, [pc, #-40]` ... `[pc, #-484]` from the block placed
+// in front of it (data_0200bb74); every backward pc-relative load in this build's compiled code reaches a literal
+// pool inside its own function. It also saves ip (`stmfd sp!, {r4-r11, ip, lr}`), which no compiled function in this
+// build does, and ends its block loop with `subs lr, lr, #0x40; bgt`, where `(n -= 0x40) > 0` compiles to `sub`,
+// `cmp rN, #0`, `bgt`: the compiler folds a compare with zero into a subtract only for eq, ne, mi and pl tests.
 asm void SHA1ProcessBlocks(unsigned *state, const void *data, int len) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, lr}
     ldmia r0, {r3, r9, r10, r11, ip}    // load the five state words

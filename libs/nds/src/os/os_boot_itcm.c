@@ -27,6 +27,10 @@ typedef struct {
     u32 arm7Rom, arm7Entry, arm7Ram, arm7Size;
 } BootHdr;
 
+// Not compiled: a register interface no C calling convention gives. It keeps r0 (the fill value) and r3 across its
+// calls to func_01ffcc20, relying on that routine not touching them, uses r4 and r11 without saving them, and ends by
+// loading r0-r10 in one ldmia from 0x027fff80 and jumping through ip with lr set to the same address; a C call passes
+// at most r0-r3 in registers and sets lr to its own return address.
 asm void func_01ffcb54(void) {
     mov ip, #0x4000000
     str ip, [ip, #0x208]
@@ -75,6 +79,12 @@ L2:
     bx ip
 }
 
+// Not compiled: stores with `stmia r1!, {r0}` (one register, base written back), reached through a `blt` over a lone
+// `b` that skips it. In this build's compiled code an ldm/stm writes back a base other than sp only in struct copies
+// and fills, which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. A plain
+// `*dst++ = v` loop gives `str r0, [r1], #4` (with `bxge lr` or a conditional `strlt` at -O4). No compiled function
+// in this build has a conditional branch over a lone `b` that nothing else reaches, and none of the forms tried
+// produced one at any level from -O0 to -O4.
 asm void func_01ffcc20(u32 v, u32 *dst, u32 size) {
     add ip, r1, r2
 L1:

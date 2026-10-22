@@ -18,6 +18,9 @@ extern void func_01ffc9a4(void);
 // func_01ffc9a4, so the handler returns into the thread-switch code; the lr
 // pushed on entry is popped there. The routine ends with two literal words
 // (table base, return address).
+// Not compiled: finds the pending bit with clz, which this compiler never emits: it has no clz intrinsic, and
+// `__builtin_clz` and `__clz` compile as calls to an external function. It also jumps to the handler with lr preset
+// to func_01ffc9a4, which pops the lr this routine pushed.
 asm void DispatchIrq(void) {
     stmfd sp!, {lr}
     mov ip, #0x4000000
@@ -70,6 +73,10 @@ Lfind:
 // sp, SPSR and user-bank registers from its record, writes r0-r3, ip and the
 // resume address (+0x40) over the IRQ stack frame, and returns through the
 // word popped from the stack. Four literal words follow the routine.
+// Not compiled: changes mode with msr and reads SPSR with mrs, which C has no expression for. It also saves and
+// restores the user-bank registers with `stmib r0!, {...}^` / `ldmib r1, {...}^`; in the forms tried the compiler
+// emits `^` only in the `ldm sp!, {..., pc}^` return of an `__irq` function, and no compiled function in this build
+// has any.
 asm void func_01ffc9a4(void) {
     ldr ip, =data_027e0060
     mov r3, #0

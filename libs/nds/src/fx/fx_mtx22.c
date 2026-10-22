@@ -2,6 +2,11 @@
 
 // MTX_Identity22_: writes a 2x2 fixed-point identity matrix (four words) to the
 // buffer in r0: 0x1000, 0, 0, 0x1000. Returns nothing.
+// Not compiled: stores with `stmia r0!, {r2, r3}` and `stmia r0!, {r1, r2}` (base written back). In this build's
+// compiled code an ldm/stm writes back a base other than sp only in struct copies and fills, which carry the data in
+// r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. In the forms tried, stores merged into one stm keep
+// the pointer step as a separate `add` (`p[0] = a; p[1] = b; p[2] = c; p += 3;` gives `stm r0, {r1, r2, r3}` and
+// `add r0, r0, #12`). Element stores compile to `str` at offsets from r0, one register per constant.
 asm void MTX_Identity22_(MtxFx22 *m) {
     mov r1, #0
     mov r2, #0x1000
@@ -15,6 +20,9 @@ asm void MTX_Identity22_(MtxFx22 *m) {
 // The pointer is advanced by one word after the first store, so the final
 // offset store of b lands on the fourth word.
 #pragma thumb on
+// Not compiled: Thumb `stmia r0!, {r1}` and `stmia r0!, {r1, r2}` on the incoming pointer. In every form tried the
+// compiler emits a Thumb stmia only in struct copies and fills, which first move the pointer off r0
+// (`adds r3, r0, #0`) and store pairs from r0 and r1; element stores compile to `str` at offsets from r0.
 asm void MTX_Scale22(int *m, int a, int b) {
     stmia r0!, {r1}         // word 0 = a
     mov r1, #0
@@ -45,6 +53,11 @@ void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *ab) {
 // MTX_Identity44_: writes a 4x4 fixed-point identity matrix (sixteen words,
 // 0x1000 at words 0, 5, 10 and 15, zero elsewhere) to the buffer in r0.
 // Returns nothing.
+// Not compiled: fills the matrix with seven `stmia r0!` of two or three registers (base written back). In this
+// build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills, which carry the
+// data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. In the forms tried, stores merged into one stm
+// keep the pointer step as a separate `add` (`p[0] = a; p[1] = b; p[2] = c; p += 3;` gives `stm r0, {r1, r2, r3}` and
+// `add r0, r0, #12`). Element stores compile to `str` at offsets from r0, one register per constant.
 asm void MTX_Identity44_(void *m) {
     mov r2, #0x1000
     mov r3, #0
@@ -62,6 +75,10 @@ asm void MTX_Identity44_(void *m) {
 // MTX_Copy44To43: copies twelve words from r0 to r1 as four groups of three,
 // skipping one source word after each group (a 4-wide source row layout becomes
 // a 3-wide destination row layout). Returns nothing; r0/r1 are scratch.
+// Not compiled: copies with `ldmia r0!, {r2, r3, ip}` and `stmia r1!, {r2, r3, ip}` (base written back, data outside
+// r0-r3). In this build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills,
+// which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. Three-word struct copies have
+// no writeback (`ldm rN, {r0, r1, r2}`, each next row's address formed with `add`).
 asm void MTX_Copy44To43(const int *src, int *dst) {
     ldmia r0!, {r2, r3, ip}     // copy 3 words
     add r0, r0, #4              // skip the fourth source word

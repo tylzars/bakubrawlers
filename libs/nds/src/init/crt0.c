@@ -23,6 +23,8 @@ void AutoloadCallback(void);
 // zeroes the word at 0x027fff9c, stores the IRQ handler address at data TCM + 0x3ffc, calls
 // func_020202bc (empty), func_02000b98 (empty) and CallStaticConstructors, and finally jumps to main with
 // lr = 0xffff0000 and sp lowered to an 8-byte boundary.
+// Not compiled: switches processor modes with msr (setting each mode's sp) and keeps the caches coherent with CP15
+// mcr instructions, which C has no expression for.
 asm void Entry(void) {
     mov ip, #0x4000000
     str ip, [ip, #0x208]            // master interrupt enable off
@@ -112,10 +114,12 @@ L_ex2:
 }
 
 // Fills size bytes at dst (r1, word aligned) with the word in r0, a word at a time.
-// Not compiled: stores with `stmia r1!, {r0}` (one register, base written back).
-// The compiler writes back an ldm/stm base only in push/pop on sp and in struct copies and fills, whose
-// registers are always r0-r3 (r0-r1 for a two-word fill); the pass that merges loads or stores into one ldm/stm
-// never adds writeback.
+// Not compiled: stores with `stmia r1!, {r0}` (one register, base written back), reached through a `blt` over a lone
+// `b` that skips it. In this build's compiled code an ldm/stm writes back a base other than sp only in struct copies
+// and fills, which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. A plain
+// `*dst++ = v` loop gives `str r0, [r1], #4` (with `bxge lr` or a conditional `strlt` at -O4). No compiled function
+// in this build has a conditional branch over a lone `b` that nothing else reaches, and none of the forms tried
+// produced one at any level from -O0 to -O4.
 asm void func_02000954(unsigned val, unsigned *dst, unsigned size) {
     add ip, r1, r2                  // end address
 L_loop:
@@ -136,6 +140,8 @@ L_nx:
 // source cursor reaches the lower bound. Does nothing if r0 is null. Afterwards, for each 32-byte
 // line from the packed data's lower bound up to the output end, drains the write buffer,
 // invalidates the instruction line and cleans and invalidates the data line.
+// Not compiled: the closing cache loop is CP15 mcr instructions (drain, invalidate instruction line, clean and
+// invalidate data line), which C has no expression for.
 asm void UnpackBackwards(void *end) {
     cmp r0, #0
     beq L_ret
@@ -194,6 +200,9 @@ L_ret:
 // zero length): copies the words from the source stream to dest, zero-fills the following
 // words, then for every 32-byte line of the whole area drains the write buffer, invalidates the
 // instruction line and cleans and invalidates the data line. Ends by jumping to AutoloadCallback.
+// Not compiled: the per-area cache loop is CP15 mcr instructions, which C has no expression for. It also uses r4-r7
+// without saving them (only Entry calls it) and ends with `b AutoloadCallback`, where a compiled final call to a
+// named function is `ldr ip, =f; bx ip`, for a function in the same file as well.
 asm void CopyAutoloadAreas(void) {
     ldr r0, =BuildInfo
     ldr r1, [r0, #0]                // table cursor
@@ -251,6 +260,7 @@ void AutoloadCallback(void) {}
 // data/instruction TCM windows, the cacheability / bufferability / access-permission registers,
 // then sets control-register bits 0x5707d (MPU, caches, write buffer, both TCMs, high exception
 // vectors, round-robin replacement).
+// Not compiled: CP15 mrc/mcr instructions, which C has no expression for.
 asm void func_02000ab0(void) {
     mrc p15, 0, r0, c1, c0, 0
     ldr r1, =0xf9005

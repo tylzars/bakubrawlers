@@ -33,6 +33,10 @@ void MIi_CpuCopy16(const void *src, void *dst, u32 size) {
 }
 
 // MIi_CpuClear32(value, dst, size): stores the word 'value' over size bytes.
+// Not compiled: stores with `stmltia r1!, {r0}` (one register, base written back). For `*d++ = data` the compiler
+// emits a post-indexed `str r0, [r1], #4`. In this build's compiled code an ldm/stm writes back a base other than sp
+// only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the
+// base.
 asm void MIi_CpuClear32(unsigned int value, void *dst, unsigned int size) {
     add ip, r1, r2              // end address
 L1:
@@ -43,6 +47,10 @@ L1:
 }
 
 // MIi_CpuCopy32(src, dst, size): copies size bytes as words.
+// Not compiled: copies with `ldmltia r0!, {r2}` and `stmltia r1!, {r2}` (one register, base written back). For
+// `*d++ = *s++` the compiler emits post-indexed `ldr`/`str` (`ldr r2, [r0], #4`). In this build's compiled code an
+// ldm/stm writes back a base other than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for
+// a fill) and never use r0 or r1 as the base.
 asm void MIi_CpuCopy32(const void *src, void *dst, unsigned int size) {
     add ip, r1, r2
 L1:
@@ -56,6 +64,10 @@ L1:
 // MI_CpuSend32(src, dst, size): reads size bytes of words from src (advancing)
 // and stores each to the same single word at dst (dst never advances). Ends
 // when the source pointer reaches src+size.
+// Not compiled: reads with `ldmltia r0!, {r2}` (one register, base written back). For `*dst = *s++` the compiler
+// emits a post-indexed `ldr r2, [r0], #4`. In this build's compiled code an ldm/stm writes back a base other than sp
+// only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the
+// base.
 asm void MI_CpuSend32(const void *src, volatile void *dst, unsigned int size) {
     add ip, r0, r2
 L1:
@@ -69,6 +81,11 @@ L1:
 // MIi_CpuClearFast(value, dst, size): fills size bytes at dst with the word
 // 'value'. Whole 32-byte blocks are written eight words at a time using copies
 // of value in r0,r2-r8; the leftover bytes are written a word at a time.
+// Not compiled: stores with `stmltia r1!, {r0, r2-r8}` and `stmltia r1!, {r0}` (base written back), and saves r4-r9
+// without lr (`stmfd sp!, {r4-r9}` ... `bx lr`). In this build's compiled code an ldm/stm writes back a base other
+// than sp only in struct copies and fills, which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as
+// the base. Every compiled ARM function in this build that saves any of r4-r11 pushes lr with them and, unless it is
+// variadic, returns by popping pc.
 asm void MIi_CpuClearFast(unsigned int value, void *dst, unsigned int size) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9}
     add r9, r1, r2                  // end address
@@ -95,6 +112,11 @@ L2:
 
 // MIi_CpuCopyFast(src, dst, size): copies size bytes; whole 32-byte blocks
 // eight words at a time, then the remaining words one at a time.
+// Not compiled: copies with `ldmltia r0!, {r2-r9}` / `stmltia r1!, {r2-r9}` and one-register `ldmltia r0!, {r2}` /
+// `stmltia r1!, {r2}` (base written back), and saves r4-r10 without lr (`stmfd sp!, {r4-r10}` ... `bx lr`). In this
+// build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills, which carry the
+// data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. Every compiled ARM function in this build that
+// saves any of r4-r11 pushes lr with them and, unless it is variadic, returns by popping pc.
 asm void MIi_CpuCopyFast(const void *src, void *dst, unsigned int size) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10}
     add r10, r1, r2                  // end address
@@ -116,6 +138,10 @@ L2:
 
 // MI_Copy36B(src, dst): copies 9 words (36 bytes) from src to dst, three at a
 // time; both pointers advance.
+// Not compiled: copies with `ldmia r0!, {r2, r3, ip}` and `stmia r1!, {r2, r3, ip}` (base written back, data outside
+// r0-r3). In this build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills,
+// which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. A 36-byte struct copy moves
+// two four-word groups through r0-r3, then the last word with `ldr`/`str`.
 asm void MI_Copy36B(const void *src, volatile void *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1!, {r2, r3, ip}
@@ -127,6 +153,11 @@ asm void MI_Copy36B(const void *src, volatile void *dst) {
 }
 
 // MI_Copy48B(src, dst): copies 12 words (48 bytes), three at a time.
+// Not compiled: copies with `ldmia r0!, {r2, r3, ip}` and `stmia r1!, {r2, r3, ip}` (base written back, data outside
+// r0-r3). In this build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills,
+// which carry the data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. A 48-byte struct copy with
+// these arguments moves r0 and r1 to lr and ip and copies four words at a time through r0-r3
+// (`ldm lr!, {r0, r1, r2, r3}` twice, then `ldm lr, {r0, r1, r2, r3}`).
 asm void MI_Copy48B(const void *src, void *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1!, {r2, r3, ip}
@@ -142,6 +173,11 @@ asm void MI_Copy48B(const void *src, void *dst) {
 // MI_Copy64B(src, dst): copies 16 words (64 bytes): four groups of three,
 // then a final group of four (r0 is reloaded as one of the data registers
 // without write-back).
+// Not compiled: copies with `ldmia r0!, {r2, r3, ip}` / `stmia r1!, {r2, r3, ip}` four times and a final
+// `ldmia r0, {r0, r2, r3, ip}` / `stmia r1!, {r0, r2, r3, ip}` (base written back, data outside r0-r3). In this
+// build's compiled code an ldm/stm writes back a base other than sp only in struct copies and fills, which carry the
+// data in r0-r3 (r0-r1 for a fill) and never use r0 or r1 as the base. A 64-byte struct copy with these arguments
+// copies four words at a time through r0-r3 from bases moved to lr and ip.
 asm void MI_Copy64B(const void *src, void *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1!, {r2, r3, ip}
@@ -161,6 +197,13 @@ asm void MI_Copy64B(const void *src, void *dst) {
 // trailing byte are merged into their halfword by read-modify-write; between
 // them a halfword store reaches word alignment, then words, then a last
 // halfword if two bytes remain. Returns at once when size is 0.
+// Not compiled: each read-modify-write keeps its `ldrh` directly before the instruction that uses the loaded value
+// (`ldrh ip, [r0, #-1]; and ip, ip, #0xff` with `subs r2, r2, #1` free to move, `ldrh r3, [r0]; and r3, r3, #0xff00`
+// with `and r1, r1, #0xff` free to move), yet stores the two trailing bytes with a conditional `strneh`. In every C
+// form tried, the levels that make that `strneh` from `if (size & 2)` (-O2 to -O4) also move an independent
+// instruction in after each such load, and -O1, which keeps source order, branches round a plain `strh`. The
+// registers differ too: every form tried loads the odd first byte into r3 (this routine uses ip) and the odd last
+// byte into r2 (this routine uses r3).
 asm void MI_CpuFill8(void *dstp, u32 data, u32 size) {
     cmp r2, #0
     bxeq lr                     // nothing to fill
@@ -213,6 +256,11 @@ L_last_byte:
 // copied; otherwise a halfword reaches word alignment, then words, then a last
 // halfword. An odd trailing byte is merged by read-modify-write. Returns at
 // once when size is 0.
+// Not compiled: `subs r2, r2, #2` is followed by `blo` and, in the loop, `bhs`: branches on the subtract's carry. In
+// this build's compiled code and in every form tried, a 32-bit flag-setting subtract is tested only with eq, ne, mi
+// or pl (or feeds the carry of a 64-bit subtract): the compiler folds a compare with zero into the subtract for those
+// tests only (`(n -= 2) >= 0` gives `subs` and `bpl`, `(n -= 2) > 0` keeps `cmp` and `bgt`), and an unsigned test of
+// the old value (`n < 2` with `n - 2` kept) compiles to `cmp rN, #2` and a separate `sub`.
 asm void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
     cmp r2, #0
     bxeq lr                     // nothing to copy
@@ -308,6 +356,9 @@ L_last_byte:
 
 
 #pragma thumb on
+// Not compiled: Thumb `stmia r0!, {r1, r2, r3}` three times on the incoming pointer. In every form tried the compiler
+// emits a Thumb stmia only in struct copies and fills, which move the pointer off r0 first and store pairs from r0
+// and r1 (a nine-word zero fill: four `stmia r2!, {r0, r1}` and a `str`).
 asm void MI_Zero36B(void *dst) {
     mov r1, #0
     mov r2, #0

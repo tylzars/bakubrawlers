@@ -4638,7 +4638,7 @@ _ZGVZN12SceneManager3GetEvE8instance kind:bss addr:0x020c17d4 weak
 _ZGVZN11SaveManager3GetEvE8instance kind:bss addr:0x020c17d8 weak
 _ZGVZN15WirelessManager3GetEvE8instance kind:bss addr:0x020c17dc weak
 @1096 kind:bss addr:0x020c17e0 local
-@1200 kind:bss addr:0x020c17ec
+gGameSystemDtorNode kind:bss addr:0x020c17ec
 @978 kind:bss addr:0x020c17f8 local
 @1190 kind:bss addr:0x020c1804 local
 @1002 kind:bss addr:0x020c1810 local

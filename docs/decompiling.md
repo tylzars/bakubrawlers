@@ -38,10 +38,12 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
    - `python3 tools/sync_linked_symbols.py --write`, then `ninja` and `ninja check`: inside complete units,
      symbols.txt takes the linked binary's names (`@N` literals, statics marked `local`) and binding (`weak` inline
      functions), and names inside a linked object fold into it. A name the check already accepts is kept (`@N`
-     matches any `@M`), so renumbering after a source edit needs no resync. `ninja check` then reports three
-     mismatches that config can't remove: `@1200` (main's destructor node: dsd can't delink GameMain.cpp's
-     reference to it if it is local, and main lives in Game.cpp's translation unit) and `data_0201ee78` /
-     `data_0201feb0` (the reciprocal tables inside `_fdiv`/`_ddiv`; asm labels emit no symbol).
+     matches any `@M`), so renumbering after a source edit needs no resync. `ninja check` then passes. Three
+     names exist only as linker-script aliases (config/usa/arm9/lcf_edits.txt): `data_0201ee78` / `data_0201feb0`,
+     the reciprocal tables inside `_fdiv`/`_ddiv` (asm labels emit no symbol), and `gGameSystemDtorNode`, main's
+     destructor record for the GameSystem instance. That record is a local `@N` of Game.cpp, where main is defined,
+     but main is delinked as its own unit (GameMain.cpp), and dsd can't delink a reference to a local symbol of
+     another unit; the alias gives it a global name.
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 

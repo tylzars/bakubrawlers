@@ -33,3 +33,11 @@ alias data_04000300 0x04000300 0
 
 # fs_overlay: the overlay digest table is empty, so its end is its start.
 alias data_020baef8_end data_020baef8 0
+
+# The reciprocal tables inside _fdiv and _ddiv: labels in an asm function emit no symbol.
+alias data_0201ee78 _fdiv 0xb4
+alias data_0201feb0 _ddiv 0x138
+
+# Game.cpp: the destructor record main registers for the GameSystem instance (@N, local to Game.o). main is
+# delinked as its own unit, so its reference needs a global name.
+alias gGameSystemDtorNode _ZGVZN10GameSystem3GetEvE8instance 0x38

@@ -103,17 +103,19 @@ struct NNSG3dRS {
     /* 04 */ NNSG3dRenderObj *mRenderObj;
     /* 08 */ u32 mFlags;
     /* 0c */ u8 mUnk_0c[0x24 - 0x0c];
-    /* 24 */ void (*mCallback)(NNSG3dRS *);
+    /* 24 */ void (*mCallback)(NNSG3dRS *); // slot[6] of the library state
     /* 28 */ u8 mUnk_28[0x92 - 0x28];
-    /* 92 */ u8 mUnk_92;
+    /* 92 */ u8 mCallbackStage; // 3 = in the node command after the node is sent; no other value is tested
     /* 93 */ u8 mUnk_93[0xae - 0x93];
-    /* ae */ u8 mUnk_ae;
+    // node index set by the node command (SBC opcode 6), which also sets mFlags & 0x10 before the callback runs, so
+    // the game's mFlags & 0x10 tests always pass in this build
+    /* ae */ u8 mNodeIndex;
 };
 
 extern "C" void InitRenderObj(void *renderObj, void *model);
 extern "C" void AddAnmObjToRenderObj(void *renderObj, NNSG3dAnmObj *obj);
 extern "C" void RemoveAnmObjFromRenderObj(void *renderObj, NNSG3dAnmObj *obj);
-extern "C" void SetRenderObjCallback(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
+extern "C" void SetRenderObjCallback(void *renderObj, void (*callback)(NNSG3dRS *), u32 unused, u32 slot, u32 stage);
 extern "C" void ClearRenderObjCallback(void *renderObj);
 extern "C" void func_02032cc8(MtxFx43 *mtx, void *unk2);
 extern "C" void FlushFifoCommandBuffer();

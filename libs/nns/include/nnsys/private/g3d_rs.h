@@ -28,18 +28,17 @@ struct Rs {
     RObj *obj;                 // 0x04
     u32 flag;                  // 0x08
     void *slot[32];            // 0x0c
-    u8 slotId[32];             // 0x8c
-    u8 curNode;                // 0xac
+    u8 slotStage[32];          // 0x8c: when slot[i] runs; only slotStage[6] == 3 (opcode 6, after cbEc) is tested
+    u8 curVisNode;             // 0xac: node index of the visibility command, stored whether or not it is visible
     u8 curMat;                 // 0xad
-    u8 curShp;                 // 0xae
+    u8 curNode;                // 0xae: node index of the node command (opcode 6); read by the slot-6 callbacks
     u8 pad_af;
     void *pMat;                // 0xb0
-    void *pShp;                // 0xb4
+    void *pNode;               // 0xb4: nodeStore during opcode 6; the NodeSt in use only for the cbEc call
     s32 *pVis;                 // 0xb8
     u32 matDone[2];            // 0xbc
-    u32 one;                   // 0xc4
-    u32 padc8;
-    u32 shpDone[2];            // 0xcc
+    u32 nodeCacheBits[2];      // 0xc4
+    u32 mtxDone[2];            // 0xcc
     Dict *dNode;               // 0xd4
     ResMat *dMat;              // 0xd8
     Dict *dShp;                // 0xdc
@@ -49,7 +48,7 @@ struct Rs {
     void *cbEc;                // 0xec
     void *cbF0;                // 0xf0
     u8 matStore[0x38];         // 0xf4
-    u8 shpStore[0x58];         // 0x12c
+    u8 nodeStore[0x58];         // 0x12c
     s32 visStore;              // 0x184
 };
 extern Rs *data_020baf00;
@@ -90,12 +89,13 @@ typedef struct MatSt {
 } MatSt;
 
 // Per-node render storage (0x58 bytes).
-typedef struct ShpSt {
-    u32 flag;          // 0x00: bit0 = no rotation, bit1 = no translation? (see code)
+typedef struct NodeSt {
+    u32 flag;          // 0x00: 2 = mtx not set from the node record, 4 = trans not set; other bits set by the cbE8 /
+                       // joint-animation callbacks
     u8 pad04[0x24];
     s32 mtx[9];        // 0x28
     s32 trans[3];      // 0x4c
-} ShpSt;
+} NodeSt;
 typedef struct NodeRes {
     u16 flag;          // 0x00
     s16 hw02;          // 0x02

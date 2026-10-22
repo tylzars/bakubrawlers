@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 extern u8 gCharacterLook[];
-void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
+void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *lookData, u32 unk5);
 
 CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
     mUnk_30 = 0;

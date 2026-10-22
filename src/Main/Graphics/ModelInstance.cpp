@@ -147,7 +147,7 @@ void ModelInstance::StoreCallbackMtx(NNSG3dRS *rs) {
     ModelInstance *instance = (ModelInstance *) rs->mRenderObj->mUserData;
     s32 index;
     if (rs->mFlags & 0x10) {
-        index = rs->mUnk_ae;
+        index = rs->mNodeIndex;
     } else {
         index = -1;
     }

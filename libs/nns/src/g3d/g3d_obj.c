@@ -40,7 +40,7 @@ void func_02031518(AnmObj *o, s32 id) {
 
 typedef struct {
     u32 flags; void *model; AnmObj *matAnims; u32 pad0c; AnmObj *jointAnims; u32 pad14; AnmObj *visAnims; u32 pad1c;
-    void *cb; u8 cbNode; u8 cbStage;
+    void *cb; u8 cbSlot; u8 cbStage;
 } RenderObj;
 extern void *data_020a57a4, *data_020a57a0, *data_020a579c;
 void InitRenderObj(u32 *r, void *mdl) {
@@ -133,10 +133,10 @@ void RemoveAnmObjFromRenderObj(u8 *r, AnmObj *a) {
         && !UnlinkAnmObj((AnmObj **)(r + 0x18), a)) return;
     *(u32 *)r |= 0x10;
 }
-void SetRenderObjCallback(u8 *r, void *cb, u32 unused, u32 node, u32 timing) {
+void SetRenderObjCallback(u8 *r, void *cb, u32 unused, u32 slot, u32 stage) {
     *(void **)(r + 0x20) = cb;
-    r[0x24] = node;
-    r[0x25] = timing;
+    r[0x24] = slot;
+    r[0x25] = stage;
 }
 void ClearRenderObjCallback(u8 *r) {
     *(void **)(r + 0x20) = 0;

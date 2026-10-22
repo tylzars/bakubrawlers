@@ -13,7 +13,8 @@ static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); 
 typedef struct { u32 cmd; u32 mode; s32 m[12]; u32 mode2; } GeBuf;
 typedef struct { u32 cmd; u32 mode; s32 m[16]; u32 mode2; } GeBuf4;
 
-// Node matrix cache owned by the G3d state (pointer at data_020baf00, bit set at +0xc4, 6-word records).
+// Node matrix cache owned by the G3d state (pointer at data_020baf00, bit set at +0xc4 (Rs::nodeCacheBits),
+// 6-word records).
 typedef struct { u32 pad[0x31]; u32 bits[1]; } NodeCache;
 extern NodeCache *data_020baf00;
 extern s32 data_020bbd04[][6];

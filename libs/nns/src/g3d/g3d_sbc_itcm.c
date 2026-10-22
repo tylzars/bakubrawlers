@@ -15,7 +15,8 @@ extern void (*data_020a5804[])(void);
 extern void (*data_020a57f8[])(void);
 extern void (*data_020a5810[])(void);
 extern void (*data_020a4e80[])(Rs *, u32, u16 *, u32);   // material handlers
-extern void (*data_020a4e90[])(Rs *, u32, u16 *, u32);   // node-description handlers
+extern void (*data_020a4e90[])(Rs *, u32, u16 *, u32);   // dShp entry handlers (opcode 5; the entry's first u16
+                                                          // selects; 0 sends its command block)
 
 extern s32 VEC_Mag(const s32 *v);        // VEC_Mag
 extern void VEC_Normalize(const s32 *src, s32 *dst);    // VEC_Normalize
@@ -79,7 +80,7 @@ static inline u8 *ResAt(u8 *m, int ofs) {
 
 void func_01ffaee8(Rs *rs, RObj *obj) {
     MIi_CpuClearFast(0, rs, 0x188);
-    rs->one = 1;
+    rs->nodeCacheBits[0] = 1;
     rs->flag = 1;
     if (obj->sbcOverride) {
         rs->cmd = obj->sbcOverride;
@@ -97,7 +98,7 @@ void func_01ffaee8(Rs *rs, RObj *obj) {
     rs->mdlScaleInv = *(s32 *) (obj->mdl + 0x20);
     if (*(u32 *) ((u8 *) obj + 0x20) != 0 && ((u8 *) obj)[0x24] < 0x20) {
         rs->slot[((u8 *) obj)[0x24]] = *(void **) ((u8 *) obj + 0x20);
-        rs->slotId[((u8 *) obj)[0x24]] = ((u8 *) obj)[0x25];
+        rs->slotStage[((u8 *) obj)[0x24]] = ((u8 *) obj)[0x25];
     }
     if (obj->flag & 1) {
         rs->flag |= 0x80;
@@ -173,7 +174,7 @@ void func_01ffb1b4(Rs *rs, u32 op) {
     if (!(rs->flag & 0x200)) {
         u32 idx = rs->cmd[1];
         RObj *o;
-        rs->curNode = idx;
+        rs->curVisNode = idx;
         rs->flag |= 4;
         rs->pVis = &rs->visStore;
         o = rs->obj;
@@ -382,11 +383,11 @@ void func_01ffb7f8(Rs *rs, u32 op) {
     u32 arg3;
     u32 idx = rs->cmd[1];
     u32 len = 4;
-    ShpSt *s;
+    NodeSt *s;
     u8 *buf;
     int cached;
     int skip;
-    rs->curShp = idx;
+    rs->curNode = idx;
     rs->flag |= 0x10;
     if (rs->flag & 0x400) {
         if (op == 0x40 || op == 0x60) {
@@ -413,11 +414,11 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             SendFifoCommand(0x14, &arg2, 1);
         }
     }
-    s = (ShpSt *) rs->shpStore;
-    rs->pShp = s;
+    s = (NodeSt *) rs->nodeStore;
+    rs->pNode = s;
     buf = *(u8 **) ((u8 *) rs->obj + 0x34);
     if (buf != 0) {
-        s = (ShpSt *) (buf + idx * 0x58);
+        s = (NodeSt *) (buf + idx * 0x58);
         cached = !(rs->flag & 0x80);
     } else {
         cached = 0;
@@ -427,7 +428,7 @@ void func_01ffb7f8(Rs *rs, u32 op) {
         s32 *p;
         s->flag = 0;
         if (*(u32 *) ((u8 *) rs->obj + 0x10) != 0 &&
-            (*(int (**)(ShpSt *, u32, u32)) ((u8 *) rs->obj + 0x14))(s, *(u32 *) ((u8 *) rs->obj + 0x10), idx) != 0) {
+            (*(int (**)(NodeSt *, u32, u32)) ((u8 *) rs->obj + 0x14))(s, *(u32 *) ((u8 *) rs->obj + 0x10), idx) != 0) {
             goto emit;
         }
         n = NodePtr(rs->dNode, idx);
@@ -465,17 +466,17 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             s->mtx[8] = ((s16 *) p)[7];
             p += 4;
         }
-        (*(void (**)(ShpSt *, s32 *, u8 *, u32)) &rs->cbE8)(s, p, rs->cmd, n->flag);
+        (*(void (**)(NodeSt *, s32 *, u8 *, u32)) &rs->cbE8)(s, p, rs->cmd, n->flag);
     }
 emit:
-    rs->pShp = s;
+    rs->pNode = s;
     if (!(rs->flag & 0x100)) {
-        (*(void (**)(ShpSt *)) &rs->cbEc)(rs->pShp);
+        (*(void (**)(NodeSt *)) &rs->cbEc)(rs->pNode);
     }
-    rs->pShp = 0;
+    rs->pNode = 0;
     skip = 0;
     if (rs->slot[6] != 0) {
-        skip = rs->slotId[6];
+        skip = rs->slotStage[6];
     }
     if (skip == 3) {
         rs->flag &= ~0x40;
@@ -689,10 +690,10 @@ void func_01ffc108(Rs *rs) {
     MTX_MODE = 2;
     for (j = 0; j < n; j++) {
         u32 idx = cmd[1];
-        u32 bit = TestBit(rs->shpDone, idx);
+        u32 bit = TestBit(rs->mtxDone, idx);
         pos = (s32 *) (data_020bc304 + idx * 100);
         if (!bit) {
-            rs->shpDone[idx >> 5] |= 1 << (idx & 31);
+            rs->mtxDone[idx >> 5] |= 1 << (idx & 31);
             MTX_RESTORE = cmd[0];
             MTX_MODE = 1;
             G3_MultMtx43(tbl + idx * 0x54);

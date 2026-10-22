@@ -505,14 +505,14 @@ void CharacterModel::SetHeadFrame(u32 frame) {
 
 void InstallHeadNodeMtxCallback(NNSG3dRS *rs) {
     rs->mCallback = StoreHeadNodeMtx;
-    rs->mUnk_92   = 3;
+    rs->mCallbackStage   = 3;
 }
 
 // Node 0x10 only: gHeadNodeMtx = func_02032cc8's matrix concatenated with func_020323b8()'s.
 void StoreHeadNodeMtx(NNSG3dRS *rs) {
     int id;
     if (rs->mFlags & 0x10) {
-        id = rs->mUnk_ae;
+        id = rs->mNodeIndex;
     } else {
         id = -1;
     }

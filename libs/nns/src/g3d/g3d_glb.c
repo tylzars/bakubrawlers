@@ -186,7 +186,8 @@ void *func_02032710(void) {   // combined position and projection matrix (cached
     }
     return data_02211574;
 }
-BOOL func_02032778(void *out, AnmObj *o, u32 idx) {   // run the animation callbacks for one node
+BOOL func_02032778(void *out, AnmObj *o, u32 idx) {   // runs an animation list's callbacks; installed at RObj+0xc,
+                                                       // which the material handler calls per material
     BOOL r = 0;
     if (o == 0) return 0;
     do {

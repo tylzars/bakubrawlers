@@ -92,7 +92,7 @@ void AntennaIndicator::SetupLayout(u32 unk1) {
 
 // The 8-byte character look (gCharacterLook, CharacterIcons.cpp:63) as LoadEditedIcon / LoadEditedIconPalette read it:
 // same bits as CharacterLook (CharacterEditScene.hpp:22); some fields pick image blocks, the others palette rows.
-struct AntennaPalette {
+struct EditedIconLook {
     /* 00 */ u16 mUnk_00_0 : 1;
     /* 00 */ u16 mFaceKind : 3;
     /* 00 */ u16 mFaceVariant : 3; // picks the "eye" palette row here
@@ -112,21 +112,21 @@ struct AntennaPalette {
 
 extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
-void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
+void LoadEditedIconPalette(u8 screen, u32 palette, const EditedIconLook *look, u32 unk4);
 void CopyNonZeroNibbles(u8 *dst, const u8 *src);
 
-void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5) {
-    const AntennaPalette *pal = (const AntennaPalette *) colors;
+void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *lookData, u32 unk5) {
+    const EditedIconLook *look = (const EditedIconLook *) lookData;
     u8 *file;
     u8 *buffer = (u8 *) OS_Alloc(0x200);
     ChangeDir("/Game/Character/EditedIcon/");
     u32 size;
     file = (u8 *) LoadFile("icon_ch_edit.nce_ncg1D.bin", 0, 0, 0, &size, 0);
-    u8 a     = pal->mFaceKind;
-    u8 b     = pal->mHairKind;
-    u8 c     = pal->mCapHandle;
-    u8 d     = pal->mGlasseHandle;
-    u8 e     = pal->mUnk_02_9;
+    u8 a     = look->mFaceKind;
+    u8 b     = look->mHairKind;
+    u8 c     = look->mCapHandle;
+    u8 d     = look->mGlasseHandle;
+    u8 e     = look->mUnk_02_9;
     MI_CpuCopy8(file + a * 0x200, buffer, 0x200);
     if (d != 0) {
         if (e != 0) {
@@ -142,7 +142,7 @@ void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 
     DC_FlushRange(buffer, 0x200);
     QueueUpload(screen, UPLOAD_KIND_OBJ, offset, buffer, 0x200, 1);
     OS_Free(file);
-    LoadEditedIconPalette(screen, palette, pal, unk5);
+    LoadEditedIconPalette(screen, palette, look, unk5);
     ChangeDir("/");
 }
 
@@ -165,7 +165,7 @@ void CopyNonZeroNibbles(u8 *dst, const u8 *src) {
     }
 }
 
-void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
+void LoadEditedIconPalette(u8 screen, u32 palette, const EditedIconLook *look, u32 unk4) {
     u32 h;
     u32 i;
     u32 d;
@@ -178,12 +178,12 @@ void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors,
     u8 pos;
     u16 *extra;
     buffer = (u16 *) OS_Alloc(0x20);
-    j16    = colors->mSkinPalette << 4;
-    b      = colors->mFaceVariant;
-    d      = colors->mHairVariant;
-    f      = colors->mCapPalette;
-    i      = colors->mUnk_02_9;
-    h      = colors->mGlassePalette;
+    j16    = look->mSkinPalette << 4;
+    b      = look->mFaceVariant;
+    d      = look->mHairVariant;
+    f      = look->mCapPalette;
+    i      = look->mUnk_02_9;
+    h      = look->mGlassePalette;
     extra  = NULL;
     pos    = 1;
     ChangeDir("/Game/Character/EditedIcon/");

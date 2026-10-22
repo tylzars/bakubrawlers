@@ -52,12 +52,17 @@ void ReaderWait(F *f) {
     f->flag = 0;
 }
 void ReaderClose(Src *s) { s->adv(); } // Reader's Close slot (PlayerRelease calls Close before deleting the reader)
-void func_0203b804() {}
+void ReaderDtor() {}
 // YUV-to-RGB555 conversion (hand-written assembly): args points at {Y, UV, dst, stride, width, height, table}.
 // Y rows are 0x100 bytes apart; each U/V row (0x100 bytes, U in the first 0x80, V in the second) serves two Y
 // rows, one U/V pair per 2x2 pixels. Output pixels are 16-bit with bit 15 set. The loops take 16 pixels and two
 // rows per pass.
-asm void func_0203b808(void *args) {
+// Not compiled: saves ip with the callee-saved registers (`stmfd sp!, {r4-r11, ip, lr}`) and moves sp inside the body
+// to keep values on the stack (`stmfd sp!, {r5-r10}`, `str r10, [sp, #-4]!`, `ldr r10, [sp], #4`,
+// `add sp, sp, #0x18`). No compiled function in this build saves ip, pushes registers after its prologue or moves sp
+// with a single `str`/`ldr`; with this unit's compiler a function needing r4-r11 and lr pushes {r3-r11, lr}. Its
+// loops also end in `subs ...; bgt`, where `while ((n -= 16) > 0)` compiles to `sub; cmp rN, #0; bgt`.
+asm void ConvertPlanes(void *args) {
     // save the registers; unpack the argument block
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, lr}
     ldr r8, [r0, #0xc]              // stride: bytes per output row
@@ -445,9 +450,9 @@ L0203b850:
 
 struct G { u32 a, b, c, s0c; u8 *p10; u32 s14; u8 *p18; u32 pad; u32 d; };
 extern G data_02215860;
-u32 func_0203bdc8() { return 0x659c; }
+u32 GetDecodeFuncSize() { return 0x659c; }
 u32 func_0203bdd4() { return 0x2580; }
-void func_0203bddc(u8 *p, u32 n) {
+void SetDecodeFuncBuffer(u8 *p, u32 n) {
     data_02215860.p18 = p;
     data_02215860.s14 = n & ~3;
     data_02215860.c = 0;
@@ -474,7 +479,7 @@ void *name() { \
     return (void *) data_02215860.field; \
 }
 extern u8 data_02096a90[];
-void *func_0203be24() {
+void *GetDecodeFunc() {
     if (data_02215860.c == 0) {
         if (data_02215860.s14 >= 0x659c) {
             data_02215860.c = (u32) data_02215860.p18;
@@ -487,9 +492,9 @@ void *func_0203be24() {
     }
     return (void *) data_02215860.c;
 }
-extern u8 data_02094990[], data_0209d6f8[], data_0209d578[];
+extern u8 data_02094990[], gMobiclipConvertTable[], data_0209d578[];
 ALLOC(func_0203bea0, b, 0x2100, data_02094990)
-ALLOC(func_0203bf10, a, 0x300, data_0209d6f8)
+ALLOC(GetConvertTable, a, 0x300, gMobiclipConvertTable)
 ALLOC(func_0203bf80, d, 0x180, data_0209d578)
 void MobiclipSetAdpcmState(u32 *s, u8 *p) {
     s[1] = p[0];

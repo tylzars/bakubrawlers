@@ -7,7 +7,7 @@
 
 extern "C" s32 FX_Atan2Idx(s32 y, s32 x);
 
-// Battle message of the communication buffer data_0220f540 (the layout used by the battle).
+// Battle message of the communication buffer gSendMessage (the layout used by the battle).
 struct BattleNetMessage {
     /* 00 */ u8 mType;
     /* 01 */ PAD(0x01, 0x04);

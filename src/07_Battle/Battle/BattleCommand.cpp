@@ -1008,10 +1008,10 @@ void BattleCommand::Update() {
             func_ov007_0223b874();
             return;
         case 29:
-            data_0220f540.mUnk_00 = 7;
-            data_0220f540.mUnk_04 = mPickIndex;
-            data_0220f540.mUnk_08 = mCursorX;
-            data_0220f540.mUnk_09 = mCursorY;
+            gSendMessage.mType = 7;
+            gSendMessage.mUnk_04 = mPickIndex;
+            gSendMessage.mUnk_08 = mCursorX;
+            gSendMessage.mUnk_09 = mCursorY;
             mState++;
             Draw();
             func_ov007_0223b874();
@@ -1239,9 +1239,9 @@ void BattleCommand::Update() {
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mCockpitWindow->mEnabled = 0;
                 mState          = 0x2d;
-                data_0220f540.mUnk_00 = 0x12;
-                data_0220f540.mCursorX = mCursorX;
-                data_0220f540.mCursorY = mCursorY;
+                gSendMessage.mType = 0x12;
+                gSendMessage.mCursorX = mCursorX;
+                gSendMessage.mCursorY = mCursorY;
                 mDragScrolling              = 0;
             } else if (sel == 2) {
                 mState++;

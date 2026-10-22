@@ -28,7 +28,7 @@ extern "C" void *MobiclipAlloc(u32 size);
 extern "C" void MobiclipFree(void *p);
 void func_0209d02c(void *);
 extern "C" void *func_0203bf80();
-int func_0203b808(void *);
+int ConvertPlanes(void *);
 int func_02090b24(Chan *);
 void func_020914e4(Chan *);
 extern "C" void MobiclipSetAdpcmState(Chan *, u8 *);
@@ -93,7 +93,7 @@ int PlayerConvertFrame(P *p, u32 a, u32 b, int c) {
     }
     p->o44 = (void *) a;
     p->o48 = b << 1;
-    func_0203b808(&p->o3c);
+    ConvertPlanes(&p->o3c);
     p->o9c++;
     p->oc4++;
     if (p->oc4 == p->oa8) p->oc4 = 0;

@@ -440,7 +440,7 @@ static inline void MI_CpuCopy16(const void *src, void *dst, u32 size) {
     MIi_CpuCopy16(src, dst, size);
 }
 
-// Layout of the list message of a battle player (BattlePlayer::mMsg) and of the communication buffer data_0220f540.
+// Layout of the list message of a battle player (BattlePlayer::mMsg) and of the communication buffer gSendMessage.
 
 struct BattleListMessage {
     /* 00 */ u8 mUnk_00;
@@ -453,7 +453,7 @@ struct BattleListMessage {
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
-#define MESSAGE ((BattleListMessage *) &data_0220f540)
+#define MESSAGE ((BattleListMessage *) &gSendMessage)
 
 // Layout of the slot message (type 4) of a battle player and of the communication buffer.
 
@@ -466,7 +466,7 @@ struct BattleSlotMessage {
     /* 1d */ u8 mSlots6cCount;
 };
 
-#define SLOT_MESSAGE ((BattleSlotMessage *) &data_0220f540)
+#define SLOT_MESSAGE ((BattleSlotMessage *) &gSendMessage)
 
 u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b);
 
@@ -4043,7 +4043,7 @@ BOOL ExchangeSlots(ListScene *self) {
 }
 
 BOOL ExchangeRandomSeed(ListScene *self) {
-    data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
+    gSendMessage.mUnk_04 = MATH_Rand32(&gRandom, 0);
     if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().GetRecvBlock(0);
         if (info != NULL) {
@@ -4055,7 +4055,7 @@ BOOL ExchangeRandomSeed(ListScene *self) {
 }
 
 BOOL ExchangeCharacterLooks(ListScene *self) {
-    MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(gCharacterLook, (u8 *) &gSendMessage + 4, 8);
     if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
@@ -4072,7 +4072,7 @@ BOOL ExchangeCharacterLooks(ListScene *self) {
 BOOL ExchangeRecordHeads(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
-            MIi_CpuCopy16(&gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
+            MIi_CpuCopy16(&gGameData.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &gSendMessage + 4 + i * 4, 4);
         } else {
             u8 id;
             u32 kind;
@@ -4083,9 +4083,9 @@ BOOL ExchangeRecordHeads(ListScene *self) {
                 invalid = 1;
             }
             if (invalid != 0) {
-                MI_CpuClear16((u8 *) &data_0220f540 + 4 + i * 4, 4);
+                MI_CpuClear16((u8 *) &gSendMessage + 4 + i * 4, 4);
             } else {
-                MIi_CpuCopy16(GetBakuganEntry(gSaveData, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
+                MIi_CpuCopy16(GetBakuganEntry(gSaveData, id, kind), (u8 *) &gSendMessage + 4 + i * 4, 4);
             }
         }
     }

@@ -95,7 +95,7 @@ These routines are not compiler output. Where they are matched, it is as comment
 - 0x02090b24-0x0209d490 (inside main `.rodata`, interleaved with data tables): the Mobiclip video decoder's
   assembly (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative
   table reads and non-standard argument registers. It links from the original bytes and is not counted as code.
-- 0x0203b808 (size 0x5c0, `func_0203b808` in MobiclipFile.cpp, an asm body): the YUV-to-RGB555 converter called
+- 0x0203b808 (size 0x5c0, `ConvertPlanes` in MobiclipFile.cpp, an asm body): the YUV-to-RGB555 converter called
   from MobiclipDecoder with an argument block (Y plane, interleaved U/V, destination, stride, width, height, lookup
   table). It keeps six computed row skips in a data block on the stack and unrolls its inner loop into 8 blocks.
 - The secure area (0x02000000-0x02000800) is `init/secure_area.s`, assembled with the toolchain's mwasmarm: the 18

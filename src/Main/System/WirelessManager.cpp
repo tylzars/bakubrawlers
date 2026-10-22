@@ -42,13 +42,13 @@ struct WmScanParam {
 
 // Parameters of the hosted network (the wireless library's WMParentParam, 0x40 bytes).
 struct WmParentParam {
-    /* 00 */ void *mUnk_00;
-    /* 04 */ u16 mUnk_04;
+    /* 00 */ void *mParentData;
+    /* 04 */ u16 mParentDataSize;
     /* 06 */ u16 mUnk_06;
     /* 08 */ u32 mGameId;
     /* 0c */ u16 mUnk_0c;
     /* 0e */ u16 mUnk_0e;
-    /* 10 */ u16 mUnk_10;
+    /* 10 */ u16 mMaxJoinedCount;
     /* 12 */ u16 mUnk_12;
     /* 14 */ u16 mUnk_14;
     /* 16 */ u16 mUnk_16;
@@ -142,7 +142,7 @@ void RecvCallback(WmCallbackArg *arg) {
                             u32 v = mgr.mUnk_124f | (1 << arg->mUnk_12);
                             mgr.mUnk_124f = v;
                             if (mgr.mUnk_1230 == (u8) ((v & 0xff) & mgr.mUnk_1230)) {
-                                mgr.func_0202f1a4(0);
+                                mgr.SetPausedAndSend(0);
                             }
                         } else {
                             mgr.SetPaused(0);
@@ -150,7 +150,7 @@ void RecvCallback(WmCallbackArg *arg) {
                         break;
                     case 1:
                         if (mgr.mState == 6) {
-                            mgr.func_0202f1a4(1);
+                            mgr.SetPausedAndSend(1);
                             mgr.mUnk_124f = 1;
                         } else {
                             mgr.SetPaused(1);
@@ -179,39 +179,39 @@ void StartCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult == 0) {
         mgr.mState = 1;
-        mgr.mUnk_122a = WM_CALL_DONE;
+        mgr.mCallStatus = WM_CALL_DONE;
         return;
     }
-    mgr.mUnk_122a = WM_CALL_FAILED;
+    mgr.mCallStatus = WM_CALL_FAILED;
 }
 
 void func_0202dd60(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult == 0) {
-        mgr.mUnk_122a = WM_CALL_DONE;
+        mgr.mCallStatus = WM_CALL_DONE;
     } else {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
     }
 }
 
 void StopCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
         return;
     }
-    mgr.mUnk_122a = WM_CALL_STOPPED;
+    mgr.mCallStatus = WM_CALL_STOPPED;
     mgr.mState = 0;
 }
 
 void ParentParamCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
         return;
     }
     func_020108e4((void *) ParentEventCallback);
-    mgr.mUnk_122a = WM_CALL_PENDING;
+    mgr.mCallStatus = WM_CALL_PENDING;
 }
 
 void ParentEventCallback(WmCallbackArg *arg) {
@@ -225,7 +225,7 @@ void ParentEventCallback(WmCallbackArg *arg) {
                 break;
             case 7: {
                 mgr.mState = 6;
-                mgr.mUnk_122a = 2;
+                mgr.mCallStatus = 2;
                 mgr.mJoinedCount++;
                 if (mgr.mJoinedCount >= mgr.mMaxJoinedCount) {
                     mgr.func_0202ec74(0);
@@ -245,15 +245,15 @@ void ParentEventCallback(WmCallbackArg *arg) {
                     }
                     mgr.func_0202ec74(1);
                 } else {
-                    mgr.mUnk_122a = WM_CALL_FAILED;
+                    mgr.mCallStatus = WM_CALL_FAILED;
                 }
                 break;
             case 0x1a:
-                mgr.mUnk_122a = WM_CALL_FAILED;
+                mgr.mCallStatus = WM_CALL_FAILED;
                 break;
         }
     } else {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
     }
 }
 
@@ -277,18 +277,18 @@ void ScanCallback(WmCallbackArg *arg) {
             }
             break;
           default:
-            mgr.mUnk_122a = WM_CALL_FAILED;
+            mgr.mCallStatus = WM_CALL_FAILED;
             break;
         }
     } else {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
     }
 }
 
 void TestChannelCallback(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
         return;
     }
     u16 a = arg->mUnk_0a;
@@ -317,7 +317,7 @@ void func_0202e288(WmCallbackArg *arg) {
                         break;
                     case 5:
                         mgr.mState = 7;
-                        mgr.mUnk_122a = WM_CALL_JOINED;
+                        mgr.mCallStatus = WM_CALL_JOINED;
                         mgr.SetRecvCallback();
                         break;
                 }
@@ -329,7 +329,7 @@ void func_0202e288(WmCallbackArg *arg) {
     } else {
         u16 e = arg->mResult;
         if (e != 9 && e != 0xd && e != 0xf) {
-            mgr.mUnk_122a = WM_CALL_FAILED;
+            mgr.mCallStatus = WM_CALL_FAILED;
         }
     }
 }
@@ -344,27 +344,27 @@ void JoinCallback(WmCallbackArg *arg) {
                 break;
             case 7: {
                 mgr.mSendBlockIndex = arg->mUnk_0a;
-                if (mgr.mUnk_122a != WM_CALL_JOINED) {
+                if (mgr.mCallStatus != WM_CALL_JOINED) {
                     mgr.func_0202ea34();
                 }
                 break;
             }
             case 9:
-                mgr.mUnk_122a = WM_CALL_FAILED;
+                mgr.mCallStatus = WM_CALL_FAILED;
                 break;
             case 0x1a:
-                mgr.mUnk_122a = WM_CALL_FAILED;
+                mgr.mCallStatus = WM_CALL_FAILED;
                 break;
         }
     } else {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
     }
 }
 
 void func_0202e478(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
-        mgr.mUnk_122a = WM_CALL_FAILED;
+        mgr.mCallStatus = WM_CALL_FAILED;
     }
 }
 
@@ -372,62 +372,62 @@ void func_0202e4e8(WmCallbackArg *arg) {} // empty: the callback SetPaused passe
 
 void WirelessManager::RequestStart() {
     func_02010674(sWmWork, (void *) StartCallback, 2);
-    mUnk_122a = WM_CALL_PENDING;
+    mCallStatus = WM_CALL_PENDING;
     mExchangeStarted = 0;
 }
 
 void WirelessManager::RequestStop() {
-    mUnk_122a = WM_CALL_PENDING;
+    mCallStatus = WM_CALL_PENDING;
     func_0201071c((void *) StopCallback);
 }
 
 void WirelessManager::func_0202e544() {
-    mUnk_122a = WM_CALL_PENDING;
+    mCallStatus = WM_CALL_PENDING;
     if (mExchangeStarted != 0) {
         func_020110c0(sExchangeBuffer);
         mExchangeStarted = 0;
     }
     if (func_020106e4((void *) func_0202dd60) != 2) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
     }
 }
 
 void WirelessManager::RequestParent() {
     MIi_CpuCopy32(&sDefaultParentParam, sParentParam, 0x40);
-    PARENT_PARAM->mUnk_10 = mMaxJoinedCount;
+    PARENT_PARAM->mMaxJoinedCount = mMaxJoinedCount;
     PARENT_PARAM->mUnk_0c     = func_02010600();
     PARENT_PARAM->mChannel  = mParentChannel;
     PARENT_PARAM->mUnk_18 = func_020104dc();
     mJoinedCount = 0;
     func_0201075c((void *) ParentParamCallback, sParentParam);
-    mUnk_122a = WM_CALL_PENDING;
+    mCallStatus = WM_CALL_PENDING;
 }
 
 void WirelessManager::TestNextChannel() {
     u32 mask = func_0201042c();
     if (mask == 0x8000) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
         return;
     }
     if (mask == 0) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
         return;
     }
     do {
         mTestedChannel++;
         if (mask & (1 << (mTestedChannel - 1))) {
             if (func_020119ec((void *) TestChannelCallback, 3, 0x11, mTestedChannel, 0x1e) == 2) {
-                mUnk_122a = WM_CALL_PENDING;
+                mCallStatus = WM_CALL_PENDING;
                 break;
             }
-            mUnk_122a = WM_CALL_FAILED;
+            mCallStatus = WM_CALL_FAILED;
         }
     } while (mTestedChannel < 0x10);
     if (mTestedChannel < 0x10) {
         return;
     }
     mState = 3;
-    mUnk_122a = WM_CALL_DONE;
+    mCallStatus = WM_CALL_DONE;
 }
 
 void WirelessManager::StartChannelTest() {
@@ -467,18 +467,18 @@ void WirelessManager::SelectNextScanChannel() {
 
 void WirelessManager::RequestScan() {
     if (func_020108f4((void *) ScanCallback, &SCAN_PARAM) != 2) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
     } else {
-        mUnk_122a = WM_CALL_SCAN_REQUESTED;
+        mCallStatus = WM_CALL_SCAN_REQUESTED;
     }
 }
 
 void WirelessManager::Join(u32 unk1) {
     MI_CpuCopy8(&mScanSnapshot[unk1], sEntryBuffer, 0xc0);
     if (func_020109e0((void *) JoinCallback, sEntryBuffer, mJoinData, 1, 0) != 2) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
     } else {
-        mUnk_122a = WM_CALL_PENDING;
+        mCallStatus = WM_CALL_PENDING;
     }
 }
 
@@ -530,7 +530,7 @@ void WirelessManager::SetRecvCallback() {
 
 void WirelessManager::func_0202ea34() {
     func_02010c1c((void *) func_0202e288, data_0220f860, 0x1c0, data_0220f700, 0xa0, 1);
-    mUnk_122a = WM_CALL_PENDING;
+    mCallStatus = WM_CALL_PENDING;
 }
 
 void WirelessManager::SendNext() {
@@ -572,7 +572,7 @@ void WirelessManager::UpdateExchange() {
             break;
         case 1:
         case 3:
-            mUnk_122a = WM_CALL_FAILED;
+            mCallStatus = WM_CALL_FAILED;
             mHasNewRecvBlocks = 0;
             break;
     }
@@ -580,14 +580,14 @@ void WirelessManager::UpdateExchange() {
         mExchangeTimer = 0x708;
     } else {
         if (--mExchangeTimer == 0) {
-            mUnk_122a = WM_CALL_FAILED;
+            mCallStatus = WM_CALL_FAILED;
         }
     }
 }
 
 void WirelessManager::func_0202ec74(u32 unk1) {
     if (func_02011a64((void *) func_0202e478, unk1) != 2) {
-        mUnk_122a = WM_CALL_FAILED;
+        mCallStatus = WM_CALL_FAILED;
     }
 }
 
@@ -759,7 +759,7 @@ void WirelessManager::func_0202f184() {
     mUnk_1250 = 0;
 }
 
-void WirelessManager::func_0202f1a4(u32 unk1) {
+void WirelessManager::SetPausedAndSend(u32 unk1) {
     if (!((mState == 6) | (mState == 7))) {
         return;
     }
@@ -775,7 +775,7 @@ u32 WirelessManager::func_0202f238() {
 }
 
 void WirelessManager::Update() {
-    if (mUnk_122a == WM_CALL_FAILED && mState != 9) {
+    if (mCallStatus == WM_CALL_FAILED && mState != 9) {
         func_0202e544();
         if (mState != 8) {
             mState = 9;
@@ -783,7 +783,7 @@ void WirelessManager::Update() {
     }
     switch (mState) {
         case 8:
-            switch (mUnk_122a) {
+            switch (mCallStatus) {
                 case WM_CALL_DONE:
                     RequestStop();
                     break;
@@ -793,19 +793,19 @@ void WirelessManager::Update() {
             break;
         case 2:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == WM_CALL_DONE) {
+            if (mCallStatus == WM_CALL_DONE) {
                 StartChannelTest();
             }
             break;
         case 3:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == WM_CALL_DONE) {
+            if (mCallStatus == WM_CALL_DONE) {
                 RequestParent();
             }
             break;
         case 4:
             mUnk_124d = func_0201044c();
-            switch (mUnk_122a) {
+            switch (mCallStatus) {
                 case WM_CALL_DONE:
                     SetupScanParam();
                     RequestScan();
@@ -816,7 +816,7 @@ void WirelessManager::Update() {
             break;
         case 5:
             mUnk_124d = func_0201044c();
-            if (mUnk_122a == WM_CALL_DONE) {
+            if (mCallStatus == WM_CALL_DONE) {
                 Join(mJoinIndex);
             }
             break;
@@ -840,7 +840,7 @@ void WirelessManager::Update() {
             break;
         case 9:
             mUnk_124d = func_0201044c();
-            mUnk_122a = WM_CALL_STOPPED;
+            mCallStatus = WM_CALL_STOPPED;
             break;
     }
 }

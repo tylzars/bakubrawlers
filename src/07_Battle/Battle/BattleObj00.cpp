@@ -56,7 +56,7 @@ public:
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mBlendBrightness; // sub-screen G2S_SetBlendBrightness level, 0 up to 0x10 (+1 every 4th frame)
     /* 38 */ PAD(0x38, 0x39);
-    // low byte of the state-13 request (1 where this class set mRequest = 1); AddMarker's slot; data_0220f540.mUnk_04
+    // low byte of the state-13 request (1 where this class set mRequest = 1); AddMarker's slot; gSendMessage.mUnk_04
     /* 39 */ u8 mSlot;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ PAD(0x3b, 0x3c);
@@ -364,12 +364,12 @@ void BattleObj00::Update() {
             }
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                data_0220f540.mUnk_04 = mSlot;
+                gSendMessage.mUnk_04 = mSlot;
                 if (SetMessageTypeAndCheckAll(gGameData.mBattlePlayers, 7)) {
                     mState = 0x12;
                 }
             } else {
-                data_0220f540.mUnk_04 = mSlot;
+                gSendMessage.mUnk_04 = mSlot;
                 mState               = 0x12;
             }
             return;

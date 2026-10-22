@@ -261,7 +261,7 @@ void BattlePlayerList::Update() {
             mState++;
             break;
         case 7:
-            data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
+            gSendMessage.mUnk_04 = MATH_Rand32(&gRandom, 0);
             if (SetMessageTypeAndCheckAll(this, 2)) {
                 SeedRandom(*(u32 *) ((u8 *) mPlayers[0] + 0x104));
                 mState = 8;
@@ -1299,7 +1299,7 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list) {
     return result;
 }
 
-// TRUE at once outside wireless mode (nothing written). Else writes `id` to the outgoing data_0220f540.mUnk_00 and is
+// TRUE at once outside wireless mode (nothing written). Else writes `id` to gSendMessage.mType and is
 // TRUE when players 0 .. n - 1 (n = GetRecvBlockCount()) all have mMsg.mType == id.
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
     WirelessManager::Get();
@@ -1307,7 +1307,7 @@ BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
         return TRUE;
     }
     u32 n = WirelessManager::Get().GetRecvBlockCount();
-    data_0220f540.mUnk_00 = id;
+    gSendMessage.mType = id;
     u8 count = 0;
     u8 i     = 0;
     do {
@@ -1329,8 +1329,8 @@ BOOL SetMessageType0x19AndCheckAny(BattlePlayerList *list, u32 flag) {
         return FALSE;
     }
     if (flag) {
-        if (data_0220f540.mUnk_00 == 0) {
-            data_0220f540.mUnk_00 = 0x19;
+        if (gSendMessage.mType == 0) {
+            gSendMessage.mType = 0x19;
         }
     }
     BOOL result = FALSE;

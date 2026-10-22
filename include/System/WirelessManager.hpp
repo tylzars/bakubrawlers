@@ -21,7 +21,7 @@ struct WmCallbackArg {
 #define WM_ENTRY_SIZE 0xc0 // one scanned/listed network record (the wireless library's WMBssDesc with its game info)
 #define WM_ENTRY_COUNT 12
 
-// Status of the last wireless library call (WirelessManager::mUnk_122a, also written as data_020c4030.mUnk_22a).
+// Status of the last wireless library call (WirelessManager::mCallStatus, also written as data_020c4030.mUnk_22a).
 // Update starts the current mState's next call when it is WM_CALL_DONE, and on WM_CALL_FAILED (outside mState 9) calls
 // func_0202e544 and sets mState 9 (unless it is 8). 2 (set with mState 6 by the parent callback's event 7) is
 // never read and stays a literal.
@@ -72,8 +72,10 @@ public:
                                    // 6 connected as parent, 7 joined, 8 stopping, 9 failed; also read as
                                    // data_020c4030.mUnk_228 / data_020c4258 (IsWirelessMode tests 6 and 7)
     /* 1229 */ u8 mJoinIndex;
-    /* 122a */ u8 mUnk_122a; // WM_CALL_* status of the last library call; 2 is written with mState 6 by ParentEventCallback
-                             // and never read. Also written as data_020c4030.mUnk_22a
+    // WM_CALL_* result of the last library call; also FAILED on the exchange timeout and from BattleShoot /
+    // BattleCommand, STOPPED every frame in mState 9, and 2 with mState 6 (ParentEventCallback; never read). Written as
+    // data_020c4030.mUnk_22a by the other units
+    /* 122a */ u8 mCallStatus;
     // 1 when SendCallback runs (command-word sends too), on event 0xa and when Send is refused; SendNext clears it
     /* 122b */ u8 mSendIdle;
     /* 122c */ u8 mExchangeStarted;
@@ -126,7 +128,7 @@ public:
     void SetPaused(u32 unk1); // only on a change: func_02010cf8 gets 0 when pausing, 1 when resuming
     void func_0202ed00();
     void Init();
-    void func_0202f1a4(u32 unk1);
+    void SetPausedAndSend(u32 unk1);
     u32 func_0202f238();
     void Update();
 
@@ -147,7 +149,7 @@ struct UnkStruct_020c4030 {
     /* 000 */ PAD(0x000, 0x228);
     /* 228 */ u8 mUnk_228; // the same byte as WirelessManager::mState
     /* 229 */ PAD(0x229, 0x22a);
-    /* 22a */ u8 mUnk_22a; // the same byte as WirelessManager::mUnk_122a
+    /* 22a */ u8 mUnk_22a; // the same byte as WirelessManager::mCallStatus
     /* 22b */ PAD(0x22b, 0x24d);
     /* 24d */ u8 mUnk_24d; // the same byte as WirelessManager::mUnk_124d
 };
@@ -164,9 +166,9 @@ static inline BOOL IsWirelessMode(const u8 *mode) {
     return FALSE;
 }
 
-struct UnkStruct_0220f540 {
-    /* 00 */ u8 mUnk_00;
-    /* 01 */ u8 mUnk_01;
+struct NetMessage {
+    /* 00 */ u8 mType;
+    /* 01 */ u8 mSendBlockIndex;
     /* 02 */ PAD(0x02, 0x04);
     union {
         /* 04 */ u32 mUnk_04;
@@ -199,4 +201,4 @@ struct UnkStruct_0220f540 {
     /* 20 */ PAD(0x20, 0x40); // the slot-message stores at 0x1c/0x1d schedule like an object of at least 0x3c bytes
 };
 
-extern UnkStruct_0220f540 data_0220f540;
+extern NetMessage gSendMessage;

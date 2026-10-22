@@ -90,21 +90,22 @@ void AntennaIndicator::SetupLayout(u32 unk1) {
     mSecondCellAnim->mPaletteBase   = gAntennaLayouts[mLayoutIndex].mPalette;
 }
 
-// Packed palette selection of the character icon: 3-bit indices into the palette files.
+// The 8-byte character look (gCharacterLook, CharacterIcons.cpp:63) as LoadEditedIcon / LoadEditedIconPalette read it:
+// same bits as CharacterLook (CharacterEditScene.hpp:22); some fields pick image blocks, the others palette rows.
 struct AntennaPalette {
     /* 00 */ u16 mUnk_00_0 : 1;
-    /* 00 */ u16 mUnk_00_1 : 3;
-    /* 00 */ u16 mUnk_00_4 : 3;
-    /* 00 */ u16 mUnk_00_7 : 3;
-    /* 00 */ u16 mUnk_00_10 : 3;
-    /* 00 */ u16 mUnk_00_13 : 3;
-    /* 02 */ u16 mUnk_02_0 : 3;
-    /* 02 */ u16 mUnk_02_3 : 3;
-    /* 02 */ u16 mUnk_02_6 : 3;
+    /* 00 */ u16 mFaceKind : 3;
+    /* 00 */ u16 mFaceVariant : 3; // picks the "eye" palette row here
+    /* 00 */ u16 mHairKind : 3;
+    /* 00 */ u16 mHairVariant : 3;
+    /* 00 */ u16 mCapHandle : 3;
+    /* 02 */ u16 mCapPalette : 3;
+    /* 02 */ u16 mGlasseHandle : 3;
+    /* 02 */ u16 mGlassePalette : 3; // picks the "fr" palette row here
     /* 02 */ u16 mUnk_02_9 : 3;
     /* 02 */ u16 mUnk_02_12 : 4;
     /* 04 */ u16 mUnk_04;
-    /* 06 */ u16 mUnk_06_0 : 3;
+    /* 06 */ u16 mSkinPalette : 3;
     /* 06 */ u16 mUnk_06_3 : 13;
     /* 08 */
 };
@@ -121,10 +122,10 @@ void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 
     ChangeDir("/Game/Character/EditedIcon/");
     u32 size;
     file = (u8 *) LoadFile("icon_ch_edit.nce_ncg1D.bin", 0, 0, 0, &size, 0);
-    u8 a     = pal->mUnk_00_1;
-    u8 b     = pal->mUnk_00_7;
-    u8 c     = pal->mUnk_00_13;
-    u8 d     = pal->mUnk_02_3;
+    u8 a     = pal->mFaceKind;
+    u8 b     = pal->mHairKind;
+    u8 c     = pal->mCapHandle;
+    u8 d     = pal->mGlasseHandle;
     u8 e     = pal->mUnk_02_9;
     MI_CpuCopy8(file + a * 0x200, buffer, 0x200);
     if (d != 0) {
@@ -177,12 +178,12 @@ void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors,
     u8 pos;
     u16 *extra;
     buffer = (u16 *) OS_Alloc(0x20);
-    j16    = colors->mUnk_06_0 << 4;
-    b      = colors->mUnk_00_4;
-    d      = colors->mUnk_00_10;
-    f      = colors->mUnk_02_0;
+    j16    = colors->mSkinPalette << 4;
+    b      = colors->mFaceVariant;
+    d      = colors->mHairVariant;
+    f      = colors->mCapPalette;
     i      = colors->mUnk_02_9;
-    h      = colors->mUnk_02_6;
+    h      = colors->mGlassePalette;
     extra  = NULL;
     pos    = 1;
     ChangeDir("/Game/Character/EditedIcon/");

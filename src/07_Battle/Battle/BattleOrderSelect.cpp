@@ -109,7 +109,7 @@ BattleOrderSelect::BattleOrderSelect()
     } else {
         mNeeded = 1;
     }
-    data_0220f540.mUnk_00 = 0xf;
+    gSendMessage.mType = 0xf;
 }
 
 BattleOrderSelect::~BattleOrderSelect() {
@@ -236,10 +236,10 @@ BOOL BattleOrderSelect::SetAndCheckMessageType(u32 index) {
 void BattleOrderSelect::WriteTouchMessage() {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-        data_0220f540.mUnk_00 = 10;
-        data_0220f540.mTouchDown = TouchManager::Get().mPressed;
-        data_0220f540.mTouchX    = TouchManager::Get().mX;
-        data_0220f540.mTouchY    = TouchManager::Get().mY;
+        gSendMessage.mType = 10;
+        gSendMessage.mTouchDown = TouchManager::Get().mPressed;
+        gSendMessage.mTouchX    = TouchManager::Get().mX;
+        gSendMessage.mTouchY    = TouchManager::Get().mY;
     }
 }
 

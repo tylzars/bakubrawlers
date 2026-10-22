@@ -33,7 +33,7 @@
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
-// The type-8 message states 6 and 9 write into data_0220f540 (state 9, the shot rebuilt from a received packet,
+// The type-8 message states 6 and 9 write into gSendMessage (state 9, the shot rebuilt from a received packet,
 // sends mRecord 0).
 struct ShootPacket {
     u8 mUnk_00;
@@ -450,14 +450,14 @@ void BattleShoot::Update() {
             break;
         case 6: {
             BattlePlayerList *list = gGameData.mBattlePlayers;
-            ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
-            ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
-            ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
-            ((ShootPacket *) &data_0220f540)->mRotYAdjust     = mRotYAdjust;
-            ((ShootPacket *) &data_0220f540)->mRotZAdjust     = mRotZAdjust;
-            ((ShootPacket *) &data_0220f540)->mShotSpeed     = mShotSpeed;
-            ((ShootPacket *) &data_0220f540)->mSpKind     = mSpKind;
-            ((ShootPacket *) &data_0220f540)->mRecord           = list->mPlayers[list->mTurnPlayer]->mRecord;
+            ((ShootPacket *) &gSendMessage)->mShotRotX     = mShotRotX;
+            ((ShootPacket *) &gSendMessage)->mShotRotY     = mShotRotY;
+            ((ShootPacket *) &gSendMessage)->mShotRotZ     = mShotRotZ;
+            ((ShootPacket *) &gSendMessage)->mRotYAdjust     = mRotYAdjust;
+            ((ShootPacket *) &gSendMessage)->mRotZAdjust     = mRotZAdjust;
+            ((ShootPacket *) &gSendMessage)->mShotSpeed     = mShotSpeed;
+            ((ShootPacket *) &gSendMessage)->mSpKind     = mSpKind;
+            ((ShootPacket *) &gSendMessage)->mRecord           = list->mPlayers[list->mTurnPlayer]->mRecord;
             if (SetMessageTypeAndCheckAll(list, 8)) {
                 mState = 10;
             }
@@ -478,14 +478,14 @@ void BattleShoot::Update() {
             break;
         case 9: {
             BattlePlayerList *list = gGameData.mBattlePlayers;
-            ((ShootPacket *) &data_0220f540)->mShotRotX     = mShotRotX;
-            ((ShootPacket *) &data_0220f540)->mShotRotY     = mShotRotY;
-            ((ShootPacket *) &data_0220f540)->mShotRotZ     = mShotRotZ;
-            ((ShootPacket *) &data_0220f540)->mRotYAdjust     = mRotYAdjust;
-            ((ShootPacket *) &data_0220f540)->mRotZAdjust     = mRotZAdjust;
-            ((ShootPacket *) &data_0220f540)->mShotSpeed     = mShotSpeed;
-            ((ShootPacket *) &data_0220f540)->mSpKind     = mSpKind;
-            ((ShootPacket *) &data_0220f540)->mRecord     = 0;
+            ((ShootPacket *) &gSendMessage)->mShotRotX     = mShotRotX;
+            ((ShootPacket *) &gSendMessage)->mShotRotY     = mShotRotY;
+            ((ShootPacket *) &gSendMessage)->mShotRotZ     = mShotRotZ;
+            ((ShootPacket *) &gSendMessage)->mRotYAdjust     = mRotYAdjust;
+            ((ShootPacket *) &gSendMessage)->mRotZAdjust     = mRotZAdjust;
+            ((ShootPacket *) &gSendMessage)->mShotSpeed     = mShotSpeed;
+            ((ShootPacket *) &gSendMessage)->mSpKind     = mSpKind;
+            ((ShootPacket *) &gSendMessage)->mRecord     = 0;
             if (SetMessageTypeAndCheckAll(list, 8)) {
                 mState++;
             }
@@ -1444,16 +1444,16 @@ void BattleShoot::UpdatePushMessages() {
     u8 sent;
     BattlePlayerList *list = gGameData.mBattlePlayers;
     u8 self                = list->mTurnPlayer;
-    data_0220f540.mUnk_00  = 9;
-    data_0220f540.mUnk_04  = 0;
-    *(s32 *) &data_0220f540.mUnk_08 = 0;
-    data_0220f540.mUnk_0c  = 0;
+    gSendMessage.mType  = 9;
+    gSendMessage.mUnk_04  = 0;
+    *(s32 *) &gSendMessage.mUnk_08 = 0;
+    gSendMessage.mUnk_0c  = 0;
     if (MicManager::Get().mEvents != 0) {
         if (gGameData.mMicEnabled) {
-            data_0220f540.mUnk_0c = 1;
+            gSendMessage.mUnk_0c = 1;
         }
     } else {
-        data_0220f540.mUnk_0c = 0;
+        gSendMessage.mUnk_0c = 0;
     }
     if (mPrevTouchFrames != 0) {
         if (mTouchFrames == 0) {
@@ -1467,10 +1467,10 @@ void BattleShoot::UpdatePushMessages() {
             }
             s32 distance = (u16) (dx + dy);
             if (distance >= 0x20) {
-                data_0220f540.mUnk_00 = 9;
+                gSendMessage.mType = 9;
                 s32 idx               = FX_Atan2Idx(-mTouchSumX, mTouchSumY) >> 4;
-                data_0220f540.mUnk_04 = -FX_Mul(FX_SinCosTable_[idx * 2], 0x4cd);
-                *(s32 *) &data_0220f540.mUnk_08 = -FX_Mul(FX_SinCosTable_[idx * 2 + 1], 0x4cd);
+                gSendMessage.mUnk_04 = -FX_Mul(FX_SinCosTable_[idx * 2], 0x4cd);
+                *(s32 *) &gSendMessage.mUnk_08 = -FX_Mul(FX_SinCosTable_[idx * 2 + 1], 0x4cd);
             }
             mTouchSumX = 0;
             mTouchSumY = 0;
@@ -1498,10 +1498,10 @@ void BattleShoot::UpdatePushMessages() {
         if (i == gGameData.mBattlePlayers->mLocalPlayer) {
             WirelessManager::Get();
             if (!IsWirelessMode(mode)) {
-                mMsgs[i].mType = ((u8 *) &data_0220f540)[0];
-                mMsgs[i].mUnk_01 = ((u8 *) &data_0220f540)[1];
-                *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) &data_0220f540) + 2);
-                mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) &data_0220f540 + 4);
+                mMsgs[i].mType = ((u8 *) &gSendMessage)[0];
+                mMsgs[i].mUnk_01 = ((u8 *) &gSendMessage)[1];
+                *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) &gSendMessage) + 2);
+                mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) &gSendMessage + 4);
             } else {
                 mMsgs[i].mType = ((u8 *) p + 0x100)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];

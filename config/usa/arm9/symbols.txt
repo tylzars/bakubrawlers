@@ -1156,7 +1156,7 @@ _ZN15WirelessManager12SetSendBlockEPv kind:function(arm,size=0x54) addr:0x0202f0
 _ZN15WirelessManager12GetRecvBlockEj kind:function(arm,size=0x68) addr:0x0202f0cc
 _ZN15WirelessManager17GetRecvBlockCountEv kind:function(arm,size=0x50) addr:0x0202f134
 _ZN15WirelessManager13func_0202f184Ev kind:function(arm,size=0x20) addr:0x0202f184
-_ZN15WirelessManager13func_0202f1a4Ej kind:function(arm,size=0x94) addr:0x0202f1a4
+_ZN15WirelessManager16SetPausedAndSendEj kind:function(arm,size=0x94) addr:0x0202f1a4
 _ZN15WirelessManager13func_0202f238Ev kind:function(arm,size=0xc) addr:0x0202f238
 _ZN15WirelessManager6UpdateEv kind:function(arm,size=0x1c8) addr:0x0202f244
 _ZN15WirelessManagerD0Ev kind:function(arm,size=0x14) addr:0x0202f40c weak
@@ -1508,13 +1508,13 @@ AdvanceRamp kind:function(arm,size=0x18) addr:0x0203a514
 IsRampDone kind:function(arm,size=0x18) addr:0x0203a52c
 _Z12MobiclipInitP6PlayerP6Readerj kind:function(arm,size=0x30) addr:0x0203a544
 _Z14MobiclipCreateP6Readerj kind:function(arm,size=0xd4) addr:0x0203a574
-_Z13func_0203a648P6Reader kind:function(arm,size=0x14) addr:0x0203a648
+_Z12ReaderDeleteP6Reader kind:function(arm,size=0x14) addr:0x0203a648
 _Z14MobiclipDeleteP6Player kind:function(arm,size=0x20) addr:0x0203a65c
-_Z13func_0203a67cP6Player kind:function(arm,size=0x18) addr:0x0203a67c
+_Z20MobiclipGetAudioRateP6Player kind:function(arm,size=0x18) addr:0x0203a67c
 _Z28MobiclipGetAudioChannelCountP6Player kind:function(arm,size=0x18) addr:0x0203a694
 _Z20MobiclipGetFrameRateP6Player kind:function(arm,size=0x18) addr:0x0203a6ac
 _Z21MobiclipGetFrameCountP6Player kind:function(arm,size=0x18) addr:0x0203a6c4
-_Z13func_0203a6dcP6Player kind:function(arm,size=0x18) addr:0x0203a6dc
+_Z27MobiclipGetAudioBlockLengthP6Player kind:function(arm,size=0x18) addr:0x0203a6dc
 _Z17MobiclipNextFrameP6Player kind:function(arm,size=0x24) addr:0x0203a6f4
 _Z19MobiclipDecodeFrameP6Player kind:function(arm,size=0x24) addr:0x0203a718
 _Z20MobiclipConvertFrameP6Playerjji kind:function(arm,size=0x24) addr:0x0203a73c
@@ -1530,11 +1530,11 @@ _ZN6PlayerC1Ev kind:function(arm,size=0x30) addr:0x0203a814
 _ZN6PlayerD1Ev kind:function(arm,size=0x14) addr:0x0203a844
 _Z10PlayerInitP6PlayerP6Readerj kind:function(arm,size=0x5ac) addr:0x0203a858
 _Z13PlayerReleaseP6Player kind:function(arm,size=0x168) addr:0x0203ae04
-_Z13func_0203af6cP6Player kind:function(arm,size=0x8) addr:0x0203af6c
+_Z18PlayerGetAudioRateP6Player kind:function(arm,size=0x8) addr:0x0203af6c
 _Z26PlayerGetAudioChannelCountP6Player kind:function(arm,size=0x8) addr:0x0203af74
 _Z18PlayerGetFrameRateP6Player kind:function(arm,size=0x8) addr:0x0203af7c
 _Z19PlayerGetFrameCountP6Player kind:function(arm,size=0x8) addr:0x0203af84
-_Z13func_0203af8cP6Player kind:function(arm,size=0x24) addr:0x0203af8c
+_Z25PlayerGetAudioBlockLengthP6Player kind:function(arm,size=0x24) addr:0x0203af8c
 PlayerNextFrame kind:function(arm,size=0x138) addr:0x0203afb0
 PlayerDecodeFrame kind:function(arm,size=0xe4) addr:0x0203b0e8
 PlayerConvertFrame kind:function(arm,size=0x184) addr:0x0203b1cc
@@ -1550,15 +1550,15 @@ ReaderRead kind:function(arm,size=0x70) addr:0x0203b6dc
 ReaderStartAlignedRead kind:function(arm,size=0x7c) addr:0x0203b74c
 ReaderWait kind:function(arm,size=0x28) addr:0x0203b7c8
 ReaderClose kind:function(arm,size=0x14) addr:0x0203b7f0
-func_0203b804 kind:function(arm,size=0x4) addr:0x0203b804
-func_0203b808 kind:function(arm,size=0x5c0) addr:0x0203b808
-func_0203bdc8 kind:function(arm,size=0xc) addr:0x0203bdc8
+ReaderDtor kind:function(arm,size=0x4) addr:0x0203b804
+ConvertPlanes kind:function(arm,size=0x5c0) addr:0x0203b808
+GetDecodeFuncSize kind:function(arm,size=0xc) addr:0x0203bdc8
 func_0203bdd4 kind:function(arm,size=0x8) addr:0x0203bdd4
-func_0203bddc kind:function(arm,size=0x20) addr:0x0203bddc
+SetDecodeFuncBuffer kind:function(arm,size=0x20) addr:0x0203bddc
 func_0203bdfc kind:function(arm,size=0x28) addr:0x0203bdfc
-func_0203be24 kind:function(arm,size=0x7c) addr:0x0203be24
+GetDecodeFunc kind:function(arm,size=0x7c) addr:0x0203be24
 func_0203bea0 kind:function(arm,size=0x70) addr:0x0203bea0
-func_0203bf10 kind:function(arm,size=0x70) addr:0x0203bf10
+GetConvertTable kind:function(arm,size=0x70) addr:0x0203bf10
 func_0203bf80 kind:function(arm,size=0x70) addr:0x0203bf80
 MobiclipSetAdpcmState kind:function(arm,size=0x14) addr:0x0203bff0
 MobiclipDecodeAdpcm kind:function(arm,size=0x158) addr:0x0203c004
@@ -3016,7 +3016,7 @@ data_02094990 kind:data(any) addr:0x02094990
 data_02096a90 kind:data(any) addr:0x02096a90
 data_0209d568 kind:data(any) addr:0x0209d568
 data_0209d578 kind:data(any) addr:0x0209d578
-data_0209d6f8 kind:data(any) addr:0x0209d6f8
+gMobiclipConvertTable kind:data(any) addr:0x0209d6f8
 gMobiclipAdpcmIndexAdjust kind:data(any) addr:0x0209d9f8
 gMobiclipAdpcmDiffScale kind:data(any) addr:0x0209da08
 gVolumeScales kind:data(any) addr:0x0209dabc
@@ -4838,7 +4838,7 @@ sManager kind:bss addr:0x0220f110 local
 @14 kind:bss addr:0x0220f120 local
 data_0220f12c kind:bss addr:0x0220f12c
 gMicBuffer kind:bss addr:0x0220f140
-data_0220f540 kind:bss addr:0x0220f540
+gSendMessage kind:bss addr:0x0220f540
 data_0220f544 kind:bss addr:0x0220f544
 data_0220f560 kind:bss addr:0x0220f560 local
 data_0220f564 kind:bss addr:0x0220f564 local

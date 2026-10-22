@@ -157,8 +157,8 @@ extern UnkStruct_020c4230 data_020c4230;
 extern u8 data_020d43e3[];
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 
-#define NET_KEYS (*(u16 *) ((u8 *) &data_0220f540 + 4))
-#define NET_BYTE(n) (*((u8 *) &data_0220f540 + (n)))
+#define NET_KEYS (*(u16 *) ((u8 *) &gSendMessage + 4))
+#define NET_BYTE(n) (*((u8 *) &gSendMessage + (n)))
 
 
 static inline u8 IsZeroU8(u8 v) {
@@ -429,7 +429,7 @@ void FieldSelectScene::Update() {
         case 4:
             MATHRandContext32 *ctx = &gRandom;
             ctx->x                 = ctx->mul * ctx->x + ctx->add;
-            data_0220f540.mUnk_04  = (u32) (ctx->x >> 32);
+            gSendMessage.mUnk_04  = (u32) (ctx->x >> 32);
             if (SetMessageTypeAndCheckAll(2)) {
                 u8 *p = WirelessManager::Get().GetRecvBlock(0);
                 if (p != NULL) {
@@ -1087,15 +1087,15 @@ BOOL FieldSelectScene::SetMessageTypeAndCheckAll(u32 unk1) {
         }
         i++;
     } while (i < count);
-    data_0220f540.mUnk_00 = unk1;
+    gSendMessage.mType = unk1;
     return matches == count;
 }
 
 BOOL FieldSelectScene::func_ov001_02221c0c() {
-    MI_CpuCopy8(gUnlockedCharacterLevel0Bits, (u8 *) &data_0220f540 + 4, 9);
-    MI_CpuCopy8(gUnlockedFieldBits, (u8 *) &data_0220f540 + 0xd, 1);
-    data_0220f540.mUnk_0e = gSaveData[0].mRules;
-    data_0220f540.mUnk_0f = gSaveData[0].mCreditsDone;
+    MI_CpuCopy8(gUnlockedCharacterLevel0Bits, (u8 *) &gSendMessage + 4, 9);
+    MI_CpuCopy8(gUnlockedFieldBits, (u8 *) &gSendMessage + 0xd, 1);
+    gSendMessage.mUnk_0e = gSaveData[0].mRules;
+    gSendMessage.mUnk_0f = gSaveData[0].mCreditsDone;
     if (SetMessageTypeAndCheckAll(0x17)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
@@ -1169,7 +1169,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
 }
 
 BOOL FieldSelectScene::ExchangeCharacterLooks() {
-    MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(gCharacterLook, (u8 *) &gSendMessage + 4, 8);
     if (SetMessageTypeAndCheckAll(6)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
@@ -1213,9 +1213,9 @@ void FieldSelectScene::func_ov001_02222040() {
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
         WirelessManager::Get();
-        data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        WirelessManager::Get().QueueSend(&data_0220f540);
-        WirelessManager::Get().SetSendBlock(&data_0220f540);
+        gSendMessage.mSendBlockIndex = data_020c4230.mUnk_20;
+        WirelessManager::Get().QueueSend(&gSendMessage);
+        WirelessManager::Get().SetSendBlock(&gSendMessage);
     }
     WirelessManager::Get();
     if (IsWirelessMode(mode)) {
@@ -1245,7 +1245,7 @@ void FieldSelectScene::func_ov001_02222040() {
             }
             i++;
         } while (i < 4);
-        data_0220f540.mUnk_00 = 0xd;
+        gSendMessage.mType = 0xd;
         NET_BYTE(6) = TouchManager::Get().mReleased;
         NET_BYTE(7) = TouchManager::Get().mX;
         NET_BYTE(8) = TouchManager::Get().mY;

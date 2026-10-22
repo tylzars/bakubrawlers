@@ -105,7 +105,7 @@ BattleAbility::~BattleAbility() {
 }
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
-extern UnkStruct_0220f540 data_0220f540;
+extern NetMessage gSendMessage;
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
@@ -181,8 +181,8 @@ void BattleAbility::Update() {
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                 break;
             }
-            ((u8 *) &data_0220f540)[0] = 0x14;
-            ((u8 *) &data_0220f540)[4] = mUnk_0f;
+            ((u8 *) &gSendMessage)[0] = 0x14;
+            ((u8 *) &gSendMessage)[4] = mUnk_0f;
             break;
         }
         case 3:
@@ -210,9 +210,9 @@ void BattleAbility::Update() {
                 mPickIndex = GetLowByte(result);
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    ((u8 *) &data_0220f540)[0] = 0x14;
-                    ((u8 *) &data_0220f540)[4] = mUnk_0f;
-                    ((u8 *) &data_0220f540)[5] = mPickIndex;
+                    ((u8 *) &gSendMessage)[0] = 0x14;
+                    ((u8 *) &gSendMessage)[4] = mUnk_0f;
+                    ((u8 *) &gSendMessage)[5] = mPickIndex;
                 }
                 mState = 6;
             } else {
@@ -261,7 +261,7 @@ void BattleAbility::Update() {
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                 break;
             }
-            ((u8 *) &data_0220f540)[0] = 0x14;
+            ((u8 *) &gSendMessage)[0] = 0x14;
             break;
         case 8: {
             BattlePlayer *player = gGameData.mBattlePlayers->mPlayers[mPlayer];

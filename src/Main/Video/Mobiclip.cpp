@@ -27,7 +27,7 @@ struct Reader : ReaderBase {
     virtual int v5();
     virtual void Close();
     s32 mFile;   // 0c: the FSFile (MobiclipFile.cpp ReaderInit 'f->file = file')
-    s32 mUnk_10; // 10: 1 while ReaderStartAlignedRead's asynchronous read runs
+    s32 mAsyncReadPending; // 10: set by ReaderStartAlignedRead
 };
 
 struct Ctx {
@@ -56,17 +56,17 @@ struct Player {
     u32 mRate;           // 18
     u16 mAudioType;      // 1c
     u16 mChannels;       // 1e
-    u32 mUnk_20;         // 20
+    u32 mAudioRate;         // 20
     u32 mUnk_24;         // 24
     u32 mUnk_28;         // 28
     u32 mUnk_2c;         // 2c
     u32 mUnk_30;         // 30
     Ctx *mCtx;           // 34
-    u32 mUnk_38;         // 38
+    u32 mDecodeFunc;         // 38
     u8 mPad3c[0x10];     // 3c
-    u32 mUnk_4c;         // 4c
-    u32 mUnk_50;         // 50
-    u32 mUnk_54;         // 54
+    u32 mConvertWidth;         // 4c
+    u32 mConvertHeight;         // 50
+    u32 mConvertTable;         // 54
     u8 *mAudio;          // 58
     u8 **mPlaneY;        // 5c
     u8 **mPlaneC;        // 60
@@ -74,21 +74,21 @@ struct Player {
     void *mUnk_68;       // 68
     void *mUnk_6c;       // 6c
     u8 *mBuf[2];         // 70
-    u32 mUnk_78;         // 78
-    u32 mUnk_7c;         // 7c
-    u32 mUnk_80;         // 80
-    u32 mUnk_84;         // 84
-    u32 mUnk_88;         // 88
-    u32 mUnk_8c;         // 8c
-    u32 mUnk_90;         // 90
+    u32 mFrameSize0;         // 78
+    u32 mFrameSize1;         // 7c
+    u32 mFrameOffset0;         // 80
+    u32 mFrameOffset1;         // 84
+    u32 mAudioBlockCount0;         // 88
+    u32 mAudioBlockCount1;         // 8c
+    u32 mBufIndex;         // 90
     u8 *mUnk_94;         // 94
     u32 mUnk_98;         // 98
     u32 mUnk_9c;         // 9c
-    u32 mUnk_a0;         // a0
+    u32 mDecodedFrames;         // a0
     u32 mUnk_a4;         // a4
     u32 mNumPlanes;      // a8
-    u32 mUnk_ac[6];      // ac
-    u32 mUnk_c4;         // c4
+    u32 mPlaneIndices[6];      // ac
+    u32 mConvertPlaneIndex;         // c4
     u32 mUnk_c8[3];      // c8
     u32 mBase;           // d4
     static void *operator new(unsigned long size);
@@ -102,9 +102,9 @@ extern "C" int ReaderInit(Reader *r, u32 a);
 extern "C" void func_0203b64c(Reader *r);
 extern "C" void *MobiclipAlloc(u32 size);
 extern "C" void MobiclipFree(void *p);
-extern "C" u32 func_0203be24();
+extern "C" u32 GetDecodeFunc();
 extern "C" u32 func_0203bea0();
-extern "C" u32 func_0203bf10();
+extern "C" u32 GetConvertTable();
 extern "C" u32 func_0203bf80();
 extern "C" int PlayerNextFrame(Player *p);
 extern "C" int PlayerDecodeFrame(Player *p);
@@ -142,7 +142,7 @@ Player *MobiclipCreate(Reader *src, u32 a) {
     return p;
 }
 
-Reader *func_0203a648(Reader *r) {
+Reader *ReaderDelete(Reader *r) {
     func_0203b64c(r);
     return r;
 }
@@ -154,15 +154,15 @@ void MobiclipDelete(Player *p) {
 }
 
 
-int func_0203af6c(Player *p);
+int PlayerGetAudioRate(Player *p);
 int PlayerGetAudioChannelCount(Player *p);
 int PlayerGetFrameRate(Player *p);
 int PlayerGetFrameCount(Player *p);
-int func_0203af8c(Player *p);
+int PlayerGetAudioBlockLength(Player *p);
 
-int func_0203a67c(Player *p) {
+int MobiclipGetAudioRate(Player *p) {
     if (p == 0) return 0;
-    return func_0203af6c(p);
+    return PlayerGetAudioRate(p);
 }
 int MobiclipGetAudioChannelCount(Player *p) {
     if (p == 0) return 0;
@@ -176,9 +176,9 @@ int MobiclipGetFrameCount(Player *p) {
     if (p == 0) return 0;
     return PlayerGetFrameCount(p);
 }
-int func_0203a6dc(Player *p) {
+int MobiclipGetAudioBlockLength(Player *p) {
     if (p == 0) return 0;
-    return func_0203af8c(p);
+    return PlayerGetAudioBlockLength(p);
 }
 int MobiclipNextFrame(Player *p) {
     if (p == 0) return 0;
@@ -260,13 +260,13 @@ int PlayerInit(Player *p, Reader *r, u32 n) {
     }
     p->mCtx = (Ctx *) MobiclipAlloc(0x454);
     MI_CpuClearFast(p->mCtx, 0x454);
-    p->mUnk_38 = func_0203be24();
+    p->mDecodeFunc = GetDecodeFunc();
     p->mCtx->mUnk_3c = func_0203bea0();
     p->mCtx->mUnk_40 = (u32) func_02092890;
     p->mCtx->mUnk_44 = func_0203bf80() + 0x40;
-    p->mUnk_4c = p->mWidth;
-    p->mUnk_50 = p->mHeight;
-    p->mUnk_54 = func_0203bf10();
+    p->mConvertWidth = p->mWidth;
+    p->mConvertHeight = p->mHeight;
+    p->mConvertTable = GetConvertTable();
     p->mCtx->mWidth = p->mWidth;
     p->mCtx->mHeight = p->mHeight;
     if (p->mWidth > 0x100) {
@@ -301,12 +301,12 @@ int PlayerInit(Player *p, Reader *r, u32 n) {
         return 0;
     }
     p->mUnk_98 = 0;
-    p->mUnk_ac[0] = 0;
+    p->mPlaneIndices[0] = 0;
     for (int i = 1; i < 6; i++) {
-        p->mUnk_ac[i] = p->mNumPlanes - i;
+        p->mPlaneIndices[i] = p->mNumPlanes - i;
     }
-    p->mUnk_c4 = 0;
-    p->mUnk_a0 = 0;
+    p->mConvertPlaneIndex = 0;
+    p->mDecodedFrames = 0;
     p->mUnk_9c = 0;
     for (int i = 0; i < 2; i++) {
         p->mBuf[i] = (u8 *) MobiclipAlloc(p->mUnk_24 + 0x400);
@@ -346,11 +346,11 @@ int PlayerInit(Player *p, Reader *r, u32 n) {
     }
     u32 w;
     p->mReader->Read(&w, 4);
-    p->mUnk_78 = w >> 14;
-    p->mUnk_88 = w & 0x3fff;
-    p->mUnk_80 = 0;
-    p->mReader->Read(p->mBuf[0], p->mUnk_78 + 4);
-    p->mUnk_90 = 1;
+    p->mFrameSize0 = w >> 14;
+    p->mAudioBlockCount0 = w & 0x3fff;
+    p->mFrameOffset0 = 0;
+    p->mReader->Read(p->mBuf[0], p->mFrameSize0 + 4);
+    p->mBufIndex = 1;
     return 1;
 }
 
@@ -405,7 +405,7 @@ void PlayerRelease(Player *p) {
     p->mUnk_94 = 0;
 }
 
-int func_0203af6c(Player *p) { return p->mUnk_20; }
+int PlayerGetAudioRate(Player *p) { return p->mAudioRate; }
 
 int PlayerGetAudioChannelCount(Player *p) { return p->mChannels; }
 
@@ -413,8 +413,8 @@ int PlayerGetFrameRate(Player *p) { return p->mRate; }
 
 int PlayerGetFrameCount(Player *p) { return p->mFrameCount; }
 
-int func_0203af8c(Player *p) {
-    if (p->mUnk_20 == 0) return 0;
+int PlayerGetAudioBlockLength(Player *p) {
+    if (p->mAudioRate == 0) return 0;
     return p->mUnk_28 != 0 ? 0x80 : 0x100;
 }
 

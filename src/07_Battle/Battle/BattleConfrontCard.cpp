@@ -472,8 +472,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                 if (w->mState == 2 && w->mResult == 1 && w->mCursor->mSelection == 0) {
                     WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
-                        data_0220f540.mUnk_00     = 0x16;
-                        data_0220f540.mTouchDown = 1; // byte 4 of message 0x16: 1 = window selection 0 chosen
+                        gSendMessage.mType     = 0x16;
+                        gSendMessage.mTouchDown = 1; // byte 4 of message 0x16: 1 = window selection 0 chosen
                     } else {
                         CloseWindow();
                         ReleaseWindow();
@@ -485,8 +485,8 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     if (w->mCursor->mSelection != 0) {
                         WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
-                            data_0220f540.mUnk_00     = 0x16;
-                            data_0220f540.mTouchDown = 0;
+                            gSendMessage.mType     = 0x16;
+                            gSendMessage.mTouchDown = 0;
                         } else {
                             CloseWindow();
                             ReleaseWindow();
@@ -919,9 +919,9 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
             if (IsWirelessMode(&data_020c4258)) {
                 u8 owner = gGameData.mBattlePlayers->mLocalPlayer;
                 if (e[0].mPlayer == owner || e[1].mPlayer == owner) {
-                    data_0220f540.mUnk_00 = 7;
-                    data_0220f540.mUnk_04 = mCardId;
-                    *((u8 *) &data_0220f540 + 0xa) = mSlot6cIndex;
+                    gSendMessage.mType = 7;
+                    gSendMessage.mUnk_04 = mCardId;
+                    *((u8 *) &gSendMessage + 0xa) = mSlot6cIndex;
                 }
             }
             u8 i    = 0;

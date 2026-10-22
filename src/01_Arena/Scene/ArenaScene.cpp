@@ -219,9 +219,9 @@ void ArenaScene::Update() {
     const u8 *modePtr = &data_020c4258;
     if (IsWirelessMode(modePtr)) {
         WirelessManager::Get();
-        data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        WirelessManager::Get().QueueSend(&data_0220f540);
-        WirelessManager::Get().SetSendBlock(&data_0220f540);
+        gSendMessage.mSendBlockIndex = data_020c4230.mUnk_20;
+        WirelessManager::Get().QueueSend(&gSendMessage);
+        WirelessManager::Get().SetSendBlock(&gSendMessage);
     }
     WirelessManager::Get();
     u8 mode = *modePtr;
@@ -243,8 +243,8 @@ void ArenaScene::Update() {
         SetSubMenuMode(2);
     } else if (mode > 1) {
         if (mState < 0xc) {
-            MIi_CpuCopy16(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
-            data_0220f540.mUnk_1f = 0;
+            MIi_CpuCopy16(data_020d441a, (u8 *) &gSendMessage + 4, 0x18);
+            gSendMessage.mUnk_1f = 0;
         }
     }
     if (mSubMenuMode != 0) {
@@ -325,7 +325,7 @@ void ArenaScene::Update() {
                                 WirelessManager::Get().Start();
                                 gGameData.mWireless = 1;
                             }
-                            data_0220f540.mUnk_00 = 0xb;
+                            gSendMessage.mType = 0xb;
                             if (mSelection == 0) {
                                 mVariant = 2;
                                 mState    = 5;
@@ -415,7 +415,7 @@ void ArenaScene::Update() {
             if (mUnk_b6-- != 0) {
                 break;
             }
-            data_0220f540.mUnk_1f = 1;
+            gSendMessage.mUnk_1f = 1;
             mState                 = 0xb;
             break;
         case 8:
@@ -541,7 +541,7 @@ void ArenaScene::Update() {
             if (SetMessageTypeAndCheckAll(0xb) != 0) {
                 mState++;
             }
-            data_0220f540.mUnk_1f = 1;
+            gSendMessage.mUnk_1f = 1;
             break;
         case 12:
             if (SetMessageTypeAndCheckAll(0xc) != 0) {
@@ -557,10 +557,10 @@ void ArenaScene::Update() {
                 }
                 mState++;
             }
-            MIi_CpuCopy16(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
+            MIi_CpuCopy16(data_020d441a, (u8 *) &gSendMessage + 4, 0x18);
             break;
         case 13:
-            MI_CpuCopy8(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
+            MI_CpuCopy8(data_020d43eb, (u8 *) &gSendMessage + 4, 4);
             if (SetMessageTypeAndCheckAll(0x18) != 0) {
                 WirelessManager::Get();
                 if (data_020c4230.mUnk_20 != 0) {
@@ -941,7 +941,7 @@ void ArenaScene::ResetNames() {
 }
 
 u32 ArenaScene::SetMessageTypeAndCheckAll(u32 unk1) {
-    data_0220f540.mUnk_00 = unk1;
+    gSendMessage.mType = unk1;
     u32 needed    = WirelessManager::Get().GetRecvBlockCount();
     u8 count      = 0;
     for (u8 i = 0; i < 4; i++) {

@@ -79,7 +79,7 @@ s32 UnlockEmblem();
 s32 UnlockEmblem8Or9();
 void func_02086d48();
 extern u8 data_020d43e5[];
-extern UnkStruct_0220f540 data_0220f540;
+extern NetMessage gSendMessage;
 
 class Camera;
 class UnkStruct_02076058 {
@@ -123,7 +123,7 @@ public:
     /* b1 */ u8 mState;
     /* b2 */ u8 mMoneyStep; // UpdateMoneyCount's step; also decides which result lines are drawn and printed
     /* b3 */ u8 mUnk_b3;
-    /* b4 */ u8 mSelectedId; // also written to data_0220f540 + 4
+    /* b4 */ u8 mSelectedId; // also written to gSendMessage + 4
     /* b5 */
 
     BattleResult();
@@ -521,7 +521,7 @@ void BattleResult::Update() {
                 if (cursor->mSelection != -1) {
                     sel = cursor->mItems[cursor->mSelection].mId;
                 }
-                *((u8 *) &data_0220f540 + 4) = mSelectedId = sel;
+                *((u8 *) &gSendMessage + 4) = mSelectedId = sel;
                 if (mSelectedId == 2) {
                     if (gGameData.mWireless == 0) {
                         mState = 22;
@@ -574,7 +574,7 @@ void BattleResult::Update() {
                 if (!SpriteManager::Get().IsFading()) {
                     u8 result;
                     if (gGameData.mWireless != 0) {
-                        // byte 4: the sender's mSelectedId (the raw `*((u8 *) &data_0220f540 + 4) =` store)
+                        // byte 4: the sender's mSelectedId (the raw `*((u8 *) &gSendMessage + 4) =` store)
                         result = gGameData.mBattlePlayers->mPlayers[0]->mMsg.mTouchDown;
                     } else {
                         result = mSelectedId;

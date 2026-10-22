@@ -7,7 +7,7 @@
 
 extern "C" s32 FX_Atan2Idx(s32 y, s32 x);
 
-// Battle message of the communication buffer data_0220f540 (the layout used by the battle).
+// Battle message of the communication buffer gSendMessage (the layout used by the battle).
 struct BattleNetMessage {
     /* 00 */ u8 mType;
     /* 01 */ PAD(0x01, 0x04);
@@ -24,7 +24,7 @@ IBattle::~IBattle() {
 }
 
 void WriteNetMessage(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag) {
-    BattleNetMessage *msg = (BattleNetMessage *) &data_0220f540;
+    BattleNetMessage *msg = (BattleNetMessage *) &gSendMessage;
     msg->mType = 0xe;
     msg->mUnk_04[0] = a[0];
     msg->mUnk_04[1] = a[1];

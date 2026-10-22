@@ -112,6 +112,10 @@ L_ex2:
 }
 
 // Fills size bytes at dst (r1, word aligned) with the word in r0, a word at a time.
+// Not compiled: stores with `stmia r1!, {r0}` (one register, base written back).
+// The compiler writes back an ldm/stm base only in push/pop on sp and in struct copies and fills, whose
+// registers are always r0-r3 (r0-r1 for a two-word fill); the pass that merges loads or stores into one ldm/stm
+// never adds writeback.
 asm void func_02000954(unsigned val, unsigned *dst, unsigned size) {
     add ip, r1, r2                  // end address
 L_loop:
@@ -240,9 +244,7 @@ L_fin:
 }
 
 // Empty hook: returns immediately.
-asm void AutoloadCallback(void) {
-    bx lr
-}
+void AutoloadCallback(void) {}
 
 // Cache and protection setup: clears control-register bits 0xf9005 (among them MPU, caches, TCMs),
 // invalidates both caches and drains the write buffer, programs the eight protection regions, the
@@ -299,11 +301,7 @@ asm void func_02000ab0(void) {
 }
 
 // Empty hook: returns immediately.
-asm void func_02000b98(void) {
-    bx lr
-}
+void func_02000b98(void) {}
 
 // Empty hook: returns immediately.
-asm void func_02000b9c(void) {
-    bx lr
-}
+void func_02000b9c(void) {}

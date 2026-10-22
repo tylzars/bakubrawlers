@@ -543,7 +543,7 @@ void MyroomCharaScene::PrintLine(u32 line, u32 kind) {
                 x += 0xc;
                 PrintValue(line, value / 10, 3, x, 4);
             } else {
-                TextManager::Get().mUnk_10 = rest;
+                TextManager::Get().mNumbers[0] = rest;
                 PrintValue(line, value / 10, 3, x, 5);
             }
             break;
@@ -562,7 +562,7 @@ void MyroomCharaScene::PrintLine(u32 line, u32 kind) {
             if (rest == 0) {
                 PrintValue(line, ratio / 10, 3, 0xc, 4);
             } else {
-                TextManager::Get().mUnk_10 = rest;
+                TextManager::Get().mNumbers[0] = rest;
                 PrintValue(line, ratio / 10, 3, 0, 5);
             }
             break;

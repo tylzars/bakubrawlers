@@ -17,9 +17,9 @@ SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk
     mEnabled   = 1;
     mInputLocked   = 0;
     mSlideInRequested   = 0;
-    mUnk_07e   = 0;
+    mDisabledButtonsSelectable   = 0;
     mResult    = 0;
-    mUnk_0e0   = 0;
+    mItemTouched   = 0;
     mCursor    = new SelectWindowCursor(itemCount, items, unk3);
     u8 i             = 0;
     WindowItem *item = mCursor->mItems;
@@ -56,7 +56,7 @@ BOOL SelectWindow::Update(BOOL input) {
         s8 oldSel        = mCursor->mSelection;
         WindowItem *items = mCursor->mItems;
         int oldId         = oldSel == -1 ? -1 : items[oldSel].mId;
-        int oldPrev       = mCursor->mUnk_05;
+        int oldPrev       = mCursor->mInputItem;
         SelectWindowCursor *cur = mCursor;
         int oldPrevId     = oldPrev == -1 ? -1 : cur->mItems[oldPrev].mId;
         if (mInputLocked == 0) {
@@ -64,9 +64,9 @@ BOOL SelectWindow::Update(BOOL input) {
         }
         int newSel    = mCursor->mSelection;
         int newId     = newSel == -1 ? -1 : mCursor->mItems[newSel].mId;
-        s8 newPrev   = mCursor->mUnk_05;
+        s8 newPrev   = mCursor->mInputItem;
         int newPrevId = newPrev == -1 ? -1 : mCursor->mItems[newPrev].mId;
-        if (mUnk_07e == 0 && newId != -1 && mButtons[newId].mEnabled == 0) {
+        if (mDisabledButtonsSelectable == 0 && newId != -1 && mButtons[newId].mEnabled == 0) {
             mCursor->mSelection = oldSel;
             return 0;
         }
@@ -112,9 +112,9 @@ BOOL SelectWindow::Update(BOOL input) {
             mState = 2;
             break;
         case 5:
-            mUnk_0e0 = 1;
+            mItemTouched = 1;
             if (newPrev != oldPrev) {
-                if (newPrevId != -1 && items[newPrev].mUnk_18 == 3) {
+                if (newPrevId != -1 && items[newPrev].mTouchKind == 3) {
                     CellAnimation *cell = mCellAnims[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
@@ -127,7 +127,7 @@ BOOL SelectWindow::Update(BOOL input) {
             }
             break;
         case 4:
-            mUnk_0e0 = 1;
+            mItemTouched = 1;
             if (newSel != oldSel) {
                 if (newId != -1) {
                     CellAnimation *cell = mCellAnims[newId];
@@ -154,7 +154,7 @@ BOOL SelectWindow::Update(BOOL input) {
             }
             break;
         case 0:
-            mUnk_0e0 = 0;
+            mItemTouched = 0;
             if (newSel != oldSel) {
                 if (newId != -1) {
                     CellAnimation *cell = mCellAnims[newId];
@@ -181,7 +181,7 @@ BOOL SelectWindow::Update(BOOL input) {
             }
             break;
         case 7:
-            mUnk_0e0 = 0;
+            mItemTouched = 0;
             if (newPrev != oldPrev && oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
                 mCellAnims[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
             }
@@ -200,7 +200,7 @@ BOOL SelectWindow::Update(BOOL input) {
             flag = TRUE;
         }
         if (flag) {
-            mUnk_0e0 = 0;
+            mItemTouched = 0;
             if (mCursor->mItems[mCursor->mSelection].mFlags & WINDOW_ITEM_NO_SLIDE_OUT) {
                 mState = 5;
                 result   = mResult;
@@ -239,7 +239,7 @@ BOOL SelectWindow::Update(BOOL input) {
         mCursor->mSelection = mSavedSelection;
         mSavedSelection            = -1;
         SelectWindowCursor *cursor = mCursor;
-        cursor->mUnk_05    = -1;
+        cursor->mInputItem    = -1;
         cursor->mPressedItem    = -1;
         cursor->mPressedOnSelection    = 0;
         mState            = 1;
@@ -294,7 +294,7 @@ void SelectWindow::Draw() {
                 mCellAnims[i]->Update();
                 mCellAnims[i]->Draw(1, mCellPos[i].x, mCellPos[i].y, mButtons[i].mUnk_00);
             }
-        } else if (mUnk_07e != 0 && mCellAnims[i] != NULL) {
+        } else if (mDisabledButtonsSelectable != 0 && mCellAnims[i] != NULL) {
             mCellAnims[i]->Update();
         }
         i++;
@@ -598,7 +598,7 @@ void SelectWindow::Reset(int selection) {
         item++;
     } while (i < mCursor->mCount);
     mSlideInRequested = 1;
-    mUnk_0e0 = 0;
+    mItemTouched = 0;
 }
 
 void SelectWindow::SetResultItem(u32 unk1, u32 unk2) {

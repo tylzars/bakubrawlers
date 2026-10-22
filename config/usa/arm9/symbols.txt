@@ -1594,9 +1594,9 @@ _ZN12BakuganModel9LoadModelEh kind:function(arm,size=0x278) addr:0x0203d710
 _ZN12BakuganModel6UpdateEv kind:function(arm,size=0x58) addr:0x0203d988
 _ZN12BakuganModel10UpdateSpinEv kind:function(arm,size=0xd0) addr:0x0203d9e0
 _ZN12BakuganModel9DrawModelEv kind:function(arm,size=0xc0) addr:0x0203dab0
-_ZN12BakuganModel13func_0203db70EPK7VecFx32 kind:function(arm,size=0x1c) addr:0x0203db70
+_ZN12BakuganModel20SetPositionOutOfLineEPK7VecFx32 kind:function(arm,size=0x1c) addr:0x0203db70
 _Z20SetTransformPositionPviii kind:function(arm,size=0x8) addr:0x0203db8c
-_ZN12BakuganModel13func_0203db94EPKt kind:function(arm,size=0x1c) addr:0x0203db94
+_ZN12BakuganModel20SetRotationOutOfLineEPKt kind:function(arm,size=0x1c) addr:0x0203db94
 _ZN9FrameTask4InitEv kind:function(arm,size=0x14) addr:0x0203dbb0
 _ZN9FrameTask11OpenHandlesEv kind:function(arm,size=0x40) addr:0x0203dbc4
 _ZN9FrameTask6UpdateEv kind:function(arm,size=0xc) addr:0x0203dc04
@@ -3247,7 +3247,7 @@ _ZZ16StoreItemLists16vE17sStoreItemLists16 kind:data(any) addr:0x020a3fe8 weak
 _ZZ15StoreItemLists8vE16sStoreItemLists8 kind:data(any) addr:0x020a4040 weak
 _ZZ21CharacterUnlockTablesvE22sCharacterUnlockTables kind:data(any) addr:0x020a4098 weak
 _ZZ15ProgressEntriesvE16sProgressEntries kind:data(any) addr:0x020a40f0 weak
-data_020a41c8 kind:data(any) addr:0x020a41c8
+gStorytalkTextYOffsets kind:data(any) addr:0x020a41c8
 gStorytalkTextOam kind:data(any) addr:0x020a41cc
 @664 kind:data(any) addr:0x020a41d8 local
 @609 kind:data(any) addr:0x020a41dc local
@@ -4656,7 +4656,7 @@ _ZZN12InputManager3GetEvE8instance kind:bss addr:0x020c18c4 weak
 _ZZN12TouchManager3GetEvE8instance kind:bss addr:0x020c1900 weak
 _ZZN12SoundManager3GetEvE8instance kind:bss addr:0x020c1964 weak
 _ZZN11TextManager3GetEvE8instance kind:bss addr:0x020c1a14 weak
-data_020c1a4c kind:bss addr:0x020c1a4c
+gTextManagerLineStarts kind:bss addr:0x020c1a4c
 _ZZN13CameraManager3GetEvE8instance kind:bss addr:0x020c1afc weak
 data_020c1b0c kind:bss addr:0x020c1b0c
 data_020c1b14 kind:bss addr:0x020c1b14

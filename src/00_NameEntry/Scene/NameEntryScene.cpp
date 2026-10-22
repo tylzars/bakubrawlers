@@ -803,7 +803,7 @@ void NameEntryScene::PrintMessage() {
     if (mSpecialNameHandle == 1) {
         index = 1;
     } else {
-        TextManager::Get().mUnk_10 = sSpecialNameMoney[mSpecialNameHandle - 1];
+        TextManager::Get().mNumbers[0] = sSpecialNameMoney[mSpecialNameHandle - 1];
         index = 2;
     }
     TextManager &text = TextManager::Get();

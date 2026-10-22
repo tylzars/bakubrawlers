@@ -334,14 +334,14 @@ void MyroomShootScene::SelectShooter(s8 index) {
             mShooter = new BakuganModel();
             mShooter->Setup(sMyroomShootBakuganKinds[mShooterIndex], (u8) mShooterIndex, BAKUGAN_MODEL_MODE_H);
             pos = sMyroomShootShooterPos[mShooterIndex];
-            mShooter->func_0203db70(&pos);
+            mShooter->SetPositionOutOfLine(&pos);
             mRot[0]  = 0;
             mRot[1]  = 0x154;
             mRot[2]  = 0;
             modelRot[0] = (u16) (65536.0f * (float) mRot[0] / 360.0f);
             modelRot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
             modelRot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
-            mShooter->func_0203db94(modelRot);
+            mShooter->SetRotationOutOfLine(modelRot);
             mEffect = StartEffect(gGameData.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mShooterIndex], 0, 0);
             SetEffectPosition(gGameData.mEffects, mEffect, &pos);
             effectRot[0] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][0] / 360.0f);
@@ -606,5 +606,5 @@ void MyroomShootScene::func_ov008_02223264() {
     rot[0] = (u16) (65536.0f * (float) mRot[0] / 360.0f);
     rot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
     rot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
-    mShooter->func_0203db94(rot);
+    mShooter->SetRotationOutOfLine(rot);
 }

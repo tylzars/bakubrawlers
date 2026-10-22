@@ -195,7 +195,7 @@ that matches should replace it.
     tools/objdiff_place.py scores it against Game.o.
   - Game.o's copies of the singletons' guards (0x020c17a8-0x020c17e0) and instances (0x020c1870-0x020d42e8) are the
     kept ones, so its `.bss` range covers them; `inner <instance> <size>` lines alias the field names other units
-    use (data_020c1a4c, data_020c3938, ...).
+    use (gTextManagerLineStarts, data_020c3938, ...).
   - The singleton destructors are `inline` in Game.cpp, which gives the original function order.
   - Six singleton classes have an empty constructor as Game.cpp saw them (guard before node there, node before guard
     in every other unit): the headers declare it under `#ifdef GAME_SINGLETON_CTORS`, defined only in Game.cpp. An

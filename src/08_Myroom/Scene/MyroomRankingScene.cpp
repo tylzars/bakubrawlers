@@ -233,7 +233,7 @@ void MyroomRankingScene::Update() {
         u8 scroll = mWindow->mCursor->mScroll;
         mResult   = mWindow->Update(FALSE);
         if (scroll != mWindow->mCursor->mScroll) {
-            switch (mWindow->mCursor->mUnk_05) {
+            switch (mWindow->mCursor->mInputItem) {
                 case 10:
                 case 11:
                     SoundManager::Get().StartSeqArc(5);

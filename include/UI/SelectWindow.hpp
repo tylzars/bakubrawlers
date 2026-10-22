@@ -11,12 +11,12 @@ struct WindowCellRecord {
     // The first member of each union is the one the code reads (as a byte); initializers still fill a whole word.
     union {
         /* 04 */ u8 mAnimIndex;
-        u32 mUnk_04_word;
+        u32 mAnimIndexWord;
     };
     /* 08 */ u32 mCharOffset;
     union {
         /* 0c */ s8 mPaletteBase;
-        u32 mUnk_0c_word;
+        u32 mPaletteBaseWord;
     };
     union {
         /* 10 */ u8 mUnk_10;
@@ -27,7 +27,7 @@ struct WindowCellRecord {
     /* 1c */
 };
 
-// Bits of WindowItem::mFlags (WindowItemRecord::mUnk_04 in the tables), named from the SelectWindowCursor and
+// Bits of WindowItem::mFlags (WindowItemRecord::mFlags in the tables), named from the SelectWindowCursor and
 // SelectWindow code that tests them. When an item is chosen (key mask 1, the key-mask searches below, or a touch
 // release), UpdateInput gives event 1 for bit 1, else 2 for bit 2, else 6 for WINDOW_ITEM_NO_RESULT, else 3.
 // Left as literals: bits 1 and 2 (events 1 / 2 differ only in the sound, seq 0 / 1, and in mResult 1 / 2, whose
@@ -50,8 +50,8 @@ struct WindowCellRecord {
 // ignore it.
 #define WINDOW_ITEM_CURSOR_SKIP 0x8000
 
-// Values of WindowItem::mUnk_18 (the tables' last column). Any non-zero value lets the keys choose the item
-// (UpdateInput tests mUnk_18 != 0 first). Left as literals: 0 (neither the keys nor a touch release choose it; only
+// Values of WindowItem::mTouchKind (the tables' last column). Any non-zero value lets the keys choose the item
+// (UpdateInput tests mTouchKind != 0 first). Left as literals: 0 (neither the keys nor a touch release choose it; only
 // key mask 2's search for bit 2 skips the test) and 3 (a touch release never chooses it; SelectWindow::Update's
 // event-5 case sets its mUnk_0a animation when a held touch moves onto it). CreateCommandListWindow and
 // CreateCommandPageWindow rewrite the column at run time.
@@ -64,13 +64,13 @@ struct WindowCellRecord {
 // Placement of a selectable element and its neighbors for cursor movement (-1: none).
 struct WindowItemRecord {
     /* 00 */ u32 mId;
-    /* 04 */ u32 mUnk_04;
+    /* 04 */ u32 mFlags;
     /* 08 */ s16 mX;
     /* 0a */ s16 mY;
     /* 0c */ s16 mWidth;
     /* 0e */ s16 mHeight;
     union {
-        /* 10 */ u16 mUnk_10;
+        /* 10 */ u16 mSlideInOut;
         struct {
             /* 10 */ u8 mSlideIn;
             /* 11 */ u8 mSlideOut;
@@ -78,7 +78,7 @@ struct WindowItemRecord {
     };
     /* 12 */ s8 mNeighbors[4];
     /* 16 */ u16 mUnk_16;
-    /* 18 */ u32 mUnk_18;
+    /* 18 */ u32 mTouchKind;
     /* 1c */
 };
 
@@ -95,7 +95,7 @@ struct WindowItem {
     /* 11 */ u8 mSlideOut; // direction the cell moves while sliding out (same values)
     /* 12 */ s8 mNeighbors[4];
     /* 16 */ PAD(0x16, 0x18);
-    /* 18 */ u32 mUnk_18;
+    /* 18 */ u32 mTouchKind;
     /* 1c */
 };
 
@@ -103,7 +103,7 @@ struct WindowItem {
 struct SelectWindowCursor {
     /* 00 */ WindowItem *mItems;
     /* 04 */ u8 mCount;
-    /* 05 */ s8 mUnk_05;
+    /* 05 */ s8 mInputItem;
     /* 06 */ s8 mSelection;
     /* 07 */ s8 mPressedItem;
     /* 08 */ u8 mPressedOnSelection;
@@ -155,13 +155,14 @@ public:
     /* 066 */ u8 mSlideInRequested; // set by SetItems / Reset; cleared when the slide-out ends (state 3, and by BattleCommand); state 4 waits for it
     /* 067 */ PAD(0x067, 0x068);
     /* 068 */ u8 mSlideToTarget[22]; // per cell id: 1 = moves to (mSlideTargetX, mSlideTargetY) (SlideCellTo)
-    /* 07e */ u8 mUnk_07e;
+    // choose events on disabled buttons pass too; Draw still advances their cells
+    /* 07e */ u8 mDisabledButtonsSelectable;
     /* 07f */ PAD(0x07f, 0x080);
     /* 080 */ Vec2s mCellPos[22];
     /* 0d8 */ s16 mSlideTargetX;
     /* 0da */ s16 mSlideTargetY;
     /* 0dc */ u32 mResult;
-    /* 0e0 */ u8 mUnk_0e0;
+    /* 0e0 */ u8 mItemTouched; // events 4 / 5; cleared by events 0 / 7, so on every frame while mInputLocked is set
     /* 0e1 */ PAD(0x0e1, 0x0e4);
     /* 0e4 */ WindowButton mButtons[22];
     /* 1ec */
@@ -171,7 +172,7 @@ public:
     void SetCells(u32 count, const WindowCellRecord *cells);
     BOOL Update(BOOL acceptInput);
     void Draw();
-    void Reset(int selection); // SetItems with the current items; also clears mUnk_0e0
+    void Reset(int selection); // SetItems with the current items; also clears mItemTouched
     void SetResultItem(u32 unk1, u32 unk2); // selects item unk1 as if chosen: its result animation, mResult = unk2, state 2
     void SetItems(u32 count, WindowItem *items, s32 selection); // new items and selection; cells to the items' positions, slide-in requested
     void FreeCells(); // deletes the 22 cells; mCellCount is left as it is

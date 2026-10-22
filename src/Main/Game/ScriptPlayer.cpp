@@ -1589,7 +1589,7 @@ void ScriptPlayer::ApplySphereRotation(u32 index) {
     rot[0] = mSpheres[index].mRot[0];
     rot[1] = mSpheres[index].mRot[1];
     rot[2] = mSpheres[index].mRot[2];
-    mSpheres[index].mSphere->func_0203db94(rot);
+    mSpheres[index].mSphere->SetRotationOutOfLine(rot);
 }
 
 void ScriptPlayer::ResetCamera() {
@@ -1933,7 +1933,7 @@ void ScriptPlayer::DrawSpheres() {
                 mSpheres[i].mSineYAngle = (mSpheres[i].mSineYAngle + 1) % 0x80;
                 pos.y += mSpheres[i].mSineYScale * SinIdx((u16) (mSpheres[i].mSineYAngle * 0x10000 / 0x80));
             }
-            mSpheres[i].mSphere->func_0203db70(&pos);
+            mSpheres[i].mSphere->SetPositionOutOfLine(&pos);
             ApplySphereRotation(i);
             mSpheres[i].mSphere->Update();
             mSpheres[i].mSphere->DrawModel();

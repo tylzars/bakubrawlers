@@ -351,7 +351,7 @@ inline u32 ParkMenu::TextEntry(u8 i) {
     if (i == 0) {
         entry = 0;
         UnkStruct_020758f4_Record *e = mRanking->FindEntry(GetParkGroupId(mCurrent));
-        TextManager::Get().mUnk_10 = e->mRank;
+        TextManager::Get().mNumbers[0] = e->mRank;
     } else {
         entry = GetParkGroupId(mCurrent);
     }

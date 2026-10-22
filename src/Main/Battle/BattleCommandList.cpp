@@ -168,7 +168,7 @@ static const u16 sCommandListLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 // table of DrawCardspecBack
 static const u16 sCardspecBackOam[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 
-extern u16 data_020c1a4c[];
+extern u16 gTextManagerLineStarts[];
 
 void StopAsyncLoad();
 
@@ -485,14 +485,14 @@ void CreateCommandListWindow(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d
     if (list->mWindow != NULL) {
         delete list->mWindow;
     }
-    ListItems()[0].mUnk_04 = 0x208;
-    ListItems()[0].mUnk_18 = WINDOW_TOUCH_RELEASE;
-    ListItems()[1].mUnk_04 = 0x408;
-    ListItems()[1].mUnk_18 = WINDOW_TOUCH_RELEASE;
-    ListItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-    ListItems()[2].mUnk_18 = 0;
-    ListItems()[3].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-    ListItems()[3].mUnk_18 = 0;
+    ListItems()[0].mFlags = 0x208;
+    ListItems()[0].mTouchKind = WINDOW_TOUCH_RELEASE;
+    ListItems()[1].mFlags = 0x408;
+    ListItems()[1].mTouchKind = WINDOW_TOUCH_RELEASE;
+    ListItems()[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    ListItems()[2].mTouchKind = 0;
+    ListItems()[3].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    ListItems()[3].mTouchKind = 0;
     ListItems()[0].mX      = c;
     ListItems()[0].mY      = d;
     ListItems()[1].mX      = e;
@@ -793,7 +793,7 @@ BOOL BattleCommandList::CreateBakuganModel() {
     pos.x = -0xd000;
     pos.y = pos.x + 0xb000;
     pos.z = 0xb8500;
-    mBakuganModel->func_0203db70(&pos);
+    mBakuganModel->SetPositionOutOfLine(&pos);
     return TRUE;
 }
 
@@ -845,7 +845,7 @@ void BattleCommandList::PrintText(u8 index) {
             void *buffer;
             buffer = mTextBuffers[0];
             file   = (MessageFile *) mBakuganMessages;
-            MI_CpuClear16(data_020c1a4c, 0x20);
+            MI_CpuClear16(gTextManagerLineStarts, 0x20);
             text.mLineStartCount      = 1;
             text.Print(file->GetText(sel), file->GetLength(sel), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
                        0xe, 0, 1, 0, 1, 1);
@@ -893,7 +893,7 @@ void BattleCommandList::PrintText(u8 index) {
             void *buffer;
             buffer = mTextBuffers[0];
             file   = (MessageFile *) mBakuganDisplayMessages;
-            MI_CpuClear16(data_020c1a4c, 0x20);
+            MI_CpuClear16(gTextManagerLineStarts, 0x20);
             text.mLineStartCount      = 1;
             text.Print(file->GetText(row), file->GetLength(row), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
                        0xe, 0, 1, 0, 1, 1);

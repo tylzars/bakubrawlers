@@ -36,11 +36,11 @@ StorytalkWindow::StorytalkWindow() :
     mUnk_36 = 0;
     mTextPage = 0;
     mLastTextPage = 0;
-    mUnk_39 = 0;
+    mHasNextPage = 0;
     mTextOnlyX = 0x14;
     mTextOnlyY = 0x40;
     mPageTextTimer = 0;
-    mUnk_3e = 0;
+    mTextYOffsetIndex = 0;
     mCharacterId = -1;
     mHasMessage = 0;
     mCell1Visible = 1;
@@ -132,12 +132,12 @@ void StorytalkWindow::Update() {
     }
 }
 
-extern u16 data_020c1a4c[];
+extern u16 gTextManagerLineStarts[];
 
 
 extern const u8 gStorytalkTextOam[];
 
-extern const s8 data_020a41c8[];
+extern const s8 gStorytalkTextYOffsets[];
 
 
 void ReplaceStorytalkMessages(StorytalkWindow *self, void *data);
@@ -218,7 +218,7 @@ void ResetStorytalkMessageText(StorytalkWindow *self) {
     MI_CpuClearFast((void *) 0x6406000, 0x1800);
     MI_CpuClear16(self->mTextBuffers[0], self->mTextBufferSizes[0]);
     self->mUnk_36 = 1;
-    self->mUnk_39 = 0;
+    self->mHasNextPage = 0;
     self->mMessageIndex = -1;
 }
 
@@ -251,7 +251,7 @@ void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1) {
     MessageFile *file;
     void *buffer = self->mTextBuffers[0];
     file         = (MessageFile *) self->mMessages;
-    MI_CpuClear16(data_020c1a4c, 0x20);
+    MI_CpuClear16(gTextManagerLineStarts, 0x20);
     text.mLineStartCount = 1;
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x20, 6, &y, &x, NULL, 0, 0, 0x21, 0x10, 0, 1, 0, 1, 1);
     for (u8 i = 1; i < 0x10; i++) {
@@ -272,12 +272,12 @@ void PrintStorytalkText(StorytalkWindow *self) {
     u32 a = TextManager::Get().GetLineStart((u8) ((self->mLastTextPage + 1) * 3));
     u32 b = TextManager::Get().GetLineStart((u8) ((self->mLastTextPage + 2) * 3));
     if (a < b) {
-        self->mUnk_39 = 1;
+        self->mHasNextPage = 1;
     }
-    if (self->mUnk_39 != 0) {
+    if (self->mHasNextPage != 0) {
         self->mLastTextPage++;
     }
-    if (self->mUnk_39 != 0) {
+    if (self->mHasNextPage != 0) {
         TextManager &first = TextManager::Get();
         TextManager &t1 = TextManager::Get();
         TextManager &text = first;
@@ -299,7 +299,7 @@ void PrintStorytalkText(StorytalkWindow *self) {
         }
         text.mLineStartCount = 0x10;
         text.Print(str, n * 2, buffer, 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
-        self->mUnk_3e = 2;
+        self->mTextYOffsetIndex = 2;
     } else {
         TextManager &text = TextManager::Get();
         s16 y;
@@ -313,7 +313,7 @@ void PrintStorytalkText(StorytalkWindow *self) {
         if (w <= 0) {
             w = 0;
         }
-        self->mUnk_3e = w;
+        self->mTextYOffsetIndex = w;
         self->mUnk_36 = 1;
     }
     QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, UPLOAD_KIND_OBJ, 0x6000, self->mTextBuffers[0], 0x1800, 0);
@@ -393,7 +393,7 @@ void DrawStorytalkTextAndCell1(StorytalkWindow *self) {
         y = self->mTextOnlyY;
     } else {
         x = 0x14;
-        y = (s16) (data_020a41c8[self->mUnk_3e] + 0x96);
+        y = (s16) (gStorytalkTextYOffsets[self->mTextYOffsetIndex] + 0x96);
     }
     i = 0;
     do {
@@ -440,7 +440,7 @@ BOOL StorytalkWindow::NextPage(u32 unk1) {
     MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
     mTextPage++;
     mLastTextPage = mTextPage;
-    mUnk_39 = 0;
+    mHasNextPage = 0;
     mState = 4;
     return TRUE;
 }

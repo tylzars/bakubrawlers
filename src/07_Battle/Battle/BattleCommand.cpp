@@ -196,32 +196,32 @@ BattleCommand::BattleCommand(u32 unk)
         i++;
     } while (i < gGameData.mPlayerCount);
     if (gGameData.mBattlePlayers->mTurnPlayer != gGameData.mBattlePlayers->mLocalPlayer) {
-        CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-        CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-        CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-        CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[1].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[4].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[5].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         if (gGameData.mBattlePlayers->mUnk_292 == 1) {
             CommandItems()[1].mY      = 0xc0;
-            CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+            CommandItems()[1].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             CommandItems()[4].mY      = 0x22;
-            CommandItems()[4].mUnk_04 = 1;
+            CommandItems()[4].mFlags = 1;
         } else {
             CommandItems()[1].mY      = 0x22;
-            CommandItems()[1].mUnk_04 = 1;
+            CommandItems()[1].mFlags = 1;
             CommandItems()[4].mY      = 0xc0;
-            CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+            CommandItems()[4].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (gGameData.mBattlePlayers->mAddMarkerEnabled != 0) {
-            CommandItems()[2].mUnk_04 = 1;
+            CommandItems()[2].mFlags = 1;
         } else {
-            CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-            CommandItems()[5].mUnk_04 = WINDOW_ITEM_NO_RESULT;
+            CommandItems()[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+            CommandItems()[5].mFlags = WINDOW_ITEM_NO_RESULT;
         }
     }
     if (gGameData.mUnk_9a_3) {
-        CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-        CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[5].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     }
     u8 x = sCommandItemX[gSaveData[0].mCommandItemXIndex];
     i = 1;
@@ -949,7 +949,7 @@ void BattleCommand::Update() {
                 }
             }
             u8 sel    = mCockpitWindow->Update(1);
-            mUnk_13a = mCockpitWindow->mUnk_0e0;
+            mUnk_13a = mCockpitWindow->mItemTouched;
             if (sel == 1 || flag != 0) {
                 mBlendBrightness = 0;
                 mAddMarkerFrames = 0;
@@ -1232,7 +1232,7 @@ void BattleCommand::Update() {
                 item->mFlags = 0x804;
             }
             u8 sel   = mCockpitWindow->Update(1);
-            mUnk_13a = mCockpitWindow->mUnk_0e0;
+            mUnk_13a = mCockpitWindow->mItemTouched;
             if (sel == 1 || flag != 0) {
                 mBlendBrightness = 0;
                 mAddMarkerFrames = 0;
@@ -1434,7 +1434,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
     if (input | poll) {
         sel = mCommandWindow->Update(1);
     }
-    mUnk_13a = mCommandWindow->mUnk_0e0;
+    mUnk_13a = mCommandWindow->mItemTouched;
     if (gGameData.mBattlePlayers->mAddMarkerEnabled == 0) {
         mCommandWindow->mButtons[2].mEnabled = 0;
     }

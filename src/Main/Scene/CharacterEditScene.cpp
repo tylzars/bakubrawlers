@@ -2016,7 +2016,7 @@ void CharacterEditScene::LoadGraphics() {
     mWindows[0] = new SelectWindow(10, (WindowItemRecord *) sRootMenuItems, -1);
     mWindows[1] = NULL;
     mWindows[1] = new SelectWindow(7, sGroupButtonItems, -1);
-    mWindows[1]->mUnk_07e = 1;
+    mWindows[1]->mDisabledButtonsSelectable = 1;
     mWindows[2] = NULL;
     mWindows[2] = new SelectWindow(3, sWindow2Items, -1);
     mCursor = new SelectWindowCursor(0x14, sCharacterEditCursorItems, 0);
@@ -2342,8 +2342,8 @@ void CharacterEditScene::UpdateRotateInput() {
     SelectWindow *w = mWindows[0];
     SelectWindowCursor *cur = w->mCursor;
     s8 id = -1;
-    if (cur->mUnk_05 != -1) {
-        id = cur->mItems[cur->mUnk_05].mId;
+    if (cur->mInputItem != -1) {
+        id = cur->mItems[cur->mInputItem].mId;
     }
     if (id != -1) {
         switch (id) {

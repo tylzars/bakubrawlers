@@ -19,7 +19,7 @@ BakuganModel::BakuganModel() {
     mMode = 0;
     mVariant = 0;
     mKind = 0;
-    mUnk_48 = 0;
+    mFreeInstanceOnly = 0;
     mSpinStep = 0;
     mSpinTurnCount = 0;
     mKind = 0;
@@ -35,7 +35,7 @@ BakuganModel::BakuganModel() {
 BakuganModel::~BakuganModel() {
     ModelInstance *model = mModel;
     if (model) {
-        if (mUnk_48) {
+        if (mFreeInstanceOnly) {
             model->mOwnFlags = 0;
             delete model;
         } else {
@@ -51,7 +51,7 @@ extern "C" void FreeBakuganModelInstance(BakuganModel *pose) {
     if (!model) {
         return;
     }
-    if (pose->mUnk_48) {
+    if (pose->mFreeInstanceOnly) {
         model->mOwnFlags = 0;
         delete model;
     } else {
@@ -68,7 +68,7 @@ void BakuganModel::SetupMode(u32 unk1) {
 void BakuganModel::Setup(u32 kind, u32 value, u32 mode) {
     char name[0x40];
     char file[0x40];
-    mUnk_48 = 0;
+    mFreeInstanceOnly = 0;
     mVisible = 1;
     mMode = mode;
     mVariant = value;
@@ -130,7 +130,7 @@ void BakuganModel::RunStoredSetup() {
 
 BOOL BakuganModel::LoadModel(u8 kind) {
     char path[0x100];
-    if (mUnk_48) {
+    if (mFreeInstanceOnly) {
         return FALSE;
     }
     ModelInstance *old = mModel;
@@ -252,7 +252,7 @@ void BakuganModel::DrawModel() {
     }
 }
 
-void BakuganModel::func_0203db70(const VecFx32 *pos) {
+void BakuganModel::SetPositionOutOfLine(const VecFx32 *pos) {
     SetPosition(pos);
 }
 
@@ -263,6 +263,6 @@ void SetTransformPosition(void *obj, fx32 x, fx32 y, fx32 z) {
     pos->z       = z;
 }
 
-void BakuganModel::func_0203db94(const u16 *rot) {
+void BakuganModel::SetRotationOutOfLine(const u16 *rot) {
     SetRotation(rot);
 }

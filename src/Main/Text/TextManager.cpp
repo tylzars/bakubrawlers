@@ -162,7 +162,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
                 units++;
                 charCount++;
                 remaining -= 2;
-                PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, &tx, &ty, unk9, color, unk11, unk12, unk15, 0,
+                PrintNumber(mNumbers[index], 0, 0, buffer, width, height, &tx, &ty, unk9, color, unk11, unk12, unk15, 0,
                             unk17);
                 break;
             }
@@ -257,7 +257,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
                 case 0xff81: {
                     u16 index = *line++;
                     units--;
-                    PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, &x, &y, unk9, color, unk11, unk12, unk15, 0,
+                    PrintNumber(mNumbers[index], 0, 0, buffer, width, height, &x, &y, unk9, color, unk11, unk12, unk15, 0,
                                 unk17);
                     break;
                 }

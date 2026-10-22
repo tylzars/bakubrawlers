@@ -762,7 +762,7 @@ void ArenaScene::SetupVariant() {
         mSlots[1].mTargetX = 0x20;
         mSlots[1].mTargetY = 0x60;
         SelectWindowCursor *p = mCursor;
-        p->mUnk_05        = -1;
+        p->mInputItem        = -1;
         p->mPressedItem        = -1;
         p->mPressedOnSelection        = 0;
         mCursor->mSelection = mSelection;

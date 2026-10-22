@@ -91,7 +91,7 @@ u8 ConfrontBg01::UpdateTouch(int a) {
         if (a) {
             limit = 0x14;
         }
-        mDistanceSum += PointDistance(TouchManager::Get().mUnk_08, TouchManager::Get().mUnk_0a,
+        mDistanceSum += PointDistance(TouchManager::Get().mPrevX, TouchManager::Get().mPrevY,
                                        (s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY);
         if (mDistanceSum >= limit) {
             mDistanceSum = 0;

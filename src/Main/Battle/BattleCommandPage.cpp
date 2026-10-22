@@ -64,7 +64,7 @@ inline const char **PagePaths() {
 
 u16 GetCardNumber(u32 id);
 u8 GetCardInfo(u32 id, u32 kind);
-extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
+extern u16 gTextManagerLineStarts[0x10];
 
 BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     SceneBase(0x3e8, 0) {
@@ -303,14 +303,14 @@ void CreateCommandPageWindow(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d
     if (page->mWindow != NULL) {
         delete page->mWindow;
     }
-    PageItems()[0].mUnk_04 = 0x208;
-    PageItems()[0].mUnk_18 = WINDOW_TOUCH_RELEASE;
-    PageItems()[1].mUnk_04 = 0x408;
-    PageItems()[1].mUnk_18 = WINDOW_TOUCH_RELEASE;
-    PageItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-    PageItems()[2].mUnk_18 = 0;
-    PageItems()[3].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
-    PageItems()[3].mUnk_18 = 0;
+    PageItems()[0].mFlags = 0x208;
+    PageItems()[0].mTouchKind = WINDOW_TOUCH_RELEASE;
+    PageItems()[1].mFlags = 0x408;
+    PageItems()[1].mTouchKind = WINDOW_TOUCH_RELEASE;
+    PageItems()[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    PageItems()[2].mTouchKind = 0;
+    PageItems()[3].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    PageItems()[3].mTouchKind = 0;
     PageItems()[0].mX      = c;
     PageItems()[0].mY      = d;
     PageItems()[1].mX      = e;
@@ -671,7 +671,7 @@ void BattleCommandPage::PrintCardText(u32 index) {
         w1 = 0x10;
         void *buffer = mTextBuffers[1];
         MessageFile *file = *textFile;
-        MI_CpuClear16(data_020c1a4c, 0x20);
+        MI_CpuClear16(gTextManagerLineStarts, 0x20);
         text.mLineStartCount = 1;
         text.Print(file->GetText(id), file->GetLength(id), buffer, 0x10, height, (s16 *) &w1, (s16 *) &h1, NULL, 0, 2, 0x21, 0xe, 0, 1, 0,
                    1, 1);

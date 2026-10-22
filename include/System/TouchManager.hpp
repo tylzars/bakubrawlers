@@ -19,8 +19,8 @@ public:
     /* 08 */ union {
         TouchSample mPrev; // previous sample
         struct {
-            s16 mUnk_08; // previous x
-            s16 mUnk_0a; // previous y
+            s16 mPrevX;
+            s16 mPrevY;
         };
     };
     /* 10 */ PAD(0x10, 0x28);

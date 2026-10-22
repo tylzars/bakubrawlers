@@ -1650,7 +1650,7 @@ void ListScene::UpdateListInput() {
                 break;
         }
     }
-    switch (mListWindow->mCursor->mUnk_05) {
+    switch (mListWindow->mCursor->mInputItem) {
         case 1:
             if (act == 0) {
                 if (mListInputState == 0) {
@@ -4695,7 +4695,7 @@ BOOL ListScene::ShouldApplyTargetPage() {
             if (mCursorPage <= mFirstPage) {
                 return TRUE;
             }
-            if (mListWindow->mCursor->mUnk_05 == 1) {
+            if (mListWindow->mCursor->mInputItem == 1) {
                 return FALSE;
             }
             break;
@@ -4703,7 +4703,7 @@ BOOL ListScene::ShouldApplyTargetPage() {
             if (mCursorPage >= mPageCount - 1) {
                 return TRUE;
             }
-            if (mListWindow->mCursor->mUnk_05 == 2) {
+            if (mListWindow->mCursor->mInputItem == 2) {
                 return FALSE;
             }
             break;

@@ -24,13 +24,16 @@ public:
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mTextPage;
     // last page found so far: printing a page sets it to mTextPage + 1 when the text runs past that page
-    // (StorytalkWindow.cpp:266-273); equal to mTextPage on the final page
+    // (StorytalkWindow.cpp:272-279); equal to mTextPage on the final page
     /* 38 */ u8 mLastTextPage;
-    /* 39 */ u8 mUnk_39;
+    // set when two line starts are recorded past this page (the text runs onto another page); cleared by Reset and
+    // NextPage, not when SetMessage restarts the same index, so a reprint raises mLastTextPage again
+    /* 39 */ u8 mHasNextPage;
     /* 3a */ u8 mTextOnlyX;
     /* 3b */ u8 mTextOnlyY;
     /* 3c */ u16 mPageTextTimer;
-    /* 3e */ u8 mUnk_3e;
+    // index into gStorytalkTextYOffsets (added to the text's base y): lines on the page - 1, or 2 when the text runs on
+    /* 3e */ u8 mTextYOffsetIndex;
     /* 3f */ u8 mCell2Frame; // set only by SetCell2FrameAndX (not the ctor); 3 or more: cell 2 not drawn
     /* 40 */ u16 mCell2X;
     /* 42 */ s16 mCharacterId;

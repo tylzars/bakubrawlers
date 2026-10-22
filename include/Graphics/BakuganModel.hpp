@@ -35,7 +35,7 @@ struct UnkStruct_0203d374_38 {
 
 // A posed Bakugan sphere model (0x54 bytes, ctor 0203d374, destructor 0203d3e8): a ModelTransform plus the loading
 // state of the sphere model (kind, value, BAKUGAN_MODEL_MODE_*). Set up with Setup, moved with
-// func_0203db70/func_0203db94, updated with Update and drawn with DrawModel.
+// SetPositionOutOfLine/SetRotationOutOfLine, updated with Update and drawn with DrawModel.
 class BakuganModel : public ModelTransform {
 public:
     /* 00 ModelTransform (position at 04, rotation at 10, scale at 18, model at 28) */
@@ -46,7 +46,7 @@ public:
     /* 34 */ u8 mUnk_34;
     /* 35 */ PAD(0x35, 0x38);
     /* 38 */ UnkStruct_0203d374_38 mUnk_38[2];
-    /* 48 */ u8 mUnk_48; // only ever written 0 in this build; when set, deletes keep the files (mOwnFlags 0)
+    /* 48 */ u8 mFreeInstanceOnly; // only ever written 0 in this build; when set, deletes free only the instance (mOwnFlags 0)
     /* 49 */ u8 mAnimUpdateEnabled; // gates Update's animation advance; separate from ModelTransform::mAnimEnabled
     /* 4a */ u8 mVisible; // visible
     /* 4b */ u8 mUnk_4b;
@@ -64,10 +64,10 @@ public:
     ~BakuganModel();
     void SetupMode(u32 unk1); // Setup with the current kind and variant
     void Setup(u32 unk1, u32 unk2, u32 unk3);
-    void func_0203db70(const VecFx32 *pos);
-    void func_0203db94(const u16 *rot);
+    void SetPositionOutOfLine(const VecFx32 *pos);
+    void SetRotationOutOfLine(const u16 *rot);
 
-    // Inline copies of the position / rotation setters (func_0203db70 / func_0203db94 are their out-of-line copies).
+    // Inline copies of the position / rotation setters.
     void SetPosition(const VecFx32 *pos) {
         mPosition.x = pos->x;
         mPosition.y = pos->y;

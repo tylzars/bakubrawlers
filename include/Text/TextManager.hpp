@@ -74,15 +74,15 @@ public:
     /* 04 */ GlyphMetrics *mMetrics;
     /* 08 */ FontData *mData;
     /* 0c */ u16 *mPalette; // &gTextPalette, the 0x20 bytes SetColor and UploadBgPalette upload
-    /* 10 */ u16 mUnk_10; // numbers for control code 0xff81: mUnk_10 and the three u16 after it
-    /* 12 */ u16 mUnk_12[3];
+    /* 10 */ u16 mNumbers[4]; // numbers for control code 0xff81
     /* 18 */ TextString mStrings[3]; // texts for control code 0xff82
     /* 30 */ PAD(0x30, 0x36);
     union {
-        /* 36 */ u16 mUnk_36[17]; // filled as one run from 0x36 (ov002 02220830)
+        /* 36 */ u16 mUnk_36[17]; // filled as one run from 0x36 (ov002 02220830); [i] is mLineStarts[i - 1]
         struct {
             /* 36 */ u16 mUnk_36_0;
-            /* 38 */ u16 mLineStarts[16]; // text position where each printed line starts
+            // text position where each printed line starts; other units reach it as gTextManagerLineStarts
+            /* 38 */ u16 mLineStarts[16];
         };
     };
     /* 58 */ u8 mLineStartCount; // entries recorded in mLineStarts

@@ -117,7 +117,7 @@ void GimmickPyrusEruption::Update() {
         if (mPushed) {
             return;
         }
-        if (target->mUnk_44 > 0x5dc) {
+        if (target->mPushScaleZeroFrames > 0x5dc) {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();

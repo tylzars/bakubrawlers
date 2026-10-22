@@ -499,7 +499,7 @@ Other findings from linking:
   each use rather than through a local pointer (PickMarkerCell, func_ov007_022314bc).
 
 - **`p = e; p += idx;` splits the address CSE.** Built that way, only `idx * size` is shared and the base is re-added
-  at each use (`ldrh r0, [r6, r7]`); `&e[idx]` or `e + idx` shares the whole address (BattleConfrontCard::func_ov007_022428d4).
+  at each use (`ldrh r0, [r6, r7]`); `&e[idx]` or `e + idx` shares the whole address (BattleConfrontCard::ApplyMarkerCard).
 - **Declared before, computed after.** Declaring `opp`/`oppLevel` before `self`/`selfLevel` but computing the self
   chain first changes which value is spilled, independently of either order alone (same function).
 

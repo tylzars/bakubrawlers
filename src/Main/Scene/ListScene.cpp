@@ -4746,7 +4746,7 @@ u32 ListScene::func_02086570(u32 unk1, u32 unk2) {
 void FillInitialEntry(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out) {
     u32 index       = GetBakuganTableIndex(self, unk1, unk2);
     out->mUnk_00_0  = 0;
-    out->mUnk_00_4  = 0;
+    out->mGauge  = 0;
     out->mUnk_02_0  = sInitialEntryFields[index][0];
     out->mUnk_02_12 = sInitialEntryFields[index][1];
     out->mUnk_02_3  = sInitialEntryFields[index][2];

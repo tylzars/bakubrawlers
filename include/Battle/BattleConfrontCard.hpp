@@ -56,8 +56,8 @@ public:
     /* 0d */ u8 mStep;
     /* 0e */ u8 mShakeSide;
     /* 0f */ u8 mShakeBaseX;
-    /* 10 */ u16 mUnk_10;
-    /* 12 */ u16 mUnk_12;
+    /* 10 */ u16 mStepTimer;
+    /* 12 */ u16 mStepFrameCount;
     /* 14 */ s16 mDrawX[3];
     /* 1a */ s16 mDrawY[3];
     /* 20 */ u8 mBattleMode; // BATTLE_MODE_* (BattleBase.hpp)
@@ -78,12 +78,12 @@ public:
     /* 54 */ u16 mCardId;
     /* 56 */ u16 mUnk_56;
     /* 58 */ PAD(0x58, 0x5c);
-    /* 5c */ u8 mUnk_5c;
-    /* 5d */ u8 mUnk_5d;
+    /* 5c */ u8 mSide0MarkerCardApplied;
+    /* 5d */ u8 mSide1MarkerCardApplied;
     /* 5e */ u8 mPromptCardPicked;
     /* 5f */ u8 mAttributeValuesVisible;
     /* 60 */ u8 mDisabledBits;
-    /* 61 */ u8 mUnk_61;
+    /* 61 */ u8 mCardValueDoubled;
     /* 62 */ u8 mSide0CardDone;
     /* 63 */ u8 mSide1CardDone;
     /* 64 */ u8 mUnk_64;
@@ -105,9 +105,9 @@ public:
     virtual ~BattleConfrontCard();
     /* 08 */ virtual void Update();
     int UpdateCardPick();
-    u8 func_ov007_022428d4(u16 card);
+    u8 ApplyMarkerCard(u16 card);
     u8 func_ov007_02244440();
-    BOOL func_ov007_022433c8(u8 side, u16 id);
+    BOOL TestCardCondition(u8 side, u16 id);
     void LoadWindow(const char *path, u32 mode);
     void PrintMessage(u32 index);
     void Init();
@@ -115,14 +115,14 @@ public:
     void ResetDisplay(); // also clears data_020d433c.mAntenna->mSecondVisible (when set)
     void LoadGraphics();
     void LoadCardGraphic(u16 card);
-    void func_ov007_0223f90c(u16 value);
+    void StartStepTimer(u16 value);
     BOOL UpdateConfrontation();
     void SetSubBlendBrightness(int brightness);
     void SetSubBlendAlpha(int blend);
     void DrawEntriesAndCard();
     void DrawEntryNumbers(u8 kind, u32 mode, u32 flag);
     u8 GetMarkerBattleMode();
-    u16 func_ov007_02243b24(u8 side, u32 id);
+    u16 GetCardValue(u8 side, u32 id);
     void OpenWindow();
     void CloseWindow();
     void ReleaseWindow();

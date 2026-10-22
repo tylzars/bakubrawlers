@@ -85,7 +85,7 @@ void GimmickJumpObj::Update() {
         if (!target) {
             return;
         }
-        if (target->mUnk_1c6) {
+        if (target->mResultFrames) {
             return;
         }
         RotateDir(1);

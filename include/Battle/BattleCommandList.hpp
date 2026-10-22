@@ -113,7 +113,7 @@ struct BattleCellPair {
         /* 0 */ u16 mUnk_00;
         struct {
             u16 mUnk_00_0 : 4;
-            u16 mUnk_00_4 : 12;
+            u16 mGauge : 12;
         };
     };
     union {

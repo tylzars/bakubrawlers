@@ -42,7 +42,7 @@ void GimmickPull::Update() {
     case 1: {
         if (mCollision && mCollision->mHitCount == 1 && !data_020d433c.mBattlePlayers->mBattleTarget->mOnMarkerCell &&
             data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y <= 0x899a &&
-            data_020d433c.mBattlePlayers->mBattleTarget->mUnk_44 <= 0x5dc && data_020d433c.mBattlePlayers->mBattleTarget->mAirFrames <= 3) {
+            data_020d433c.mBattlePlayers->mBattleTarget->mPushScaleZeroFrames <= 0x5dc && data_020d433c.mBattlePlayers->mBattleTarget->mAirFrames <= 3) {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
             BattleRecord *r = &p->mRecords[p->mRecord];
             if (!mSoundStarted) {

@@ -85,7 +85,7 @@ void GimmickDashBase::Update() {
             return;
         }
         target = data_020d433c.mBattlePlayers->mBattleTarget;
-        if (target->mUnk_44 > 0x5dc) {
+        if (target->mPushScaleZeroFrames > 0x5dc) {
             return;
         }
         if (!(mCollision && mCollision->mHitCount)) {

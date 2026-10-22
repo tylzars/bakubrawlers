@@ -134,7 +134,7 @@ public:
     /* 617c */ u16 mCameraRotYFrames; // + 2 in a frame when KEY_LEFT and KEY_RIGHT are both held
     /* 617e */ u16 mUnk_617e;
     /* 6180 */ u16 mUnk_6180;
-    /* 6182 */ u16 mUnk_6182;
+    /* 6182 */ u16 mSpCellTargetX;
     /* 6184 */ u16 mMessageId;
     /* 6186 */ u8 mState;
     /* 6187 */ u8 mDelayTimer;
@@ -153,7 +153,7 @@ public:
     /* 6194 */ u8 mStrokeIconStarted;
     /* 6195 */ u8 mPredictVisible;
     /* 6196 */ u8 mSpEnabled; // gates the x > 0xc8, y < 0x30 touch toggling mSpKind and the mCells[2] / [1] draws
-    /* 6197 */ u8 mUnk_6197;
+    /* 6197 */ u8 mTurnPlayerIsLocal;
     /* 6198 */ u8 mSpKind;
     /* 6199 */ u8 mStartTouchInCorner; // stroke began at x > 0xc8 with y > 0xa0, or y < 0x30 while mSpEnabled
     /* 619a */ u8 mMessageY;
@@ -169,7 +169,7 @@ public:
     /* 61a2 */ u8 mSavedTutorialNumber;
     /* 61a3 */ u8 mSubPlanes;
     /* 61a4 */ u8 mMicVisible;
-    /* 61a5 */ u8 mUnk_61a5;
+    /* 61a5 */ u8 mMicCellEventAnim;
     /* 61a6 */ s8 mMicTargetY;
     /* 61a7 */ u8 mKeyTimer;
     /* 61a8 */ u8 mReturnState;
@@ -184,7 +184,7 @@ public:
     void Init(Camera *unk1);
     void InitDisplay();
     void Setup(); // once per object, from Update state 0 or 7
-    void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mUnk_6182 = 0xdc when set)
+    void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mSpCellTargetX = 0xdc when set)
     void ClearBitmap(); // only for the local turn player (mTurnPlayer == mLocalPlayer); the upload needs mPlotEnabled
     // also folds the mMicEvent flags into the turn player's mUnk_dc / mUnk_e4 and steps the other CPUs' offset entries
     void UpdatePushMessages();
@@ -212,7 +212,7 @@ public:
     void UpdateCameraOffset();
     void UpdateIcons(); // also fades mBlendAlpha in and counts mPenStrokesRemaining down
     void ApplyBlendAlpha();
-    BOOL func_ov007_0226d214();
+    BOOL UpdateWindow();
     u16 GetLengthXY(int a, int b);
     u16 GetAngleFromOriginToCpuPos(); // state 10 stores it as mRotYAdjust
 };
@@ -268,10 +268,10 @@ void BattleShoot::Init(Camera *unk1) {
     mRotZAdjust = gFieldRotZAdjust[data_020d433c.mFieldId];
     mPredictVisible = 1;
     mSpEnabled = 0;
-    mUnk_6197 = 0;
+    mTurnPlayerIsLocal = 0;
     mSpKind = 0;
     mStartTouchInCorner = 0;
-    mUnk_6182 = 0x122;
+    mSpCellTargetX = 0x122;
     mCamera = unk1;
     mWindow = 0;
     mBattleTarget = 0;
@@ -287,7 +287,7 @@ void BattleShoot::Init(Camera *unk1) {
     mUnk_6180 = 0;
     mPenAndIconsVisible = 1;
     mPlotEnabled = 1;
-    mUnk_61a5 = 0;
+    mMicCellEventAnim = 0;
     mMicVisible = 0;
     mMicTargetY = 0x30;
     mMessageId = 0;
@@ -300,7 +300,7 @@ void BattleShoot::Init(Camera *unk1) {
     mTextWidth = 0;
     mSavedTutorialNumber = 0;
     if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mLocalPlayer) {
-        mUnk_6197 = 1;
+        mTurnPlayerIsLocal = 1;
     }
     MI_CpuClear32(mCells, 0x54);
     MI_CpuClear32(mIcons, 0x50);
@@ -421,7 +421,7 @@ void BattleShoot::Update() {
                 mState++;
                 break;
             }
-            if (func_ov007_0226d214()) {
+            if (UpdateWindow()) {
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState = 0x10;
                 UpdateMessageAndBall();
@@ -519,7 +519,7 @@ void BattleShoot::Update() {
             mBattleTarget->mSpKind        = mSpKind;
             mBattleTarget->StartShot();
             if (mSpKind == 0) {
-                mUnk_6182 = 0x122;
+                mSpCellTargetX = 0x122;
             }
             mCpuPushInterval = 0x14;
             mMicVisible = 1;
@@ -561,7 +561,7 @@ void BattleShoot::Update() {
                 if (mContext->mRequest != 0) {
                     mPenAndIconsVisible = 0;
                     mMicTargetY = 0x30;
-                    mUnk_6182 = 0x122;
+                    mSpCellTargetX = 0x122;
                     mState = 15;
                 } else {
                     if (mPenAndIconsVisible != 0 && mBattleTarget->mUnk_1d7 != 0) {
@@ -572,13 +572,13 @@ void BattleShoot::Update() {
                         } while (i < 5);
                         mPenAndIconsVisible = 0;
                         mMicTargetY = 0x30;
-                        mUnk_6182 = 0x122;
+                        mSpCellTargetX = 0x122;
                     }
-                    if (mBattleTarget->func_ov007_0225d078()) {
+                    if (mBattleTarget->IsFadingToAbility()) {
                         G2S_SetBG1Priority(3);
                         mMicTargetY = 0x30;
                     }
-                    if (mBattleTarget->mUnk_1cb == 0) {
+                    if (mBattleTarget->mPushInputStopped == 0) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         if (l->mPlayers[l->mTurnPlayer]->IsCpu()) {
                             UpdateTurnPlayerCpu();
@@ -797,7 +797,7 @@ void BattleShoot::LoadGraphics() {
     } else {
         mCells[2].mCellAnim->SetAnimation(2);
         mSpEnabled = 1;
-        mUnk_6182 = 0xdc;
+        mSpCellTargetX = 0xdc;
     }
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(buffer, "vs_b_obj_pen.nce_ncg1D.bin", id);
@@ -948,7 +948,7 @@ void BattleShoot::UpdateTouch(BOOL canStart) {
     }
 }
 
-BOOL BattleShoot::func_ov007_0226d214() {
+BOOL BattleShoot::UpdateWindow() {
     return (u8) mWindow->Update(1) == 2;
 }
 
@@ -1072,7 +1072,7 @@ void BattleShoot::UpdateCameraOffset() {
 
 extern "C" void MTX_ApplyRotZ43(MtxFx43 *mtx, s32 angle);
 extern const u8 gPlayerEffectIds[];
-extern const VecFx32 data_ov007_0227bcac;
+extern const VecFx32 gAxisZ;
 
 BOOL BattleShoot::UpdateCameraRotKeys() {
     if (InputManager::Get().IsDown(0x200) | InputManager::Get().IsDown(0x100)) {
@@ -1219,7 +1219,7 @@ public:
     }
 };
 
-extern const s32 data_ov007_0227bcb8[3];
+extern const s32 gNonCpuPushScales[3];
 
 #define INT_TO_FX(n) ((fx32) ((n) > 0 ? 0.5f + (float) ((n) << 12) : (float) ((n) << 12) - 0.5f))
 
@@ -1281,7 +1281,7 @@ void BattleShoot::StartTouchShot() {
     player->mShotRot[2] = mShotRotZ;
     mBattleTarget->StartShot();
     if (mSpKind == 0) {
-        mUnk_6182 = 0x122;
+        mSpCellTargetX = 0x122;
     }
 }
 
@@ -1369,7 +1369,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
     }
     if (cpu->mUsingTargets == 1) {
         BattleTarget *bt = mBattleTarget;
-        if (bt->mUnk_1dd == 4 && bt->mAirFrames == 0 && bt->mUnk_40 == 0) {
+        if (bt->mUnk_1dd == 4 && bt->mAirFrames == 0 && bt->mAirFramesBeforeIntegrate == 0) {
             cpu->NextTarget();
         }
         if (mBattleTarget->mMoveFrames == cpu->mUnk_54) {
@@ -1546,10 +1546,10 @@ void BattleShoot::UpdatePushMessages() {
         do {
             if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu == 0) {
                 if (mMsgs[i].mPushX != 0) {
-                    mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, data_ov007_0227bcb8[me->mUnk_f7]);
+                    mMsgs[i].mPushX = FX_Mul(mMsgs[i].mPushX, gNonCpuPushScales[me->mUnk_f7]);
                 }
                 if (mMsgs[i].mPushZ != 0) {
-                    mMsgs[i].mPushZ = FX_Mul(mMsgs[i].mPushZ, data_ov007_0227bcb8[me->mUnk_f7]);
+                    mMsgs[i].mPushZ = FX_Mul(mMsgs[i].mPushZ, gNonCpuPushScales[me->mUnk_f7]);
                 }
             }
             i++;
@@ -1573,13 +1573,13 @@ void BattleShoot::UpdatePushMessages() {
                 if (self == i) {
                     sumX += msgX;
                     sumZ += msgZ;
-                    if (!(m->mMicEvent != 0 && mBattleTarget->mUnk_1cc != 1)) {
+                    if (!(m->mMicEvent != 0 && mBattleTarget->mPushMode != 1)) {
                     } else {
                         animState = 1;
                         charged   = 1;
                         power += 0x19a;
                     }
-                } else if (!(mBattleTarget->mSpKind == 5 || mBattleTarget->mUnk_1cc == 1)) {
+                } else if (!(mBattleTarget->mSpKind == 5 || mBattleTarget->mPushMode == 1)) {
                     u8 count = mOtherPlayerCount;
                     sumX += msgX * 30 / 100 / count;
                     sumZ += msgZ * 30 / 100 / count;
@@ -1590,7 +1590,7 @@ void BattleShoot::UpdatePushMessages() {
                     }
                 }
                 sent = 1;
-                if (self == i || !(mBattleTarget->mSpKind == 5 || mBattleTarget->mUnk_1cc == 1)) {
+                if (self == i || !(mBattleTarget->mSpKind == 5 || mBattleTarget->mPushMode == 1)) {
                     StartPushEffect(i, msgX, msgZ);
                 }
             }
@@ -1626,9 +1626,9 @@ void BattleShoot::UpdatePushMessages() {
         mBattleTarget->AddPlayerPush();
     }
     if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
-        if (mUnk_61a5 != animState) {
-            mUnk_61a5 = animState;
-            if (mUnk_61a5) {
+        if (mMicCellEventAnim != animState) {
+            mMicCellEventAnim = animState;
+            if (mMicCellEventAnim) {
                 mCells[4].mCellAnim->SetAnimation(2);
             } else {
                 mCells[4].mCellAnim->SetAnimation(0);
@@ -1651,7 +1651,7 @@ void BattleShoot::StartPushEffect(u8 player, s32 x, s32 z) {
     VecFx32 pos = mBattleTarget->mBakugan->mPosition;
     VecFx32 off;
     VecFx32 dir = {0, 0, 0};
-    VecFx32 ref = data_ov007_0227bcac;
+    VecFx32 ref = gAxisZ;
     dir.x       = x;
     dir.z       = z;
     VEC_Normalize(&dir, &dir);
@@ -1714,8 +1714,8 @@ void BattleShoot::UpdateMessageAndBall() {
     if (mCells[0].mCellAnim) {
         mCells[0].mCellAnim->Update();
         mCells[0].mCellAnim->Draw(1, (s16) (mCells[0].mX + 0x10), (s16) (mCells[0].mY + 0x10), mCells[0].mUnk_08);
-        if (mUnk_6197 != 0 && mSpEnabled != 0) {
-            mCells[2].mX = (mUnk_6182 + mCells[2].mX) / 2;
+        if (mTurnPlayerIsLocal != 0 && mSpEnabled != 0) {
+            mCells[2].mX = (mSpCellTargetX + mCells[2].mX) / 2;
             mCells[2].mCellAnim->Update();
             mCells[2].mCellAnim->Draw(1, mCells[2].mX, mCells[2].mY, mCells[2].mUnk_08);
             if (mSpKind != 0) {
